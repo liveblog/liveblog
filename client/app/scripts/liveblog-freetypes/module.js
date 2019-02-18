@@ -181,7 +181,7 @@ const liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
                     label: gettext('Free types manager'),
                     controller: LiveblogFreetypesController,
                     controllerAs: 'self',
-                    betaMark: true,
+                    betaMark: false,
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {global_preferences: 1},

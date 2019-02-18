@@ -1,7 +1,7 @@
 <article
-         ng-repeat="post in ctrl.allPosts() track by post._id"
+         ng-repeat="post in ctrl.allPosts() track by $index"
          class="lb-post list-group-item ng-cloak "
-         ng-class="['lb-mainitem-{{ post.mainItem.item_type | varname }}', {'show-author-avatar': 
+         ng-class="['lb-mainitem-{{ post.mainItem.item_type | varname }}', {'show-author-avatar':
                         ctrl.timeline.settings.showAuthor &&
                         ctrl.timeline.settings.showAuthorAvatar &&
                         !ctrl.isAd(post) &&
@@ -13,7 +13,7 @@
             <i class="icon-star icon--orange"></i>
         </div>
         <div class="lb-post-social" ng-click="showSocialBox = !showSocialBox" ng-if="ctrl.timeline.settings.showSocialShare">
-           
+
             <i class="fa fa-share share-icon" title="{{ 'Social Share' | translate }}"></i>
 
             <div ng-if="showSocialBox" class="share-box">
@@ -57,29 +57,29 @@
         </div>
     </span>
     <lb-gallery items="post.items" ng-if="ctrl.showGallery(post)"></lb-gallery>
-    
+
     <span ng-if="ctrl.isAd(post)">
         <div class="lb-advertisement" translate>Advertisement</div>
     </span>
-    <span></span>    
+    <span></span>
 
     <div ng-repeat="item in post.items track by item._id" class="lb-item lb-article-{{ item.item_type | varname }}">
         <div ng-if="post.fullDetails && !$first" class="list-group-item">
             <div class="lb-timeline__header">
                 <lb-author item="item" timeline="ctrl.timeline" post="post"></lb-author>
-                <lb-item 
-                    ident="true" 
+                <lb-item
+                    ident="true"
                     item="item"
                     gallery="ctrl.showGallery(post)"></lb-item>
             </div>
-        </div>                
+        </div>
         <div ng-if="!post.fullDetails || $first">
             <lb-item item="item" gallery="ctrl.showGallery(post)"></lb-item>
         </div>
     </div>
     <div
-        class="lb-updated-date ng-cloak" 
-        ng-if="!ctrl.isAd(post) || ctrl.hideInfo" 
+        class="lb-updated-date ng-cloak"
+        ng-if="!ctrl.isAd(post) || ctrl.hideInfo"
         ng-show="post.showUpdate"
         translate>
             Updated {{post.content_updated_date | prettifyIsoDate}}

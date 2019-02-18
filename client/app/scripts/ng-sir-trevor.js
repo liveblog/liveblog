@@ -60,11 +60,16 @@ export default angular
 
                 angular.extend(opts, scope.params);
                 opts.el = $(element.find('textarea'));
+
+                // clean older instances if any
+                if (scope.editor)
+                    scope.editor.destroy();
+
                 scope.editor = new SirTrevor.Editor(opts);
                 scope.editor.get = function() {
                     const list = [];
-                    // sort blocks by index.
 
+                    // sort blocks by index.
                     scope.editor.blocks.sort((a, b) => a.$el.index() - b.$el.index());
                     angular.forEach(scope.editor.blocks, (block) => {
                         scope.editor.saveBlockStateToStore(block);

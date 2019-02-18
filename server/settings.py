@@ -16,7 +16,20 @@ import arrow
 from superdesk.default_settings import CORE_APPS as core_apps
 from celery.schedules import crontab
 
-CORE_APPS = [app for app in core_apps if app != 'apps.auth.db']
+# these apps below are not used in Liveblog and because of that
+# they produce some errors given their missing configurations
+EXCLUDED_APPS = [
+    'apps.archived',
+    'apps.auth.db',  # this is replace with local one in liveblog
+    'content_api.publish',
+    'content_api.items',
+    'content_api.tokens',
+    'content_api.items_versions',
+    'content_api.api_audit',
+    'content_api.search'
+]
+
+CORE_APPS = [app for app in core_apps if app not in EXCLUDED_APPS]
 CORE_APPS.append('liveblog.auth')
 
 
@@ -323,7 +336,7 @@ SUBSCRIPTION_LEVEL_NETWORK = 'network'
 SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
 SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
 SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
-SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 5}
+SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 6}
 ACCESS_SUBSCRIPTIONS_MOBILE = ['solo-mobile', 'team', 'network']
 
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
@@ -343,3 +356,6 @@ COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, 
 
 DEFAULT_THEME_DATE_FORMAT = env('DEFAULT_THEME_DATE_FORMAT', 'D. MMMM YYYY HH:mm')
 DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ'))
+
+# TTL for editing post flag (seconds). Default: 5 minutes
+EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60))

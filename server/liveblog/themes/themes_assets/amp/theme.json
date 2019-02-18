@@ -1,10 +1,11 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.3.38",
+  "version": "3.4.0",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
+  "extendsFromPackage": "liveblog-default-theme",
   "onlyOwnCss": "true",
   "author": "Sourcefabric <contact@sourcefabric.org>",
   "contributors": [
@@ -17,8 +18,8 @@
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-a84bb08d17.css"],
-  "styles": ["dist/amp-a84bb08d17.css"],
+  "devStyles": ["dist/amp-0e96741fbf.css"],
+  "styles": ["dist/amp-0e96741fbf.css"],
   "supportAdsInjection": true,
   "options": [
     {

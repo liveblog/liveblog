@@ -198,6 +198,21 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
         }
 
         /**
+         * Receives edit flags information, loop over them and find the right
+         * posts to update the data, then triggers callback
+         */
+        function updatePostFlag(postId, flag, cb) {
+            self.pages.forEach((page, pageIndex) => {
+                page.posts.forEach((post, postIndex) => {
+                    if (post._id === postId) {
+                        self.pages[pageIndex].posts[postIndex]['edit_flag'] = flag;
+                        cb(self.pages[pageIndex].posts[postIndex]);
+                    }
+                });
+            });
+        }
+
+        /**
          * Update the latest update date by using the given posts
          * @param {array} posts - List of posts
          */
@@ -403,6 +418,10 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                 // flatten array
                 return [].concat(...self.pages.map((page) => page.posts));
             },
+            /**
+             * Updates flag information, look for the right post and updates it
+             */
+            updatePostFlag: updatePostFlag,
             /**
              * Returns the number of posts in the local pages
              */

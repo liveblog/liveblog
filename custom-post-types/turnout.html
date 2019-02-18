@@ -1,0 +1,162 @@
+<!-- Works with Liveblog 3.4 -->
+
+<div class="turnout">
+    <label for="turnout.headline" hide-render="">Headline</label>
+    <input  class="turnout__headline" placeholder=" " name="$turnout.headline">
+
+    <label for="turnout.text" hide-render="">Additional text</label>
+    <input class="turnout__subheadline" placeholder=" " name="$turnout.text">
+
+    <div class="turnout__results">
+        <div class="turnout__result">
+            <label for="year.result1" hide-render="">Result 1 (E.G. 12.8%)</label>
+            <input class="turnout__resultScore" placeholder="Result 1" name="$year.result1">
+            <label for="" hide-render=""></label>
+            <div class="turnout__resultUntil"></div>
+            <div class="turnout__resultItem">
+                <div class="turnout__resultBarWrap">
+                    <div class="turnout__resultBar" style="height: @year.result1"></div>
+                </div>
+            </div>
+            <label for="year.year1" hide-render="">Year 1</label>
+            <input class="turnout__resultYear" placeholder="Year 1" name="$year.year1">
+        </div>
+        <div class="turnout__result">
+            <label for="year.result2" hide-render="">Result 2 (E.G. 12.8%)</label>
+            <input class="turnout__resultScore" placeholder="Result 2" name="$year.result2">
+            <label for="" hide-render=""></label>
+            <div class="turnout__resultUntil"></div>
+            <div class="turnout__resultItem">
+                <div class="turnout__resultBarWrap">
+                    <div class="turnout__resultBar" style="height: @year.result2"></div>
+                </div>
+            </div>
+            <label for="year.year2" hide-render="">Year 2</label>
+            <input class="turnout__resultYear" placeholder="Year 2" name="$year.year2">
+        </div>
+        <div class="turnout__result">
+            <label for="year.result3" hide-render="">Result 3 (E.G. 12.8%)</label>
+            <input class="turnout__resultScore" placeholder="Result 3" name="$year.result3">
+            <label for="" hide-render=""></label>
+            <div class="turnout__resultUntil"></div>
+            <div class="turnout__resultItem">
+                <div class="turnout__resultBarWrap">
+                    <div class="turnout__resultBar" style="height: @year.result3"></div>
+                </div>
+            </div>
+            <label for="year.year3" hide-render="">Year 3</label>
+            <input class="turnout__resultYear" placeholder="Year 3" name="$year.year3">
+        </div>
+        <div class="turnout__result">
+
+            <label for="year.result3" hide-render="">Result 4 (E.G. 12.8%)</label>
+            <input class="turnout__resultScore" placeholder="Result 4" name="$year.result4">
+            <label for="year.until4" hide-render="">Until</label>
+            <div class="turnout__resultUntil">
+                <input placeholder="Until" name="$year.until4">
+            </div>
+            <div class="turnout__resultItem">
+                <div class="turnout__resultBarWrap turnout__resultBarWrap--latest">
+                    <div class="turnout__resultBar" style="height: @year.result4"></div>
+                </div>
+            </div>
+            <label for="year.year4" hide-render="">Year 4</label>
+            <input class="turnout__resultYear" placeholder="Year 4" name="$year.year4">
+
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    .turnout .turnout__results {
+        display: flex;
+        text-align: center;
+        max-width: 700px;
+        justify-content: space-between;
+        margin: 25px 0px 0px 0px;
+    }
+
+    .turnout span.turnout__headline {
+        display: block;
+        font-size: 1.06em;
+        font-weight: 700;
+        margin-bottom: .7em;
+    }
+    .turnout .turnout__result {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 1 20%;
+        flex: 1 1 20%;
+        padding: 0px;
+    }
+    .turnout .turnout__resultScore {
+        font-weight: bold;
+        min-height: 23px;
+    }
+    .turnout .turnout__resultUntil {
+        height: 18px;
+        white-space: nowrap;
+        margin-top: 5px;
+    }
+    .turnout .turnout__resultItem {
+        position: relative;
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        margin: 10px 0px;
+        border-top: 1px dotted #d6d6d6;
+        border-bottom: 1px solid #d6d6d6;
+
+    }
+    .turnout .turnout__resultBarWrap {
+        position: relative;
+        flex: 0 1 auto;
+        display: block;
+        margin: 0px;
+        background: transparent;
+        width: 25px;
+        height: 200px;
+        z-index: 1;
+        height: 250px;
+    }
+    .editor-holder .turnout .turnout__resultBarWrap {
+        background: #ececec;
+    }
+    .turnout .turnout__resultBar {
+        display: block;
+        width: 25px;
+        background: #e0dfdf;
+        position: absolute;
+        opacity: 0.7;
+        bottom: -2px;
+    }
+
+    .turnout .turnout__resultBarWrap--latest .turnout__resultBar {
+        background: #66cfa0;
+        opacity: 0.9;
+    }
+    .turnout .turnout__resultItem:before {
+        position: absolute;
+        content: " ";
+        display: block;
+        height: 1px;
+        border-top: 1px dotted #d6d6d6;
+        top: 33%;
+        left: 0px;
+        right: 0px;
+        text-align: center;
+    }
+
+    .turnout .turnout__resultItem:after {
+        position: absolute;
+        content: " ";
+        display: block;
+        height: 1px;
+        border-top: 1px dotted #d6d6d6;
+        top: 66%;
+        left: 0px;
+        right: 0px;
+        text-align: center;
+    }
+</style>

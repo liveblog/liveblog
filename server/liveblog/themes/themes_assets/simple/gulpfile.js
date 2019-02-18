@@ -1,3 +1,7 @@
 process.env.EXTENDED_MODE = true;
 
-const gulp = require('liveblog-default-theme/gulpfile.js');
+var gulp = require('gulp');
+var parent = require('liveblog-default-theme/gulpfile.js');
+
+gulp.tasks = parent.tasks;
+module.exports = gulp;

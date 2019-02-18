@@ -1,4 +1,8 @@
 import logging
+import flask
+import datetime
+
+from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
@@ -7,14 +11,14 @@ from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
-from flask import current_app as app
-import flask
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
-from liveblog.common import check_comment_length
+from liveblog.common import check_comment_length, get_user
 
+from settings import EDIT_POST_FLAG_TTL
+from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed
 
 
@@ -131,7 +135,8 @@ class PostsResource(ArchiveResource):
         'producer_post_id': {
             'type': 'string',
             'nullable': True
-        }
+        },
+        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True)
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
     mongo_indexes = {
@@ -213,8 +218,10 @@ class PostsService(ArchiveService):
         posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
+            blog_id = doc.get('blog')
             post = {}
             post['id'] = doc.get('_id')
+            post['blog'] = blog_id
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
@@ -226,7 +233,7 @@ class PostsService(ArchiveService):
                     post['auto_publish'] = synd_in.get('auto_publish')
 
             posts.append(post)
-            app.blog_cache.invalidate(doc.get('blog'))
+            app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='created')
@@ -236,6 +243,10 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
                 out_service.send_syndication_post(doc, action='created')
+
+            # let's check for posts limits in blog and remove old one if needed
+            if blog_id:
+                check_limit_and_delete_oldest(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
@@ -248,8 +259,8 @@ class PostsService(ArchiveService):
                 blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))
         # in the case we have a comment
         if original['post_status'] == 'comment':
-            original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
-            updates['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
+            original['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
+            updates['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
         # check if updates `content` is diffrent then the original.
@@ -298,7 +309,8 @@ class PostsService(ArchiveService):
         super().on_updated(updates, original)
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('blog'))
+        blog_id = original.get('blog')
+        app.blog_cache.invalidate(blog_id)
         doc = original.copy()
         doc.update(updates)
         posts = []
@@ -310,11 +322,12 @@ class PostsService(ArchiveService):
             # Syndication.
             out_service.send_syndication_post(original, action='deleted')
             # Push notification.
-            push_notification('posts', deleted=True, post_id=original.get('_id'))
-        # NOTE: Seems unsused, to be removed later if no bug appears.
-        # elif updates.get('post_status') == 'draft':
-        #     push_notification('posts', drafted=True, post_id=original.get('_id'),
-        #                       author_id=original.get('original_creator'))
+            _posts = [{'post_id': original.get('_id'), 'blog': blog_id}]
+            push_notification('posts', deleted=True, posts=_posts)
+
+            stats = get_blog_stats(blog_id)
+            if stats:
+                push_notification('blog:limits', blog_id=blog_id, stats=stats)
         else:
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='updated')
@@ -362,6 +375,138 @@ class PostsService(ArchiveService):
         push_notification('posts', deleted=True)
 
 
+def add_flags_info(post):
+    # time to get info from editing flags
+    flag = get_resource_service('post_flags').find_one(req=None, postId=post['_id'])
+
+    # let's replace users id with real information
+    if (flag):
+        users = []
+        for userId in flag['users']:
+            users.append(get_resource_service('users').find_one(req=None, _id=userId))
+        flag['users'] = users
+
+        # so this we have _links available for other methods in frontend
+        build_custom_hateoas(PostFlagService.custom_hateoas, flag, location='post_flags')
+        post['edit_flag'] = flag
+
+    return post
+
+
+class PostFlagResource(Resource):
+    datasource = {
+        'source': 'post_flags'
+    }
+    schema = {
+        'postId': Resource.rel(
+            'posts',
+            type='string',
+            embeddable=True,
+            required=False
+        ),
+
+        # Flag type because in future we might want to add
+        # other types of flag like lock, unlock among others
+        # flag_type edit => it's just used to show alert in frontend
+        'flag_type': {
+            'type': 'string',
+            'allowed': ['edit'],
+            'default': 'edit'
+        },
+
+        'users': {
+            'type': 'list',
+            'nullable': True,
+        },
+
+        # TTL for the flag, this ensures the flag doesn't stay there forever
+        'expireAt': {
+            'type': 'datetime'
+        },
+    }
+
+    item_methods = ['PUT', 'GET', 'DELETE']
+    privileges = {'GET': 'posts', 'POST': 'posts', 'DELETE': 'posts'}
+
+    mongo_indexes = {
+        'edit_flag_ttl': ([('expireAt', 1)], {'expireAfterSeconds': 0}),
+        'unique_flag_x_post': ([('postId', 1), ('flag_type', 1)], {'unique': True})
+    }
+
+
+def complete_flag_info(flag):
+    if not flag:
+        return
+
+    users = []
+    if 'users' in flag:
+        for userId in flag['users']:
+            users.append(get_resource_service('users').find_one(req=None, _id=userId))
+        flag['users'] = users
+
+    # so this we have _links available for other methods in frontend
+    build_custom_hateoas(PostFlagService.custom_hateoas, flag, location='post_flags')
+
+
+class PostFlagService(BaseService):
+    custom_hateoas = {'self': {'title': 'Post Flag', 'href': '/{location}/{_id}'}}
+
+    def create(self, docs, **kwargs):
+        """
+        Basically we override this to avoid repeated entries in flag.
+        We need to check flag and postId, if exists we extract users and
+        append them to new doc that will be created
+        """
+
+        userId = get_user()['_id']
+
+        for doc in docs:
+            doc['users'] = [userId]
+            doc['expireAt'] = utcnow() + datetime.timedelta(seconds=EDIT_POST_FLAG_TTL)
+
+            doc_exists = self.find_one(
+                req=None, postId=doc['postId'], flag_type=doc['flag_type'])
+
+            if doc_exists:
+                doc['users'] += doc_exists['users']
+                doc['users'] = list(set(doc['users']))
+                # super delete to avoid notification :)
+                super().delete(lookup={'_id': doc_exists['_id']})
+
+        return super().create(docs, **kwargs)
+
+    def on_created(self, docs):
+        for doc in docs:
+            complete_flag_info(doc)
+
+        # send notifications
+        push_notification('posts:updateFlag', flags=docs)
+
+    def delete(self, lookup):
+        # this delete method it's kind of special, because it might delete just
+        # the user which is leaving the editor but keep the flag because there are
+        # more than one user editing the same post
+        update = False
+        flag = self.find_one(req=None, **lookup)
+
+        if (len(flag['users']) > 1):
+            current_user = get_user()['_id']
+            updates = flag.copy()
+            updates['users'].remove(ObjectId(current_user))
+            flag = self.update(flag['_id'], updates, flag)
+            update = True
+        else:
+            super().delete(lookup)
+
+        complete_flag_info(flag)
+        self.delete_notify(flag, update=update)
+
+        return flag
+
+    def delete_notify(self, flag, update=False):
+        push_notification('posts:deletedFlag', flag=flag, update=update)
+
+
 class BlogPostsResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = PostsResource.schema
@@ -391,3 +536,9 @@ class BlogPostsService(ArchiveService):
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
                     assoc['item'] = item
         return docs
+
+    def on_fetched(self, docs):
+        super().on_fetched(docs)
+
+        for doc in docs['_items']:
+            add_flags_info(doc)
