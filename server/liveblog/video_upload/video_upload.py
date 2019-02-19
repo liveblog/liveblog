@@ -1,18 +1,21 @@
-from flask import Blueprint, request
+import json
+import logging
+import os
+import urllib.request
+
+import flask
+import google_auth_oauthlib.flow
+import requests
+
+from flask import current_app as app
+from flask import Blueprint, make_response, request
 from flask_cors import CORS
+
+from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk import get_resource_service
-from flask import current_app as app
-from flask import make_response
-import logging
-import json
-import requests
-import os
-import flask
-import requests
-import google_auth_oauthlib.flow
-import urllib.request
+
+from liveblog.utils.api import api_error
 
 logger = logging.getLogger('superdesk')
 
@@ -60,25 +63,31 @@ class VideoUploadService(BaseService):
 
 @video_upload_blueprint.route('/api/video_upload/token', methods=['GET'])
 def get_token():
-    client = get_resource_service('video_upload')
-    credential = client.find_one(req=None)
-    if credential:
-        url = "https://www.googleapis.com/oauth2/v4/token"
+    if (os.path.exists(CLIENT_SECRETS_FILE)):
+        # TODO: refactor this to generate the access_token from
+        # the account json file instead of client id and secret.
 
-        querystring = {
-            "client_id": credential['client_id'],
-            "client_secret": credential['client_secret'],
-            "refresh_token": credential['refresh_token'],
-            "grant_type": "refresh_token"
-        }
-        response = requests.request("POST", url, params=querystring)
-        if response:
-            response_data = json.loads(response.text)['access_token']
+        client = get_resource_service('video_upload')
+        credential = client.find_one(req=None)
+        if credential:
+            url = "https://www.googleapis.com/oauth2/v4/token"
+
+            querystring = {
+                "client_id": credential['client_id'],
+                "client_secret": credential['client_secret'],
+                "refresh_token": credential['refresh_token'],
+                "grant_type": "refresh_token"
+            }
+            response = requests.request("POST", url, params=querystring)
+            if response:
+                response_data = json.loads(response.text)['access_token']
+            else:
+                response_data = 'Not Found'
         else:
             response_data = 'Not Found'
+        return make_response(response_data, 200)
     else:
-        response_data = 'Not Found'
-    return make_response(response_data, 200)
+        return api_error('Missing youtube credentials', 501)
 
 
 @video_upload_blueprint.route('/api/video_upload/credential', methods=['POST', 'GET'])

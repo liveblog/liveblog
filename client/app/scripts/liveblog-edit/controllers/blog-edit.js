@@ -662,6 +662,9 @@ export default function BlogEditController(
             $route.updateParams(params);
             unreadPostsService.reset(panel);
         },
+
+        // SirTrevor params that can be accessed using this.getOptions()
+        // from inside of a sir trevor block
         stParams: {
             disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;
@@ -711,77 +714,73 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
-            displayModalBox: function(message) {
-                var redirectUrl = null;
-                var currentUrl = window.location.href;
 
-                $http({
-                    url: `${config.server.url}/video_upload/callback_url`,
-                    method: 'GET',
-                    params: {currentUrl: currentUrl},
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                    .then((response) => {
-                        redirectUrl = response.data;
-                    });
-                function confirmCredential() {
-                    var deferred = $q.defer();
+            displayModalBox: function() {
+                // var redirectUrl = null;
+                // var currentUrl = window.location.href;
 
-                    modal.confirm(gettext(message))
-                        .then(deferred.resolve, deferred.reject);
-                    return deferred.promise;
+                // $http({
+                //     url: `${config.server.url}/video_upload/callback_url`,
+                //     method: 'GET',
+                //     params: {currentUrl: currentUrl},
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                // }).then((response) => {
+                //     redirectUrl = response.data;
+                // });
+
+                function openCredentialForm() {
+                    const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
+
+                    // @NOTE: this is ugly. Figure out how to improve this.
+                    const bodyText = `In order to be able to upload videos to Youtube directly from Live Blog
+                        you need to provide your credentials file.
+                        Follow <a target="_blank" href="${helpLink}">this guide</a> to generate yours.
+                        <br/><br/>
+                        <input type="file" ng-model="jsonFile" id="jsonFile" accept=".json" />
+                        <div id="secrets-file"></div>
+                        <script>
+                            var uploadBtn = $('[ng-click="ok()"]');
+                            uploadBtn.prop('disabled', true);
+                            $('#jsonFile').on('change', function() {
+                                var file = $(this).prop('files')[0];
+                                document.getElementById('secrets-file').value = file;
+                                uploadBtn.prop('disabled', false);
+                            });
+                        </script>`;
+                    const headerText = 'Upload your Youtube\'s credentials';
+                    const okText = 'Upload';
+
+                    return modal.confirm({headerText, bodyText, okText});
                 }
-                function openCredentialForm(scope) {
-                    var deferred = $q.defer();
 
-                    modal
-                        .confirm(gettext('Please Make Sure that Authorized redirect URIs in Google Console is Set to: "'
-                            + redirectUrl +
-                            `"<br/><br/>Please Upload Your Credential File<br/>
-                            <input type="file" ng-model="jsonFile" id="jsonFile">
-                            <div id="file"></div>
-                            <script>
-                                $('#jsonFile').on('change', function() {
-                                    var file = $(this).prop('files')[0];
-                                    document.getElementById('file').value = file;
-                                });
-                            </script>
-                            `))
-                        .then(deferred.resolve, deferred.reject);
-                    return deferred.promise;
-                }
-                confirmCredential().then(() => {
-                    openCredentialForm().then(() => {
-                        let file = document.getElementById('file').value;
+                openCredentialForm().then(() => {
+                    let file = document.getElementById('secrets-file').value;
 
-                        api.archive.getUrl().then((url) => {
-                            upload.start({
+                    api.archive.getUrl().then((url) => {
+                        upload.start({
+                            method: 'POST',
+                            url: url,
+                            data: {media: file},
+                        }).then((response) => {
+                            $http({
+                                url: `${config.server.url}/video_upload/credential`,
                                 method: 'POST',
-                                url: url,
-                                data: {media: file},
-                            })
-                                .then((response) => {
-                                    $http({
-                                        url: `${config.server.url}/video_upload/credential`,
-                                        method: 'POST',
-                                        data: {
-                                            file: response.data.renditions.original.href,
-                                        },
-                                        headers: {
-                                            'Content-Type': 'application/json;charset=utf-8',
-                                        },
-                                    })
-                                        .then((response) => {
-                                            notify.pop();
-                                            notify.info(gettext('Saved credentials'));
-                                            window.location.replace(response.data);
-                                        });
-                                });
+                                data: {
+                                    file: response.data.renditions.original.href,
+                                },
+                                headers: {
+                                    'Content-Type': 'application/json;charset=utf-8',
+                                },
+                            }).then((response) => {
+                                notify.pop();
+                                notify.info(gettext('Saved credentials'));
+                                window.location.replace(response.data);
+                            });
                         });
                     });
-                });
+                }, () => cleanEditor(true));
             },
             getAccessToken: function(successCallback, errorCallback) {
                 $scope.actionPending = true;

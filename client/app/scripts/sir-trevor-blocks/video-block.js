@@ -67,17 +67,17 @@ export default function videoBlock(SirTrevor, config) {
                 '</div>',
             ].join('\n');
 
+            // when rendering the block we need to check right away if the keys
+            // for youtube uploading are already set, it not show the modal
             self.getOptions().getAccessToken(
                 (data) => {
                     localStorage.setItem('accessToken', data);
                 },
                 (error) => {
-                    var message = `The direct video upload requires a connection to Youtube<br/>
-                        Do you want to update the YouTube Credential?`;
-
-                    self.getOptions().displayModalBox(message);
+                    self.getOptions().displayModalBox();
                 }
             );
+
             self.$('.during-upload').hide();
             self.$('.st-block__inputs').append(uploadBlock);
             if (!isAdmin)
