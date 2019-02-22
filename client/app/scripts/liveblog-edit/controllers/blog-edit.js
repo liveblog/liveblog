@@ -747,11 +747,14 @@ export default function BlogEditController(
                     upload.start({
                         method: 'POST',
                         url: `${config.server.url}/video_upload/credential`,
-                        data: {secretsFile},
+                        data: {
+                            secretsFile: secretsFile,
+                            currentUrl: window.location.href,
+                        },
                     }).then((response) => {
-                        console.log(response); // eslint-disable-line
                         notify.pop();
                         notify.info(gettext('Saved credentials'));
+                        window.location.replace(response.data);
                     });
                 }, () => cleanEditor(true));
             },

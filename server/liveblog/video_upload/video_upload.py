@@ -2,16 +2,21 @@ import json
 import logging
 import os
 
+import six
 import flask
 import httplib2
+
+from google_auth_oauthlib.flow import Flow
+
 from oauth2client import _helpers
 from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 from flask import current_app as app
-from flask import Blueprint, make_response, request
+from flask import Blueprint, make_response, request, session
 from flask_cors import CORS
 
+from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
@@ -27,6 +32,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 # set this only when in local server
 # os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 CLIENT_SECRETS_FILE = 'youtube/client-secret.json'
+YT_KEY = 'youtube_secrets'
+YT_CREDENTIALS = 'youtube_credentials'
 
 SCOPES = ['https://www.googleapis.com/auth/youtube']
 API_SERVICE_NAME = 'youtube'
@@ -78,6 +85,25 @@ def fileExists(filename):
     return app.media.exists({'filename': filename})
 
 
+def bytes2string(value):
+    """Converts bytes to a string value, if necessary.
+    Args:
+        value: The string/bytes value to be converted.
+    Returns:
+        The original value converted to unicode (if bytes) or as passed in
+        if it started out as unicode.
+    Raises:
+        ValueError if the value could not be converted to unicode.
+    """
+    result = value.decode('utf-8') if isinstance(value, six.binary_type) else value
+
+    if isinstance(result, six.text_type):
+        return result
+    else:
+        raise ValueError(
+            '{0!r} could not be converted to unicode'.format(value))
+
+
 @video_upload_blueprint.route('/api/video_upload/token', methods=['GET'])
 def get_token():
     if (fileExists(CLIENT_SECRETS_FILE)):
@@ -95,39 +121,57 @@ def get_token():
         return api_error('Missing youtube credentials', 501)
 
 
-@video_upload_blueprint.route('/api/video_upload/credential', methods=['POST', 'GET'])
+@video_upload_blueprint.route('/api/video_upload/credential', methods=['POST'])
 def get_refresh_token():
-    # TODO: add condition, file must be provided
-    secrets = request.files['secretsFile']
+    # let's save current url to later redirect
+    session['current_url'] = request.values['currentUrl']
 
+    secrets = request.files['secretsFile']
     secrets.seek(0)
     file_content = secrets.read()
+    yt_data = json.loads(bytes2string(file_content))
 
-    secrets_file = app.media.put(
-        file_content, filename=CLIENT_SECRETS_FILE, content_type='application/json', version=False)
+    if 'web' not in yt_data:
+        return api_error('OAuth project has to be configured as web in google console', 400)
 
-    return api_response({'_id': secrets_file}, 200)
+    # let's save secrets file content in db for future usage
+    global_serv = get_resource_service('global_preferences')
+    global_serv.save_preference(YT_KEY, yt_data)
+
+    redirect_uri = flask.url_for(
+        'video_upload.oauth2callback', _external=True, _scheme='https')
+
+    flow = Flow.from_client_config(
+        yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
+    auth_url, _ = flow.authorization_url(
+        prompt='consent', access_type='offline', include_granted_scopes='true')
+
+    return make_response(auth_url, 200)
 
 
 @video_upload_blueprint.route('/api/video_upload/oauth2callback', methods=['GET', 'POST'])
 def oauth2callback():
-    # flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-    #     CLIENT_SECRETS_FILE, scopes=SCOPES)
-    # flow.redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
 
-    # # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    # authorization_response = flask.request.url
-    # authorization_response = authorization_response.replace('http', 'https')
-    # flow.fetch_token(authorization_response=authorization_response)
+    yt_prefs = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
+    yt_data = yt_prefs['value']
 
-    # credentials = flow.credentials
-    # client = app.data.mongo.pymongo('video_upload').db['video_upload']
-    # current_url_data = client.find_one()
-    # current_url = current_url_data['current_url']
-    # client.update({}, {'client_id': credentials.client_id, 'client_secret': credentials.client_secret,
-    #                    'refresh_token': credentials.refresh_token}, True)
-    return ""
-    # return flask.redirect(current_url)
+    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
+    flow = Flow.from_client_config(yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
+
+    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+    authorization_response = flask.request.url
+    authorization_response = authorization_response.replace('http', 'https')
+    flow.fetch_token(authorization_response=authorization_response)
+
+    credentials = flow.credentials
+    global_serv = get_resource_service('global_preferences')
+    global_serv.save_preference(YT_CREDENTIALS, {
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'refresh_token': credentials.refresh_token
+    })
+
+    return flask.redirect(session['current_url'])
 
 
 @video_upload_blueprint.route('/api/video_upload/callback_url', methods=['GET'])
