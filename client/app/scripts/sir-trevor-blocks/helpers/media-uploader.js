@@ -3,7 +3,7 @@ import RetryHandler from './retry-handler';
 
 class MediaUploader {
     constructor(options) {
-        this.initialize();
+        this.initialize(options);
         this.retryHandler = new RetryHandler();
         this.url = options.url;
 

@@ -716,20 +716,6 @@ export default function BlogEditController(
             },
 
             displayModalBox: function() {
-                // var redirectUrl = null;
-                // var currentUrl = window.location.href;
-
-                // $http({
-                //     url: `${config.server.url}/video_upload/callback_url`,
-                //     method: 'GET',
-                //     params: {currentUrl: currentUrl},
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                // }).then((response) => {
-                //     redirectUrl = response.data;
-                // });
-
                 function openCredentialForm() {
                     const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
 
@@ -756,29 +742,16 @@ export default function BlogEditController(
                 }
 
                 openCredentialForm().then(() => {
-                    let file = document.getElementById('secrets-file').value;
+                    let secretsFile = document.getElementById('secrets-file').value;
 
-                    api.archive.getUrl().then((url) => {
-                        upload.start({
-                            method: 'POST',
-                            url: url,
-                            data: {media: file},
-                        }).then((response) => {
-                            $http({
-                                url: `${config.server.url}/video_upload/credential`,
-                                method: 'POST',
-                                data: {
-                                    file: response.data.renditions.original.href,
-                                },
-                                headers: {
-                                    'Content-Type': 'application/json;charset=utf-8',
-                                },
-                            }).then((response) => {
-                                notify.pop();
-                                notify.info(gettext('Saved credentials'));
-                                window.location.replace(response.data);
-                            });
-                        });
+                    upload.start({
+                        method: 'POST',
+                        url: `${config.server.url}/video_upload/credential`,
+                        data: {secretsFile},
+                    }).then((response) => {
+                        console.log(response); // eslint-disable-line
+                        notify.pop();
+                        notify.info(gettext('Saved credentials'));
                     });
                 }, () => cleanEditor(true));
             },
