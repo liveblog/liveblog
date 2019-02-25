@@ -9,6 +9,6 @@
     "build": "gulp"
   },
   "dependencies": {
-    "liveblog-default-theme": "^3.5.0"
+    "liveblog-default-theme": "^3.5.1"
   }
 }
