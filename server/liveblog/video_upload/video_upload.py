@@ -13,24 +13,26 @@ from apiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
 from flask import current_app as app
-from flask import Blueprint, make_response, request, session
+from flask import Blueprint, make_response, request
 from flask_cors import CORS
 
+import superdesk
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
 from liveblog.blogs.utils import is_s3_storage_enabled
 from liveblog.utils.api import api_error, api_response
+from liveblog.common import get_user
 
 logger = logging.getLogger('superdesk')
 
-video_upload_blueprint = Blueprint('video_upload', __name__)
+video_upload_blueprint = superdesk.Blueprint('video_upload', __name__)
 CORS(video_upload_blueprint)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 # set this only when in local server
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 CLIENT_SECRETS_FILE = 'youtube/client-secret.json'
 YT_KEY = 'youtube_secrets'
 YT_CREDENTIALS = 'youtube_credentials'
@@ -121,10 +123,18 @@ def get_token():
         return api_error('Missing youtube credentials', 501)
 
 
-@video_upload_blueprint.route('/api/video_upload/credential', methods=['POST'])
+@video_upload_blueprint.route('/api/video_upload/credential', methods=['POST', 'GET'])
 def get_refresh_token():
-    # let's save current url to later redirect
-    session['current_url'] = request.values['currentUrl']
+    # as we don't use session from flask, then we save into user registry, at least for now
+    if not app.auth.authorized([], 'global_preferences', 'POST'):
+        return app.auth.authenticate()
+
+    current_user = get_resource_service('client_users').find_one(
+        req=None, username=get_user()['username'])
+    updates = current_user.copy()
+    updates['current_url'] = request.values['currentUrl']
+    get_resource_service('client_users').system_update(
+        current_user['_id'], updates, current_user)
 
     secrets = request.files['secretsFile']
     secrets.seek(0)
@@ -139,7 +149,7 @@ def get_refresh_token():
     global_serv.save_preference(YT_KEY, yt_data)
 
     redirect_uri = flask.url_for(
-        'video_upload.oauth2callback', _external=True, _scheme='https')
+        'video_upload.oauth2callback', _external=True, _scheme='http')
 
     flow = Flow.from_client_config(
         yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
@@ -151,11 +161,12 @@ def get_refresh_token():
 
 @video_upload_blueprint.route('/api/video_upload/oauth2callback', methods=['GET', 'POST'])
 def oauth2callback():
+    # if not app.auth.authorized([], 'client_blogs', 'GET'):
+    #     return app.auth.authenticate()
 
-    yt_prefs = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
-    yt_data = yt_prefs['value']
+    yt_data = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
 
-    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
+    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='http')
     flow = Flow.from_client_config(yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
@@ -171,7 +182,9 @@ def oauth2callback():
         'refresh_token': credentials.refresh_token
     })
 
-    return flask.redirect(session['current_url'])
+    current_user = get_resource_service('client_users').find_one(req=None, username=get_user()['username'])
+
+    return flask.redirect(current_user['current_url'])
 
 
 @video_upload_blueprint.route('/api/video_upload/callback_url', methods=['GET'])

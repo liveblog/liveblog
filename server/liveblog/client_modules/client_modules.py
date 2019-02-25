@@ -57,6 +57,12 @@ class ClientUsersResource(Resource):
     resource_methods = ['GET']
     schema = {}
     schema.update(UsersResource.schema)
+    schema.update({
+        'current_url': {
+            'type': 'string',
+            'nullable': True
+        },
+    })
 
 
 class ClientUsersService(BaseService):
