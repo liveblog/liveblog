@@ -107,7 +107,6 @@ export default function videoBlock(SirTrevor, config) {
             });
         },
         uploadFile: function(file) {
-            debugger; // eslint-disable-line
             var uploadStartTime = 0;
             var title = 'liveblog-' + Math.random().toString(36)
                 .substr(2, 5);

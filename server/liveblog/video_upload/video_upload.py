@@ -4,16 +4,12 @@ import os
 
 import six
 import flask
-import httplib2
+import requests
 
 from google_auth_oauthlib.flow import Flow
 
-from oauth2client import _helpers
-from apiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
-
 from flask import current_app as app
-from flask import Blueprint, make_response, request
+from flask import make_response, request
 from flask_cors import CORS
 
 import superdesk
@@ -108,17 +104,26 @@ def bytes2string(value):
 
 @video_upload_blueprint.route('/api/video_upload/token', methods=['GET'])
 def get_token():
-    if (fileExists(CLIENT_SECRETS_FILE)):
-        secrets_content = getFileContent(CLIENT_SECRETS_FILE).read()
-        json_data = json.loads(_helpers._from_bytes(secrets_content))
-        credentials = ServiceAccountCredentials.from_json_keyfile_dict(
-            json_data, scopes=["https://www.googleapis.com/auth/youtube"])
+    global_serv = get_resource_service('global_preferences').get_global_prefs()
+    credentials = global_serv[YT_CREDENTIALS]
 
-        http = httplib2.Http()
-        credentials.authorize(http)
-        build("youtube", "v3", http=http, cache_discovery=False)
+    if credentials:
+        url = 'https://www.googleapis.com/oauth2/v4/token'
 
-        return api_response(credentials.access_token, 200)
+        try:
+            params = {
+                'client_id': credentials['client_id'],
+                'client_secret': credentials['client_secret'],
+                'refresh_token': credentials['refresh_token'],
+                'grant_type': 'refresh_token'
+            }
+            response = requests.post(url, data=params)
+            response = json.loads(response.text)
+            return api_response(response['access_token'], 200)
+        except Exception as err:
+            msg = 'Unexpected error getting youtube access token. {0}'.format(err)
+            logger.warning(msg)
+            return api_error(msg, 501)
     else:
         return api_error('Missing youtube credentials', 501)
 
@@ -128,13 +133,6 @@ def get_refresh_token():
     # as we don't use session from flask, then we save into user registry, at least for now
     if not app.auth.authorized([], 'global_preferences', 'POST'):
         return app.auth.authenticate()
-
-    current_user = get_resource_service('client_users').find_one(
-        req=None, username=get_user()['username'])
-    updates = current_user.copy()
-    updates['current_url'] = request.values['currentUrl']
-    get_resource_service('client_users').system_update(
-        current_user['_id'], updates, current_user)
 
     secrets = request.files['secretsFile']
     secrets.seek(0)
@@ -153,17 +151,17 @@ def get_refresh_token():
 
     flow = Flow.from_client_config(
         yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
+
     auth_url, _ = flow.authorization_url(
-        prompt='consent', access_type='offline', include_granted_scopes='true')
+        prompt='consent',
+        access_type='offline',
+        include_granted_scopes='true')
 
     return make_response(auth_url, 200)
 
 
 @video_upload_blueprint.route('/api/video_upload/oauth2callback', methods=['GET', 'POST'])
 def oauth2callback():
-    # if not app.auth.authorized([], 'client_blogs', 'GET'):
-    #     return app.auth.authenticate()
-
     yt_data = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
 
     redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='http')
@@ -182,9 +180,7 @@ def oauth2callback():
         'refresh_token': credentials.refresh_token
     })
 
-    current_user = get_resource_service('client_users').find_one(req=None, username=get_user()['username'])
-
-    return flask.redirect(current_user['current_url'])
+    return flask.redirect(app.config['CLIENT_URL'])
 
 
 @video_upload_blueprint.route('/api/video_upload/callback_url', methods=['GET'])

@@ -300,6 +300,10 @@ export default function BlogEditController(
 
         // let's loop over the possible places to find the post and update it
         for (let place of placesToLook) {
+            // NOTE: temporarily check this. We need to decide if we can modify
+            // users comments coming from frontend ui/blog
+            if (!place) continue;
+
             place.pagesManager.updatePostFlag(postId, flag, (post) => {
                 cb(post, flag);
                 foundPost = post;
@@ -493,10 +497,6 @@ export default function BlogEditController(
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
-                    // @TODO: ask about specific behaviour in draft or submitted
-                    // !$scope.freetypeControl.isValid()
-                    //     && ($scope.currentPost.post_status === 'draft'
-                    //         || $scope.currentPost.post_status === 'submitted');
                     return !$scope.freetypeControl.isValid();
                 }
 
@@ -752,6 +752,8 @@ export default function BlogEditController(
                             currentUrl: window.location.href,
                         },
                     }).then((response) => {
+                        // save to later be able to redirect to the place we were
+                        localStorage.setItem('blogToRedirect', $scope.blog._id);
                         notify.pop();
                         notify.info(gettext('Saved credentials'));
                         window.location.replace(response.data);
@@ -850,6 +852,7 @@ export default function BlogEditController(
             $scope.preview = !$scope.preview;
         },
     });
+
     // initalize the view with the editor panel
     var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',
         syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
