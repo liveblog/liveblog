@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -36,7 +36,7 @@
                     "label": "Finnish"
                 },
                 {
-                    "value": "se",
+                    "value": "sv",
                     "label": "Swedish"
                 },
                 {
@@ -616,7 +616,7 @@
           "Sort by:": "Ordonează după:",
           "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare",
           "credit:": "credit:"
-        }, "se": {
+        }, "sv": {
             "Highlights": "Höjdpunkter",
             "Comment by": "Kommentar av",
             "Powered by": "Powered by",

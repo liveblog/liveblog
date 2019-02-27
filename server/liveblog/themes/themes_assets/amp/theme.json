@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -268,7 +268,7 @@
           "Sort by:": "Ordonează după:",
           "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare",
           "credit:": "credit:"
-        }, "se": {
+        }, "sv": {
           "Highlights": "Höjdpunkter",
           "Comment by": "Kommentar av",
           "Powered by": "Powered by",
