@@ -56,8 +56,6 @@ export default angular
             link: function(scope, element, attrs) {
                 const opts = angular.copy(options);
 
-                opts.blockTypes = ['Text', 'Image', 'Embed', 'Quote', 'Video'];
-
                 angular.extend(opts, scope.params);
                 opts.el = $(element.find('textarea'));
 

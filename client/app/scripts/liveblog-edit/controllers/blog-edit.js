@@ -294,6 +294,7 @@ export default function BlogEditController(
         let placesToLook = [
             self.timelineStickyInstance,
             self.timelineInstance,
+            self.commentPostsInstance,
             self.contributionsPostsInstance,
             self.draftPostsInstance,
         ];
