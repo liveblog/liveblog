@@ -19,7 +19,6 @@ from superdesk.services import BaseService
 
 from liveblog.blogs.utils import is_s3_storage_enabled
 from liveblog.utils.api import api_error, api_response
-from liveblog.common import get_user
 
 logger = logging.getLogger('superdesk')
 
