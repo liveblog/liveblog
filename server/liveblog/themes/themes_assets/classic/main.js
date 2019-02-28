@@ -1,6 +1,6 @@
 (function(angular) {
     'use strict';
-    TimelineCtrl.$inject = ['$interval', 
+    TimelineCtrl.$inject = ['$interval',
                             'PagesManager',
                             'blogs',
                             'config',
@@ -48,7 +48,7 @@
             if(!all.length ) {
                 return;
             }
-            if(config.output && 
+            if(config.output &&
                 config.output.collection &&
                 config.output.collection.advertisements &&
                 config.output.collection.advertisements.length
@@ -135,7 +135,7 @@
                 fixBackgroundImage(config.output.style);
                 $('body').css(config.output.style);
             }
-            
+
         }
 
         applyOutputStyle();
@@ -242,7 +242,7 @@
             window.addEventListener('message', receiveMessage, false);
         });
     }
-    
+
     function GalleryCtrl() {
         var vm = this;
         // Filter posts getting only images
