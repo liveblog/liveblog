@@ -15,3 +15,4 @@ pymongo>=0.4,<4.0
 
 redis>=2.10.5,<3.0
 elasticsearch==1.9.0
+kombu<4.3.0
