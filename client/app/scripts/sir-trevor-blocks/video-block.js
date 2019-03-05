@@ -34,7 +34,6 @@ export default function videoBlock(SirTrevor, config) {
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author'),
         titlePlaceholder: window.gettext('Add title'),
-        embedlyKey: config.embedly.key,
         youtubeCredential: config.youtubeCredential,
 
         editorHTML: function() {
@@ -80,8 +79,8 @@ export default function videoBlock(SirTrevor, config) {
 
             self.$('.during-upload').hide();
             self.$('.st-block__inputs').append(uploadBlock);
-            if (!isAdmin)
-                self.$('#updateButton').hide();
+            if (!isAdmin) self.$('#updateButton').hide();
+
             self.$('#updateButton').on('click', () => {
                 var message = 'Are you sure to update the credentials?';
 
@@ -91,9 +90,8 @@ export default function videoBlock(SirTrevor, config) {
             self.$('#embedlyUploadFile').on('change', function() {
                 var file = $(this).prop('files')[0];
 
-                if (!file) {
-                    return false;
-                }
+                if (!file) return false;
+
                 // Handle one upload at a time
                 if (/video/.test(file.type)) {
                     self.loading();
@@ -122,7 +120,8 @@ export default function videoBlock(SirTrevor, config) {
                     privacyStatus: 'public',
                 },
             };
-            var uploader = new MediaUploader({
+
+            let uploader = new MediaUploader({
                 baseUrl: 'https://www.googleapis.com/upload/youtube/v3/videos',
                 file: file,
                 token: localStorage.getItem('accessToken'),
@@ -140,13 +139,13 @@ export default function videoBlock(SirTrevor, config) {
                     }
                 },
                 onProgress: function(data) {
-                    var currentTime = Date.now();
-                    var bytesUploaded = data.loaded;
-                    var totalBytes = data.total;
-                    // The times are in millis, so we need to divide by 1000 to get seconds.
-                    var bytesPerSecond = bytesUploaded / ((currentTime - uploadStartTime) / 1000);
-                    var estimatedSecondsRemaining = ((totalBytes - bytesUploaded) / bytesPerSecond).toFixed(2);
-                    var percentageComplete = ((bytesUploaded * 100) / totalBytes).toFixed(2);
+                    let currentTime = Date.now();
+                    let bytesUploaded = data.loaded;
+                    let totalBytes = data.total;
+                    // Time is in ms, so we need to convert get seconds
+                    let bytesPerSecond = bytesUploaded / ((currentTime - uploadStartTime) / 1000);
+                    let estimatedSecondsRemaining = ((totalBytes - bytesUploaded) / bytesPerSecond).toFixed(2);
+                    let percentageComplete = ((bytesUploaded * 100) / totalBytes).toFixed(2);
 
                     $('.remaining_time').text('Time Left: ' + estimatedSecondsRemaining + ' Seconds');
                     $('#upload-progress').attr({
@@ -157,18 +156,22 @@ export default function videoBlock(SirTrevor, config) {
                     $('#percent-transferred').text(percentageComplete);
                     $('#bytes-transferred').text(handleFileSize(bytesUploaded));
                     $('#total-bytes').text(handleFileSize(totalBytes));
-                    $('.upload-status').text('Please wait!!! uploading the video');
+                    $('.upload-status').text(`Please wait until the upload completes.
+                        Do not close or reload your browser.`);
                     $('.during-upload').show();
                 },
+
                 onComplete: function(data) {
                     $('.remaining_time').hide();
-                    $('.upload-status').text('Video uploaded successfully..');
+                    $('.upload-status').text('Video uploaded successfully');
                     $('.during-upload').hide();
-                    var uploadResponse = JSON.parse(data);
-                    var media = {
-                        html: '<iframe width="400" height="300" scrolling="no"'
-                        + ' frameborder="0" src="https://www.youtube.com/embed/'
-                            + uploadResponse.id + '" allowfullscreen></iframe>',
+
+                    let ytParams = $.param({modestbranding: 1, rel: 0});
+                    let uploadResponse = JSON.parse(data);
+                    let media = {
+                        html: `<iframe width="100%" height="400" scrolling="no"\
+                            frameborder="0" src="https://www.youtube.com/embed/${uploadResponse.id}?${ytParams}"\
+                            allowfullscreen></iframe>`,
                     };
 
                     self.getOptions().disableSubmit(false);
@@ -177,32 +180,33 @@ export default function videoBlock(SirTrevor, config) {
                     self.ready();
                 },
             });
-            // This won't correspond to the *exact* start of the upload, but it should be close enough.
 
+            // This won't correspond to the *exact* start of the upload, but it should be close enough.
             uploadStartTime = Date.now();
             uploader.upload();
         },
 
         renderCard: function(data) {
-            var cardClass = 'liveblog--card';
-
-            var html = $([
-                '<div class="' + cardClass + ' hidden">',
-                '  <div class="hidden st-embed-block embed-preview"></div>',
-                '  <div name="title" class="st-embed-block title-preview"></div>',
-                '  <div name="caption" class="st-embed-block description-preview"></div>',
-                '  <div name="credit" class="st-embed-block credit-preview"></div>',
-                '</div>',
-            ].join('\n'));
+            let cardClass = 'liveblog--card';
+            let html = $(
+                `<div class="${cardClass} hidden">
+                  <div class="hidden st-embed-block embed-preview"></div>
+                  <div name="title" class="st-embed-block title-preview"></div>
+                  <div name="caption" class="st-embed-block description-preview"></div>
+                  <div name="credit" class="st-embed-block credit-preview"></div>
+                </div>`
+            );
 
             // hide everything
             html.find('.embed-preview').addClass('hidden');
+
             // set the embed code
             if (_.has(data, 'html')) {
                 html.find('.embed-preview')
                     .html(data.html)
                     .removeClass('hidden');
             }
+
             // set the title
             if (_.has(data, 'title')) {
                 html.find('.title-preview')
@@ -221,15 +225,7 @@ export default function videoBlock(SirTrevor, config) {
             }
 
             // retrieve the final html code
-            var htmltoReturn = '';
-
-            htmltoReturn = '<div class="' + cardClass + '">';
-            htmltoReturn += html.get(0).innerHTML;
-            htmltoReturn += '</div>';
-
-            // this.handleProgress(data.video_id);
-
-            return htmltoReturn;
+            return `<div class="${cardClass}">${html.get(0).innerHTML}</div>`;
         },
 
         onDrop: function(transferData) {
@@ -251,6 +247,7 @@ export default function videoBlock(SirTrevor, config) {
                 self.uploadFile(file);
             }
         },
+
         // render a card from data, and make it editable
         loadData: function(data) {
             const self = this;
@@ -259,34 +256,35 @@ export default function videoBlock(SirTrevor, config) {
             self.$('.video-input')
                 .addClass('hidden')
                 .after(self.renderCard(data));
+
             // set somes fields contenteditable
             self.$('.title-preview').attr({
                 contenteditable: true,
                 placeholder: self.titlePlaceholder,
             });
+
             self.$('.description-preview').attr({
                 contenteditable: true,
                 placeholder: self.descriptionPlaceholder,
             });
+
             self.$('.credit-preview').attr({
                 contenteditable: true,
                 placeholder: self.authorPlaceholder,
             });
 
             // remove the loader when media is loaded
-            var iframe = this.$('.embed-preview iframe');
+            let iframe = this.$('.embed-preview iframe');
 
-            if (iframe.length > 0) {
-                // special case for iframe
-                iframe.ready(this.ready.bind(this));
-            } else {
-                this.ready();
-            }
+            // special case for iframe
+            (iframe.length > 0) ? iframe.ready(this.ready.bind(this)) : this.ready();
+
             // Remove placeholders
             handlePlaceholder(this.$('[name=title]'), self.titlePlaceholder);
             handlePlaceholder(this.$('[name=caption]'), self.descriptionPlaceholder);
             handlePlaceholder(this.$('[name=credit]'), self.authorPlaceholder, {tabbedOrder: true});
         },
+
         retrieveData: function() {
             return {
                 html: this.getData().html,
@@ -297,11 +295,13 @@ export default function videoBlock(SirTrevor, config) {
                 title: this.$('[name=title]').text(),
             };
         },
+
         toHTML: function() {
             var data = this.retrieveData();
 
             return this.renderCard(data);
         },
+
         toMeta: function() {
             return this.retrieveData();
         },
