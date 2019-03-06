@@ -191,9 +191,11 @@ export default function videoBlock(SirTrevor, config) {
             let html = $(
                 `<div class="${cardClass} hidden">
                   <div class="hidden st-embed-block embed-preview"></div>
-                  <div name="title" class="st-embed-block title-preview"></div>
-                  <div name="caption" class="st-embed-block description-preview"></div>
-                  <div name="credit" class="st-embed-block credit-preview"></div>
+                  <div class="item--embed__info">
+                    <div name="title" class="st-embed-block item--embed__title title-preview"></div>
+                    <div name="caption" class="st-embed-block item--embed__description description-preview"></div>
+                    <div name="credit" class="st-embed-block item--embed__credit credit-preview"></div>
+                  </div>
                 </div>`
             );
 

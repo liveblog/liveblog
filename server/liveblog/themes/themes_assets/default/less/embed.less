@@ -578,7 +578,9 @@
     background-size: 9px;
   }
 
-  .lb-type--embed-twitter, .lb-type--embed-facebook, .lb-type--embed-youtube, .lb-type--embed-instagram, .lb-type--embed-brightcove {
+  .lb-type--embed-twitter, .lb-type--embed-facebook,
+  .lb-type--embed-youtube, .lb-type--embed-instagram,
+  .lb-type--embed-brightcove, .lb-type--video {
     width: 40px;
     height: 40px;
     margin-left: -20px;
@@ -600,6 +602,7 @@
     background-size: 20px;
   }
 
+  .lb-type--video, // NOTE: it's also youtube for now as we don't host videos
   .lb-type--embed-youtube {
     background-color: #e52d27;
     background-image: url("../images/youtube_logo.png");
