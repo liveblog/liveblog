@@ -2,12 +2,13 @@
 <script async defer src="https://platform.instagram.com/en_US/embeds.js"></script>
 <script async defer src="https://platform.twitter.com/widgets.js"></script>
 <script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
+<script async defer src="http://www.youtube.com/player_api"></script>
 <script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 <style class="embedly-css">
     .card .hdr{
       display: none;
     }
-  </style>
+</style>
 <script>
     embedly("defaults", {
         cards: {
@@ -17,3 +18,65 @@
         }
     });
 </script>
+
+<script>
+    var SET_FLAG = 'player-set';
+    window.playersState = {};
+
+    function playerStateUpdate(playerId, isPlaying) {
+        window.playersState[playerId] = isPlaying;
+    }
+
+    // Handles direct youtube video embeds
+    function onYouTubeIframeAPIReady() {
+        var iframes = document.querySelectorAll("iframe[src^='https://www.youtube.com']");
+
+        iframes.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG)) return;
+
+            new YT.Player(iframe, {
+                events: {
+                    'onReady': function () { iframe.setAttribute(SET_FLAG, 1); },
+                    'onStateChange': function(event) {
+                        var playerId = event.target.a.id;
+                        var isPlaying = event.data === YT.PlayerState.PLAYING;
+                        playerStateUpdate(playerId, isPlaying);
+                    }
+                }
+            });
+        });
+    }
+
+    // Handles embedly players
+    function onPlayerJSReady () {
+        var embedlyIframes = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
+
+        embedlyIframes.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG)) return;
+
+            // set id to be used later
+            if (!iframe.id) {
+                var parentId = iframe.closest('[data-post-id]').getAttribute('data-post-id');
+                iframe.id = "iplayer_" + parentId;
+            }
+
+            var player = new playerjs.Player(iframe);
+
+            player.on(playerjs.EVENTS.PLAY, function() {
+                playerStateUpdate(iframe.id, true);
+            });
+
+            player.on(playerjs.EVENTS.ENDED, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            player.on(playerjs.EVENTS.PAUSE, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            // flag to know if this it's been wired
+            iframe.setAttribute(SET_FLAG, 1);
+        });
+    }
+</script>
+<script async defer src="//cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>

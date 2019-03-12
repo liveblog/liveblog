@@ -166,7 +166,7 @@ export default function videoBlock(SirTrevor, config) {
                     $('.upload-status').text('Video uploaded successfully');
                     $('.during-upload').hide();
 
-                    let ytParams = $.param({modestbranding: 1, rel: 0});
+                    let ytParams = $.param({enablejsapi: 1, modestbranding: 1, rel: 0});
                     let uploadResponse = JSON.parse(data);
                     let media = {
                         html: `<iframe width="100%" height="400" scrolling="no"\
