@@ -146,7 +146,7 @@ def get_refresh_token():
     global_serv.save_preference(YT_KEY, yt_data)
 
     redirect_uri = flask.url_for(
-        'video_upload.oauth2callback', _external=True, _scheme='http')
+        'video_upload.oauth2callback', _external=True, _scheme='https')
 
     flow = Flow.from_client_config(
         yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
@@ -163,7 +163,7 @@ def get_refresh_token():
 def oauth2callback():
     yt_data = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
 
-    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='http')
+    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
     flow = Flow.from_client_config(yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
