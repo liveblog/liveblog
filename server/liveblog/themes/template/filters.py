@@ -98,19 +98,17 @@ def ampify(html):
             height = DEFAULT_IFRAME_HEIGHT
 
         return '''
-<amp-iframe
-    width={width}
-    height={height}
-    layout="responsive"
-    frameborder="0"
-    sandbox="allow-scripts allow-same-origin allow-popups"
-    src="{src}">
-    <p placeholder>Loading...</p>
-</amp-iframe>
-'''.format(
-            width=width,
-            height=height,
-            src=src.group('src') if src else '')
+            <amp-iframe
+                width={width}
+                height={height}
+                layout="responsive"
+                frameborder="0"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+                src="{src}">
+                <p placeholder>Loading...</p>
+            </amp-iframe>
+            '''.format(width=width, height=height, src=src.group('src') if src else '')
+
     if re.search('players.brightcove.net/\d*/\w*([a-zA-Z0-9\-]*)_\w*\/index\.min\.js', html):
         account = re.search(r'account\s*=\s*"(?P<account>[^\"]+)"', html)
         player = re.search(r'player\s*=\s*"(?P<player>[^\"]+)"', html)
@@ -118,19 +116,20 @@ def ampify(html):
         videoId = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)
 
         return '''
-<amp-brightcove
-    data-account={}
-    data-player={}
-    data-embed={}
-    data-video-id={}
-    layout="responsive"
-    width="480" height="270">
-</amp-brightcove>
-'''.format(
-            account.group('account') if account else '',
-            player.group('player') if player else '',
-            embed.group('embed') if embed else '',
-            videoId.group(1) if videoId else '')
+            <amp-brightcove
+                data-account={}
+                data-player={}
+                data-embed={}
+                data-video-id={}
+                layout="responsive"
+                width="480" height="270">
+            </amp-brightcove>
+            '''.format(
+               account.group('account') if account else '',
+               player.group('player') if player else '',
+               embed.group('embed') if embed else '',
+               videoId.group(1) if videoId else '')
+
     return html
 
 

@@ -27,7 +27,7 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
   {% block post_header %}{% endblock %}
 
   {% block post_body %}
-  <div class="lb-type lb-type-{{ item.post_items_type }}">
+  <div class="lb-type lb-type--{{ item.post_items_type }}">
     {% if item.post_items_type == "embed-facebook" %}
       <amp-img src="{{ assets_root }}images/facebook_logo.png"
       layout="responsive"
@@ -35,7 +35,7 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
       height="20"
       >
       </amp-img>
-    {% elif item.post_items_type == "embed-youtube" %}
+    {% elif item.post_items_type == "embed-youtube" or item.post_items_type == "video" %}
       <amp-img src="{{ assets_root }}images/youtube_logo.png"
       layout="responsive"
       width="20"
@@ -109,8 +109,8 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
       {% if ref.item.item_type == "comment" %}
         <div class="items-containerIndent">
       {% endif %}
-      <div class="lb-item lb-item-{{ ref.item.item_type|lower|replace(' ', '-') }}">
-        {% if ref.item.item_type == "embed" %}
+      <div class="lb-item lb-item--{{ ref.item.item_type|lower|replace(' ', '-') }}">
+        {% if ref.item.item_type == "embed" or ref.item.item_type == "video" %}
           {% include "template-item-embed.html" %}
         {% elif ref.item.item_type == "image" %}
           {% include "template-item-image.html" %}

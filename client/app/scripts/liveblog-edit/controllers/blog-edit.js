@@ -159,7 +159,7 @@ export default function BlogEditController(
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
-        var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
+        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment'];
 
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;
@@ -294,12 +294,17 @@ export default function BlogEditController(
         let placesToLook = [
             self.timelineStickyInstance,
             self.timelineInstance,
+            self.commentPostsInstance,
             self.contributionsPostsInstance,
             self.draftPostsInstance,
         ];
 
         // let's loop over the possible places to find the post and update it
         for (let place of placesToLook) {
+            // NOTE: temporarily check this. We need to decide if we can modify
+            // users comments coming from frontend ui/blog
+            if (!place) continue;
+
             place.pagesManager.updatePostFlag(postId, flag, (post) => {
                 cb(post, flag);
                 foundPost = post;
@@ -493,10 +498,6 @@ export default function BlogEditController(
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
-                    // @TODO: ask about specific behaviour in draft or submitted
-                    // !$scope.freetypeControl.isValid()
-                    //     && ($scope.currentPost.post_status === 'draft'
-                    //         || $scope.currentPost.post_status === 'submitted');
                     return !$scope.freetypeControl.isValid();
                 }
 
@@ -533,6 +534,7 @@ export default function BlogEditController(
                     setDefautPostType();
                     delay = 5;
                 }
+
                 $timeout(() => {
                     var items = post.groups[1].refs;
 
@@ -540,6 +542,7 @@ export default function BlogEditController(
                         var itm = item;
 
                         itm = itm.item;
+
                         if (angular.isDefined(itm)) {
                             if (isItemFreetype(itm.item_type)) {
                                 // post it freetype so we need to reder it
@@ -660,6 +663,9 @@ export default function BlogEditController(
             $route.updateParams(params);
             unreadPostsService.reset(panel);
         },
+
+        // SirTrevor params that can be accessed using this.getOptions()
+        // from inside of a sir trevor block
         stParams: {
             disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;
@@ -709,6 +715,81 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
+
+            displayModalBox: function() {
+                function openCredentialForm() {
+                    const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
+                    const callbackURI = `${config.server.url}/api/video_upload/oauth2callback`;
+
+                    // @NOTE: this is ugly. Figure out how to improve this.
+                    const bodyText = `In order to be able to upload videos to Youtube directly from Live Blog
+                        you need to provide your credentials file.
+                        Follow <a target="_blank" href="${helpLink}">this guide</a> to generate yours.
+                        <br/><br/>
+                        <input type="file" ng-model="jsonFile" id="jsonFile" accept=".json" />
+                        <div id="secrets-file"></div>
+                        <script>
+                            var uploadBtn = $('[ng-click="ok()"]');
+                            uploadBtn.prop('disabled', true);
+                            $('#jsonFile').on('change', function() {
+                                var file = $(this).prop('files')[0];
+                                document.getElementById('secrets-file').value = file;
+                                uploadBtn.prop('disabled', false);
+                            });
+                        </script>\
+                        <br/><b>Important Note:</b><br/>\
+                        Make sure that Authorized Redirect URI in Google Console project is set to
+                        ${callbackURI}`;
+                    const headerText = 'Upload your Youtube\'s credentials - Beta';
+                    const okText = 'Upload';
+
+                    return modal.confirm({headerText, bodyText, okText});
+                }
+
+                openCredentialForm().then(() => {
+                    let secretsFile = document.getElementById('secrets-file').value;
+
+                    upload.start({
+                        method: 'POST',
+                        url: `${config.server.url}/video_upload/credential`,
+                        data: {
+                            secretsFile: secretsFile,
+                            currentUrl: window.location.href,
+                        },
+                    }).then((response) => {
+                        // save to later be able to redirect to the place we were
+                        localStorage.setItem('blogToRedirect', $scope.blog._id);
+                        notify.pop();
+                        notify.info(gettext('Saved credentials'));
+                        window.location.replace(response.data);
+                    });
+                }, () => cleanEditor(true));
+            },
+            getAccessToken: function(successCallback, errorCallback) {
+                $scope.actionPending = true;
+                const handleError = function(response) {
+                    errorCallback(response.data ? response.data._message : undefined);
+                    $scope.actionPending = true;
+                };
+
+                return $http({
+                    url: `${config.server.url}/video_upload/token`,
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((response) => {
+                        $scope.actionPending = false;
+                        if (response.data != 'Not Found')
+                            successCallback(response.data);
+                        else
+                            errorCallback(response.data);
+                    }, handleError);
+            },
+            isAdmin: function() {
+                return blogSecurityService.isAdmin;
+            },
             gogoGadgetoRemoteImage: function(imgURL) {
                 return $http({
                     url: `${config.server.url}/archive/draganddrop`,
@@ -726,11 +807,13 @@ export default function BlogEditController(
                             throw response.data._issues;
                         }
 
-                        return {media: {
-                            _id: response.data._id,
-                            _url: response.data.renditions.thumbnail.href,
-                            renditions: response.data.renditions,
-                        }};
+                        return {
+                            media: {
+                                _id: response.data._id,
+                                _url: response.data.renditions.thumbnail.href,
+                                renditions: response.data.renditions,
+                            },
+                        };
                     });
             },
         },
@@ -776,6 +859,7 @@ export default function BlogEditController(
             $scope.preview = !$scope.preview;
         },
     });
+
     // initalize the view with the editor panel
     var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',
         syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
