@@ -719,6 +719,7 @@ export default function BlogEditController(
             displayModalBox: function() {
                 function openCredentialForm() {
                     const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
+                    const callbackURI = `${config.server.url}/api/video_upload/oauth2callback`;
 
                     // @NOTE: this is ugly. Figure out how to improve this.
                     const bodyText = `In order to be able to upload videos to Youtube directly from Live Blog
@@ -735,8 +736,11 @@ export default function BlogEditController(
                                 document.getElementById('secrets-file').value = file;
                                 uploadBtn.prop('disabled', false);
                             });
-                        </script>`;
-                    const headerText = 'Upload your Youtube\'s credentials';
+                        </script>\
+                        <br/><b>Important Note:</b><br/>\
+                        Make sure that Authorized Redirect URI in Google Console project is set to
+                        ${callbackURI}`;
+                    const headerText = 'Upload your Youtube\'s credentials - Beta';
                     const okText = 'Upload';
 
                     return modal.confirm({headerText, bodyText, okText});
@@ -803,11 +807,13 @@ export default function BlogEditController(
                             throw response.data._issues;
                         }
 
-                        return {media: {
-                            _id: response.data._id,
-                            _url: response.data.renditions.thumbnail.href,
-                            renditions: response.data.renditions,
-                        }};
+                        return {
+                            media: {
+                                _id: response.data._id,
+                                _url: response.data.renditions.thumbnail.href,
+                                renditions: response.data.renditions,
+                            },
+                        };
                     });
             },
         },

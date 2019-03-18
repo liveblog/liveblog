@@ -4,16 +4,19 @@ import MediaUploader from './helpers/media-uploader';
 var AddContentBtns = function() {
     this.top = $('.st-block-controls__top');
     this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
+    this.closeBtn = $('[data-icon="close"]');
 };
 
 AddContentBtns.prototype.hide = function() {
     this.top.hide();
     this.bottom.removeAttr('data-icon-after');
+    this.closeBtn.hide();
 };
 
 AddContentBtns.prototype.show = function() {
     this.top.show();
     this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
+    this.closeBtn.show();
 };
 
 function handleFileSize(size) {
@@ -165,6 +168,7 @@ export default function videoBlock(SirTrevor, config) {
                     $('.remaining_time').hide();
                     $('.upload-status').text('Video uploaded successfully');
                     $('.during-upload').hide();
+                    $('[data-icon="close"]').show();
 
                     let ytParams = $.param({enablejsapi: 1, modestbranding: 1, rel: 0});
                     let uploadResponse = JSON.parse(data);
@@ -184,6 +188,12 @@ export default function videoBlock(SirTrevor, config) {
             // This won't correspond to the *exact* start of the upload, but it should be close enough.
             uploadStartTime = Date.now();
             uploader.upload();
+        },
+
+        getYoutubeID: function(url) {
+            let parsedUrl = url.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+
+            return (parsedUrl[2] !== undefined) ? parsedUrl[2].split(/[^0-9a-z_-]/i)[0] : parsedUrl[0];
         },
 
         renderCard: function(data) {
@@ -288,10 +298,12 @@ export default function videoBlock(SirTrevor, config) {
         },
 
         retrieveData: function() {
+            const data = this.getData();
+
             return {
-                html: this.getData().html,
-                url: this.getData().url,
-                video_id: this.getData().video_id,
+                html: data.html,
+                original_id: this.getYoutubeID(data.html),
+                provider_name: 'YoutubeUpload',
                 caption: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
                 title: this.$('[name=title]').text(),

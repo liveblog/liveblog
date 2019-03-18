@@ -312,6 +312,20 @@
                             a[data-type='comment'] {
                                 display: none;
                             }
+
+                            // adding Beta label to Youtube upload option
+                            a[data-type=video] {
+                                &:after {
+                                    display: inline-block;
+                                    content: 'beta';
+                                    font-size: 9px;
+                                    color: red;
+                                    position: absolute;
+                                    top: -10px;
+                                    right: 7px;
+                                }
+                            }
+
                             padding: 0;
                             // [block types bar]
                             &--active {

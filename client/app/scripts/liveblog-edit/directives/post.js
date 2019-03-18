@@ -88,7 +88,9 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     return user.display_name;
                 },
                 removePost: function(post) {
-                    postsService.remove(angular.copy(post)).then((message) => {
+                    let postToDelete = angular.copy(post);
+
+                    postsService.remove(postToDelete).then((message) => {
                         notify.pop();
                         notify.info(gettext('Removing post...'));
                         $rootScope.$broadcast('removing_timeline_post', {post: post});
@@ -124,9 +126,17 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     scope.clearReorder();
                     scope.onEditAction(post);
                 },
+                isYoutubeAttached: function(post) {
+                    return post.items.some((x) => x.item.item_type === 'video');
+                },
                 askRemovePost: function(post) {
+                    let msg = gettext('Are you sure you want to delete the post?');
+
+                    if (scope.isYoutubeAttached(post))
+                        msg += '<br/>This will NOT remove the video from YouTube\'s account.';
+
                     scope.clearReorder();
-                    modal.confirm(gettext('Are you sure you want to delete the post?'))
+                    modal.confirm(msg)
                         .then(() => {
                             scope.removePost(post);
                         });
