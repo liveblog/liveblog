@@ -237,11 +237,6 @@ const configApp = (grunt) => ({
         embedly: {
             key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
         },
-        youtubeCredential: {
-            clientId: grunt.option('youtube-client-id') || process.env.YOUTUBE_CLIENT_ID || '',
-            clientSecret: grunt.option('youtube-client-secret') || process.env.YOUTUBE_CLIENT_SECRET || '',
-            refreshToken: grunt.option('youtube-refresh-token') || process.env.YOUTUBE_REFRESH_TOKEN || ''
-        },
         facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
         syndication: process.env.SYNDICATION || false,
         marketplace: process.env.MARKETPLACE || false,
@@ -298,11 +293,6 @@ const configLiveblog = (grunt) => ({
     },
     embedly: {
         key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
-    },
-    youtubeCredential: {
-        clientId: grunt.option('youtube-client-id') || process.env.YOUTUBE_CLIENT_ID || '',
-        clientSecret: grunt.option('youtube-client-secret') || process.env.YOUTUBE_CLIENT_SECRET || '',
-        refreshToken: grunt.option('youtube-refresh-token') || process.env.YOUTUBE_REFRESH_TOKEN || ''
     },
     facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
     syndication: process.env.SYNDICATION || false,

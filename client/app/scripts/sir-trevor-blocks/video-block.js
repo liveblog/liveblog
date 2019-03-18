@@ -37,7 +37,6 @@ export default function videoBlock(SirTrevor, config) {
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author'),
         titlePlaceholder: window.gettext('Add title'),
-        youtubeCredential: config.youtubeCredential,
 
         editorHTML: function() {
             return [

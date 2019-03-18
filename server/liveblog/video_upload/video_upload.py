@@ -144,12 +144,3 @@ def oauth2callback():
     })
 
     return flask.redirect(app.config['CLIENT_URL'])
-
-
-@video_upload_blueprint.route('/api/video_upload/callback_url', methods=['GET'])
-def callback_url():
-    current_url = request.args.get('currentUrl')
-    client = app.data.mongo.pymongo('video_upload').db['video_upload']
-    client.update({}, {'$set': {'current_url': current_url}}, True)
-    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
-    return make_response(redirect_uri, 200)
