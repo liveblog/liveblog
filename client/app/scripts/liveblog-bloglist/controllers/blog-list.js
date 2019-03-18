@@ -271,7 +271,9 @@ export default function BlogListController(
     };
 
     $scope.edit = function(blog) {
-        $location.path('/liveblog/edit/' + blog._id);
+        let blogId = typeof blog === 'object' ? blog._id : blog;
+
+        $location.path('/liveblog/edit/' + blogId);
     };
 
     $scope.openAccessRequest = function(blog) {
@@ -450,6 +452,14 @@ export default function BlogListController(
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
             $scope.blogsLoading = false;
+
+            // check if redirect after youtube authentication
+            let blogToRedirect = localStorage.getItem('blogToRedirect');
+
+            if (blogToRedirect) {
+                $scope.edit(blogToRedirect);
+                localStorage.removeItem('blogToRedirect');
+            }
         });
     }
     // initialize bloglist embed code.

@@ -1,5 +1,5 @@
 .st-icon {
-    font-size: 20px !important;
+    font-size: 18px !important;
 }
 
 .st-format-bar {
@@ -7,7 +7,7 @@
 }
 
 .st-format-btn--Unlink {
-    text-decoration: none !important; 
+    text-decoration: none !important;
 }
 
 .st-text-block {
@@ -23,7 +23,7 @@
         font-size: inherit !important;
     }
     p {
-        font-size: inherit !important;   
+        font-size: inherit !important;
     }
     h4 {
         font-size: 18px;
@@ -32,5 +32,39 @@
     h5 {
         font-size: 16px;
         margin: 10px 0;
+    }
+}
+
+.st-block__dropzone .st-icon {
+    margin-bottom: .5em;
+}
+
+.video-progress-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 15px;
+    transform: translateX(-50%) translateY(-50%);
+
+    &__processing {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 15px;
+        transform: translateX(-50%) translateY(-50%);
+        z-index: 2;
+        font-size: 12px;
+        line-height: 15px;
+        text-align: center;
+        color: #fff;
+    }
+
+    &__bar {
+        width: 0;
+        height: 15px;
+        background-color: #5ea9c8;
+        transition: width .2s linear;
     }
 }

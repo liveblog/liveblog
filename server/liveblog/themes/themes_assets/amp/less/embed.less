@@ -330,74 +330,6 @@
       height: 40px;
   }
 
-  // .sorting-bar__title {
-  //     float: left;
-  //     text-transform: uppercase;
-  //     position: absolute;
-  //     color: #adadad;
-  //     font-size: 11px;
-  //     font-weight: 500;
-  // }
-  //
-  // .sorting-bar__orders {
-  //     float: left
-  //   }
-  //
-  // .sorting-bar__order {
-  //     float: left;
-  //     margin-right: 25px;
-  //     padding-bottom: 8px;
-  //     cursor: pointer;
-  //     color: #999999;
-  //     font-size: 1em;
-  //     transition: color .1s ease-out;
-  // }
-  //
-  // .sorting-bar__order--active,
-  // .sorting-bar__order:hover {
-  //     color: @black;
-  //     margin-bottom: -2px;
-  //     //border-bottom: 4px solid @lbgreen;
-  //     border-bottom: 2px solid @black;
-  // }
-  //
-  // .sorting-bar__dropdownBtn {
-  //   display: none;
-  //   background: transparent url('../images/dropdown_arrow.svg') right center no-repeat;
-  //   padding-right: 20px;
-  //   cursor: pointer;
-  //   padding-left: .5rem;
-  //   position: relative;
-  //   z-index: 2;
-  // }
-  //
-  // .header-bar__highlight {
-  //     position: relative;
-  //     text-indent: -9999px;
-  //     color: #999999;
-  //     width: 32px;
-  //     background-image: url("../images/highlighted.svg");
-  //     background-repeat: no-repeat;
-  //     background-size: 14px;
-  //     background-position: center;
-  //     border: 1px solid @lightgrey;
-  //     border-radius: 2px;
-  //     padding: 6px 15px;
-  //     margin-top: 0px;
-  //     margin-left: 0px;
-  // }
-  //
-  // .header-bar__highlight:hover {
-  //     border: 1px solid #cccccc;
-  // }
-  //
-  // .header-bar__highlight.header-bar__highlight--active {
-  //     background-color: #f2f5f8;
-  //     border: 1px solid #cccccc;
-  // }
-
-  // Sorting Bar End
-
   // Posts
 
   .lb-posts {
@@ -614,13 +546,6 @@
     background: none;
   }
 
-  //.lb-type--embed {
-  //  width: 40px;
-  //  height: 40px;
-  //  margin-left: -18px;
-  //  margin-top: -10px;
-  //}
-
   [class*="lb-type--embed"] {
     top: 60px;
     left: 0px;
@@ -650,11 +575,19 @@
     }
   }
 
+  .lb-type--video,
   .lb-type--embed-youtube {
     background-color: #e52d27;
+    top: 60px;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    margin-left: -18px;
+    margin-top: -20px;
+
     amp-img {
-      margin: 10px 0 0 10px;
       width: 20px;
+      margin: 10px 0 0 10px;
     }
   }
 

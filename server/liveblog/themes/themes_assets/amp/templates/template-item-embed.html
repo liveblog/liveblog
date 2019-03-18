@@ -21,6 +21,19 @@
     height="1"
     layout="responsive">
   </amp-instagram>
+{% elif ref.item.meta.provider_name == 'YoutubeUpload' and ref.item.meta.original_id %}
+  <amp-youtube
+    data-videoid="{{ ref.item.meta.original_id }}"
+    layout="responsive"
+    width="480" height="270">
+  </amp-youtube>
+  {% if ref.item.meta.title %}
+    <div class="item--embed__info">
+      <div class="item--embed__title">{{ ref.item.meta.title }}</div>
+      <div class="item--embed__description">{{ ref.item.meta.caption }}</div>
+      <div class="item--embed__credit">{{ ref.item.meta.credit }}</div>
+    </div>
+  {% endif %}
 {% elif ref.item.meta.provider_name == 'Brightcove' and ref.item.meta.original_url %}
   {{ref.item.meta.original_url | ampify | safe}}
 {% else %}

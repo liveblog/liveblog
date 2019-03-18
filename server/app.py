@@ -27,7 +27,7 @@ from liveblog.analytics.analytics import analytics_blueprint
 from liveblog.items.items import drag_and_drop_blueprint
 from liveblog.client_modules.client_modules import blog_posts_blueprint
 from liveblog.advertisements.advertisements import advertisements_blueprint
-
+from liveblog.video_upload.video_upload import video_upload_blueprint
 
 from superdesk.factory import get_app as superdesk_app
 
@@ -99,6 +99,9 @@ def get_app(config=None):
 
     # New posts endpoint
     app.register_blueprint(blog_posts_blueprint)
+
+    # Video upload endpoint
+    app.register_blueprint(video_upload_blueprint)
 
     return app
 

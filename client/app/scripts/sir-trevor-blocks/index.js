@@ -13,6 +13,7 @@ import _ from 'lodash';
 import sanitizeHtml from 'sanitize-html';
 
 import imageBlock from './image-block';
+import videoBlock from './video-block';
 import handlePlaceholder from './handle-placeholder';
 import sanitizeConfig from './sanitizer-config';
 
@@ -158,6 +159,7 @@ angular
 
             return instance ? instance.options : null;
         };
+
         SirTrevor.Blocks.Embed = SirTrevor.Block.extend({
             type: 'embed',
             data: {},
@@ -174,6 +176,7 @@ angular
                 var self = this;
 
                 // create and trigger a 'change' event for the $editor which is a contenteditable
+
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     const $this = $(this);
 
@@ -195,6 +198,7 @@ angular
                         .trim();
 
                     // exit if the input field is empty
+
                     if (_.isEmpty(input)) {
                         self.getOptions().disableSubmit(true);
                         return false;
@@ -340,7 +344,7 @@ angular
                 }
 
                 fixSocial(html, data);
-                // retrieve the final html code
+
                 let htmlToReturn = '';
 
                 htmlToReturn = '<div class="' + cardClass + '">';
@@ -358,7 +362,6 @@ angular
                 self.$('.embed-input')
                     .addClass('hidden')
                     .after(self.renderCard(data));
-                // set somes fields contenteditable
                 ['title', 'description', 'credit'].forEach((fieldName) => {
                     self.$('.' + fieldName + '-preview').attr({
                         contenteditable: true,
@@ -374,7 +377,6 @@ angular
                 } else {
                     this.ready();
                 }
-                // add a link to remove/show the cover
                 const $coverHandler = this.$('.cover-preview-handler');
 
                 if ($coverHandler.length > 0 && !$coverHandler.hasClass('hidden')) {
@@ -523,6 +525,8 @@ angular
         SirTrevor.Locales.en.general.upload = 'Select from folder';
 
         SirTrevor.Blocks.Image = imageBlock(SirTrevor, config);
+
+        SirTrevor.Blocks.Video = videoBlock(SirTrevor, config);
 
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
