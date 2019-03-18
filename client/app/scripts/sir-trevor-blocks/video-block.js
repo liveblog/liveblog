@@ -20,7 +20,7 @@ function handleFileSize(size) {
     var i = Math.floor(Math.log(size) / Math.log(1024));
 
     return (size / Math.pow(1024, i)).toFixed(2) * 1
-    + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
 }
 
 export default function videoBlock(SirTrevor, config) {
@@ -44,7 +44,7 @@ export default function videoBlock(SirTrevor, config) {
                 '<div class="during-upload">',
                 '<p><span id="percent-transferred">'
                 + '</span>% Done (<span id="bytes-transferred"></span>'
-                + '/<span id="total-bytes"></span> bytes)</p>',
+                + '/<span id="total-bytes"></span>)</p>',
                 '<progress id="upload-progress" max="1" value="0"></progress>',
                 '</div>',
             ].join('\n');

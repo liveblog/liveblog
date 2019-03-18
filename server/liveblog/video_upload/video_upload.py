@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 
 import six
 import flask
@@ -14,8 +13,6 @@ from flask_cors import CORS
 
 import superdesk
 from superdesk import get_resource_service
-from superdesk.resource import Resource
-from superdesk.services import BaseService
 
 from liveblog.blogs.utils import is_s3_storage_enabled
 from liveblog.utils.api import api_error, api_response
@@ -25,46 +22,13 @@ logger = logging.getLogger('superdesk')
 video_upload_blueprint = superdesk.Blueprint('video_upload', __name__)
 CORS(video_upload_blueprint)
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-# set this only when in local server
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-CLIENT_SECRETS_FILE = 'youtube/client-secret.json'
 YT_KEY = 'youtube_secrets'
 YT_CREDENTIALS = 'youtube_credentials'
 
 SCOPES = ['https://www.googleapis.com/auth/youtube']
-API_SERVICE_NAME = 'youtube'
-API_VERSION = 'v3'
 
-video_upload_schema = {
-    'client_id': {
-        'type': 'string',
-    },
-    'client_secret': {
-        'type': 'string',
-    },
-    'refresh_token': {
-        'type': 'string',
-    },
-    'current_url': {
-        'type': 'string',
-    }
-}
-
-
-class VideoUploadResource(Resource):
-    datasource = {
-        'source': 'video_upload'
-    }
-
-    public_methods = ['POST']
-    privileges = {'POST': 'video_upload'}
-
-    schema = video_upload_schema
-
-
-class VideoUploadService(BaseService):
-    notification_key = 'video_upload'
+# set this only when in local server
+# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 def getFileContent(filename):
