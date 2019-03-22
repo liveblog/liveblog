@@ -1,7 +1,7 @@
 import handlePlaceholder from './handle-placeholder';
 import MediaUploader from './helpers/media-uploader';
 
-var AddContentBtns = function() {
+let AddContentBtns = function() {
     this.top = $('.st-block-controls__top');
     this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
     this.closeBtn = $('[data-icon="close"]');
@@ -20,7 +20,7 @@ AddContentBtns.prototype.show = function() {
 };
 
 function handleFileSize(size) {
-    var i = Math.floor(Math.log(size) / Math.log(1024));
+    let i = Math.floor(Math.log(size) / Math.log(1024));
 
     return (size / Math.pow(1024, i)).toFixed(2) * 1
     + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
@@ -42,7 +42,7 @@ export default function videoBlock(SirTrevor, config) {
             return [
                 '<div class="st-required st-embed-block video-input"></div>',
                 '<div class="upload-status"></div><br>',
-                '<div class="remaining_time"></div><br>',
+                '<div class="remaining-time"></div><br>',
                 '<div class="during-upload">',
                 '<p><span id="percent-transferred">'
                 + '</span>% Done (<span id="bytes-transferred"></span>'
@@ -53,11 +53,11 @@ export default function videoBlock(SirTrevor, config) {
         },
 
         onBlockRender: function() {
-            var self = this;
+            let self = this;
 
-            var addContentBtns = new AddContentBtns();
-            var isAdmin = self.getOptions().isAdmin();
-            var uploadBlock = [
+            let addContentBtns = new AddContentBtns();
+            let isAdmin = self.getOptions().isAdmin();
+            let uploadBlock = [
                 '<div class="row st-block__upload-container">',
                 '<div class="col-md-6">',
                 '<label onclick="$(this).next().trigger(\'click\');"' +
@@ -84,13 +84,13 @@ export default function videoBlock(SirTrevor, config) {
             if (!isAdmin) self.$('#updateButton').hide();
 
             self.$('#updateButton').on('click', () => {
-                var message = 'Are you sure to update the credentials?';
+                let message = 'Are you sure to update the credentials?';
 
                 self.getOptions().displayModalBox(message);
             });
 
             self.$('#embedlyUploadFile').on('change', function() {
-                var file = $(this).prop('files')[0];
+                let file = $(this).prop('files')[0];
 
                 if (!file) return false;
 
@@ -105,13 +105,41 @@ export default function videoBlock(SirTrevor, config) {
                     self.uploadFile(file);
                 }
             });
+
+            const onEditorChange = () => {
+                const data = this.retrieveData();
+                const input = data.title + data.credit + data.credit;
+
+                if (_.isEmpty(input)) {
+                    this.getOptions().disableSubmit(true);
+                    return false;
+                }
+                this.getOptions().disableSubmit(false);
+            };
+
+            let editableFields = self.$editor.next().find('[contenteditable]');
+
+            editableFields.on('focus', function(ev) {
+                const $this = $(this);
+
+                $this.data('before', $this.html());
+            });
+
+            editableFields.on('blur keyup paste input', function(ev) {
+                const $this = $(this);
+
+                if ($this.data('before') !== $this.html()) {
+                    $this.data('before', $this.html());
+                    onEditorChange();
+                }
+            });
         },
         uploadFile: function(file) {
-            var uploadStartTime = 0;
-            var title = 'liveblog-' + Math.random().toString(36)
+            let uploadStartTime = 0;
+            let title = 'liveblog-' + Math.random().toString(36)
                 .substr(2, 5);
-            var self = this;
-            var metadata = {
+            let self = this;
+            let metadata = {
                 snippet: {
                     title: title,
                     description: '',
@@ -129,10 +157,10 @@ export default function videoBlock(SirTrevor, config) {
                 token: localStorage.getItem('accessToken'),
                 metadata: metadata,
                 onError: function(data) {
-                    var message = data;
+                    let message = data;
 
                     try {
-                        var errorResponse = JSON.parse(data);
+                        let errorResponse = JSON.parse(data);
 
                         message = errorResponse.error.message;
                     } finally {
@@ -149,7 +177,7 @@ export default function videoBlock(SirTrevor, config) {
                     let estimatedSecondsRemaining = ((totalBytes - bytesUploaded) / bytesPerSecond).toFixed(2);
                     let percentageComplete = ((bytesUploaded * 100) / totalBytes).toFixed(2);
 
-                    $('.remaining_time').text('Time Left: ' + estimatedSecondsRemaining + ' Seconds');
+                    $('.remaining-time').text('Time Left: ' + estimatedSecondsRemaining + ' Seconds');
                     $('#upload-progress').attr({
                         value: bytesUploaded,
                         max: totalBytes,
@@ -164,7 +192,7 @@ export default function videoBlock(SirTrevor, config) {
                 },
 
                 onComplete: function(data) {
-                    $('.remaining_time').hide();
+                    $('.remaining-time').hide();
                     $('.upload-status').text('Video uploaded successfully');
                     $('.during-upload').hide();
                     $('[data-icon="close"]').show();
@@ -240,9 +268,9 @@ export default function videoBlock(SirTrevor, config) {
         },
 
         onDrop: function(transferData) {
-            var file = transferData.files[0];
-            var addContentBtns = new AddContentBtns();
-            var self = this;
+            let file = transferData.files[0];
+            let addContentBtns = new AddContentBtns();
+            let self = this;
 
             if (!file) {
                 return false;
@@ -310,7 +338,7 @@ export default function videoBlock(SirTrevor, config) {
         },
 
         toHTML: function() {
-            var data = this.retrieveData();
+            let data = this.retrieveData();
 
             return this.renderCard(data);
         },
