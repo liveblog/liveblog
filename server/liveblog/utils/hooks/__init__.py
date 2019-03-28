@@ -1,4 +1,3 @@
-import json
 import requests
 import logging
 from settings import TRIGGER_HOOK_URLS
