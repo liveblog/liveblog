@@ -1,8 +1,9 @@
 import superdesk
 from apps.auth import AuthResource
 from liveblog.auth.db import AccessAuthService
+from .reset_password import LiveBlogResetPasswordService
 
-from apps.auth.db.reset_password import ResetPasswordService, ResetPasswordResource, ActiveTokensResource
+from apps.auth.db.reset_password import ResetPasswordResource, ActiveTokensResource
 from apps.auth.db.change_password import ChangePasswordService, ChangePasswordResource
 
 
@@ -12,7 +13,7 @@ def init_app(app):
     AuthResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'reset_user_password'
-    service = ResetPasswordService(endpoint_name, backend=superdesk.get_backend())
+    service = LiveBlogResetPasswordService(endpoint_name, backend=superdesk.get_backend())
     ResetPasswordResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'change_user_password'

@@ -359,3 +359,7 @@ DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ')
 
 # TTL for editing post flag (seconds). Default: 5 minutes
 EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60))
+
+# list of URLs where the hooks would be trigger too. POST only for now
+# This should be comma separated string like: 'example.com, domain.com'
+TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
