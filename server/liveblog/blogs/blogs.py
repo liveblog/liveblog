@@ -26,11 +26,13 @@ from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS, TRIGGER_HOOK_URLS
 
 from .schema import blogs_schema
 from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, \
     publish_blog_embeds_on_s3, post_auto_output_creation
+
+from liveblog.utils.hooks import trigger_hooks, build_hook_data, events
 
 logger = logging.getLogger('superdesk')
 
@@ -48,17 +50,17 @@ class BlogsResource(Resource):
     schema = blogs_schema
 
 
-def notify_members(blog, origin, recipients):
+def notify_members(blog, blog_url, recipients):
     add_activity(
         'liveblog:add', 'you have been added as a member',
         resource=None,
         item=blog,
         item_slugline=blog.get('title'),
         notify=recipients)
-    send_email_to_added_members(blog, recipients, origin)
+    send_email_to_added_members(blog, recipients, blog_url)
 
 
-def send_email_to_added_members(blog, recipients, origin):
+def send_email_to_added_members(blog, recipients, blog_url):
     prefs_service = get_resource_service('preferences')
     recipients_email = []
     for user in recipients:
@@ -72,13 +74,12 @@ def send_email_to_added_members(blog, recipients, origin):
 
     if recipients_email:
         # Send emails.
-        url = '{}/#/liveblog/edit/{}'.format(origin, blog['_id'])
         title = blog['title']
         admins = app.config['ADMINS']
         app_name = app.config['APPLICATION_NAME']
         subject = render_template("invited_members_subject.txt", app_name=app_name)
-        text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
-        html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
+        text_body = render_template("invited_members.txt", app_name=app_name, link=blog_url, title=title)
+        html_body = render_template("invited_members.html", app_name=app_name, link=blog_url, title=title)
         if not app.config.get('SUPERDESK_TESTING', False):
             send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
                              text_body=text_body, html_body=html_body)
@@ -130,7 +131,15 @@ class BlogService(BaseService):
                 else:
                     recipients.append(user['user'])
             self._auto_create_output(blog)
-            notify_members(blog, app.config['CLIENT_URL'], recipients)
+            blog_url = self._blog_url(blog['_id'])
+            notify_members(blog, blog_url, recipients)
+
+            # trigger hooks if there are any hook configured
+            if TRIGGER_HOOK_URLS:
+                author = get_resource_service('users').find_one(req=None, _id=ObjectId(blog['original_creator']))
+                hook_data = build_hook_data(
+                    events.BLOG_CREATED, blog_url=blog_url, user_email=author.get('email', ''))
+                trigger_hooks(hook_data)
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
@@ -196,7 +205,9 @@ class BlogService(BaseService):
                     recipients.append(user)
                 else:
                     recipients.append(user['user'])
-        notify_members(blog, app.config['CLIENT_URL'], recipients)
+
+        url = self._blog_url(blog['_id'])
+        notify_members(blog, url, recipients)
 
     def on_delete(self, doc):
         # Prevent delete of blog if blog has consumers
@@ -221,6 +232,9 @@ class BlogService(BaseService):
 
         # Send notifications.
         push_notification('blogs', deleted=1)
+
+    def _blog_url(self, blog_id):
+        return '{}/#/liveblog/edit/{}'.format(app.config['CLIENT_URL'], blog_id)
 
     def _check_max_active(self, increment):
         subscription = SUBSCRIPTION_LEVEL
