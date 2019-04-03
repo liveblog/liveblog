@@ -1,14 +1,20 @@
-from flask import Blueprint, request
+import json
+import logging
+
+from bson import ObjectId
+from eve.utils import config
+from flask import Blueprint
+from flask import current_app as app
+from flask import make_response, request
 from flask_cors import CORS
+
+from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk import get_resource_service
-from flask import current_app as app
-from flask import make_response
-from bson import ObjectId
-import logging
-import json
-from eve.utils import config
+
+from liveblog.utils.hooks import build_hook_data, events, trigger_hooks
+from settings import TRIGGER_HOOK_URLS
+
 
 logger = logging.getLogger('superdesk')
 
@@ -56,16 +62,41 @@ class BlogAnalyticsService(BaseService):
     notification_key = 'blog_analytics'
 
 
+def _trigger_embed_hook(blog_id, url):
+    cache = app.cache
+    hook_cache_key = 'first_embeded_blog_{0}'.format(blog_id)
+    cached_hook = cache.get(hook_cache_key)
+
+    if cached_hook != blog_id:
+        blog = get_resource_service('blogs').find_one(
+            req=None, checkUser=False, _id=blog_id)
+        author = get_resource_service('users').find_one(
+            req=None, _id=ObjectId(blog['original_creator']))
+
+        hook_data = build_hook_data(
+            events.BLOG_FIRST_EMBEDDED, email=author['email'], blog_id=blog_id, url=url)
+        trigger_hooks(hook_data)
+
+        # do not expire as we want this only once
+        cache.set(hook_cache_key, blog_id, timeout=0)
+
+
 @analytics_blueprint.route('/api/analytics/hit', methods=['POST'])
 def analytics_hit():
-    data = request.get_json()
-    context_url = data['context_url']
-    blog_id = data['blog_id']
+    amp = request.args.get('amp', None)
+
+    if amp:
+        context_url = request.args.get('context_url', None)
+        blog_id = request.args.get('blog_id', None)
+    else:
+        data = request.get_json()
+        context_url = data['context_url']
+        blog_id = data['blog_id']
 
     # check ip of origin of request
     # request may have been forwarded by proxy
     if 'X-Forwarded-For' in request.headers:
-        ip = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1]
+        ip = request.headers.getlist('X-Forwarded-For')[0].rpartition(' ')[-1]
     else:
         ip = request.remote_addr or 'untrackable'
 
@@ -74,6 +105,9 @@ def analytics_hit():
     cached = cache.get(ip)
     if cached == blog_id:
         return make_response('hit already registered', 406)
+
+    if TRIGGER_HOOK_URLS and context_url:
+        _trigger_embed_hook(blog_id, context_url)
 
     # short term cache is enough here, as we just want to guard against hammering of db
     cache.set(ip, blog_id, timeout=5 * 60)

@@ -28,6 +28,7 @@ from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
+from settings import TRIGGER_HOOK_URLS
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -222,7 +223,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
         'async': asyncTheme,
-        'i18n': i18n
+        'i18n': i18n,
+        'hook_urls': bool(TRIGGER_HOOK_URLS)
     }
     if is_amp:
         # Add AMP compatible css to template context

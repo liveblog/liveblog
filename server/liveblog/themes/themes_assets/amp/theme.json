@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -9,8 +9,9 @@
   "onlyOwnCss": "true",
   "author": "Sourcefabric <contact@sourcefabric.org>",
   "contributors": [
-    "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
     "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>",
+    "Helmy Giacoman <helmy.giacoman@sourcefabric.org>",
+    "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
     "Tomasz Rondio <tomasz.rondio@sourcefabric.org>"
   ],
   "repository": {
