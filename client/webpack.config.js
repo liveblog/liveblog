@@ -52,9 +52,6 @@ module.exports = function makeConfig(grunt) {
                 jQuery: 'jquery',
                 'window.jQuery': 'jquery',
                 moment: 'moment',
-                // MediumEditor needs to be globally available, because
-                // its plugins will not be able to find it otherwise.
-                MediumEditor: 'medium-editor'
             }),
             new webpack.DefinePlugin({
                 __SUPERDESK_CONFIG__: JSON.stringify(sdConfig)

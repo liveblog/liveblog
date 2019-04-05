@@ -902,4 +902,22 @@ export default function BlogEditController(
             blog['total_posts'] = data.stats['total_posts'];
         }
     });
+
+    const removeFlagOnLeaving = () => {
+        if ($scope.currentPost && $scope.currentPost.edit_flag) {
+            const flag = $scope.currentPost.edit_flag;
+            const url = `${config.server.url}/post_flags/${flag._id}`;
+
+            postsService.syncRemoveFlag(url, flag._etag);
+        }
+    };
+
+    angular.element(window).on('beforeunload', () => {
+        if ($scope.currentPost)
+            return 'Are you sure you want to leave?';
+    });
+
+    angular.element(window).on('unload', () => {
+        removeFlagOnLeaving();
+    });
 }

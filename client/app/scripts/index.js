@@ -3,7 +3,6 @@ import 'lb-bootstrap.scss';
 import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';
-// import 'moment-timezone';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
@@ -31,9 +30,6 @@ import moment from 'moment-timezone';
 
 _.sortByOrder = require('lodash.sortbyorder');
 
-// This is an ugly little hack required by the venerable superdesk.editor to work
-import MediumEditor from 'medium-editor';
-window.MediumEditor = MediumEditor;
 
 import 'superdesk-core/scripts/core/activity';
 import 'superdesk-core/scripts/core/analytics';
@@ -46,9 +42,7 @@ import 'superdesk-core/scripts/core/elastic';
 import 'superdesk-core/scripts/core/filters';
 import 'superdesk-core/scripts/core/services';
 import 'superdesk-core/scripts/core/directives';
-import 'superdesk-core/scripts/core/editor2';
 import 'superdesk-core/scripts/core/spellcheck';
-import 'superdesk-core/scripts/core/editor3';
 import 'superdesk-core/scripts/core/features';
 import 'superdesk-core/scripts/core/list';
 import 'superdesk-core/scripts/core/keyboard';
@@ -66,8 +60,6 @@ import 'superdesk-core/scripts/core/loading';
 import 'superdesk-core/scripts/apps/workspace';
 import 'superdesk-core/scripts/apps/dashboard';
 import 'superdesk-core/scripts/apps/users';
-// import 'superdesk-core/scripts/apps/groups';
-// import 'superdesk-core/scripts/apps/products';
 import 'superdesk-core/scripts/apps/publish';
 import 'superdesk-core/scripts/apps/templates';
 import 'superdesk-core/scripts/apps/profiling';
@@ -149,8 +141,6 @@ angular.module('superdesk.apps', [
     'superdesk.apps.archive',
     'superdesk.apps.ingest',
     'superdesk.apps.desks',
-    // 'superdesk.apps.groups',
-    // 'superdesk.apps.products',
     'superdesk.apps.authoring',
     'superdesk.apps.packaging',
     'superdesk.apps.spellcheck',
@@ -160,7 +150,6 @@ angular.module('superdesk.apps', [
     'superdesk.apps.content_filters', // Can't remove
     'superdesk.apps.dictionaries',
     'superdesk.apps.vocabularies',
-    // 'superdesk.apps.searchProviders',
     'superdesk.apps.stream',
     'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
