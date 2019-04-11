@@ -105,5 +105,10 @@ blogs_schema = {
         'type': 'integer',
         'nullable': True,
         'default': 500
-    }
+    },
+    'users_can_comment': {
+        'type': 'string',
+        'allowed': ['unset', 'enabled', 'disabled'],
+        'default': 'unset'
+    },
 }

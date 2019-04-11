@@ -177,6 +177,18 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     theme_settings = theme_service.get_default_settings(theme)
     i18n = theme.get('i18n', {})
 
+    # the blog level theme overrides the one in theme level
+    # this way we allow user to enable commenting only for certain blog(s)
+    # or the other way around
+    unset = 'unset'
+    blog_users_can_comment = blog.get('users_can_comment', unset)
+    if blog_users_can_comment != unset:
+        theme_settings['canComment'] = True if blog_users_can_comment == 'enabled' else False
+
+    # also when blog has been archived, we should disable commenting
+    if blog.get('blog_status') == 'closed':
+        theme_settings['canComment'] = False
+
     # Check if theme is SEO and/or AMP compatible.
     is_amp = theme.get('ampTheme', False)
     is_seo = theme.get('seoTheme', False)
