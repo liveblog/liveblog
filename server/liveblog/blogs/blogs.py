@@ -172,6 +172,10 @@ class BlogService(BaseService):
         if blog_status == 'closed':
             self._on_deactivate(original['_id'])
 
+            # if SOLO subscription level, we remove the embed :O
+            if 'solo' in SUBSCRIPTION_LEVEL:
+                delete_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
+
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
