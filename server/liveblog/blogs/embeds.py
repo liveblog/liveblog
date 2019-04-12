@@ -28,7 +28,7 @@ from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
-from settings import TRIGGER_HOOK_URLS
+from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -244,12 +244,17 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         if len(styles):
             scope['amp_style'] = next(iter(styles))
 
-    embed_template = 'embed.html'
-    if is_amp:
-        embed_template = 'embed_amp.html'
+    embed_template = 'embed_amp.html' if is_amp else 'embed.html'
+
+    blog_archived = blog['blog_status'] == 'closed'
+    solo_subscription = 'solo' in SUBSCRIPTION_LEVEL
+    if blog_archived and solo_subscription:
+        scope['template'] = render_template('blog-unavailable.html', **scope)
+        scope['assets']['scripts'] = []
 
     response_content = render_template(embed_template, **scope)
 
+    # TODO: move to somewhere else to simplify this method
     if is_amp and output and theme.get('supportAdsInjection', False):
         parsed_content = BeautifulSoup(response_content, 'lxml')
         ads = get_advertisements_list(output)
