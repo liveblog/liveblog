@@ -334,11 +334,8 @@ function displayCommentFormErrors(errors) {
 }
 
 function attachSlideshow() {
-  setTimeout(() => {
-    const slideshow = Slideshow.getInstance();
-
-    slideshow.init();
-  }, 900);
+  const slideshow = Slideshow.getInstance();
+  slideshow.init();
 }
 
 function attachPermalink() {
