@@ -52,8 +52,8 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - nvm install 6.7.0
-    - nvm use 6.7.0
+    - nvm install 8.12.0
+    - nvm use 8.12.0
     - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge -f elasticsearch
     - sudo apt-get install -t stable elasticsearch
@@ -96,7 +96,7 @@ script:
     - python3 manage.py register_local_themes ;
     - python3 manage.py register_bloglist ;
     - cd $TRAVIS_BUILD_DIR/client
-    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.44
+    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome=2.46 --versions.standalone=3.9.1
     - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:
