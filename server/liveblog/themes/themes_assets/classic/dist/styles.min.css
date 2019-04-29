@@ -899,6 +899,21 @@ body .scorecard-top {
     height: 100%;
 }
 
+.comment-sent {
+    background: rgb(86, 195, 145);
+    width: 100%;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment-sent h3 {
+    color: white;
+    font-weight: 500;
+    top: -7px;
+    position: relative;
+}
 lb-dropdown {
   float: left;
   display: block;

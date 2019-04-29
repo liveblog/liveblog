@@ -42,7 +42,7 @@
                         }
                         deferred.resolve(dataComment);
                     });
-                    
+
                 }, function(error) {
                     deferred.reject('Try again later!');
                 });
@@ -57,7 +57,7 @@
     CommentsCtrl.$inject = ['$scope', '$timeout', 'CommentsManager'];
     function CommentsCtrl($scope, $timeout, CommentsManager) {
         var vm = $scope,
-            commentsManager = new CommentsManager();        
+            commentsManager = new CommentsManager();
         angular.extend(vm, {
             modal: true,
             notify: false,
@@ -81,9 +81,9 @@
                 }
             },
             send: function() {
-                if( 
+                if(
                     !vm.commenter || vm.commenter.length < 3 || vm.commenter.length > 30 ||
-                    !vm.content || vm.content.length <3 || vm.content.length > 300 ) {
+                    !vm.content || vm.content.length < 3 || vm.content.length > 300 ) {
                         vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
                         vm.content = (vm.content === undefined)? '' : vm.content;
                         return false;
@@ -96,12 +96,12 @@
                 }).then(function(){
                     vm.reset();
                     $timeout(function(){
-                        if(vm.notify) {
+                        if (vm.notify) {
                             vm.notify = false;
                             vm.form = true;
                             vm.comment = false;
                         }
-                    }, 2500);
+                    }, 5000);
                 });
             }
         });
