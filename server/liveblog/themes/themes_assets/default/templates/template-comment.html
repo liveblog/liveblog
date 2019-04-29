@@ -1,17 +1,21 @@
-<form class="comment hide">
-  <div class="comment__wrap">
-    <h2 class="comment__headline">{{ translate('Post a comment') }}</h2>
-    <div>
-      <input type="name" placeholder="{{ translate('Name *') }}" id="comment-name" />
+<div class="comment_container">
+  <form class="comment hide">
+    <div class="comment__wrap">
+      <h2 class="comment__headline">{{ translate('Post a comment') }}</h2>
+      <div>
+        <input type="name" placeholder="{{ translate('Name *') }}" id="comment-name" />
+      </div>
+      <div>
+        <textarea placeholder="{{ translate('Comment *') }}" id="comment-content"></textarea>
+      </div>
+      <div>
+        <button class="comment__button">{{ translate('Send') }}</button>
+        <button class="comment__button comment__button--grey" data-js-close-comment-dialog>{{ translate('Cancel')  }}</button>
+      </div>
     </div>
-    <div>
-      <textarea placeholder="{{ translate('Comment *') }}" id="comment-content"></textarea>
-    </div>
-    <div>
-      <button class="comment__button">{{ translate('Send') }}</button>
-      <button class="comment__button comment__button--grey" data-js-close-comment-dialog>{{ translate('Cancel')  }}</button>
-    </div>
-  </div>
-</form>
+  </form>
 
-<div class="comment-sent hide">{{ translate('Your comment was sent for approval') }}.</div>
+  <div class="comment-sent hide">
+    <p>{{ translate("Your comment is being reviewed and will be published as soon as it's approved") }}.</p>
+  </div>
+</div>
