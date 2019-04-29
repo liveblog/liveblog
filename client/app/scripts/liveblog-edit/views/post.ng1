@@ -26,7 +26,7 @@
                 </span>
             </div>
         </div>
-        <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
+        <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type | varname }}">
             <div class="lb-post__figure">
                 <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),
                                    'avatar-comment': (post.mainItem.item.item_type === 'comment')}">

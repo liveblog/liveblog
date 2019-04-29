@@ -39,7 +39,7 @@
             ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
         </button>
         <button
-            ng-if="blog.blog_preferences.theme.settings.canComment"
+            ng-if="blog.blog_preferences.theme.settings.canComment || blog.users_can_comment === 'enabled'"
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
             ng-class="{'active': panelState === 'comments'}"

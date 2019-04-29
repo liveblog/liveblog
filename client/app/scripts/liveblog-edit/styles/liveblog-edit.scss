@@ -870,3 +870,12 @@
 .cursor-pointer {
     cursor: pointer;
 }
+
+.lb-mainitem-advertisement_remote {
+    // forcing positioning to relative to avoid overlapping
+    // sometimes instagram embed renders a bit late and produce an overlapping
+    // issue with other posts in admin interface
+    iframe.instagram-media {
+        position: relative !important;
+    }
+}
