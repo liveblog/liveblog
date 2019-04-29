@@ -4,6 +4,7 @@
         <form method="post"
             action-xhr="{{ api_host }}api/client_item_comments"
             target="_top"
+            on="submit-success:lightbox-comment-success;"
             class="comment">
             <div class="comment__wrap">
                 <div>
@@ -17,7 +18,12 @@
                 </div>
                 <div submit-success>
                     <template type="amp-mustache">
-                        {{ translate('Your comment was sent for approval') }}
+                        {{ translate('Comment Sent') }}
+                        <amp-lightbox id="lightbox-comment-success" layout="nodisplay">
+                            <div class="lightbox-success" on="tap:lightbox-comment-success.close" role="button" tabindex="0">
+                                <p>{{ translate('Your comment was sent for approval') }}</p>
+                            </div>
+                        </amp-lightbox>
                     </template>
                 </div>
                 <div submit-error>
