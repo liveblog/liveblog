@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.4.6",
+  "version": "3.4.7",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -87,7 +87,7 @@
           "Show highlighted post only": "Zobraz jen zvýrazněné příspěvky",
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
-          "Your comment was sent for approval": "Váš text byl úspěšně odeslán Čeká na schválení",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Váš komentář se kontroluje a bude publikován, jakmile bude schválen",
           "credit:": "autor:"
         }, "de": {
           "Highlights": "Highlights",
@@ -118,7 +118,7 @@
           "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
           "Sort by:": "Ordnen nach",
           "Updated": "Aktualisiert am",
-          "Your comment was sent for approval": "Ihr Kommentar wartet auf Freischaltung",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
           "credit:": "Bild:"
         }, "fi": {
           "Highlights": "Kohokohtia",
@@ -149,7 +149,7 @@
           "Show highlighted post only": "Näytä vain korostettu julkaisu",
           "Sort by:": "Järjestä:",
           "Updated": "Päivitetty",
-          "Your comment was sent for approval": "Kommenttisi lähetettiin hyväksyttäväksi",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Kommenttisi tarkistetaan ja julkaistaan heti, kun se on hyväksytty",
           "credit:": "©"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
@@ -180,7 +180,7 @@
           "Show highlighted post only": "Afficher uniquement les messages en surbrillance",
           "Sort by:": "Trier par:",
           "Updated": "Mise à jour",
-          "Your comment was sent for approval": "Votre commentaire a été envoyé et est en attente de validation",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Votre commentaire est en cours de révision et sera publié dès qu'il aura été approuvé",
           "credit:": "crédit:"
         }, "nl": {
           "Highlights": "Highlights",
@@ -208,7 +208,7 @@
           "See new updates": "Bekijk nieuwe berichten",
           "Send": "Verzenden",
           "Sort by:": "Sorteer:",
-          "Your comment was sent for approval": "Uw reactie is ontvangen ter beoordeling",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Uw opmerking wordt beoordeeld en wordt gepubliceerd zodra deze is goedgekeurd",
           "credit:": "credit:"
         }, "no": {
           "Highlights": "Høydepunkter",
@@ -239,7 +239,7 @@
           "Show highlighted post only": "Vis bare høydepunkter",
           "Sort by:": "Sortér etter:",
           "Updated": "Oppdatert",
-          "Your comment was sent for approval": "Din kommentar er sendt til godkjenning",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar blir gjennomgått og vil bli publisert så snart den er godkjent",
           "credit:": "credit:"
         }, "ro": {
           "Highlights": "Repere",
@@ -267,7 +267,7 @@
           "See new updates": "Vezi articole noi",
           "Send": "Trimite",
           "Sort by:": "Ordonează după:",
-          "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Comentariul dvs. este revizuit și va fi publicat de îndată ce va fi aprobat",
           "credit:": "credit:"
         }, "sv": {
           "Highlights": "Höjdpunkter",
@@ -299,7 +299,7 @@
           "Show highlighted post only": "Visa endast höjdpunkter",
           "Sort by:": "Sortera enligt:",
           "Updated": "Uppdaterat",
-          "Your comment was sent for approval": "Din kommentar väntar på att godkännas",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar granskas och publiceras så snart den godkänns",
           "credit:": "källa:"
       },"sr": {
           "Highlights": "Istaknuto",
@@ -327,7 +327,7 @@
           "See new updates": "Pogledajte nove postove",
           "Send": "Pošalji",
           "Sort by:": "Sortiraj:",
-          "Your comment was sent for approval": "Vaš komentar je poslat na odobrenje",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Vaš komentar se pregledava i biće objavljen čim bude odobren",
           "credit:": "autor:"
         }, "sr-cy": {
           "Highlights": "Истакнуто",
@@ -355,7 +355,7 @@
           "See new updates": "Погледајте нове постове",
           "Send": "Пошаљи",
           "Sort by:": "Сортирај:",
-          "Your comment was sent for approval": "Ваш коментар је послат на одобрење",
+          "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
           "credit:": "аутор:"
         }
     }
