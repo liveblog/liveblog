@@ -341,6 +341,24 @@ export default function postsService(api, $q, userList, session) {
         api('post_flags').remove(flag);
     }
 
+    function syncRemoveFlag(url, etag) {
+        // NOTE: avoid using Promise as we are triggering this
+        // when unload & onunload window event. So if we use promises
+        // browser will kill the thread before the request is triggered
+        const jq = angular.element;
+
+        jq.ajax({
+            url: url,
+            method: 'DELETE',
+            crossDomain: true,
+            async: false,
+            headers: {
+                Authorization: localStorage.getItem('sess:token'),
+                'If-Match': etag,
+            },
+        });
+    }
+
     function setFlagTimeout(post, cb) {
         // perhaps not the best place to put this but I needed this
         // to be accessible from diferent directives. If there is another/better way
@@ -378,6 +396,7 @@ export default function postsService(api, $q, userList, session) {
         savePost: savePost,
         flagPost: flagPost,
         removeFlagPost: removeFlagPost,
+        syncRemoveFlag: syncRemoveFlag,
         setFlagTimeout: setFlagTimeout,
         saveDraft: function(blogId, post, items, sticky, highlight) {
             return savePost(

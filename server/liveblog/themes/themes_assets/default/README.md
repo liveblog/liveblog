@@ -1,9 +1,9 @@
 # Liveblog 3 SEO Theme
 
-User-friendly, indexable and fast Liveblog theme. 
+User-friendly, indexable and fast Liveblog theme.
 
 ## Compatibility
-This theme requires Live Blog version 3.3 or higher. 
+This theme requires Live Blog version 3.5 or higher.
 
 ## Develop
 
@@ -11,8 +11,8 @@ The best starting point for the development of custom theme extensions is our Wi
 
 --
 
-Just issue a `npm i` followed by `gulp watch-static`.    
-Development server is up and running at `localhost:8008`.    
+Just issue a `npm i` followed by `gulp watch-static`.
+Development server is up and running at `localhost:8008`.
 Entry point for Browserify is `js/liveblog.js`.
 
 you can also point to an existing liveblog api entry point by add a `--embedUrl` param.
@@ -31,7 +31,7 @@ Generate documentation via `jsdoc`.
 
 ### Full screen in the parent page
 
-When embedding liveblog, you want to have to have the fullscreen mode the slideshow taking all the available space. For this you need to modify the embed code as follow:
+When embedding liveblog, you want to have the fullscreen mode the slideshow taking all the available space. For this you need to modify the embed code as follow:
 
 ```html
 <iframe id="liveblog-iframe" width="100%" height="715" src="http://localhost:8008/" frameborder="0" allowfullscreen></iframe>

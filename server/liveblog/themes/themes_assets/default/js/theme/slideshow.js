@@ -1,4 +1,5 @@
 const lory = require('lory.js').lory;
+const imagesLoaded = require('imagesloaded');
 
 class Slideshows {
   constructor() {
@@ -13,16 +14,23 @@ class Slideshows {
     this.slideshows = [];
 
     Array.prototype.slice.call(document.querySelectorAll('.lb-slideshow')).forEach((element, index) => {
-      let inst = lory(element, {
-        classNameFrame: 'lb-slideshow_frame',
-        classNameSlideContainer: 'lb-slideshow_slides',
-        classNamePrevCtrl: 'lb-slideshow_prev',
-        classNameNextCtrl: 'lb-slideshow_next',
-        rewind: true
+      imagesLoaded(element, () => {
+        const inst = this.wirePlugin(element);
+        this.slideshows.push(inst);
       });
-
-      this.slideshows.push(inst);
     });
+  }
+
+  wirePlugin(element) {
+    let inst = lory(element, {
+      classNameFrame: 'lb-slideshow_frame',
+      classNameSlideContainer: 'lb-slideshow_slides',
+      classNamePrevCtrl: 'lb-slideshow_prev',
+      classNameNextCtrl: 'lb-slideshow_next',
+      rewind: true
+    });
+
+    return inst;
   }
 }
 

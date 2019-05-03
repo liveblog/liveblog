@@ -1,0 +1,13 @@
+<div data-timeline class="lb-timeline">
+    {% if settings.showTitle and blog.title %}
+    <h1>{{ blog.title }}</h1>
+    {% endif %}
+
+    {% if settings.showDescription and blog.description %}
+    <div class="description">
+      {{ blog.description | safe }}
+    </div>
+    {% endif %}
+
+    <h2>This live blog has finished and is no longer available.</h2>
+</div>

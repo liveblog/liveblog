@@ -210,6 +210,9 @@ const app = angular.module('liveblog.edit', [
             return match;
         });
     })
+    .filter('varname', () => function(text = '') {
+        return text.toLowerCase().replace(' ', '_');
+    })
     .factory('instagramService', ['$timeout', function($timeout) {
         const insta = {};
 

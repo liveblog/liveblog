@@ -138,6 +138,11 @@ function BlogSettingsController(
             {text: 2000, value: 2000},
             {text: 3000, value: 3000},
         ],
+        canCommentOptions: [
+            {text: 'Unset', value: 'unset'},
+            {text: 'Enabled', value: 'enabled'},
+            {text: 'Disabled', value: 'disabled'},
+        ],
         // used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
         // users to remove from the pending queue once the changes are saved
@@ -332,6 +337,7 @@ function BlogSettingsController(
                 start_date: startDate,
                 members: members,
                 posts_limit: vm.newBlog.posts_limit,
+                users_can_comment: vm.newBlog.users_can_comment,
             };
 
             angular.extend(vm.newBlog, changedBlog);
