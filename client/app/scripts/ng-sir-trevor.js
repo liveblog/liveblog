@@ -60,8 +60,9 @@ export default angular
                 opts.el = $(element.find('textarea'));
 
                 // clean older instances if any
-                if (scope.editor)
+                if (scope.editor) {
                     scope.editor.destroy();
+                }
 
                 scope.editor = new SirTrevor.Editor(opts);
                 scope.editor.get = function() {

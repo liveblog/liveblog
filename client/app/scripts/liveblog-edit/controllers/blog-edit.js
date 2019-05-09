@@ -239,7 +239,9 @@ export default function BlogEditController(
     function doOrAskBeforeIfExceedsPostsLimit($scope) {
         var deferred = $q.defer();
 
-        if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit && !(localStorage.getItem('preventDialog'))) {
+        if (blog.posts_limit !== 0 && blog.total_posts >= blog.posts_limit &&
+                !(localStorage.getItem('preventDialog'))
+        ) {
             modal
                 .confirm(gettext(`You will lose the oldest post as posts
                     limit exceeds. Are you sure to continue?<br/>
@@ -303,14 +305,18 @@ export default function BlogEditController(
         for (let place of placesToLook) {
             // NOTE: temporarily check this. We need to decide if we can modify
             // users comments coming from frontend ui/blog
-            if (!place) continue;
+            if (!place) {
+                continue;
+            }
 
             place.pagesManager.updatePostFlag(postId, flag, (post) => {
                 cb(post, flag);
                 foundPost = post;
             });
 
-            if (foundPost) break;
+            if (foundPost) {
+                break;
+            }
         }
     }
 
@@ -781,10 +787,11 @@ export default function BlogEditController(
                 })
                     .then((response) => {
                         $scope.actionPending = false;
-                        if (response.data != 'Not Found')
+                        if (response.data !== 'Not Found') {
                             successCallback(response.data);
-                        else
+                        } else {
                             errorCallback(response.data);
+                        }
                     }, handleError);
             },
             isAdmin: function() {
@@ -861,8 +868,8 @@ export default function BlogEditController(
     });
 
     // initalize the view with the editor panel
-    var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',
-        syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
+    var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor';
+    var syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
     // Here we define an object instead of simple array.
     // because this variable needs to be update in the ingest-panel directive
@@ -913,8 +920,9 @@ export default function BlogEditController(
     };
 
     angular.element(window).on('beforeunload', () => {
-        if ($scope.currentPost)
+        if ($scope.currentPost) {
             return 'Are you sure you want to leave?';
+        }
     });
 
     angular.element(window).on('unload', () => {

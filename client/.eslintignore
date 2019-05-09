@@ -1,3 +1,4 @@
+*.d.ts
 *.generated.js
 missing-translations-strings.js
 language-mapping-list.js

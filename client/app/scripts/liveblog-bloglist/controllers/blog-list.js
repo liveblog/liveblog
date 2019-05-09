@@ -150,7 +150,7 @@ export default function BlogListController(
                 const deferred = $q.defer();
 
                 const changedBlog = {
-                    blog_status: activeState.name == 'active' ? 'closed' : 'open',
+                    blog_status: activeState.name === 'active' ? 'closed' : 'open',
                 };
 
                 let newBlog = angular.copy(blog);
@@ -166,7 +166,7 @@ export default function BlogListController(
                 newBlog.original_creator = blog.original_creator._id;
                 blogService.update(blog, newBlog).then((blog) => {
                     notify.pop();
-                    if (blog.blog_status == 'closed') {
+                    if (blog.blog_status === 'closed') {
                         notify.info(gettext('Blog(s) moved to archived'));
                     } else {
                         notify.info(gettext('Blog(s) is actived now'));

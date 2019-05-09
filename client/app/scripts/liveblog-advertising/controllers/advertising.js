@@ -24,7 +24,6 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
     $scope.advertModalTpl = advertModalTpl;
     $scope.collectionModalTpl = collectionModalTpl;
 
-
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
     $scope.adTypes = [
         {

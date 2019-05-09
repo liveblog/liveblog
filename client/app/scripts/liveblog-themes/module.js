@@ -97,7 +97,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
                 self.themeNames = [];
                 for (var i = 0; i < themes.length; i++) {
-                    if (themes[i].name != 'angular') {
+                    if (themes[i].name !== 'angular') {
                         self.themeNames.push({label: themes[i].label, name: themes[i].name});
                     }
                 }
@@ -148,14 +148,16 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             // loading indicatior for the first timeload.
             loading: true,
             setNotificationCookie: function(cookieName, cookieValue) {
-                if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+                if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
                     document.cookie = cookieName + '=' + cookieValue + ';path=/';
+                }
                 document.cookie = encodeURIComponent(cookieName + '=') + encodeURIComponent(cookieValue + ';')
                  + 'expires=0;path=/';
             },
             getNotificationCookie: function(cookieName) {
-                if (getCookie(cookieName))
+                if (getCookie(cookieName)) {
                     return true;
+                }
 
                 function getCookie(cookieName) {
                     var name = cookieName + '=';
@@ -165,10 +167,12 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     for (var i = 0; i < cookieArray.length; i++) {
                         var temp = cookieArray[i];
 
+                        // tslint:disable-next-line
                         while (temp.charAt(0) == ' ') {
                             temp = temp.substring(1);
                         }
-                        if (temp.indexOf(name) == 0) {
+
+                        if (temp.indexOf(name) === 0) {
                             return temp.substring(name.length, temp.length);
                         }
                     }

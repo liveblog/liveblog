@@ -1,5 +1,5 @@
 import './styles/marketplace.scss';
-import './../flux';
+import '../flux';
 
 import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.ng1';
 
@@ -40,4 +40,3 @@ export default angular
                 },
             });
     }]);
-

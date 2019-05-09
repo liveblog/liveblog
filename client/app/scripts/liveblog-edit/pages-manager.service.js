@@ -163,9 +163,13 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                         // post deleted
                         removePost(post);
                         // post updated
-                    } if (post.post_status !== self.status
-                    || self.status === 'open' && post.sticky !== sticky
-                    || self.highlight && !post.lb_highlight) {
+                    }
+
+                    if (post.post_status !== self.status
+                            || self.status === 'open'
+                            && post.sticky !== sticky
+                            || self.highlight && !post.lb_highlight
+                    ) {
                         removePost(post);
                     } else {
                         updatePost(post);

@@ -1,3 +1,4 @@
+/* eslint complexity: ["error", 12] */
 import postsTpl from 'scripts/liveblog-edit/views/posts.ng1';
 
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];

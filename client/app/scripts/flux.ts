@@ -1,13 +1,13 @@
 export default angular.module('liveblog.flux', [])
     .factory('Dispatcher', () => ({
-        dispatch: function(action) {
+        dispatch: (action) => {
             document.dispatchEvent(
                 new CustomEvent('dispatch', {detail: action})
             );
         },
     }))
     .factory('Store', () => {
-        const Store = function(reducers, initialState) {
+        const Store = (reducers, initialState) => {
             this.dispatch = this.dispatch.bind(this);
             this.destroy = this.destroy.bind(this);
 
@@ -18,11 +18,11 @@ export default angular.module('liveblog.flux', [])
             document.addEventListener('dispatch', this.dispatch);
         };
 
-        Store.prototype.connect = function(listener) {
+        Store.prototype.connect = (listener) => {
             this.listeners.push(listener);
         };
 
-        Store.prototype.dispatch = function(e) {
+        Store.prototype.dispatch = (e) => {
             this.state = this.reducers(this.state, e.detail);
             const state = this.state;
 
@@ -31,7 +31,7 @@ export default angular.module('liveblog.flux', [])
             });
         };
 
-        Store.prototype.destroy = function() {
+        Store.prototype.destroy = () => {
             document.removeEventListener('dispatch', this.dispatch);
         };
 
