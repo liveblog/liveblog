@@ -11,7 +11,7 @@
         "allowJs": true,
         "esModuleInterop": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2015",
         "skipLibCheck": true,
         "lib": [
             "dom",

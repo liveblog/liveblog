@@ -1,39 +1,46 @@
 export default angular.module('liveblog.flux', [])
     .factory('Dispatcher', () => ({
-        dispatch: (action) => {
+        dispatch: (action: AnyAction) => {
             document.dispatchEvent(
-                new CustomEvent('dispatch', {detail: action})
+                new CustomEvent<AnyAction>('dispatch', {detail: action})
             );
         },
     }))
     .factory('Store', () => {
-        const Store = (reducers, initialState) => {
-            this.dispatch = this.dispatch.bind(this);
-            this.destroy = this.destroy.bind(this);
+        class Store<S = any> {
+            state: S;
+            reducer: Reducer<S>;
+            listeners: Array<Listener>;
 
-            this.reducers = reducers;
-            this.listeners = [];
-            this.state = initialState;
+            constructor(reducer, initialState: S) {
+                this.state = initialState;
+                this.reducer = reducer;
+                this.listeners = [];
 
-            document.addEventListener('dispatch', this.dispatch);
-        };
+                document.addEventListener('dispatch', this.dispatcher);
+            }
 
-        Store.prototype.connect = (listener) => {
-            this.listeners.push(listener);
-        };
+            connect = (listener: Listener) => {
+                this.listeners.push(listener);
+            }
 
-        Store.prototype.dispatch = (e) => {
-            this.state = this.reducers(this.state, e.detail);
-            const state = this.state;
+            dispatch = (action: AnyAction) => {
+                this.state = this.reducer(this.state, action);
+                const state = this.state;
 
-            this.listeners.forEach((listener) => {
-                listener(state);
-            });
-        };
+                this.listeners.forEach((listener) => {
+                    listener(state);
+                });
+            }
 
-        Store.prototype.destroy = () => {
-            document.removeEventListener('dispatch', this.dispatch);
-        };
+            dispatcher = (evData: CustomEvent<AnyAction>) => {
+                this.dispatch(evData.detail);
+            }
+
+            destroy = () => {
+                document.removeEventListener('dispatch', this.dispatcher);
+            }
+        }
 
         return Store;
     });
