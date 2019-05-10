@@ -1,19 +1,18 @@
 const superdeskRules = require('superdesk-code-style');
 
 module.exports = Object.assign({}, superdeskRules, {
-    parser: '@typescript-eslint/parser',
-    overrides: [
+    'overrides': [
         {
+            files: ['*.ts', '*.tsx'],
             plugins: [
                 '@typescript-eslint/tslint',
             ],
-            files: ['*.ts', '*.tsx'],
+            parser: '@typescript-eslint/parser',
             parserOptions: {
-                sourceType: 'module',
-                project: './tsconfig.json'
+                project: "./tsconfig.json"
             },
             rules: {
-                '@typescript-eslint/tslint/config': [1, {
+                '@typescript-eslint/tslint/config': [2, {
                     lintFile: './tslint.json',
                 }]
             }

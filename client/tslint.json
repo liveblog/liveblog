@@ -1,11 +1,8 @@
-
 {
     "defaultSeverity": "error",
     "extends": [
         "tslint:recommended"
     ],
-    "jsRules": {
-    },
     "rules": {
         "quotemark": false,
         "trailing-comma": [
@@ -31,7 +28,7 @@
             true,
             "generic"
         ],
-        "prefer-const": false,
+        "prefer-const": true,
         "one-variable-per-declaration": false,
         "object-literal-shorthand": false,
         "variable-name": false,
@@ -50,6 +47,5 @@
         "no-eval": false,
         "no-conditional-assignment": true,
         "only-arrow-functions": true
-    },
-    "rulesDirectory": []
+    }
 }
