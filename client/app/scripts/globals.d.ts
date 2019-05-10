@@ -4,10 +4,10 @@ type Action<T = any> = {
     type: T;
 };
 
-interface AnyAction extends Action {
+interface IAnyAction extends Action {
     [prop: string]: any;
 }
 
 type Listener = (state: any) => void;
 
-type Reducer<S = any> = (state: S, action: AnyAction) => S;
+type Reducer<S = any> = (state: S, action: IAnyAction) => S;

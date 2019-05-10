@@ -1,8 +1,8 @@
 export default angular.module('liveblog.flux', [])
     .factory('Dispatcher', () => ({
-        dispatch: (action: AnyAction) => {
+        dispatch: (action: IAnyAction) => {
             document.dispatchEvent(
-                new CustomEvent<AnyAction>('dispatch', {detail: action})
+                new CustomEvent<IAnyAction>('dispatch', {detail: action})
             );
         },
     }))
@@ -24,7 +24,7 @@ export default angular.module('liveblog.flux', [])
                 this.listeners.push(listener);
             }
 
-            dispatch = (action: AnyAction) => {
+            dispatch = (action: IAnyAction) => {
                 this.state = this.reducer(this.state, action);
                 const state = this.state;
 
@@ -33,7 +33,7 @@ export default angular.module('liveblog.flux', [])
                 });
             }
 
-            dispatcher = (evData: CustomEvent<AnyAction>) => {
+            dispatcher = (evData: CustomEvent<IAnyAction>) => {
                 this.dispatch(evData.detail);
             }
 
