@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="header-bar__actions">
-            <div 
+            <div
                 class="toggleHighlights"
                 ng-if="timeline.settings.hasHighlights"
                 ng-class="{'active': timeline.highlightsOnly}"
@@ -51,7 +51,7 @@
                 only-title="{{ 'Show highlighted post only' | translate }}"
                 all-title="{{ 'Show all posts'| translate }}"
                 title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
-                <i class="icon-star icon--orange"></i> 
+                <i class="icon-star icon--orange"></i>
             </div>
             <button
                 ng-if="timeline.settings.canComment"
@@ -61,7 +61,7 @@
         </div>
         <div class="header-bar__logo">
             <img ng-if="timeline.output.logo_url" ng-src="{{ timeline.output.logo_url }}"/>
-            <a ng-if="!timeline.output.logo_url" href="https://www.liveblog.pro" target="_blank">  
+            <a ng-if="!timeline.output.logo_url" href="https://www.liveblog.pro" target="_blank">
                 <img ng-src="{{ timeline.templateDir}}images/lb-logo.svg"/>
             </a>
         </div>
@@ -95,7 +95,7 @@
 
                 <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
                     class="pin-drawer" ng-cloak>
-                    
+
                     <div class="pin-drawer-info"
                          ng-if="timeline.stickyPagesManager.hideSticky"
                          translate translate-n="timeline.stickyPagesManager.allPosts().length"
@@ -120,6 +120,14 @@
     </div>
 </div>
 <script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
+<style class="embedly-css">
+    .card .hdr{
+      display: none;
+    }
+    body#cards {
+        padding: 0px;
+    }
+</style>
 <script>
     embedly("defaults", {
         cards: {

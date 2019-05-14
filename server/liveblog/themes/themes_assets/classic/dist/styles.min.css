@@ -853,6 +853,12 @@ body .scorecard-top {
     }
 }
 
+@media (max-width: 360px) {
+    .lb-timeline__header, .lb-post {
+        padding: 15px 5px;
+    }
+}
+
 .justified-gallery>a>.caption {
     max-height: 45%;
 }
