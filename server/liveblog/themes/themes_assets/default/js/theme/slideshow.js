@@ -1,6 +1,7 @@
 const lory = require('lory.js').lory;
 const imagesLoaded = require('imagesloaded');
 
+
 class Slideshows {
   constructor() {
     this.slideshows = [];
@@ -14,7 +15,7 @@ class Slideshows {
     this.slideshows = [];
 
     Array.prototype.slice.call(document.querySelectorAll('.lb-slideshow')).forEach((element, index) => {
-      imagesLoaded(element, () => {
+      new imagesLoaded(element, () => {
         const inst = this.wirePlugin(element);
         this.slideshows.push(inst);
       });
