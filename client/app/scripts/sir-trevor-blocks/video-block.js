@@ -87,7 +87,9 @@ export default function videoBlock(SirTrevor, config) {
 
             self.$('.during-upload').hide();
             self.$('.st-block__inputs').append(uploadBlock);
-            if (!isAdmin) self.$('#updateButton').hide();
+            if (!isAdmin) {
+                self.$('#updateButton').hide();
+            }
 
             self.$('#updateButton').on('click', () => {
                 let message = 'Are you sure to update the credentials?';
@@ -98,7 +100,9 @@ export default function videoBlock(SirTrevor, config) {
             self.$('#embedlyUploadFile').on('change', function() {
                 let file = $(this).prop('files')[0];
 
-                if (!file) return false;
+                if (!file) {
+                    return false;
+                }
 
                 // Handle one upload at a time
                 if (/video/.test(file.type)) {

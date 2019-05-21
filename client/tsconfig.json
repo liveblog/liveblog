@@ -1,0 +1,22 @@
+{
+    "include": [
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "app/**/*.js",
+    ],
+    "compilerOptions": {
+        "baseUrl": "app/scripts",
+        "sourceMap": true,
+        "noUnusedLocals": true,
+        "allowJs": true,
+        "esModuleInterop": true,
+        "module": "commonjs",
+        "target": "es2015",
+        "skipLibCheck": true,
+        "lib": [
+            "dom",
+            "es2017"
+        ],
+        "jsx": "react"
+    }
+}

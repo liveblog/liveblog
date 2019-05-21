@@ -79,7 +79,6 @@ export default function ingestPanel(
                 }
             });
 
-
             // This watches for incoming posts when ingest is not in focus
             if (scope.ingestQueue.queue.length > 0) {
                 IngestPanelActions.getSyndication($routeParams._id, scope.ingestQueue.queue);

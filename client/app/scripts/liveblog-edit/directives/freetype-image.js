@@ -33,7 +33,9 @@ export default function freetypeImage($rootScope, modal, upload, urls, notify) {
 
             if ($attrs.compulsory !== undefined) {
                 const sentinel = $scope.$watch('[image,compulsory]', ([image, compulsory]) => {
-                    if (image.picture_url === undefined && compulsory === undefined) return;
+                    if (image.picture_url === undefined && compulsory === undefined) {
+                        return;
+                    }
                     const imageValue = (image.picture_url === '' || image.picture_url === undefined);
                     const compulsoryValue = (compulsory === '' || compulsory === undefined);
 

@@ -1,5 +1,5 @@
 import './styles/syndication.scss';
-import './../flux';
+import '../flux';
 
 // ACTIONS
 import ingestPanelActions from './actions/ingest-panel';

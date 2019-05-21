@@ -11,10 +11,9 @@
 import angular from 'angular';
 import './module';
 
-'use strict';
 /**
-     * Name of the scope variable where the freetype data will be stored.
-     */
+ * Name of the scope variable where the freetype data will be stored.
+ */
 const SCOPE_FREETYPEDATA = 'freetypeData';
 
 /**

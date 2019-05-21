@@ -1,6 +1,5 @@
 import RetryHandler from './retry-handler';
 
-
 class MediaUploader {
     constructor(options) {
         this.initialize(options);
@@ -132,9 +131,9 @@ class MediaUploader {
      * @param {object} e XHR event
      */
     onContentUploadSuccess_(e) {
-        if (e.target.status == 200 || e.target.status == 201) {
+        if (e.target.status === 200 || e.target.status === 201) {
             this.onComplete(e.target.response);
-        } else if (e.target.status == 308) {
+        } else if (e.target.status === 308) {
             this.extractRange_(e.target);
             this.retryHandler.reset();
             this.sendFile_();
@@ -192,13 +191,16 @@ class MediaUploader {
         var url = baseUrl;
         var query = this.buildQuery_(params);
 
-        if (id) url += id;
+        if (id) {
+            url += id;
+        }
 
-        if (query) url += '?' + query;
+        if (query) {
+            url += '?' + query;
+        }
 
         return url;
     }
 }
-
 
 export default MediaUploader;
