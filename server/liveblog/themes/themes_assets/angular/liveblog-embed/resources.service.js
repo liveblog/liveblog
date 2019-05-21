@@ -29,7 +29,7 @@
             }
             // pick the smallest size image from renditions
             // the smallest one is the one with the minimum area.
-            var src = '', 
+            var src = '',
                 min = false,
                 area;
             angular.forEach(renditions, function(rendition) {
@@ -48,7 +48,7 @@
         return function(blog) {
             blog.descriptionHtml = $sce.trustAsHtml(blog.description);
             if (blog.picture_url && blog.picture) {
-                blog.picture_srcset = srcSet(blog.picture.renditions); 
+                blog.picture_srcset = srcSet(blog.picture.renditions);
                 blog.picture_url = fixProtocol(blog.picture_url);
             }
             return blog;
@@ -71,13 +71,13 @@
     Users.$inject = ['$resource', 'config', 'srcSet', 'thumbnailRendition'];
     function Users($resource, config, srcSet, thumbnailRendition) {
         return $resource(config.api_host + 'api/client_users/:userId', {'userId':'@id'}, {
-            'get': { 
+            'get': {
                 method:'GET',
                 transformResponse: function(user) {
                     user = angular.fromJson(user);
-                    if(user && user.picture_url !== null) {
+                    if (user && !!user.picture_url) {
                         var thumbnail = thumbnailRendition(user.avatar_renditions);
-                        user.picture_url =thumbnail? thumbnail : user.picture_url;
+                        user.picture_url =thumbnail ? thumbnail : user.picture_url;
                         user.picture_srcset = srcSet(user.avatar_renditions);
                     }
                     return user;
@@ -177,7 +177,7 @@
                             post.content_updated_date = post._updated;
                         }
                         // special cases for comments.
-                        post.showUpdate = (post.content_updated_date !== post.published_date) && 
+                        post.showUpdate = (post.content_updated_date !== post.published_date) &&
                                            !post.hasComments && (post.mainItem.item_type !== 'comment');
                         // add all the items directly in a `items` property.
                         if (angular.isDefined(post.groups[1])) {

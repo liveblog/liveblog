@@ -326,12 +326,22 @@ export default function BlogEditController(
         // let's set the timeout and refresh when expired
         postsService.setFlagTimeout(post, () => {
             if ($scope.currentPost && post._id === $scope.currentPost._id) {
-                cleanEditor();
+                alertOfExpiredFlag();
             } else {
                 $scope.$apply();
             }
         });
     }
+
+    const alertOfExpiredFlag = () => {
+        const headerText = 'Inactivity Alert';
+        const bodyText = `
+            The current post has been inactive in the editor for some time so the warning message
+            of being edited by you has been removed. Please be careful about saving the post as
+            the work from other users in this post could get overwritten`;
+
+        return modal.alert({headerText, bodyText});
+    };
 
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
@@ -495,6 +505,18 @@ export default function BlogEditController(
                 $scope.actionDisabled = _.isEmpty(input);
             });
         },
+        /**
+         * Alternative debounced function triggered on editor changes.
+         * The idea with this is to be able to keep the edit flag alive
+         * while user keeps active in the editor
+         */
+        debouncedEditorChanges: function() {
+            if ($scope.currentPost) {
+                console.log('flag post...'); // eslint-disable-line
+                postsService.flagPost($scope.currentPost._id);
+            }
+        },
+
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {

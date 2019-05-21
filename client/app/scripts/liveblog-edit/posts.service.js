@@ -359,7 +359,7 @@ export default function postsService(api, $q, userList, session) {
         });
     }
 
-    function setFlagTimeout(post, cb) {
+    function setFlagTimeout(post, callback) {
         // perhaps not the best place to put this but I needed this
         // to be accessible from diferent directives. If there is another/better way
         // please improve this ;)
@@ -380,7 +380,8 @@ export default function postsService(api, $q, userList, session) {
 
         window[key] = setTimeout(() => {
             post.edit_flag = undefined;
-            cb();
+
+            callback();
 
             // then remove also from backend if user is editing
             if (editFlag.users.indexOf(session.identity) !== -1) {
