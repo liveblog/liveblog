@@ -18,6 +18,7 @@ import analiticsTpl from 'scripts/liveblog-analytics/views/view-analytics.ng1';
 
 import BlogEditController from './controllers/blog-edit.js';
 import BlogSettingsController from './controllers/blog-settings.js';
+import './components/inactivity.modal';
 
 /**
  * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
@@ -46,6 +47,7 @@ const app = angular.module('liveblog.edit', [
     'lrInfiniteScroll',
     'liveblog.security',
     'liveblog.freetypes',
+    'liveblog.edit.components.inactivityModal',
 ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {

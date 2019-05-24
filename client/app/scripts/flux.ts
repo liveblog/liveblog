@@ -2,7 +2,7 @@ export default angular.module('liveblog.flux', [])
     .factory('Dispatcher', () => ({
         dispatch: (action: IAnyAction) => {
             document.dispatchEvent(
-                new CustomEvent<IAnyAction>('dispatch', {detail: action})
+                new CustomEvent<IAnyAction>('dispatch', { detail: action })
             );
         },
     }))
