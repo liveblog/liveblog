@@ -10,7 +10,7 @@ const Modal: React.SFC<IModalProps> = (props) => {
         <ModalContext.Consumer>
             {({ modalRef }) => (
                 <div ref={modalRef} className={`modal fade ${props.modalClass || ''}`} tabIndex={-1} role="dialog">
-                    <div className="modal__dialog" role="document">
+                    <div className="modal__dialog v2" role="document">
                         <div className="modal__content">
                             <Header title={props.title} />
                             <Body>{props.body}</Body>
