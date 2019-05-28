@@ -1,6 +1,6 @@
 {
   "name": "liveblog-simple-theme",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "description": "Liveblog SEO Simple Theme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
