@@ -181,7 +181,9 @@
                                     ng-sir-trevor
                                     st-model="blogEdit.editor"
                                     st-params="stParams"
-                                    st-change="onEditorChanges"></div>
+                                    st-change="onEditorChanges"
+                                    st-debounce-change="debouncedEditorChanges",
+                                    st-debounce-time=600></div>
                             </div>
                             <freetype-render
                                     ng-if="selectedPostType!='Default'"

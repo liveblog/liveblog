@@ -9,11 +9,13 @@ module.exports = {
 
     app: {
         src: [
-            path.join(root, 'app/scripts/**/*.js'),
-            path.join(root, 'app/scripts/**/*.jsx')
+            path.join(root, 'app/**/*.js'),
+            path.join(root, 'app/**/*.jsx'),
+            path.join(root, 'app/**/*.ts'),
+            path.join(root, 'app/**/*.tsx')
         ],
         envs: ['browser', 'amd']
-    }
+    },
 
     // TODO: lint the shit out of the specs
     //specs: {

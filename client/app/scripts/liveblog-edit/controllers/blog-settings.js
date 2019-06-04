@@ -74,7 +74,7 @@ function BlogSettingsController(
         var deferred = $q.defer();
         let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
 
-        if (vm.newBlog.posts_limit != 0 && count > 0) {
+        if (vm.newBlog.posts_limit !== 0 && count > 0) {
             modal
                 .confirm(gettext(`You will lose the oldest posts beyond
                     set limit. Are you sure to continue?`))
@@ -88,7 +88,7 @@ function BlogSettingsController(
     function deleteOldPosts() {
         let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
 
-        if (vm.newBlog.posts_limit != 0 && count > 0) {
+        if (vm.newBlog.posts_limit !== 0 && count > 0) {
             postsService.getPosts(vm.blog._id, {excludeDeleted: true, sticky: false, highlight: false})
                 .then((posts) => {
                     let deleted = {deleted: true};
@@ -514,7 +514,6 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
     });
 
     $scope.isAdmin = blogSecurityService.isAdmin;
-
 
     // check if form is dirty before leaving the page
     const deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);

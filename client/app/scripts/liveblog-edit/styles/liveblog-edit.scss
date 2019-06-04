@@ -879,3 +879,22 @@
         position: relative !important;
     }
 }
+
+
+.inactivity-modal.modal {
+    .modal__dialog {
+        max-width: 600px;
+    }
+
+    .modal__content {
+        .modal__body {
+            max-width: inherit;
+        }
+    }
+
+    .modal__footer {
+        .btn {
+            margin-right: 10px;
+        }
+    }
+}

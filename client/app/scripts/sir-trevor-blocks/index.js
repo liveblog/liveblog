@@ -13,7 +13,7 @@ import _ from 'lodash';
 import sanitizeHtml from 'sanitize-html';
 
 import imageBlock from './image-block';
-import videoBlock from './video-block';
+import videoBlock, {getYoutubeID} from './video-block';
 import handlePlaceholder from './handle-placeholder';
 import sanitizeConfig from './sanitizer-config';
 
@@ -139,7 +139,7 @@ function replaceEmbedWithUrl(string) {
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
         if ((m = youtubePattern.exec(string)) !== null) {
-            return 'https://www.youtube.com/watch?v=' + m[1];
+            return 'https://www.youtube.com/watch?v=' + getYoutubeID(string);
         } else if ((m = facebookPattern.exec(string)) !== null) {
             return decodeURIComponent(m[1]);
         } else if ((m = instagramPattern.exec(string)) !== null) {

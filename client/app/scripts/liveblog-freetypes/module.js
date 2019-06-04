@@ -203,4 +203,3 @@ const liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
     }]);
 
 export default liveblogFreetypesModule;
-

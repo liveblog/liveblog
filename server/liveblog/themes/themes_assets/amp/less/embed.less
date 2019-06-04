@@ -152,50 +152,27 @@
   // Comment
   .comment__accordion {
     margin-top: 20px;
+
+    form {
+
+    }
   }
 
-  .comment__accordion .i-amphtml-accordion-header {
-    border: none;
-    background: none;
-    outline: none;
-    padding: 0 20px;
-    background: transparent url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzIgMzIiIGhlaWdodD0iMTBweCIgaWQ9InN2ZzIiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTZweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9ImJhY2tncm91bmQiPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMTAiIHdpZHRoPSIxNiIvPjwvZz48ZyBpZD0iYXJyb3dfeDVGX2Rvd24iPjxwb2x5Z29uIHBvaW50cz0iMCwwIDgsMTAgMTYsMCAgIi8+PC9nPjwvc3ZnPg==') right 7px no-repeat;
-    display: inline-block !important;
-    line-height: 1em;
+  .comment__accordion > section {
+    > h4 {
+      border: none;
+      background: none;
+      outline: none;
+
+      > span {
+        padding: 0 20px;
+        background: transparent url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzIgMzIiIGhlaWdodD0iMTBweCIgaWQ9InN2ZzIiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTZweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgaWQ9ImJhY2tncm91bmQiPjxyZWN0IGZpbGw9Im5vbmUiIGhlaWdodD0iMTAiIHdpZHRoPSIxNiIvPjwvZz48ZyBpZD0iYXJyb3dfeDVGX2Rvd24iPjxwb2x5Z29uIHBvaW50cz0iMCwwIDgsMTAgMTYsMCAgIi8+PC9nPjwvc3ZnPg==') right 7px no-repeat;
+        display: inline-block;
+        line-height: 1em;
+      }
+    }
   }
-  //
-  // form.comment {
-  //   outline: 2px solid @lightgrey;
-  //   .animate_smooth(max-height, 0.6s);
-  //   margin: 5px;
-  //   max-height: 500px;
-  // }
-  //
-  // form.comment.hide {
-  //   outline: 0px;
-  //   max-height: 0px;
-  // }
-  //
-  // div.comment-sent.hide {
-  //   display: none;
-  // }
-  //
-  // .comment__wrap {
-  //   .animate_smooth(opacity, 0.6s);
-  //   transition-delay: 0.2s;
-  //   opacity: 1;
-  //   padding: 40px;
-  // }
-  //
-  // form.comment.hide .comment__wrap, div.comment-sent.hide .comment__wrap {
-  //   .animate_smooth(opacity, 0.2s);
-  //   opacity: 0;
-  // }
-  //
-  // .comment-sent {
-  //     margin-top: 20px;
-  // }
-  //
+
   .comment__headline {
     font-size: 1.3em;
     line-height: 1.4em;
@@ -807,45 +784,6 @@
     cursor: pointer;
   }
 
-  // .lb-post-share {
-  //
-  // }
-  //
-  // .lb-post:hover .lb-post-share:hover .lb-post-shareBox {
-  //   width: 180px;
-  //   padding-right: 10px;
-  //   transition-delay: 0s; /* react immediately on hover */
-  // }
-  //
-  // .lb-post-shareBox {
-  //   position: absolute;
-  //   color: #888;
-  //   top: -3px;
-  //   right: 40px;
-  //   width: 0px;
-  //   height: 24px;
-  //   overflow: hidden;
-  // }
-  //
-  // .lb-post:hover .lb-post-shareBox {
-  //   transition: width 0.1s;
-  //   transition: 0.1s 0.8s; /* delay of 1 seconds on hover off */
-  // }
-  //
-  // .lb-post-shareBox__item {
-  //   display: inline-block;
-  //   width: 18px;
-  //   margin-right: 8px;
-  // }
-  //
-  // .lb-post-shareBox__item img {
-  //   vertical-align: bottom;
-  // }
-
-  .lb-post-permalink {
-
-  }
-
   .lb-post-sticky,
   .lb-post-highlighted {
       background-size: 15px;
@@ -1329,35 +1267,6 @@ body .scorecard-top__info {
         margin-right: 10px;
       }
 
-    //   .header-bar__highlight {
-    //     margin-right: 10px;
-    //   }
-      //
-    //   .header-bar__comment {
-    //     position: relative;
-    //     text-indent: -9999px;
-    //     color: #999999;
-    //     width: 32px;
-    //     background-image: url(../images/comment_icon--dark.svg);
-    //     background-repeat: no-repeat;
-    //     background-size: 14px;
-    //     background-position: center;
-    //     border: 1px solid @lightgrey;
-    //     border-radius: 2px;
-    //     padding: 6px 15px;
-    //     margin-top: 0px;
-    //     margin-left: 0px;
-    //   }
-      //
-    //   .header-bar__comment:hover {
-    //       border: 1px solid #cccccc;
-    //   }
-      //
-    //   .header-bar__comment.header-bar__comment--active {
-    //       background-color: #f2f5f8;
-    //       border: 1px solid #cccccc;
-    //   }
-
       .header-bar__logo {
         width: auto;
         flex: 1 1 auto;
@@ -1388,7 +1297,7 @@ body .scorecard-top__info {
         line-height: 1.6em;
       }
 
-      .comment__accordion .i-amphtml-accordion-header {
+      .comment__accordion > section > h4 {
         background-position: right 5px;
       }
     }
@@ -1398,9 +1307,17 @@ body .scorecard-top__info {
   }
 }
 
+@media (min-width: 768px) {
+  .comment__accordion {
+    form {
+      padding-left: 15px;
+    }
+  }
+}
+
 @media (max-width: 575.98px) {
-  .lb-timeline{
-    max-width: 100vw!important
+  .lb-timeline {
+    max-width: 100vw;
   }
 }
 
@@ -1421,4 +1338,19 @@ form.amp-form-submit-success input, form.amp-form-submit-success textarea, form.
 form.amp-form-submit-success [submit-success] {
   color: green;
   padding: 1em
+}
+
+
+.lightbox-success {
+  background: rgb(86, 195, 145);
+  width: 100%;
+  height: 45px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-success p {
+  color: white;
+  font-weight: 500;
 }

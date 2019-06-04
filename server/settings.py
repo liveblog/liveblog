@@ -142,6 +142,10 @@ CELERYBEAT_SCHEDULE = {
     }
 }
 
+# trying to fix stuff
+CELERY_BEAT_SCHEDULE_FILENAME = CELERYBEAT_SCHEDULE_FILENAME
+CELERY_BEAT_SCHEDULE = CELERYBEAT_SCHEDULE
+
 SENTRY_DSN = env('SENTRY_DSN')
 SENTRY_INCLUDE_PATHS = ['superdesk']
 
@@ -357,8 +361,8 @@ COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, 
 DEFAULT_THEME_DATE_FORMAT = env('DEFAULT_THEME_DATE_FORMAT', 'D. MMMM YYYY HH:mm')
 DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ'))
 
-# TTL for editing post flag (seconds). Default: 5 minutes
-EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60))
+# TTL for editing post flag (seconds). Default: 5 hours
+EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60 * 60))
 
 # list of URLs where the hooks would be trigger too. POST only for now
 # This should be comma separated string like: 'example.com, domain.com'

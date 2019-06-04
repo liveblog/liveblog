@@ -18,6 +18,7 @@ import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.ng1';
 import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
+import './../components/inactivity.modal';
 
 BlogEditController.$inject = [
     'api',
@@ -45,6 +46,7 @@ BlogEditController.$inject = [
     '$timeout',
     '$rootScope',
     '$location',
+    'InactivityModal',
 ];
 
 export default function BlogEditController(
@@ -72,7 +74,8 @@ export default function BlogEditController(
     $templateCache,
     $timeout,
     $rootScope,
-    $location
+    $location,
+    InactivityModal
 ) {
     var self = this;
     // @TODO: remove this when theme at blog level.
@@ -187,17 +190,6 @@ export default function BlogEditController(
         return areallBlocksempty || !$scope.isCurrentPostUnsaved();
     }
 
-    function removeEditFlag(postId, flag) {
-        postsService.removeFlagPost(flag);
-        findPostAndUpdate(postId, undefined, angular.noop);
-    }
-
-    function cleanUpFlag() {
-        if ($scope.currentPost && $scope.currentPost.edit_flag) {
-            removeEditFlag($scope.currentPost._id, $scope.currentPost.edit_flag);
-        }
-    }
-
     // ask in a modalbox if the user is sure to want to overwrite editor.
     // call the callback if user say yes or if editor is empty
     function doOrAskBeforeIfEditorIsNotEmpty() {
@@ -239,7 +231,9 @@ export default function BlogEditController(
     function doOrAskBeforeIfExceedsPostsLimit($scope) {
         var deferred = $q.defer();
 
-        if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit && !(localStorage.getItem('preventDialog'))) {
+        if (blog.posts_limit !== 0 && blog.total_posts >= blog.posts_limit &&
+                !(localStorage.getItem('preventDialog'))
+        ) {
             modal
                 .confirm(gettext(`You will lose the oldest post as posts
                     limit exceeds. Are you sure to continue?<br/>
@@ -268,70 +262,6 @@ export default function BlogEditController(
             $scope.currentPost = {...$scope.currentPost, ...edited};
         }
     });
-
-    /**
-     * Basically this just receives the data from flag registry with
-     * the users information attached to it. It also includes the flag TTL
-     */
-    $scope.$on('posts:updateFlag', (event, data) => {
-        data.flags.forEach((flag, index) => {
-            findPostAndUpdate(flag.postId, flag, afterPostFlagUpdate);
-        });
-    });
-
-    $scope.$on('posts:deletedFlag', (event, data) => {
-        const refreshCallback = () => {
-            $scope.$apply();
-        };
-        const flag = data.update ? data.flag : undefined;
-        const callback = data.update ? afterPostFlagUpdate : refreshCallback;
-
-        findPostAndUpdate(data.flag.postId, flag, callback);
-    });
-
-    function findPostAndUpdate(postId, flag, cb) {
-        let foundPost;
-        let placesToLook = [
-            self.timelineStickyInstance,
-            self.timelineInstance,
-            self.commentPostsInstance,
-            self.contributionsPostsInstance,
-            self.draftPostsInstance,
-        ];
-
-        // let's loop over the possible places to find the post and update it
-        for (let place of placesToLook) {
-            // NOTE: temporarily check this. We need to decide if we can modify
-            // users comments coming from frontend ui/blog
-            if (!place) continue;
-
-            place.pagesManager.updatePostFlag(postId, flag, (post) => {
-                cb(post, flag);
-                foundPost = post;
-            });
-
-            if (foundPost) break;
-        }
-    }
-
-    function afterPostFlagUpdate(post, flag) {
-        // let's also update post if its being edited
-        if ($scope.currentPost && $scope.currentPost._id === post._id) {
-            $scope.currentPost.edit_flag = flag;
-        }
-
-        // to trigger rendering
-        $scope.$apply();
-
-        // let's set the timeout and refresh when expired
-        postsService.setFlagTimeout(post, () => {
-            if ($scope.currentPost && post._id === $scope.currentPost._id) {
-                cleanEditor();
-            } else {
-                $scope.$apply();
-            }
-        });
-    }
 
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
@@ -495,6 +425,17 @@ export default function BlogEditController(
                 $scope.actionDisabled = _.isEmpty(input);
             });
         },
+        /**
+         * Alternative debounced function triggered on editor changes.
+         * The idea with this is to be able to keep the edit flag alive
+         * while user keeps active in the editor
+         */
+        debouncedEditorChanges: function() {
+            if ($scope.currentPost) {
+                postsService.flagPost($scope.currentPost._id);
+            }
+        },
+
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
@@ -781,10 +722,11 @@ export default function BlogEditController(
                 })
                     .then((response) => {
                         $scope.actionPending = false;
-                        if (response.data != 'Not Found')
+                        if (response.data !== 'Not Found') {
                             successCallback(response.data);
-                        else
+                        } else {
                             errorCallback(response.data);
+                        }
                     }, handleError);
             },
             isAdmin: function() {
@@ -861,8 +803,8 @@ export default function BlogEditController(
     });
 
     // initalize the view with the editor panel
-    var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',
-        syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
+    var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor';
+    var syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
     // Here we define an object instead of simple array.
     // because this variable needs to be update in the ingest-panel directive
@@ -882,6 +824,101 @@ export default function BlogEditController(
 
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
+    });
+
+    /* --------  let's put all related to edit post flag (if possible)  -------- */
+
+    function removeEditFlag(postId, flag) {
+        postsService.removeFlagPost(flag);
+        findPostAndUpdate(postId, undefined, angular.noop);
+    }
+
+    function cleanUpFlag() {
+        if ($scope.currentPost && $scope.currentPost.edit_flag) {
+            removeEditFlag($scope.currentPost._id, $scope.currentPost.edit_flag);
+        }
+    }
+
+    function findPostAndUpdate(postId, flag, cb) {
+        let foundPost;
+        let placesToLook = [
+            self.timelineStickyInstance,
+            self.timelineInstance,
+            self.commentPostsInstance,
+            self.contributionsPostsInstance,
+            self.draftPostsInstance,
+        ];
+
+        // let's loop over the possible places to find the post and update it
+        for (let place of placesToLook) {
+            // NOTE: temporarily check this. We need to decide if we can modify
+            // users comments coming from frontend ui/blog
+            if (!place) {
+                continue;
+            }
+
+            place.pagesManager.updatePostFlag(postId, flag, (post) => {
+                cb(post, flag);
+                foundPost = post;
+            });
+
+            if (foundPost) {
+                break;
+            }
+        }
+    }
+
+    const inactivityModal = new InactivityModal({
+        onKeepWorking: () => {
+            postsService.flagPost($scope.currentPost._id);
+            inactivityModal.instance.resetBrowserTab();
+        },
+        onSaveAndClose: () => {
+            $scope.publish();
+            inactivityModal.instance.resetBrowserTab();
+        },
+        onClose: () => {
+            cleanEditor();
+            inactivityModal.instance.resetBrowserTab();
+        },
+    });
+
+    function afterPostFlagUpdate(post, flag) {
+        // let's also update post if its being edited
+        if ($scope.currentPost && $scope.currentPost._id === post._id) {
+            $scope.currentPost.edit_flag = flag;
+        }
+
+        // to trigger rendering
+        $scope.$apply();
+
+        // let's set the timeout and refresh when expired
+        postsService.setFlagTimeout(post, () => {
+            if ($scope.currentPost && post._id === $scope.currentPost._id) {
+                inactivityModal.openModal();
+                inactivityModal.instance.iconTabAlert();
+            } else {
+                $scope.$apply();
+            }
+        });
+    }
+
+    // Basically this just receives the data from flag registry with
+    // the users information attached to it. It also includes the flag TTL
+    $scope.$on('posts:updateFlag', (event, data) => {
+        data.flags.forEach((flag, index) => {
+            findPostAndUpdate(flag.postId, flag, afterPostFlagUpdate);
+        });
+    });
+
+    $scope.$on('posts:deletedFlag', (event, data) => {
+        const refreshCallback = () => {
+            $scope.$apply();
+        };
+        const flag = data.update ? data.flag : undefined;
+        const callback = data.update ? afterPostFlagUpdate : refreshCallback;
+
+        findPostAndUpdate(data.flag.postId, flag, callback);
     });
 
     // we listen to change route event in order to remove flag when leaving the
@@ -913,11 +950,14 @@ export default function BlogEditController(
     };
 
     angular.element(window).on('beforeunload', () => {
-        if ($scope.currentPost)
+        if ($scope.currentPost) {
             return 'Are you sure you want to leave?';
+        }
     });
 
     angular.element(window).on('unload', () => {
         removeFlagOnLeaving();
     });
+
+    /* --------  end of post flagging stuff  --------- */
 }

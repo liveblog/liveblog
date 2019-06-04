@@ -1,9 +1,10 @@
 <amp-accordion class="comment__accordion">
     <section>
-        <h4>{{ translate('Post a comment') }}</h4>
+        <h4><span>{{ translate('Post a comment') }}</span></h4>
         <form method="post"
             action-xhr="{{ api_host }}api/client_item_comments"
             target="_top"
+            on="submit-success:lightbox-comment-success"
             class="comment">
             <div class="comment__wrap">
                 <div>
@@ -16,9 +17,11 @@
                     <textarea placeholder="{{ translate('Comment *') }}" name="text" required></textarea>
                 </div>
                 <div submit-success>
-                    <template type="amp-mustache">
-                        {{ translate('Your comment was sent for approval') }}
-                    </template>
+                    <amp-lightbox id="lightbox-comment-success" layout="nodisplay">
+                        <div class="lightbox-success" on="tap:lightbox-comment-success.close" role="button" tabindex="0">
+                            <p>{{ translate("Your comment is being reviewed and will be published as soon as it's approved") }}.</p>
+                        </div>
+                    </amp-lightbox>
                 </div>
                 <div submit-error>
                     <template type="amp-mustache">

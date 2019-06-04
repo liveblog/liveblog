@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const lodash = require('lodash');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 // makeConfig creates a new configuration file based on the passed options.
 module.exports = function makeConfig(grunt) {
@@ -30,10 +31,6 @@ module.exports = function makeConfig(grunt) {
         return !validModules.some((app) => p.indexOf(app) > -1);
     };
 
-    // isEmbedded will be true when the app is embedded into the main repo as a
-    // node module.
-    const isEmbedded = require('fs').existsSync('./node_modules/superdesk-core');
-
     return {
         entry: {
             app: 'app/scripts/index.js'
@@ -55,6 +52,12 @@ module.exports = function makeConfig(grunt) {
             }),
             new webpack.DefinePlugin({
                 __SUPERDESK_CONFIG__: JSON.stringify(sdConfig)
+            }),
+
+            // Using TS transpileOnly mode to speed up things and using this plugin
+            // for type checking. https://github.com/Realytics/fork-ts-checker-webpack-plugin
+            new ForkTsCheckerWebpackPlugin({
+                async: false
             })
         ],
 
@@ -80,32 +83,27 @@ module.exports = function makeConfig(grunt) {
                 react: path.resolve('./node_modules/react')
 
             },
-            extensions: ['.js', '.jsx']
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
 
         module: {
             rules: [
                 {
-                    enforce: 'pre',
-                    test: /\.jsx?$/,
-                    loader: 'eslint-loader',
-                    // superdesk apps handle their own linter
-                    exclude: (p) => p.indexOf('node_modules') !== -1 || sdConfig.apps && sdConfig.apps.some(
-                        (app) => p.indexOf(app) > -1
-                    ),
+                    test: /\.(ts|tsx|js|jsx)$/,
+                    exclude: shouldExclude,
+                    loader: 'ts-loader',
                     options: {
-                        configFile: './.eslintrc.js',
-                        ignorePath: './.eslintignore'
+                        transpileOnly: true,
                     }
                 },
                 {
-                    test: /\.jsx?$/,
-                    exclude: shouldExclude,
-                    loader: 'babel-loader',
+                    enforce: 'pre',
+                    test: /\.(ts|tsx|js|jsx)$/,
+                    loader: 'eslint-loader',
+                    exclude: /node_modules/,
                     options: {
-                        cacheDirectory: true,
-                        presets: ['es2015', 'react'],
-                        plugins: ['transform-object-rest-spread']
+                        configFile: './.eslintrc.js',
+                        ignorePath: './.eslintignore'
                     }
                 },
                 {

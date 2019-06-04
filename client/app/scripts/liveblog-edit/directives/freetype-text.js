@@ -17,7 +17,9 @@ export default function freetypeText() {
 
             if ($attrs.number !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
-                    if (value === undefined) return;
+                    if (value === undefined) {
+                        return;
+                    }
                     $scope.numberFlag = (value !== '') && isNaN(value);
                     $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
@@ -26,7 +28,9 @@ export default function freetypeText() {
             if ($attrs.compulsory !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('[text,compulsory]', ([text, compulsory]) => {
                     // if initially they're undefined we return and do nothing
-                    if (text === undefined && compulsory === undefined) return;
+                    if (text === undefined && compulsory === undefined) {
+                        return;
+                    }
 
                     $scope.compulsoryFlag = (text === '' && (compulsory === '' || compulsory === undefined));
                     $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;

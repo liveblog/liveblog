@@ -21,7 +21,7 @@ var blogs = [
 
 function waitForModal() {
     /* jshint validthis: true */
-    browser.wait(() => element(by.css('.modal__dialog')).isDisplayed(), 1000);
+    browser.wait(() => element(by.css('.modal__dialog:not(.v2)')).isDisplayed(), 1000);
     return this;
 }
 function okModal() {

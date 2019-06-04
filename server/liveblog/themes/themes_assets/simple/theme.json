@@ -1,15 +1,15 @@
 {
     "label": "LB SEO Simple Theme",
     "name": "simple",
-    "version": "0.2.4",
+    "version": "0.2.7",
     "seoTheme": true,
     "extends": "default",
     "extendsFromPackage": "liveblog-default-theme",
     "license": "AGPL-3.0",
-    "devStyles": ["dist/simple-a22d182a49.css"],
-    "devScripts": ["dist/simple-d174c94b04.js"],
-    "styles": ["dist/simple-a22d182a49.css"],
-    "scripts": ["dist/simple-d174c94b04.js"],
+    "devStyles": ["dist/simple-91730d9196.css"],
+    "devScripts": ["dist/simple-6a706fbb9d.js"],
+    "styles": ["dist/simple-91730d9196.css"],
+    "scripts": ["dist/simple-6a706fbb9d.js"],
     "options": [],
     "i18n": {
         "cs": {
@@ -39,7 +39,8 @@
           "Show highlighted post only": "Zobraz jen zvýrazněné příspěvky",
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
-          "Your comment was sent for approval": "Váš text byl úspěšně odeslán Čeká na schválení"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Váš komentář se kontroluje a bude publikován, jakmile bude schválen",
+          "credit:": " autor:"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
@@ -50,7 +51,7 @@
           "Comment *": "Kommentar",
           "Comment should be maximum 300 characters in length": "Kommentar darf maximal 300 Zeichen lang sein",
           "Editorial": "Redaktionell",
-          "Load more posts": "Mehr Einträge laden",
+          "Load more posts": "Weitere Beiträge",
           "Loading": "Lade",
           "Name *": "Name",
           "Name should be maximum 30 characters in length": "Name darf maximal 30 Zeichen lang sein",
@@ -69,7 +70,8 @@
           "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
           "Sort by:": "Ordnen nach",
           "Updated": "Aktualisiert am",
-          "Your comment was sent for approval": "Ihr Kommentar wartet auf Freischaltung,"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
+          "credit:": "Bild:"
         }, "fi": {
           "Highlights": "Kohokohtia",
           "Comment by": "Comment by",
@@ -99,7 +101,8 @@
           "Show highlighted post only": "Näytä vain korostettu julkaisu",
           "Sort by:": "Järjestä:",
           "Updated": "Päivitetty",
-          "Your comment was sent for approval": "Kommenttisi lähetettiin hyväksyttäväksi"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Kommenttisi tarkistetaan ja julkaistaan heti, kun se on hyväksytty",
+          "credit:": "©"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
           "Comment by": "Commentaire de",
@@ -129,7 +132,8 @@
           "Show highlighted post only": "Afficher uniquement les messages en surbrillance",
           "Sort by:": "Trier par:",
           "Updated": "Mise à jour",
-          "Your comment was sent for approval": "Votre commentaire a été envoyé et est en attente de validation"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Votre commentaire est en cours de révision et sera publié dès qu'il aura été approuvé",
+          "credit:": "crédit:"
         }, "nl": {
           "Highlights": "Highlights",
           "Comment by": "Commentaar door",
@@ -156,7 +160,8 @@
           "See new updates": "Bekijk nieuwe berichten",
           "Send": "Verzenden",
           "Sort by:": "Sorteer:",
-          "Your comment was sent for approval": "Uw reactie is ontvangen ter beoordeling"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Uw opmerking wordt beoordeeld en wordt gepubliceerd zodra deze is goedgekeurd",
+          "credit:": "credit:"
         }, "no": {
           "Highlights": "Høydepunkter",
           "Comment by": "Kommentar av",
@@ -186,7 +191,8 @@
           "Show highlighted post only": "Vis bare høydepunkter",
           "Sort by:": "Sortér etter:",
           "Updated": "Oppdatert",
-          "Your comment was sent for approval": "Din kommentar er sendt til godkjenning"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar blir gjennomgått og vil bli publisert så snart den er godkjent",
+          "credit:": "credit:"
         }, "ro": {
           "Highlights": "Repere",
           "Comment by": "Comentariu de",
@@ -213,7 +219,102 @@
           "See new updates": "Vezi articole noi",
           "Send": "Trimite",
           "Sort by:": "Ordonează după:",
-          "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare"
+          "Your comment is being reviewed and will be published as soon as it's approved": "Comentariul dvs. este revizuit și va fi publicat de îndată ce va fi aprobat",
+          "credit:": "credit:"
+        }, "sv": {
+            "Highlights": "Höjdpunkter",
+            "Comment by": "Kommentar av",
+            "Powered by": "Powered by",
+            "Advertisement": "Reklam",
+            "Cancel": "Avbryt",
+            "Comment": "Kommentar",
+            "Comment *": "Kommentar",
+            "Comment should be maximum 300 characters in length": "Kommentaren får vara högst 300 tecken",
+            "Editorial": "Redaktionellt material",
+            "Load more posts": "Ladda fler inlägg",
+            "Loading": "Laddar",
+            "Name ": "Namn",
+            "Name *": "Namn",
+            "Name should be maximum 30 characters in length": "Namnet får bestå av upp till 30 tecken",
+            "Newest first": "Nyaste först",
+            "No posts for now": "Inga inlägg just nu",
+            "Oldest first": "Äldsta först",
+            "One pinned post": "Ett inlägg fastnålat",
+            "pinned posts": "fastnålade inlägg",
+            "Please fill in your Comment": "Fyll i din kommentar",
+            "Please fill in your Name": "Fyll i ditt namn",
+            "Post a comment": "Skicka en kommentar",
+            "See one new update": "Se ett nytt inlägg",
+            "See new updates": "Se nya inlägg",
+            "Send": "Sänd",
+            "Show all posts": "Visa alla inlägg",
+            "Show highlighted post only": "Visa endast höjdpunkter",
+            "Sort by:": "Sortera enligt:",
+            "Updated": "Uppdaterat",
+            "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar granskas och publiceras så snart den godkänns",
+            "credit:": "källa:"
+        }, "sr": {
+            "Highlights": "Najvažnije",
+            "Comment by": "Komentar postavio",
+            "Powered by": "Ovo je",
+            "Advertisement": "Reklama",
+            "Cancel": "Otkaži",
+            "Comment": "Komentar",
+            "Comment *": "Komentar *",
+            "Comment should be maximum 300 characters in length": "Komentar je ograničen na 300 karaktera",
+            "Editorial": "Izbor urednika",
+            "Load more posts": "Učitaj još postova",
+            "Loading": "Učitavanje",
+            "Name *": "Ime *",
+            "Name should be maximum 30 characters in length": "Ime je ograničeno na 30 karaktera",
+            "Newest first": "Od najnovijeg",
+            "No posts for now": "Za sada nema postova",
+            "Oldest first": "Od najstarijeg",
+            "One pinned post": "Jedan istaknut post",
+            "pinned posts": "istaknuti postovi",
+            "Please fill in your Comment": "Molimo unesite vaš komentar",
+            "Please fill in your Name": "Molimo unesite vaše ime",
+            "Post a comment": "Postavite komentar",
+            "See one new update": "Pogledajte novi post",
+            "See new updates": "Pogledajte nove postove",
+            "Send": "Pošalji",
+            "Show all posts": "Prikaži sve postove",
+            "Show highlighted post only": "Prikaži najvažnije postove",
+            "Sort by:": "Sortiraj:",
+            "Updated": "Ažurirano",
+            "Your comment is being reviewed and will be published as soon as it's approved": "Vaš komentar se pregledava i biće objavljen čim bude odobren",
+            "credit:": "autor:"
+        }, "sr-cy": {
+            "Highlights": "Најважније",
+            "Comment by": "Коментар поставио",
+            "Powered by": "Ово је",
+            "Advertisement": "Реклама",
+            "Cancel": "Откажи",
+            "Comment": "Коментар",
+            "Comment *": "Коментар *",
+            "Comment should be maximum 300 characters in length": "Коментар је ограничен на 300 карактера",
+            "Editorial": "Избор уредника",
+            "Load more posts": "Учитај још постова",
+            "Loading": "Учитавење",
+            "Name *": "Име *",
+            "Name should be maximum 30 characters in length": "Име је ограничено на 30 карактера",
+            "Newest first": "Од најновијег",
+            "No posts for now": "За сада нема постова",
+            "Oldest first": "Од најстаријег",
+            "One pinned post": "Један истакнут пост",
+            "pinned posts": "истакнути постови",
+            "Please fill in your Comment": "Молимо унесите ваш коментар",
+            "Please fill in your Name": "Молимо унесите ваше име",
+            "Post a comment": "Поставите коментар",
+            "See one new update": "Погледајте нови пост",
+            "See new updates": "Погледајте нове постове",
+            "Send": "Пошаљи",
+            "Show all posts": "Прикажи све постове",
+            "Show highlighted post only": "Прикажи најважније постове",
+            "Sort by:": "Сортирај:",
+            "Updated": "Ажурирано",
+            "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
+            "credit:": "аутор:"
         }
     }
 }

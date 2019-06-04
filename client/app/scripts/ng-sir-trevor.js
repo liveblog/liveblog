@@ -1,4 +1,5 @@
 import angular from 'angular';
+import _ from 'lodash';
 
 export default angular
     .module('SirTrevor', [])
@@ -52,6 +53,8 @@ export default angular
                 editor: '=stModel',
                 onChange: '=stChange',
                 params: '=stParams',
+                debounceOnChange: '=stDebounceChange',
+                debounceTime: '@stDebounceTime',
             },
             link: function(scope, element, attrs) {
                 const opts = angular.copy(options);
@@ -60,8 +63,9 @@ export default angular
                 opts.el = $(element.find('textarea'));
 
                 // clean older instances if any
-                if (scope.editor)
+                if (scope.editor) {
                     scope.editor.destroy();
+                }
 
                 scope.editor = new SirTrevor.Editor(opts);
                 scope.editor.get = function() {
@@ -92,6 +96,10 @@ export default angular
                 };
 
                 element.on('keyup', scope.onChange);
+
+                const debouncedChange = _.debounce(scope.debounceOnChange, scope.debounceTime);
+
+                element.on('keydown', debouncedChange);
 
                 // @TODO: investigate how to better `digest` out of $scope  variables.
                 // scope.$watchCollection('editor.blocks', function(blocks) {

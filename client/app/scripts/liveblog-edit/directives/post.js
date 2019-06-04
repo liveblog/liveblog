@@ -80,10 +80,13 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     }
                 },
                 userify: function(user) {
-                    if (!user) return;
+                    if (!user) {
+                        return;
+                    }
 
-                    if (user._id === $rootScope.currentUser._id)
+                    if (user._id === $rootScope.currentUser._id) {
                         return 'You';
+                    }
 
                     return user.display_name;
                 },
@@ -132,8 +135,9 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                 askRemovePost: function(post) {
                     let msg = gettext('Are you sure you want to delete the post?');
 
-                    if (scope.isYoutubeAttached(post))
+                    if (scope.isYoutubeAttached(post)) {
                         msg += '<br/>This will NOT remove the video from YouTube\'s account.';
+                    }
 
                     scope.clearReorder();
                     modal.confirm(msg)

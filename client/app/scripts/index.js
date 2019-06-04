@@ -30,7 +30,6 @@ import moment from 'moment-timezone';
 
 _.sortByOrder = require('lodash.sortbyorder');
 
-
 import 'superdesk-core/scripts/core/activity';
 import 'superdesk-core/scripts/core/analytics';
 import 'superdesk-core/scripts/core/api';

@@ -1,5 +1,5 @@
 {% if item.post_items_type != "advertisement" %}
-    <div class="lb-post-actions {% if settings.authorPosition == "bottom"  %}lb-post-actions--top{% endif %}">
+    <div class="lb-post-actions {% if settings.authorPosition == 'bottom'  %}lb-post-actions--top{% endif %}">
 
         {% if settings.showSharingButtons %}
             <div class="lb-post-share">
@@ -12,13 +12,22 @@
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//plus.google.com/share?url="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
+                    data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+                    data-link-base="//wa.me/?text="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_whatsapp.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                    data-link-base="//telegram.me/share/url?url="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_telegram.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item share_viber-hidden-desktop"
+                    data-link-base="viber://forward?text="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_viber.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"

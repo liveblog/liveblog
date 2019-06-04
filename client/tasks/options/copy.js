@@ -9,6 +9,7 @@ module.exports = {
                 'fonts/**/*',
                 'images/**/*',
                 'favicon.ico',
+                'favicon-alert.ico',
                 'styles/css/*.css'
             ]
         },
