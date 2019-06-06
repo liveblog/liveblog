@@ -367,3 +367,6 @@ EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60))  # 5 mins for testin
 # list of URLs where the hooks would be trigger too. POST only for now
 # This should be comma separated string like: 'example.com, domain.com'
 TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
+
+# will add a watermark to the live embed timeline with liveblog logo
+ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
