@@ -28,7 +28,7 @@ from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
-from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL
+from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL, ACTIVATE_WATERMARK
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -188,6 +188,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     # also when blog has been archived, we should disable commenting
     if blog.get('blog_status') == 'closed':
         theme_settings['canComment'] = False
+
+    theme_settings['watermark'] = ACTIVATE_WATERMARK
 
     # Check if theme is SEO and/or AMP compatible.
     is_amp = theme.get('ampTheme', False)

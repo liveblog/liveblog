@@ -16,6 +16,9 @@
       <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
     </div>
   {% endif %}
+
+  {% include "default/template-watermark.html" %}
+
   {% endblock %}
 
   {% block timeline_header %}

@@ -3,7 +3,25 @@
 
 // Timeline
 
+.watermark {
+  .lb-timeline:before {
+    content:'';
+    background-image:var(--watermark);
+    background-repeat:repeat;
+    background-size:500px;
+
+    opacity: 0.08;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: 0;
+  }
+}
+
 .lb-timeline {
+    position: relative;
     font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
     font-weight: 400;
     font-size: 17px;
