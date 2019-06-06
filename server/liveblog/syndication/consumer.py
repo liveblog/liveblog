@@ -93,6 +93,10 @@ class ConsumerService(BaseService):
             raise ConsumerAPIError('Unable to get consumer "{}".'.format(consumer_id))
 
         api_url = trailing_slash(consumer['webhook_url'])
+        if not consumer.get('webhook_enabled', False):
+            logger.warning('Unable to send request. Consumer "{}" webhook is not available'.format(api_url))
+            return
+
         try:
             response = send_api_request(api_url, consumer_blog_token, method=method, data=data, json_loads=json_loads,
                                         timeout=timeout)
