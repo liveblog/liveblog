@@ -22,8 +22,14 @@
                 <link rel="stylesheet" href="{{ style }}">
             {% endfor %}
         {% endif %}
+
+        {% if settings.watermark %}
+        <style>
+        :root { --watermark: url('{{ assets_root }}images/logo-liveblog-watermark.svg') }
+        </style>
+        {% endif %}
     </head>
-    <body class="lb-wrapBody" style="{{ (output and output.get('style')) | tostyle | safe }}">
+    <body class="lb-wrapBody {% if settings.watermark %}watermark{% endif %}" style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% elif not settings.removeStylesESI %}
     {% if debug %}
         {% for style in assets.devStyles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}
