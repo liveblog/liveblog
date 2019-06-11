@@ -13,6 +13,7 @@ from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
+from superdesk.utc import utcnow
 
 from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
                            BLOGSLIST_DIRECTORY, CONTENT_TYPES)
@@ -287,3 +288,25 @@ def post_auto_output_creation(output_data):
     """
 
     get_resource_service('outputs').post(output_data)
+
+
+@celery.task
+def remove_deleted_blogs():
+    """
+    Simply find what blogs has been marked with blog_status "deleted"
+    and it will remove them (and the embeds) not before 3 days
+    """
+
+    logger.info('Checking for blogs marked for deletion')
+
+    blog_service = get_resource_service('blogs')
+    archive_service = get_resource_service('archive')
+
+    for blog in blog_service.find({'blog_status': 'deleted'}):
+        if blog['delete_not_before'] <= utcnow():
+            logger.info('Blog "{}" with id "{}" removed as was marked for deletion'.format(blog['title'], blog['_id']))
+
+            blog_id = blog['_id']
+            blog_service.on_delete(blog)
+            blog_service.delete(lookup={'_id': blog_id})
+            archive_service.delete(lookup={'blog': ObjectId(blog_id)})

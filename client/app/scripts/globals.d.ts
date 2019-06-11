@@ -11,3 +11,5 @@ interface IAnyAction extends Action {
 type Listener = (state: any) => void;
 
 type Reducer<S = any> = (state: S, action: IAnyAction) => S;
+
+declare const gettext: (text: string) => string;
