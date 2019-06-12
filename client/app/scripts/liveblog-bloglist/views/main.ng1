@@ -63,6 +63,11 @@
                 <span class="title" translate>Create a Blog</span>
             </button>
         </div>
+
+        <div ng-if="blogs._meta.total >= 0 && activeState.code === 'deleted'" class="empty-state">
+            <div translate class="alert alert-warning">Blogs show the time remaininig before deletion. After that time, they will be permanently deleted.</div>
+        </div>
+
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
@@ -119,6 +124,12 @@
                         <dd>
                         <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
                         <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
+                        </dd>
+                        <dt ng-if="blog.blog_status == 'deleted'">
+                            {{ ::'To be deleted' | translate }}:
+                        </dt>
+                        <dd ng-if="blog.blog_status == 'deleted'">
+                            {{ ::blog.delete_not_before | reldateAutoUpdate }}
                         </dd>
                     </dl>
                 </div>
