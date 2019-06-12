@@ -125,10 +125,10 @@
                         <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
                         <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
                         </dd>
-                        <dt ng-if="blog.blog_status == 'deleted'">
+                        <dt ng-if="blog.blog_status == 'deleted'" class="text-red">
                             {{ ::'To be deleted' | translate }}:
                         </dt>
-                        <dd ng-if="blog.blog_status == 'deleted'">
+                        <dd ng-if="blog.blog_status == 'deleted'" class="text-red">
                             {{ ::blog.delete_not_before | reldateAutoUpdate }}
                         </dd>
                     </dl>
