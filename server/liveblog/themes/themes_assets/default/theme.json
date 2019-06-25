@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-930b50c8f9.css"],
-    "devScripts": ["dist/default-e6073a7343.js"],
+    "devScripts": ["dist/default-ca0977427c.js"],
     "styles": ["dist/default-930b50c8f9.css"],
-    "scripts": ["dist/default-e6073a7343.js"],
+    "scripts": ["dist/default-ca0977427c.js"],
     "options": [
         {
             "name": "language",
@@ -404,6 +404,46 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to prompt user to load updates"
+        }
+    ],
+    "styleOptions": [
+        {
+            "label": "General",
+            "name": "general",
+            "cssSelector": "div.lb-timeline",
+            "columns": 3,
+            "options": [
+                {
+                    "label": "Blog Margin",
+                    "property": "margin",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Blog Padding",
+                    "property": "padding",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Blog Max. Width",
+                    "property": "max-width",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Background",
+                    "property": "background",
+                    "type": "colorpicker",
+                    "default": "#fff"
+                },
+                {
+                    "label": "Link Color",
+                    "property": "colorpicker",
+                    "type": "text",
+                    "tagName": "a"
+                }
+            ]
         }
     ],
     "i18n": {

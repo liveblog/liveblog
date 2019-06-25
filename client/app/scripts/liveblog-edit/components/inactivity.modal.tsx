@@ -15,7 +15,7 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
     favicon: JQuery<HTMLElement>;
     initialIcon: string;
 
-    constructor(props) {
+    constructor(props: IInactivityModalProps) {
         super(props);
 
         this.favicon = $('link[rel="icon"]');

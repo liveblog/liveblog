@@ -2,7 +2,7 @@
     "plugins": [
         "angular",
         "jasmine",
-        "react",
+        "react"
     ],
 
     "env": {
@@ -36,14 +36,14 @@
             "globalReturn": false,
             "impliedStrict": true,
             "jsx": true,
-            "experimentalObjectRestSpread": true
+            "ecmaVersion": 2018
         }
     },
 
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:jasmine/recommended",
+        "plugin:jasmine/recommended"
     ],
 
     "rules": {
@@ -57,7 +57,6 @@
         "react/self-closing-comp": 2,
         "react/prefer-es6-class": 2,
 
-        // deprecated apis
         "react/no-find-dom-node": 1,
         "react/no-string-refs": 1,
 
@@ -100,11 +99,9 @@
         "no-unused-vars": [2, {"vars": "all", "args": "none"}],
         "no-undef-init": 2,
 
-        // jasmine
         "jasmine/new-line-before-expect": 0,
         "jasmine/new-line-between-declarations": 0,
 
-        // style
         "array-bracket-spacing": [2, "never"],
         "block-spacing": 2,
         "brace-style": [2, "1tbs"],

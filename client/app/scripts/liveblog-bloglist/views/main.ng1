@@ -17,13 +17,12 @@
     </div>
 
     <div class="button-stack" >
-    <button class="navbtn hover pull-left" href="/#/liveblog">
+        <button class="navbtn hover pull-left" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </button>
         <ul class="nav nav-tabs" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
         </ul>
-
     </div>
     <div class="subnav__stretch-bar"></div>
     <div class="subnav__button-stack--square-buttons" ng-if="isUserAllowedToCreateABlog();">
