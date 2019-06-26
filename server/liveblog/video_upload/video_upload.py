@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -16,6 +17,7 @@ from superdesk import get_resource_service
 
 from liveblog.blogs.utils import is_s3_storage_enabled
 from liveblog.utils.api import api_error, api_response
+from settings import LIVEBLOG_DEBUG, CLIENT_URL
 
 logger = logging.getLogger('superdesk')
 
@@ -24,11 +26,13 @@ CORS(video_upload_blueprint)
 
 YT_KEY = 'youtube_secrets'
 YT_CREDENTIALS = 'youtube_credentials'
-
+SCHEME = 'https'
 SCOPES = ['https://www.googleapis.com/auth/youtube']
 
-# set this only when in local server
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+# if we are in local let's handle things http
+if LIVEBLOG_DEBUG:
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    SCHEME = 'http'
 
 
 def getFileContent(filename):
@@ -68,7 +72,7 @@ def bytes2string(value):
 @video_upload_blueprint.route('/api/video_upload/token', methods=['GET'])
 def get_token():
     global_serv = get_resource_service('global_preferences').get_global_prefs()
-    credentials = global_serv[YT_CREDENTIALS]
+    credentials = global_serv.get(YT_CREDENTIALS)
 
     if credentials:
         url = 'https://www.googleapis.com/oauth2/v4/token'
@@ -88,7 +92,7 @@ def get_token():
             logger.warning(msg)
             return api_error(msg, 501)
     else:
-        return api_error('Missing youtube credentials', 501)
+        return api_error('Youtube credentials not configured yet', 501)
 
 
 @video_upload_blueprint.route('/api/video_upload/credential', methods=['POST', 'GET'])
@@ -97,7 +101,10 @@ def get_refresh_token():
     if not app.auth.authorized([], 'global_preferences', 'POST'):
         return app.auth.authenticate()
 
-    secrets = request.files['secretsFile']
+    secrets = request.files.get('secretsFile', None)
+    if secrets is None:
+        return api_error('Please provide your youtube credentials', 400)
+
     secrets.seek(0)
     file_content = secrets.read()
     yt_data = json.loads(bytes2string(file_content))
@@ -110,7 +117,7 @@ def get_refresh_token():
     global_serv.save_preference(YT_KEY, yt_data)
 
     redirect_uri = flask.url_for(
-        'video_upload.oauth2callback', _external=True, _scheme='https')
+        'video_upload.oauth2callback', _external=True, _scheme=SCHEME)
 
     flow = Flow.from_client_config(
         yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
@@ -125,14 +132,21 @@ def get_refresh_token():
 
 @video_upload_blueprint.route('/api/video_upload/oauth2callback', methods=['GET', 'POST'])
 def oauth2callback():
-    yt_data = get_resource_service('global_preferences').get_global_prefs()[YT_KEY]
+    global_prefs = get_resource_service('global_preferences').get_global_prefs()
+    yt_data = global_prefs.get(YT_KEY, None)
 
-    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme='https')
+    # check if access was denied
+    access_error = request.args.get('error')
+
+    if access_error or yt_data is None:
+        logger.warning('Access denied in google auth or missing credentials. Error: "{}"'.format(access_error))
+        return flask.redirect(CLIENT_URL)
+
+    redirect_uri = flask.url_for('video_upload.oauth2callback', _external=True, _scheme=SCHEME)
     flow = Flow.from_client_config(yt_data, scopes=SCOPES, redirect_uri=redirect_uri)
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = flask.request.url
-    authorization_response = authorization_response.replace('http', 'https')
     flow.fetch_token(authorization_response=authorization_response)
 
     credentials = flow.credentials

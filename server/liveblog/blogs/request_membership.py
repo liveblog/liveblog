@@ -100,7 +100,7 @@ class MembershipService(BaseService):
     def on_created(self, docs):
         for doc in docs:
             push_notification(self.notification_key, created=1, request_id=str(doc.get('_id')))
-        # and members with emails
+            # and members with emails
             notify_the_owner(doc, app.config['CLIENT_URL'])
 
 
