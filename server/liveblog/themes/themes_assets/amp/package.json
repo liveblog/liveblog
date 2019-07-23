@@ -1,6 +1,6 @@
 {
   "name": "liveblog-amp-theme",
-  "version": "3.4.6",
+  "version": "3.4.7",
   "description": "Liveblog 3 AMP theme",
   "author": "Sourcefabric <contact@sourcefabric.org>",
   "license": "AGPL-3.0",
@@ -9,6 +9,6 @@
     "build": "gulp"
   },
   "dependencies": {
-    "liveblog-default-theme": "3.5.9"
+    "liveblog-default-theme": "3.5.10"
   }
 }
