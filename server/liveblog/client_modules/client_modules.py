@@ -4,6 +4,7 @@ from liveblog.advertisements.collections import CollectionsService, CollectionsR
 from liveblog.advertisements.outputs import OutputsService, OutputsResource
 from liveblog.advertisements.advertisements import AdvertisementsService, AdvertisementsResource
 from superdesk.services import BaseService
+from apps.archive.archive import ArchiveService
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
@@ -227,7 +228,27 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
+
+    def find_author(self, author_id):
+        """Find a user by id. Caches whole list of authors to avoid hitting
+        database multiple times in a short period of time"""
+
+        users_cache_key = 'lb_ClientBlogPostsService_find_author'
+        all_users = app.cache.get(users_cache_key)
+
+        if all_users is None:
+            all_users = list(get_resource_service('users').find({}))
+            app.cache.set(users_cache_key, all_users, timeout=5 * 60)
+
+        found = list(filter(lambda x: str(x['_id']), all_users))
+        if len(found) > 0:
+            return found[0]
+
+        return {}
+
     def add_post_info(self, doc, items=None):
+        # users collection will be used many times here
+        # so we need to cache it and reuse it the object to avoid hitting db
         items = items or []
         if not items:
             # Get from groups
@@ -235,8 +256,7 @@ class ClientBlogPostsService(BlogPostsService):
                 for ref in group.get('refs'):
                     item = ref.get('item')
                     if item:
-                        item['original_creator'] = get_resource_service('users')\
-                            .find_one(req=None, _id=item['original_creator'])
+                        item['original_creator'] = self.find_author(item['original_creator'])
                         items.append(item)
 
         if not items:
@@ -244,8 +264,7 @@ class ClientBlogPostsService(BlogPostsService):
             for assoc in self.packageService._get_associations(doc):
                 if 'residRef' in assoc:
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
-                    item['original_creator'] = get_resource_service('users')\
-                        .find_one(req=None, _id=item['original_creator'])
+                    item['original_creator'] = self.find_author(item['original_creator'])
                     items.append(item)
 
         items_length = len(items)
@@ -282,15 +301,17 @@ class ClientBlogPostsService(BlogPostsService):
 
         doc['post_items_type'] = post_items_type
 
-        # Bring the client user in the posts so we can post.original_creator.
-        # LBSD-2010
-        doc['original_creator'] = get_resource_service('users') \
-            .find_one(req=None, _id=doc['original_creator'])
+        # Bring the client user in the posts so we can post.original_creator.X - LBSD-2010
+        doc['original_creator'] = self.find_author(doc['original_creator'])
 
         return doc
 
     def on_fetched(self, docs):
-        super().on_fetched(docs)
+        # BlogPostsService `on_fetched` overwrite method has a not so performant
+        # data completion with PostFlags (which is not needed in client side)
+        # so we call super of `ArchiveService` instead to avoid db hammering
+        super(ArchiveService, self).on_fetched(docs)
+
         for doc in docs['_items']:
             self.add_post_info(doc)
 
