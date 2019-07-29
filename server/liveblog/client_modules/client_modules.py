@@ -240,7 +240,7 @@ class ClientBlogPostsService(BlogPostsService):
             all_users = list(get_resource_service('users').find({}))
             app.cache.set(users_cache_key, all_users, timeout=5 * 60)
 
-        found = list(filter(lambda x: str(x['_id']), all_users))
+        found = list(filter(lambda x: str(x['_id']) == author_id, all_users))
         if len(found) > 0:
             return found[0]
 
