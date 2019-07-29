@@ -375,24 +375,6 @@ class PostsService(ArchiveService):
         push_notification('posts', deleted=True)
 
 
-def add_flags_info(post):
-    # time to get info from editing flags
-    flag = get_resource_service('post_flags').find_one(req=None, postId=post['_id'])
-
-    # let's replace users id with real information
-    if (flag):
-        users = []
-        for userId in flag['users']:
-            users.append(get_resource_service('users').find_one(req=None, _id=userId))
-        flag['users'] = users
-
-        # so this we have _links available for other methods in frontend
-        build_custom_hateoas(PostFlagService.custom_hateoas, flag, location='post_flags')
-        post['edit_flag'] = flag
-
-    return post
-
-
 class PostFlagResource(Resource):
     datasource = {
         'source': 'post_flags'
@@ -529,16 +511,69 @@ class BlogPostsService(ArchiveService):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         docs = super().get(req, lookup)
+        related_items = self._related_items_map(docs)
+
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
             for assoc in self.packageService._get_associations(doc):
-                if assoc.get('residRef'):
-                    item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
-                    assoc['item'] = item
+                ref_id = assoc.get('residRef', None)
+                if ref_id is not None:
+                    assoc['item'] = related_items[ref_id]
+
         return docs
 
-    def on_fetched(self, docs):
-        super().on_fetched(docs)
+    def _related_items_map(self, docs):
+        """It receives an array of blogs and we extract the associations' ID
+        then we hit the database just 1 time and return them as dictionary"""
 
-        for doc in docs['_items']:
-            add_flags_info(doc)
+        items_map = {}
+        ids = []
+
+        for doc in docs:
+            for assoc in self.packageService._get_associations(doc):
+                ref_id = assoc.get('residRef', None)
+                if ref_id:
+                    ids.append(ref_id)
+
+        # now let's get this into a form of dictionary
+        for item in get_resource_service('archive').find({'_id': {'$in': ids}}):
+            items_map[item.get('_id')] = item
+
+        return items_map
+
+    def on_fetched(self, blog):
+        super().on_fetched(blog)
+
+        posts_flags_map = self._flags_for_posts(blog['_items'])
+
+        for post in blog['_items']:
+            self._add_flags_info(post, posts_flags_map)
+
+    def _flags_for_posts(self, posts):
+        """
+        Dictionary of {postId: flag} for later usage instead of hitting database
+        """
+        flags_map = {}
+
+        post_ids = [post['_id'] for post in posts]
+        for flag in get_resource_service('post_flags').find({'postId': {'$in': post_ids}}):
+            flags_map[flag.get('postId')] = flag
+
+        return flags_map
+
+    def _add_flags_info(self, post, flags_map):
+        # time to get info from editing flags
+        flag = flags_map.get(post['_id'])
+
+        # let's replace users id with real information
+        if (flag):
+            users = []
+            for userId in flag['users']:
+                users.append(get_resource_service('users').find_one(req=None, _id=userId))
+            flag['users'] = users
+
+            # so this we have _links available for other methods in frontend
+            build_custom_hateoas(PostFlagService.custom_hateoas, flag, location='post_flags')
+            post['edit_flag'] = flag
+
+        return post
