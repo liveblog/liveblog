@@ -370,3 +370,10 @@ TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
 
 # will add a watermark to the live embed timeline with liveblog logo
 ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
+
+# using Flask-Cache. Using `simple` as default for simple or local environments
+# See https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching for more info
+LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
+
+# used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
+LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')

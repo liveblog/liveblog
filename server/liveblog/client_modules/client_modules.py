@@ -1,10 +1,10 @@
+import json
 from itertools import groupby
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
 from liveblog.advertisements.outputs import OutputsService, OutputsResource
 from liveblog.advertisements.advertisements import AdvertisementsService, AdvertisementsResource
 from superdesk.services import BaseService
-from apps.archive.archive import ArchiveService
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
@@ -21,6 +21,7 @@ from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
 from werkzeug.datastructures import MultiDict
+
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -306,15 +307,6 @@ class ClientBlogPostsService(BlogPostsService):
 
         return doc
 
-    def on_fetched(self, docs):
-        # BlogPostsService `on_fetched` overwrite method has a not so performant
-        # data completion with PostFlags (which is not needed in client side)
-        # so we call super of `ArchiveService` instead to avoid db hammering
-        super(ArchiveService, self).on_fetched(docs)
-
-        for doc in docs['_items']:
-            self.add_post_info(doc)
-
     def get(self, req, lookup):
         allowed_params = {
             'start_date', 'end_date',
@@ -328,13 +320,22 @@ class ClientBlogPostsService(BlogPostsService):
         # check for unknown query parameters
         _check_for_unknown_params(request, allowed_params)
 
-        cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
+        sufix = hash(json.dumps(req.__dict__, sort_keys=True))
+        cache_key = 'lb_ClientBlogPostsService_get_%s' % sufix
         blog_id = lookup.get('blog_id')
-        docs = app.blog_cache.get(blog_id, cache_key)
-        if not docs:
-            docs = super().get(req, lookup)
-            app.blog_cache.set(blog_id, cache_key, docs)
-        return docs
+
+        # ElasticCursor is returned so we can loop and modify docs inside
+        blog_posts = app.blog_cache.get(blog_id, cache_key)
+
+        if blog_posts is None:
+            blog_posts = super().get(req, lookup)
+
+            # let's complete the post info before cache
+            for post in blog_posts.docs:
+                self.add_post_info(post)
+            app.blog_cache.set(blog_id, cache_key, blog_posts)
+
+        return blog_posts
 
 
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):
