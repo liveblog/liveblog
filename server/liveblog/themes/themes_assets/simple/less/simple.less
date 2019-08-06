@@ -1,6 +1,23 @@
 // Liveblog Base Theme
 @import "globals.less";
 
+.watermark {
+    .lb-timeline:before {
+      content:'';
+      background-image:var(--watermark);
+      background-repeat:repeat;
+      background-size:500px;
+
+      opacity: 0.08;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: absolute;
+      z-index:-1;
+    }
+  }
+
 .lb-timeline {
     .lb-post {
         padding-right: 10px;

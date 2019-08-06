@@ -1,3 +1,4 @@
+import json
 from itertools import groupby
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
@@ -20,6 +21,7 @@ from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
 from werkzeug.datastructures import MultiDict
+
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -227,7 +229,27 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
+
+    def find_author(self, author_id):
+        """Find a user by id. Caches whole list of authors to avoid hitting
+        database multiple times in a short period of time"""
+
+        users_cache_key = 'lb_ClientBlogPostsService_find_author'
+        all_users = app.cache.get(users_cache_key)
+
+        if all_users is None:
+            all_users = list(get_resource_service('users').find({}))
+            app.cache.set(users_cache_key, all_users, timeout=5 * 60)
+
+        found = list(filter(lambda x: str(x['_id']) == author_id, all_users))
+        if len(found) > 0:
+            return found[0]
+
+        return {}
+
     def add_post_info(self, doc, items=None):
+        # users collection will be used many times here
+        # so we need to cache it and reuse it the object to avoid hitting db
         items = items or []
         if not items:
             # Get from groups
@@ -235,8 +257,7 @@ class ClientBlogPostsService(BlogPostsService):
                 for ref in group.get('refs'):
                     item = ref.get('item')
                     if item:
-                        item['original_creator'] = get_resource_service('users')\
-                            .find_one(req=None, _id=item['original_creator'])
+                        item['original_creator'] = self.find_author(item['original_creator'])
                         items.append(item)
 
         if not items:
@@ -244,8 +265,7 @@ class ClientBlogPostsService(BlogPostsService):
             for assoc in self.packageService._get_associations(doc):
                 if 'residRef' in assoc:
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
-                    item['original_creator'] = get_resource_service('users')\
-                        .find_one(req=None, _id=item['original_creator'])
+                    item['original_creator'] = self.find_author(item['original_creator'])
                     items.append(item)
 
         items_length = len(items)
@@ -282,17 +302,10 @@ class ClientBlogPostsService(BlogPostsService):
 
         doc['post_items_type'] = post_items_type
 
-        # Bring the client user in the posts so we can post.original_creator.
-        # LBSD-2010
-        doc['original_creator'] = get_resource_service('users') \
-            .find_one(req=None, _id=doc['original_creator'])
+        # Bring the client user in the posts so we can post.original_creator.X - LBSD-2010
+        doc['original_creator'] = self.find_author(doc['original_creator'])
 
         return doc
-
-    def on_fetched(self, docs):
-        super().on_fetched(docs)
-        for doc in docs['_items']:
-            self.add_post_info(doc)
 
     def get(self, req, lookup):
         allowed_params = {
@@ -307,13 +320,22 @@ class ClientBlogPostsService(BlogPostsService):
         # check for unknown query parameters
         _check_for_unknown_params(request, allowed_params)
 
-        cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
+        sufix = hash(json.dumps(req.__dict__, sort_keys=True))
+        cache_key = 'lb_ClientBlogPostsService_get_%s' % sufix
         blog_id = lookup.get('blog_id')
-        docs = app.blog_cache.get(blog_id, cache_key)
-        if not docs:
-            docs = super().get(req, lookup)
-            app.blog_cache.set(blog_id, cache_key, docs)
-        return docs
+
+        # ElasticCursor is returned so we can loop and modify docs inside
+        blog_posts = app.blog_cache.get(blog_id, cache_key)
+
+        if blog_posts is None:
+            blog_posts = super().get(req, lookup)
+
+            # let's complete the post info before cache
+            for post in blog_posts.docs:
+                self.add_post_info(post)
+            app.blog_cache.set(blog_id, cache_key, blog_posts)
+
+        return blog_posts
 
 
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):

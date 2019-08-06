@@ -452,14 +452,6 @@ export default function BlogListController(
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
             $scope.blogsLoading = false;
-
-            // check if redirect after youtube authentication
-            let blogToRedirect = localStorage.getItem('blogToRedirect');
-
-            if (blogToRedirect) {
-                $scope.edit(blogToRedirect);
-                localStorage.removeItem('blogToRedirect');
-            }
         });
     }
     // initialize bloglist embed code.

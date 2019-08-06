@@ -698,10 +698,9 @@ export default function BlogEditController(
                             currentUrl: window.location.href,
                         },
                     }).then((response) => {
-                        // save to later be able to redirect to the place we were
-                        localStorage.setItem('blogToRedirect', $scope.blog._id);
                         notify.pop();
-                        notify.info(gettext('Saved credentials'));
+                        notify.info(gettext('Saved credentials. Redirecting...'));
+                        // redirect to google verification screen
                         window.location.replace(response.data);
                     });
                 }, () => cleanEditor(true));

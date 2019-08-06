@@ -30,6 +30,7 @@ from liveblog.advertisements.advertisements import advertisements_blueprint
 from liveblog.video_upload.video_upload import video_upload_blueprint
 
 from superdesk.factory import get_app as superdesk_app
+from superdesk.default_settings import celery_queue as instance_prefix
 
 
 def get_app(config=None):
@@ -64,8 +65,15 @@ def get_app(config=None):
     ])
     app.jinja_loader = custom_loader
 
-    # Caching.
-    app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+    # Caching. By default 'simple' cache will be used
+    cache_config = {'CACHE_TYPE': settings.LIVEBLOG_CACHE_TYPE}
+    if cache_config['CACHE_TYPE'] == 'redis':
+        cache_config.update({
+            'CACHE_REDIS_URL': settings.LIVEBLOG_CACHE_REDIS_URL,
+            'CACHE_KEY_PREFIX': instance_prefix('_lb-cache')
+        })
+
+    app.cache = Cache(app, config=cache_config)
     app.blog_cache = BlogCache(cache=app.cache)
 
     # Amazon S3 support.
