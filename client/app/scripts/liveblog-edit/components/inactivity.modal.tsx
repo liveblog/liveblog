@@ -70,7 +70,7 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
         const bodyText = `
             The current post has been inactive in the editor for some time so the warning message
             of being edited by you has been removed. Please be careful about saving the post as
-            the work from other users in this post could get overwritten`;
+            the work from other users in this post could get overwritten.`;
 
         const footerBtns = this.modalActions();
 
