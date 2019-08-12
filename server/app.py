@@ -70,7 +70,7 @@ def get_app(config=None):
     if cache_config['CACHE_TYPE'] == 'redis':
         cache_config.update({
             'CACHE_REDIS_URL': settings.LIVEBLOG_CACHE_REDIS_URL,
-            'CACHE_KEY_PREFIX': instance_prefix('_lb-cache')
+            'CACHE_KEY_PREFIX': instance_prefix('_lb-cache_')
         })
 
     app.cache = Cache(app, config=cache_config)
