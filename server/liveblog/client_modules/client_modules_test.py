@@ -476,9 +476,15 @@ class ClientModuleTestCase(TestCase):
 
     def test_add_post_info(self):
         doc = self.blog_post_service.add_post_info(self.blog_posts[0])
+
+        # TODO: split this test in two
+        self.blog_post_service.generate_authors_map()
+        self.blog_post_service.attach_authors([doc])
+
         # test method added original creator info
         original_creator = doc.get('original_creator')
         self.assertIsNotNone(original_creator, True)
+
         # test original creator ids
         original_creator_id = self.blog_posts[0].get('original_creator').get('_id')
         self.assertEqual(original_creator.get('_id'), original_creator_id)

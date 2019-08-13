@@ -1,4 +1,5 @@
 import json
+import logging
 from bson import ObjectId
 from itertools import groupby
 from liveblog.blogs.blogs import BlogsResource
@@ -26,6 +27,7 @@ from werkzeug.datastructures import MultiDict
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
+logger = logging.getLogger(__name__)
 
 
 class ClientUsersResource(Resource):
@@ -230,8 +232,8 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
-
     authors = []
+    authors_map = {}
 
     def add_post_info(self, doc, items=None):
         # users collection will be used many times here
@@ -239,8 +241,11 @@ class ClientBlogPostsService(BlogPostsService):
 
         def _append_author(item):
             author_id = item.get('original_creator', None)
-            if isinstance(author_id, str) and len(author_id.strip()) > 0:
-                self.authors.append(author_id.strip())
+            try:
+                author_id = ObjectId(author_id)
+                self.authors.append(author_id)
+            except Exception as err:
+                logger.debug("Unable to add author id to map. {}".format(err))
 
         items = items or []
         items_refs = [assoc for group in doc.get('groups', []) for assoc in group.get('refs', [])]
@@ -293,32 +298,27 @@ class ClientBlogPostsService(BlogPostsService):
         return doc
 
     def generate_authors_map(self):
-        ids = []
-        for x in set(self.authors):
-            try:
-                ids.append(ObjectId(x))
-            except Exception as err:
-                print(err)
+        """
+        Gets users information from database based on a list of predefined ids
+        The idea behind the method is to reduce the impact on DB
+        """
+        ids = set(self.authors)
 
-        authors_map = {}
+        for user in get_resource_service('users').find({'_id': {'$in': ids}}):
+            self.authors_map[user.get('_id')] = user
 
-        for flag in get_resource_service('users').find({'_id': {'$in': ids}}):
-            authors_map[flag.get('_id')] = flag
-
-        return authors_map
-
-    def attach_authors(self, posts, authors_map):
+    def attach_authors(self, posts):
         """
         Simply gets authors id from items related and for post itself
         """
         for post in posts:
-            post['original_creator'] = authors_map.get(post['original_creator'])
+            post['original_creator'] = self.authors_map.get(post['original_creator'])
 
             items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
             for ref in items_refs:
                 item = ref.get('item')
                 if item:
-                    item['original_creator'] = authors_map.get(item['original_creator'])
+                    item['original_creator'] = self.authors_map.get(item['original_creator'])
 
     def get(self, req, lookup):
         allowed_params = {
@@ -347,8 +347,8 @@ class ClientBlogPostsService(BlogPostsService):
             for post in blog_posts.docs:
                 self.add_post_info(post)
 
-            authors_map = self.generate_authors_map()
-            self.attach_authors(blog_posts.docs, authors_map)
+            self.generate_authors_map()
+            self.attach_authors(blog_posts.docs)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
