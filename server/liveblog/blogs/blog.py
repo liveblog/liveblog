@@ -105,6 +105,10 @@ class Blog:
         for doc in posts:
             client_blog_posts.add_post_info(doc)
 
+        # now let's add authors' information
+        client_blog_posts.generate_authors_map()
+        client_blog_posts.attach_authors(posts)
+
         if wrap:
             # Wrap in python-eve style data structure
             return {
