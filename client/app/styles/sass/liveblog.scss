@@ -158,15 +158,6 @@
 	}
 }
 
-//Hide liveblog tab in global settings
-:not(.blog-settings-view)>.settings-page>.tabbable.outer>.nav-stacked {
-    display: none !important;
-}
-
-:not(.blog-settings-view)>.settings-page .tabbable.outer .tab-content.outer {
-    position: inherit;
-}
-
 .btn--contact-support {
     float: right;
     position: relative;

@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputTheme" class="control-label">Theme</label>
+                    <label for="inputTheme" class="control-label">Default Theme</label>
                     <div class="form-input">
                         <select ng-options="theme.name as theme.label for theme in themes"
                                 ng-model="liveblogSettings.theme.value"

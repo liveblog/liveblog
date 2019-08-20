@@ -50,9 +50,21 @@ import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
         .config(['superdeskProvider', function(superdesk) {
             superdesk
                 .activity('/settings/', {
-                    label: gettext('Liveblog'),
+                    label: gettext('Liveblog Settings'),
+                    controller: angular.noop,
+                    category: superdesk.MENU_MAIN,
+                    priority: 1000,
+                    adminTools: true,
+                    _settings: 1,
+                    privileges: {global_preferences: 1},
+                })
+                .activity('/settings/general', {
+                    label: gettext('General Settings'),
                     controller: LiveblogSettingsController,
                     templateUrl: generalTpl,
+                    category: superdesk.MENU_SETTINGS,
+                    liveblogSetting: true,
+                    privileges: {global_preferences: 1},
                 });
         }])
         .config(['apiProvider', function(apiProvider) {
