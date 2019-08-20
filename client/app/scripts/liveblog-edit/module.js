@@ -35,20 +35,21 @@ function BlogResolver(api, $route, $location, notify, gettext, blogService) {
         });
 }
 
-const app = angular.module('liveblog.edit', [
-    'SirTrevor',
-    'SirTrevorBlocks',
-    'angular-embed',
-    'angular-embed.handlers',
-    'ngRoute',
-    'superdesk.core.services.modal',
-    'superdesk.core.upload',
-    'liveblog.pages-manager',
-    'lrInfiniteScroll',
-    'liveblog.security',
-    'liveblog.freetypes',
-    'liveblog.edit.components.inactivityModal',
-])
+const app = angular.module('liveblog.edit',
+    [
+        'SirTrevor',
+        'SirTrevorBlocks',
+        'angular-embed',
+        'angular-embed.handlers',
+        'ngRoute',
+        'superdesk.core.services.modal',
+        'superdesk.core.upload',
+        'liveblog.pages-manager',
+        'lrInfiniteScroll',
+        'liveblog.security',
+        'liveblog.freetypes',
+        'liveblog.edit.components.inactivityModal',
+    ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/liveblog/edit/:_id', {
@@ -183,7 +184,6 @@ const app = angular.module('liveblog.edit', [
      * @param {Datetime} date iso format datetime
      * @return {String} relative time
      */
-
     .filter('reldateAutoUpdate', ['$interval', function reldateAutorUpdateFactory($interval) {
         // trigger digest every 60 seconds
         $interval(() => true, 60000);
@@ -250,4 +250,3 @@ const app = angular.module('liveblog.edit', [
     ]);
 
 export default app;
-// });
