@@ -1,4 +1,5 @@
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
+import {renderTagsComponent} from './components/index';
 
 
 LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
@@ -88,6 +89,17 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             type: 'http',
             backend: {rel: 'global_preferences'},
         });
+    }])
+    .directive('renderTagsComponent', [function() {
+        return {
+            scope: {
+                tags: '=',
+            },
+            link: function(scope, element) {
+                renderTagsComponent($(element).get(0), scope.tags);
+                // renderStylesTab($(element).get(0), scope.options, scope.settings);
+            },
+        };
     }]);
 
 export default liveblogSettings;

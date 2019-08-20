@@ -24,6 +24,9 @@
                                 class="form-control"></select>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div render-tags-component tags="liveblogSettings.tags">
+                </div>
             </form>
         </div>
     </div>
