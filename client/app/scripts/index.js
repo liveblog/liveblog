@@ -166,6 +166,7 @@ const liveblogModules = [
     'liveblog.blog',
     'liveblog.themes',
     'liveblog.freetypes',
+    'liveblog.settings',
     'liveblog.advertising',
     'ngMessages',
 ];

@@ -50,14 +50,15 @@ const app = angular.module('liveblog.edit', [
     'liveblog.edit.components.inactivityModal',
 ])
     .config(['superdeskProvider', function(superdesk) {
-        superdesk.activity('/liveblog/edit/:_id', {
-            label: gettext('Blog Editor'),
-            auth: true,
-            controller: BlogEditController,
-            controllerAs: 'blogEdit',
-            templateUrl: mainTpl,
-            resolve: {blog: BlogResolver},
-        })
+        superdesk
+            .activity('/liveblog/edit/:_id', {
+                label: gettext('Blog Editor'),
+                auth: true,
+                controller: BlogEditController,
+                controllerAs: 'blogEdit',
+                templateUrl: mainTpl,
+                resolve: {blog: BlogResolver},
+            })
             .activity('/liveblog/settings/:_id', {
                 label: gettext('Blog Settings'),
                 auth: true,
@@ -120,16 +121,6 @@ const app = angular.module('liveblog.edit', [
             setTimeout(() => {
                 if (editorOptions.isEditorClean()) {
                     editorOptions.disableSubmit(true);
-
-                    // NOTE: this below was meant to remove the flag indicator from the
-                    // post in timeline. We don't need to remove the flag as the post is still
-                    // being edited. Clicking `delete` button doesn't mean deleting the post bu
-                    // the block in the editor.
-
-                    // const editor = SirTrevor.getInstance(0);
-                    // if (editor && editor.blocks.length === 0) {
-                    //     editorOptions.cleanUpFlag();
-                    // }
                 }
             }, 500);
         };
