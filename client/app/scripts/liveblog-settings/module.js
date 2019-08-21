@@ -1,11 +1,12 @@
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
 import {renderTagsComponent} from './components/index';
 
-
 LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
 function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
     // prep the settings
-    $scope.liveblogSettings = {language: {}, theme: {}, tags: []};
+    $scope.settingsForm = null;
+    $scope.liveblogSettings = {language: {}, theme: {}, global_tags: []};
+    const allowedKeys = ['language', 'theme', 'global_tags'];
 
     api.languages.query().then((data) => {
         $scope.languages = data._items;
@@ -22,9 +23,18 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
         _.forEach(data._items, (setting) => {
             $scope.liveblogSettings[setting.key] = setting;
         });
-        console.log($scope.liveblogSettings); // eslint-disable-line
         $scope.settingsLoading = false;
     });
+
+    $scope.setFormRef = function(childScope) {
+        $scope.settingsForm = childScope.settingsForm;
+    };
+
+    $scope.onTagsChange = function(tags) {
+        $scope.liveblogSettings.global_tags.value = tags;
+        $scope.settingsForm.$setDirty();
+        $scope.$apply();
+    };
 
     $scope.saveSettings = function() {
         notify.pop();
@@ -33,6 +43,8 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
         const reqArr = [];
 
         _.forEach($scope.liveblogSettings, (item, key) => {
+            if (!_.includes(allowedKeys, key)) return;
+
             patch = {
                 key: key,
                 value: item.value,
@@ -94,10 +106,10 @@ const liveblogSettings = angular.module('liveblog.settings', [])
         return {
             scope: {
                 tags: '=',
+                onTagsChange: '=',
             },
             link: function(scope, element) {
-                renderTagsComponent($(element).get(0), scope.tags);
-                // renderStylesTab($(element).get(0), scope.options, scope.settings);
+                renderTagsComponent($(element).get(0), scope.tags, scope.onTagsChange);
             },
         };
     }]);

@@ -1,12 +1,12 @@
 <div sd-settings-view class="general-settings">
     <div class="split-content">
         <div style="margin:10px">
-            <button ng-click="saveSettings()" class="btn btn--primary pull-right" type="button" translate ng-disabled="!setForm.$dirty">Save</button>
+            <button ng-click="saveSettings()" class="btn btn--primary pull-right" type="button" translate ng-disabled="!settingsForm.$dirty">Save</button>
             <button ng-click="close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
         <div class="content">
             <div class="loading-indicator" ng-show="settingsLoading"><span translate>loading</span></div>
-            <form class="form-horizontal" name="setForm">
+            <form class="form-horizontal" name="settingsForm">
                 <div class="form-group" style="display: none;">
                     <label for="inputLanguage" class="control-label">Language</label>
                     <div class="form-input">
@@ -16,18 +16,38 @@
                                 ng-model="liveblogSettings.language.value" class="form-control"></select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="inputTheme" class="control-label">Default Theme</label>
-                    <div class="form-input">
-                        <select ng-options="theme.name as theme.label for theme in themes"
-                                ng-model="liveblogSettings.theme.value"
-                                class="form-control"></select>
+                <div class="flex-grid wrap-items padded-grid medium-3">
+                    <div class="flex-item">
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label class="sd-line-input__label text-uppercase text-bold">
+                                    Default Theme
+                                </label>
+                            </div>
+
+                            <div>
+                                <select ng-options="theme.name as theme.label for theme in themes"
+                                    ng-model="liveblogSettings.theme.value"
+                                    class="form-control">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label for="global_tags" class="sd-line-input__label text-uppercase text-bold">
+                                    Global Tags
+                                </label>
+                            </div>
+                            <div ng-if="!settingsLoading" render-tags-component
+                                tags="liveblogSettings.global_tags.value" on-tags-change="onTagsChange">
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div render-tags-component tags="liveblogSettings.tags">
-                </div>
+
             </form>
+            <!-- really dirty workaround but found no way -->
+            {{setFormRef(this)}}
         </div>
     </div>
 </div>

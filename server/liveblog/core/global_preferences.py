@@ -41,7 +41,7 @@ class GlobalPreferencesResource(Resource):
                 GLOBAL_TAGS
             ],
         },
-        'value': {'type': 'string'}
+        'value': {'type': ['string', 'list']}
     }
 
     privileges = {
