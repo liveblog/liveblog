@@ -30,6 +30,7 @@ import freetypeLink from './directives/freetype-link';
 import freetypeCollectionAdd from './directives/freetype-collection-add';
 import freetypeCollectionRemove from './directives/freetype-collection-remove';
 import freetypeImage from './directives/freetype-image';
+import tagsSelector from './directives/tags-selector';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -49,4 +50,5 @@ angular.module('liveblog.edit')
     .directive('freetypeLink', freetypeLink)
     .directive('freetypeCollectionAdd', freetypeCollectionAdd)
     .directive('freetypeCollectionRemove', freetypeCollectionRemove)
-    .directive('freetypeImage', freetypeImage);
+    .directive('freetypeImage', freetypeImage)
+    .directive('tagsSelector', tagsSelector);

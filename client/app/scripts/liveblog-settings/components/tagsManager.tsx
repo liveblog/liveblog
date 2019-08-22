@@ -31,10 +31,10 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     );
 };
 
-const renderTagsComponent = (
+const renderTagsManager = (
     element: HTMLDivElement, tags: Array<any>, onChange: (tags: Array<any>) => void) => {
     ReactDOM.render(
         <TagsSelector tags={tags} onChange={onChange} />, element);
 };
 
-export { renderTagsComponent, TagsSelector };
+export { renderTagsManager };

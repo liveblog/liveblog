@@ -1,5 +1,5 @@
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
-import {renderTagsComponent} from './components/index';
+import {renderTagsManager} from './components/tagsManager';
 
 LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
 function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
@@ -109,7 +109,7 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 onTagsChange: '=',
             },
             link: function(scope, element) {
-                renderTagsComponent($(element).get(0), scope.tags, scope.onTagsChange);
+                renderTagsManager($(element).get(0), scope.tags, scope.onTagsChange);
             },
         };
     }]);
