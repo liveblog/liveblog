@@ -136,7 +136,11 @@ class PostsResource(ArchiveResource):
             'type': 'string',
             'nullable': True
         },
-        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True)
+        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True),
+        'tags': {
+            'type': 'list',
+            'default': []
+        }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
     mongo_indexes = {

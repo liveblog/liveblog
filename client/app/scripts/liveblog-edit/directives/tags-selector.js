@@ -1,29 +1,29 @@
 import renderTagsSelector from '../components/tagsSelector';
 
-tagsPicker.$inject = ['$compile', '$rootScope', 'api'];
-
-const TAGS = 'global_tags';
+tagsPicker.$inject = ['$rootScope', 'config'];
 
 /**
 * simple directive to fetch tags data and render selector
 */
-export default function tagsPicker($compile, $rootScope, api) {
+export default function tagsPicker($rootScope, config) {
     return {
         restrict: 'E',
         link: function(scope, element, attrs) {
-            // perhaps should separate this, but used here for now
-            // so we can extract it later if needed
-            api.global_preferences.query({where: {key: TAGS}})
-                .then((preferences) => {
-                    const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
-                    const tags = (tagSetting.value) ? tagSetting.value : [];
+            if ($rootScope.globalTags) {
+                const props = {
+                    tags: $rootScope.globalTags,
+                    isMulti: config.allowMultiTagPost,
+                    onChange: scope.onChange,
+                    selectedTags: scope.selectedTags,
+                };
 
-                    renderTagsSelector($(element).get(0), tags);
-                });
+                renderTagsSelector($(element).get(0), props);
+            }
         },
 
         scope: {
-            tags: '=',
+            selectedTags: '=',
+            onChange: '=',
         },
     };
 }

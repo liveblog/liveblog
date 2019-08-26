@@ -311,6 +311,7 @@ export default function postsService(api, $q, userList, session) {
                     post.groups[1].refs.push({residRef: item._id});
                 });
             }
+
             let operation;
 
             if (angular.isDefined(postToUpdate)) {

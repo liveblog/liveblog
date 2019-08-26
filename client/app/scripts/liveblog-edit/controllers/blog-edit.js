@@ -84,16 +84,29 @@ export default function BlogEditController(
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
     $scope.freetypesOriginal = {};
+    $scope.showTagsSelector = false;
     $rootScope.uploadingImage = false;
+    $rootScope.globalTags = null;
 
     if (blog.blog_preferences.theme) {
         themesService.get(blog.blog_preferences.theme).then((themes) => {
             blog.blog_preferences.theme = themes[0];
         });
     }
+
+    const TAGS = 'global_tags';
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
+
+    // let's get global tags for post only once, when the controller loads
+    api.global_preferences.query({where: {key: TAGS}})
+        .then((preferences) => {
+            const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
+
+            $rootScope.globalTags = tagSetting.value || [];
+            $scope.showTagsSelector = true;
+        });
 
     // start listening for unread posts.
     unreadPostsService.startListening(blog);
@@ -273,6 +286,7 @@ export default function BlogEditController(
         }
 
         $scope.enableEditor = false;
+        $scope.showTagsSelector = false;
 
         actionDisable = typeof actionDisable === 'boolean' ? actionDisable : true;
         if ($scope.freetypeControl.reset) {
@@ -283,9 +297,11 @@ export default function BlogEditController(
         $scope.currentPost = undefined;
         $scope.sticky = false;
         $scope.highlight = false;
+        $scope.currentPostTags = [];
 
         $timeout(() => {
             $scope.enableEditor = true;
+            $scope.showTagsSelector = true;
         });
     }
 
@@ -345,6 +361,7 @@ export default function BlogEditController(
             post_status: 'open',
             sticky: $scope.sticky,
             lb_highlight: $scope.highlight,
+            tags: $scope.currentPostTags,
         };
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
@@ -372,6 +389,7 @@ export default function BlogEditController(
         syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
         selectedUsersFilter: [],
         currentPost: undefined,
+        currentPostTags: [],
         blogSecurityService: blogSecurityService,
         unreadPostsService: unreadPostsService,
         preview: false,
@@ -468,9 +486,12 @@ export default function BlogEditController(
                 cleanEditor(false);
                 let delay = 0;
 
+                $scope.showTagsSelector = false;
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
+                $scope.currentPostTags = $scope.currentPost.tags || [];
+
                 // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
                 if (isPostFreetype()) {
                     setDefautPostType();
@@ -498,6 +519,7 @@ export default function BlogEditController(
                     });
 
                     $scope.actionDisabled = false;
+                    $scope.showTagsSelector = true;
                 }, delay);
             }
 
@@ -584,6 +606,11 @@ export default function BlogEditController(
                 cleanUpFlag();
             });
         },
+
+        onTagsChange: (tags) => {
+            $scope.currentPostTags = tags;
+        },
+
         filterHighlight: function(highlight) {
             $scope.filter.isHighlight = highlight;
             self.timelineInstance.pagesManager.changeHighlight(highlight);

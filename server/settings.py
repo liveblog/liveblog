@@ -377,3 +377,6 @@ LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
 
 # used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
 LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')
+
+# used to set single or multiple tag selection on post creating/editing
+ALLOW_MULTI_TAG_POST = env('ALLOW_MULTI_TAG_POST', False)

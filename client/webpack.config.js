@@ -163,7 +163,7 @@ function getDefaults(grunt) {
 
     return Object.assign(
         {
-        // application version
+            // application version
             version: version || grunt.file.readJSON(path.join(__dirname, 'package.json')).version,
 
             // iframely settings
@@ -309,5 +309,7 @@ const configLiveblog = (grunt) => ({
     maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
     // You might think this empty object is useless.
     // That would be a terrible mistake to make.
-    validatorMediaMetadata: {}
+    validatorMediaMetadata: {},
+
+    allowMultiTagPost: process.env.ALLOW_MULTI_TAG_POST === 'True' || false
 });

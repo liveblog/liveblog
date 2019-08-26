@@ -193,7 +193,10 @@
                                     control="freetypeControl">
                             </freetype-render>
 
-                            <tags-selector />
+                            <tags-selector
+                                ng-if="showTagsSelector"
+                                on-change="onTagsChange"
+                                selected-tags="currentPostTags" />
                         </div>
                         <div class="actions">
                             <div class="actions__options" style="display:table-row">
