@@ -102,7 +102,7 @@
                         <lb-item item="post.mainItem.item"></lb-item>
                     </div>
                     <div ng-if="show_all">
-                         <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
+                        <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
                            <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
                                <div class="lb-post__figure">
                                     <figure ng-class="{'avatar': (item.item.item_type !== 'comment'),
@@ -128,13 +128,13 @@
                                 html-content="{{ item.item.text }}"
                                 class="lb-post__item"
                                 ng-class="{'lb-post__item--even': !$first}"></div>
-                         </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="!post.multipleItems" class="lb-post__list">
+                    <lb-item item="post.mainItem.item"></lb-item>
                 </div>
             </div>
-                <div ng-if="!post.multipleItems" class="lb-post__list">
-                        <lb-item item="post.mainItem.item"></lb-item>
-                </div>
-        </div>
         <a
             class="lb-post__expander-holder"
             ng-click="toggleMultipleItems()"
@@ -156,6 +156,10 @@
             ng-if="post.multipleItems && show_all">
             <div class="lb-post__collapser-multiple-items"></div>
         </a>
+
+        <div ng-if="post.tags.length > 0" style="text-align: right; font-size: 12px;">
+            <b>Tags:</b> {{ post.tags.join(', ') }}
+        </div>
     </div>
     <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active bottom': post.order < reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'below');" translate>Click to place the post here</div>
 </li>

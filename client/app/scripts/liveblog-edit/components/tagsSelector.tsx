@@ -23,7 +23,11 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
                 isMulti={props.isMulti}
                 placeholder="Type in or select from the dropdown"
                 onChange={(value: any, action: ActionMeta) => {
-                    props.onChange(_.map(value, (x) => x.value));
+                    if (props.isMulti) {
+                        return props.onChange(_.map(value, (x) => x.value));
+                    }
+
+                    return props.onChange([value.value]);
                 }}
                 defaultValue={current}
                 options={options}
