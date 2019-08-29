@@ -9,10 +9,16 @@ export default function tagsPicker($rootScope, config) {
     return {
         restrict: 'E',
         link: function(scope, element, attrs) {
+            let isMulti = scope.isMulti;
+
+            if (typeof isMulti === 'undefined') {
+                isMulti = config.allowMultiTagPost;
+            }
+
             if ($rootScope.globalTags) {
                 const props = {
                     tags: $rootScope.globalTags,
-                    isMulti: config.allowMultiTagPost,
+                    isMulti: isMulti,
                     onChange: scope.onChange,
                     selectedTags: scope.selectedTags,
                 };
@@ -24,6 +30,7 @@ export default function tagsPicker($rootScope, config) {
         scope: {
             selectedTags: '=',
             onChange: '=',
+            isMulti: '=',
         },
     };
 }

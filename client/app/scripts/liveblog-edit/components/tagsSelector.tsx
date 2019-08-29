@@ -17,8 +17,6 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
 
     return (
         <React.Fragment>
-            <div className="selector__label">Tag(s):</div>
-
             <Select
                 isMulti={props.isMulti}
                 placeholder="Type in or select from the dropdown"

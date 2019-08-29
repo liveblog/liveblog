@@ -235,6 +235,7 @@
                         </form>
                     </div>
                 </div>
+
                 <!-- Users -->
                 <div class="split-content tab-content outer" ng-if="(settings.tab === 'team')">
                     <div class="header">
@@ -395,7 +396,6 @@
                     </div>
                 </div>
 
-
                 <!-- Output channels -->
                 <div class="split-content tab-content outer outputs" ng-if="(settings.tab === 'outputs')">
                     <div class="header">
@@ -429,7 +429,6 @@
                                                     <i class="icon-trash"></i>
                                                 </button>
                                             </div>
-
                                         </li>
                                         <li ng-if="settings.outputs.length === 0">
                                             {{ 'No outputs for now' | translate }}
@@ -446,6 +445,7 @@
         </div>
     </div>
 </div>
+
 <!-- MODAL FOR ADDING EDITING OUTPUTS -->
 <output-modal
     modal-active="settings.outputModalActive"

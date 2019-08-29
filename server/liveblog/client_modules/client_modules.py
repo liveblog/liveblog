@@ -1,26 +1,28 @@
 import json
 from itertools import groupby
+from distutils.util import strtobool
+from eve.utils import config
+from flask_cors import CORS
+from flask import Blueprint, request
+from flask import current_app as app
+from werkzeug.datastructures import MultiDict
+from superdesk import get_resource_service
+
+from superdesk.resource import Resource
+from superdesk.services import BaseService
+from superdesk.errors import SuperdeskApiError
+from superdesk.users.users import UsersResource
+from superdesk.metadata.utils import item_url
+
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
 from liveblog.advertisements.outputs import OutputsService, OutputsResource
 from liveblog.advertisements.advertisements import AdvertisementsService, AdvertisementsResource
-from superdesk.services import BaseService
-from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
-from superdesk.users.users import UsersResource
-from superdesk.metadata.utils import item_url
-from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.utils.api import api_error, api_response
-from superdesk.resource import Resource
-from eve.utils import config
-from flask import Blueprint, request
-from flask_cors import CORS
-from distutils.util import strtobool
-from superdesk import get_resource_service
-from werkzeug.datastructures import MultiDict
 
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
