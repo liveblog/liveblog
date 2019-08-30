@@ -13,7 +13,7 @@ interface IProps {
 
 const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     const options = _.map(props.tags, (x) => ({ label: x, value: x }));
-    const current = _.map(props.selectedTags, (x) => ({ label: x, value: x }));
+    const selectedTags = _.map(props.selectedTags, (x) => ({ label: x, value: x }));
 
     return (
         <React.Fragment>
@@ -27,7 +27,7 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
 
                     return props.onChange([value.value]);
                 }}
-                defaultValue={current}
+                defaultValue={selectedTags}
                 options={options}
             />
         </React.Fragment>

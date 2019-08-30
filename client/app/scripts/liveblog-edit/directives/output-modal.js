@@ -1,4 +1,5 @@
 import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.ng1';
+import {TAGS} from '../../liveblog-common/constants';
 
 /**
  * @desc directive to open a modal to create or edit a channel output
@@ -52,8 +53,6 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             self.blog.public_urls = data.public_urls;
         }
     });
-
-    const TAGS = 'global_tags';
 
     if (!$rootScope.globalTags) {
         api.global_preferences.query({where: {key: TAGS}})

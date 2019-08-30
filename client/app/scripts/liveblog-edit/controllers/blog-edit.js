@@ -19,6 +19,7 @@ import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
+import {TAGS} from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
     'api',
@@ -94,7 +95,6 @@ export default function BlogEditController(
         });
     }
 
-    const TAGS = 'global_tags';
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
