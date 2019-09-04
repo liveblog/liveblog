@@ -111,4 +111,11 @@ blogs_schema = {
         'allowed': ['unset', 'enabled', 'disabled'],
         'default': 'unset'
     },
+    'consumers_settings': {
+        'type': 'dict',
+        'mapping': {
+            'type': 'object',
+            'enabled': False
+        }
+    }
 }

@@ -908,3 +908,16 @@
         margin-bottom: 5px;
     }
 }
+
+.preview-layout.consumers-settings {
+    width: 100% !important;
+
+    .list-pane > .content {
+        right: 400px;
+        top: 0px;
+    }
+
+    .preview-pane {
+        top: 0px;
+    }
+}

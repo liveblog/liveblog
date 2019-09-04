@@ -301,8 +301,12 @@ export default function BlogEditController(
 
         $timeout(() => {
             $scope.enableEditor = true;
-            $scope.showTagsSelector = true;
         });
+
+        // separate timeout to avoid issue with sir trevor reinitialize
+        setTimeout(() => {
+            $scope.showTagsSelector = true;
+        }, 100);
     }
 
     // retieve the blog's public url
@@ -898,17 +902,19 @@ export default function BlogEditController(
     const inactivityModal = new InactivityModal({
         onKeepWorking: () => {
             postsService.flagPost($scope.currentPost._id);
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
         onSaveAndClose: () => {
             $scope.publish();
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
         onClose: () => {
             cleanEditor();
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
     });
+
+    $scope.$on('$destroy', inactivityModal.destroy);
 
     function afterPostFlagUpdate(post, flag) {
         // let's also update post if its being edited
@@ -922,8 +928,8 @@ export default function BlogEditController(
         // let's set the timeout and refresh when expired
         postsService.setFlagTimeout(post, () => {
             if ($scope.currentPost && post._id === $scope.currentPost._id) {
-                inactivityModal.openModal();
-                inactivityModal.instance.iconTabAlert();
+                inactivityModal.open();
+                inactivityModal.iconTabAlert();
             } else {
                 $scope.$apply();
             }

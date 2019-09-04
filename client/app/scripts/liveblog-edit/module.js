@@ -100,7 +100,6 @@ const app = angular.module('liveblog.edit',
             type: 'http',
             backend: {rel: 'archive'},
         });
-        // @TODO: remove this when theme at blog level.
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'},
@@ -108,6 +107,10 @@ const app = angular.module('liveblog.edit',
         apiProvider.api('themes', {
             type: 'http',
             backend: {rel: 'themes'},
+        });
+        apiProvider.api('consumers', {
+            type: 'http',
+            backend: {rel: 'consumers'},
         });
     }])
     .config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevorParam) {

@@ -1,4 +1,4 @@
-import renderTagsSelector from '../components/tagsSelector';
+import renderTagsSelector, {destroyTagsSelector} from '../components/tagsSelector';
 
 tagsPicker.$inject = ['$rootScope', 'config'];
 
@@ -25,6 +25,10 @@ export default function tagsPicker($rootScope, config) {
 
                 renderTagsSelector($(element).get(0), props);
             }
+
+            scope.$on('$destroy', () => {
+                destroyTagsSelector($(element).get(0));
+            });
         },
 
         scope: {

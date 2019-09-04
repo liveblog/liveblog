@@ -34,6 +34,10 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     );
 };
 
+export const destroyTagsSelector = (element: HTMLDivElement) => {
+    ReactDOM.unmountComponentAtNode(element);
+};
+
 const renderTagsSelector = (
     element: HTMLDivElement, props: IProps) => {
     ReactDOM.render(<TagsSelector { ...props } />, element);
