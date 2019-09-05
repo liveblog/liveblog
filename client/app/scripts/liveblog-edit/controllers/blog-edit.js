@@ -104,7 +104,11 @@ export default function BlogEditController(
         .then((preferences) => {
             const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
 
-            $rootScope.globalTags = tagSetting.value || [];
+            if (tagSetting)
+                $rootScope.globalTags = tagSetting.value || [];
+            else
+                $rootScope.globalTags = [];
+
             $scope.showTagsSelector = true;
         });
 
