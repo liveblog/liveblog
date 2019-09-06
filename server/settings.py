@@ -377,3 +377,10 @@ ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
 
 # numbers of days to remove blogs after marked for deletion
 DAYS_REMOVE_DELETED_BLOGS = int(env('DAYS_REMOVE_DELETED_BLOGS', 3))
+
+# using Flask-Cache. Using `simple` as default for simple or local environments
+# See https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching for more info
+LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
+
+# used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
+LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')

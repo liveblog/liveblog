@@ -18,13 +18,13 @@
 
             <div ng-if="showSocialBox" class="share-box">
 
-                <a href="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]={{ ctrl.timeline.permalink.get(post._id) }}" class='social facebook' target='_blank'
+                <a href="//www.facebook.com/sharer.php?u={{ ctrl.timeline.permalink.get(post._id) }}" class='social facebook' target='_blank'
                 title="{{ 'Share this post on Facebook' | translate }}"
                 onclick="openSocialShareWindow(this.href, 570, 400)">
                     <span class="fa fa-facebook social-icon"></span>
                 </a>
 
-                <a href="//twitter.com/home?status={{ ctrl.timeline.permalink.get(post._id) }}'" class='social twitter' target='_blank'
+                <a href="//twitter.com/intent/tweet?text={{ ctrl.timeline.permalink.get(post._id) }}'" class='social twitter' target='_blank'
                 title="{{ 'Share this post on Twitter' | translate }}"
                 onclick="openSocialShareWindow(this.href, 570, 400)">
                     <span class="fa fa-twitter social-icon"></span>

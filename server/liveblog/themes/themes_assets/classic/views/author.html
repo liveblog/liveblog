@@ -12,9 +12,9 @@
     <!-- author name, with or without mailto link  -->
     <div ng-if="!post.syndication_in || timeline.settings.showSyndicatedAuthor">
         <!-- author name, with or without mailto link  -->
-        <div ng-if="!timeline.settings.authorNameLinksToEmail"
+        <div ng-if="!timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
              class="lb-author__name"
-             ng-bind="post.original_creator[timeline.settings.authorNameFormat]">
+             ng-bind="item.original_creator[timeline.settings.authorNameFormat]">
         </div>
 
         <div class="lb-author__name" ng-if="item.item_type === 'comment'" ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></div>
