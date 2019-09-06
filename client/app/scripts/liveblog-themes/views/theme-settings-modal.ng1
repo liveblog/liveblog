@@ -3,9 +3,15 @@
         <button class="modal__close pull-right" ng-click="vm.closeModal()"><i class="icon-close-small"></i></button>
         <h3 class="modal__heading">{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
     </div>
+    <!-- TODO: check if theme has support -->
+    <ul class="nav nav-tabs" ng-show="false">
+        <li ng-class="{active: vm.activeTab === tab}" ng-repeat="tab in vm.tabs">
+            <button ng-click="vm.activeTab = tab;" translate>{{ ::tab }}</button>
+        </li>
+    </ul>
     <div class="modal__body">
         <div ng-if="vm.optionsAreloading" translate>Options are loading...</div>
-        <form ng-if="!vm.optionsAreloading" name="vm.themeSettingsForm">
+        <form ng-if="!vm.optionsAreloading && vm.activeTab === vm.settingsTab" name="vm.themeSettingsForm">
             <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)" class="form__row">
                 <div class="sd-line-input form-group"
                     ng-class="{'sd-line-input--is-{{ option.type }} setting--{{ option.name }}': true}"
@@ -58,10 +64,11 @@
                 </div>
             </div>
         </form>
+        <div ng-show="vm.activeTab === vm.stylesTab" styles-tab-component settings="vm.styleSettings" options="vm.styleOptions" ></div>
     </div>
     <div class="modal__footer">
-        <div class="pull-left" ng-if="vm.hasAdvancedOptions">
-          <span sd-switch="" ng-model="vm.showAdvancedSettings" ></span><label trans>Advanced settings</label>
+        <div class="pull-left" ng-if="vm.hasAdvancedOptions && vm.activeTab === vm.settingsTab">
+            <span sd-switch="" ng-model="vm.showAdvancedSettings"></span><label trans>Advanced settings</label>
         </div>
 
         <button ng-click="vm.submitSettings()" type="submit" class="btn btn--primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">Save</button>

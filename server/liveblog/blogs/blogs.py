@@ -10,6 +10,7 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import logging
+import datetime
 
 from bson.objectid import ObjectId
 from flask import current_app as app
@@ -26,7 +27,8 @@ from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS, TRIGGER_HOOK_URLS
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS, \
+    DAYS_REMOVE_DELETED_BLOGS, TRIGGER_HOOK_URLS
 
 from .schema import blogs_schema
 from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, \
@@ -176,6 +178,12 @@ class BlogService(BaseService):
             # warning message that blog is not available anymore
             if 'solo' in SUBSCRIPTION_LEVEL:
                 publish_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
+
+        # we mark the time to later remove if with celery beat if status is deleted
+        # use this below for local devel purposes
+        # remove_not_before = utcnow() + datetime.timedelta(seconds=DAYS_REMOVE_DELETED_BLOGS)
+        remove_not_before = utcnow() + datetime.timedelta(days=DAYS_REMOVE_DELETED_BLOGS)
+        updates['delete_not_before'] = remove_not_before if blog_status == 'deleted' else None
 
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:

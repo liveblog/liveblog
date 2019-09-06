@@ -26,7 +26,7 @@ blogs_schema = {
     },
     'blog_status': {
         'type': 'string',
-        'allowed': ['open', 'closed'],
+        'allowed': ['open', 'closed', 'deleted'],
         'default': 'open'
     },
     'members': {
@@ -80,6 +80,12 @@ blogs_schema = {
     'start_date': {
         'type': 'datetime',
         'default': None
+    },
+    'delete_not_before': {
+        'type': 'datetime',
+        'default': None,
+        'nullable': True,
+        'required': False
     },
     'last_created_post': {
         'type': 'dict',

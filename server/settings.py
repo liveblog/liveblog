@@ -139,6 +139,10 @@ CELERYBEAT_SCHEDULE = {
     'session:gc': {
         'task': 'apps.auth.session_purge',
         'schedule': crontab(minute=20)
+    },
+    'blogs:delete': {
+        'task': 'liveblog.blogs.tasks.remove_deleted_blogs',
+        'schedule': crontab(hour='*/1')  # run every hour
     }
 }
 
@@ -370,6 +374,9 @@ TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
 
 # will add a watermark to the live embed timeline with liveblog logo
 ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
+
+# numbers of days to remove blogs after marked for deletion
+DAYS_REMOVE_DELETED_BLOGS = int(env('DAYS_REMOVE_DELETED_BLOGS', 3))
 
 # using Flask-Cache. Using `simple` as default for simple or local environments
 # See https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching for more info

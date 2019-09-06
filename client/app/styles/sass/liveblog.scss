@@ -436,3 +436,38 @@ i.icon-star.orange {
     padding-bottom: 2px;
     display: inline-block;
 }
+
+.text-red {
+    color: #b94a48 !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.text-bold {
+    font-weight: 500;
+}
+
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+
+.flex-grid.wrap-items {
+    &.padded-grid {
+        margin-left: -15px;
+        margin-right: -15px;
+
+        .flex-item {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+}
+
+
+.styles-tab-content {
+    .sd-line-input {
+        padding-top: 0.8em !important;
+        margin-bottom: 0.8em !important;
+    }
+}

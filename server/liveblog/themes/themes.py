@@ -136,6 +136,16 @@ class ThemesResource(Resource):
                 }
             }
         },
+        'styleOptions': {
+            'type': 'list',
+            'schema': {
+                'type': 'dict',
+                'mapping': {
+                    'type': 'object',
+                    'enabled': False
+                }
+            }
+        },
         'repository': {
             'type': 'dict',
             'mapping': {

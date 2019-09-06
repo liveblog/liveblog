@@ -406,6 +406,46 @@
             "help": "Turn off to prompt user to load updates"
         }
     ],
+    "styleOptions": [
+        {
+            "label": "General",
+            "name": "general",
+            "cssSelector": "div.lb-timeline",
+            "columns": 3,
+            "options": [
+                {
+                    "label": "Blog Margin",
+                    "property": "margin",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Blog Padding",
+                    "property": "padding",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Blog Max. Width",
+                    "property": "max-width",
+                    "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Background",
+                    "property": "background",
+                    "type": "colorpicker",
+                    "default": "#fff"
+                },
+                {
+                    "label": "Link Color",
+                    "property": "colorpicker",
+                    "type": "text",
+                    "tagName": "a"
+                }
+            ]
+        }
+    ],
     "i18n": {
         "cs": {
           "Highlights": "Hlavní body",
