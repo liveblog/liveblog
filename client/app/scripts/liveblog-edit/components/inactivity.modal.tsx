@@ -95,7 +95,9 @@ export default angular.module('liveblog.edit.components.inactivityModal', [])
                 const InactivityAlert = withModalContext<IInactivityModalProps>(InactivityModal);
 
                 // eslint-disable-next-line
-                return ReactDOM.render(<InactivityAlert { ...props } />, targetEl);
+                const instance = ReactDOM.render(<InactivityAlert { ...props } />, targetEl);
+
+                return instance as any;
             }
         }
 

@@ -3,8 +3,8 @@ declare const angular: IAngularStatic;
 // fix to avoid the typescript compiler warning
 declare module '*.ng1' {
     const value: string;
-    export default value
-};
+    export default value;
+}
 
 declare const gettext: (text: string) => string;
 
@@ -24,15 +24,15 @@ interface IAuthor {
     name: string;
     email: string;
     url?: string;
-};
+}
 
 interface IFiles {
     scripts: any;
     styles: any;
     templates: {
         [key: string]: string;
-    }
-};
+    };
+}
 
 interface IDict {
     [key: string]: any;
@@ -51,7 +51,7 @@ interface IThemeSettings extends IDict {
     hidePostOrder: boolean;
     language: string;
     outputChannel: boolean;
-    outputChannelName: string
+    outputChannelName: string;
     outputChannelTheme: string;
     permalinkDelimiter: string;
     postOrder: string;
@@ -90,15 +90,15 @@ interface IStyleGroupSetting {
 }
 
 interface IStyleSettings {
-    [key: string]: IStyleGroupSetting
-};
+    [key: string]: IStyleGroupSetting;
+}
 
 interface ILinks {
     self: {
         href: string;
         title: string;
     };
-};
+}
 
 interface ITheme {
     asyncTheme: boolean;
@@ -124,13 +124,13 @@ interface ITheme {
     settings: IThemeSettings;
     styleSettings: IStyleSettings;
     template: string;
-    version: string
-    _created: string
+    version: string;
+    _created: string;
     _etag: string;
     _id: string;
     _links: ILinks;
     _updated: string;
-};
+}
 
 interface IStyleOption {
     // text to indicate the name of the setting
@@ -156,7 +156,7 @@ interface IStyleOption {
 
     // Tag to apply the styling under group cssSelector. Eg. div.lb-timeline TagName { }
     tagName?: string;
-};
+}
 
 interface IStyleGroup {
     label: string;
