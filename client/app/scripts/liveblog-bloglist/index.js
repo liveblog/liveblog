@@ -33,8 +33,8 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 category: superdesk.MENU_MAIN,
                 adminTools: false,
                 resolve: {
-                    isArchivedFilterSelected: function() {
-                        return false;
+                    selectedFilter: function() {
+                        return 'active';
                     },
                 },
             })
@@ -43,8 +43,8 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 controller: blogListController,
                 templateUrl: mainTemplate,
                 resolve: {
-                    isArchivedFilterSelected: function() {
-                        return false;
+                    selectedFilter: function() {
+                        return 'active';
                     },
                 },
             })
@@ -53,8 +53,18 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 controller: blogListController,
                 templateUrl: mainTemplate,
                 resolve: {
-                    isArchivedFilterSelected: function() {
-                        return true;
+                    selectedFilter: function() {
+                        return 'archived';
+                    },
+                },
+            })
+            .activity('/liveblog/deleted', {
+                label: gettext('Blog List'),
+                controller: blogListController,
+                templateUrl: mainTemplate,
+                resolve: {
+                    selectedFilter: function() {
+                        return 'deleted';
                     },
                 },
             });

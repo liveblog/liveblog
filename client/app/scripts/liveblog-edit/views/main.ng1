@@ -244,8 +244,8 @@
             </span>
             <span ng-if="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
-                    <span><strong translate>This blog is closed!</strong></span><br />
-                    <span translate >To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
+                    <span><strong translate>This blog is {{ blog.blog_status === 'deleted' ? "going to be deleted": "closed" }}!</strong></span><br />
+                    <span translate>To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
                 </div>
             </span>
         </div>

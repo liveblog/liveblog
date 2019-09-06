@@ -4,18 +4,25 @@
             <a class="btn" ng-click="bulkActionCancel()">Cancel</a>
             <span class="sliding-toolbar__info-text">{{bulkActions}} item(s) selected</span>
         </div>
-        <a class="btn btn--primary" ng-click="bulkAction(activeState)">{{activeState.name == 'active' ? 'Archive' : 'Activate'}}</a>
-        <a class="btn btn--alert" ng-click="askRemoveBlog()"><i class="icon-trash"></i>Delete</a>
+
+        <a class="btn btn--primary" ng-click="preBulkAction(activeState)">{{activeState.name == 'active' ? 'Archive' : 'Activate'}}</a>
+
+        <a class="btn btn--alert" ng-if="activeState.name === 'deleted'" ng-click="askDestroyBlog()">
+            <i class="icon-trash"></i>Delete Permanently
+        </a>
+
+        <a class="btn btn--alert" ng-if="activeState.name !== 'deleted'"  ng-click="askRemoveBlog()">
+            <i class="icon-trash"></i>Delete
+        </a>
     </div>
 
     <div class="button-stack" >
-    <button class="navbtn hover pull-left" href="/#/liveblog">
+        <button class="navbtn hover pull-left" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </button>
         <ul class="nav nav-tabs" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
         </ul>
-
     </div>
     <div class="subnav__stretch-bar"></div>
     <div class="subnav__button-stack--square-buttons" ng-if="isUserAllowedToCreateABlog();">
@@ -55,6 +62,11 @@
                 <span class="title" translate>Create a Blog</span>
             </button>
         </div>
+
+        <div ng-if="blogs._meta.total >= 0 && activeState.code === 'deleted'" class="empty-state">
+            <div translate class="alert alert-warning">Blogs show the time remaininig before deletion. After that time, they will be permanently deleted.</div>
+        </div>
+
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
@@ -86,7 +98,7 @@
                     <h3>{{ ::blog.title }}</h3>
                     <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
                 </div>
-                <div class="footer"> 
+                <div class="footer">
                     <dl>
                         <dt>{{ ::'Blog owner' | translate }}:</dt>
                         <dd>{{ ::blog.original_creator | username }}</dd>
@@ -111,6 +123,12 @@
                         <dd>
                         <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
                         <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
+                        </dd>
+                        <dt ng-if="blog.blog_status == 'deleted'" class="text-red">
+                            {{ ::'To be deleted' | translate }}:
+                        </dt>
+                        <dd ng-if="blog.blog_status == 'deleted'" class="text-red">
+                            {{ ::blog.delete_not_before | reldateAutoUpdate }}
                         </dd>
                     </dl>
                 </div>

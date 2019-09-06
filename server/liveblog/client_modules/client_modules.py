@@ -1,4 +1,6 @@
 import json
+import logging
+from bson import ObjectId
 from itertools import groupby
 from distutils.util import strtobool
 from eve.utils import config
@@ -27,6 +29,7 @@ from liveblog.utils.api import api_error, api_response
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
+logger = logging.getLogger(__name__)
 
 
 class ClientUsersResource(Resource):
@@ -231,47 +234,34 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
-
-    def find_author(self, author_id):
-        """Find a user by id. Caches whole list of authors to avoid hitting
-        database multiple times in a short period of time"""
-
-        users_cache_key = 'lb_ClientBlogPostsService_find_author'
-        all_users = app.cache.get(users_cache_key)
-
-        if all_users is None:
-            all_users = list(get_resource_service('users').find({}))
-            app.cache.set(users_cache_key, all_users, timeout=5 * 60)
-
-        found = list(filter(lambda x: str(x['_id']) == author_id, all_users))
-        if len(found) > 0:
-            return found[0]
-
-        return {}
+    authors = []
+    authors_map = {}
 
     def add_post_info(self, doc, items=None):
         # users collection will be used many times here
         # so we need to cache it and reuse it the object to avoid hitting db
+
+        def _append_author(item):
+            author_id = item.get('original_creator', None)
+            try:
+                author_id = ObjectId(author_id)
+                self.authors.append(author_id)
+            except Exception as err:
+                logger.debug("Unable to add author id to map. {}".format(err))
+
         items = items or []
-        if not items:
-            # Get from groups
-            for group in doc.get('groups'):
-                for ref in group.get('refs'):
-                    item = ref.get('item')
-                    if item:
-                        item['original_creator'] = self.find_author(item['original_creator'])
-                        items.append(item)
+        items_refs = [assoc for group in doc.get('groups', []) for assoc in group.get('refs', [])]
 
         if not items:
-            # Not available in groups. Fetch from packageService.
-            for assoc in self.packageService._get_associations(doc):
-                if 'residRef' in assoc:
-                    item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
-                    item['original_creator'] = self.find_author(item['original_creator'])
+            for ref in items_refs:
+                item = ref.get('item')
+                if item:
                     items.append(item)
+                    _append_author(item)
 
         items_length = len(items)
         post_items_type = None
+
         if items_length:
             if items_length == 1:
                 if items[0].get('item_type', '').lower().startswith('advertisement'):
@@ -305,9 +295,35 @@ class ClientBlogPostsService(BlogPostsService):
         doc['post_items_type'] = post_items_type
 
         # Bring the client user in the posts so we can post.original_creator.X - LBSD-2010
-        doc['original_creator'] = self.find_author(doc['original_creator'])
+        _append_author(doc)
 
         return doc
+
+    def generate_authors_map(self):
+        """
+        Gets users information from database based on a list of predefined ids
+        The idea behind the method is to reduce the impact on DB
+        """
+        ids = set(self.authors)
+
+        for user in get_resource_service('users').find({'_id': {'$in': ids}}):
+            author_id = str(user.get('_id'))
+            self.authors_map[author_id] = user
+
+    def attach_authors(self, posts):
+        """
+        Simply gets authors id from items related and for post itself
+        """
+        for post in posts:
+            post_author_id = str(post['original_creator'])
+            post['original_creator'] = self.authors_map.get(post_author_id)
+
+            items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
+            for ref in items_refs:
+                item = ref.get('item')
+                if item:
+                    author_id = str(item['original_creator'])
+                    item['original_creator'] = self.authors_map.get(author_id)
 
     def get(self, req, lookup):
         allowed_params = {
@@ -335,9 +351,17 @@ class ClientBlogPostsService(BlogPostsService):
             # let's complete the post info before cache
             for post in blog_posts.docs:
                 self.add_post_info(post)
+
+            self.generate_authors_map()
+            self.attach_authors(blog_posts.docs)
+
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
         return blog_posts
+
+    def on_fetched(self, blog):
+        """Override parent's class method as we don't need it"""
+        pass
 
 
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):
