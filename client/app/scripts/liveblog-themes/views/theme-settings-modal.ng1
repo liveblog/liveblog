@@ -4,7 +4,7 @@
         <h3 class="modal__heading">{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
     </div>
     <!-- TODO: check if theme has support -->
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" ng-show="false">
         <li ng-class="{active: vm.activeTab === tab}" ng-repeat="tab in vm.tabs">
             <button ng-click="vm.activeTab = tab;" translate>{{ ::tab }}</button>
         </li>
