@@ -168,7 +168,6 @@ gulp.task('lint', () =>
   .pipe(plugins.eslint.failAfterError())
 );
 
-
 gulp.task('precomp-parent-templates', precompileParentTemplates(theme, nunjucksEnv));
 
 gulp.task('precomp-theme-templates', precompileThemeTemplates(theme, nunjucksEnv));
@@ -184,7 +183,8 @@ gulp.task('less', ['clean-css'], compileLess(theme, inputPath));
 gulp.task('amp-validate', [], ampValidate);
 
 // Inject API response into template for dev/test purposes.
-gulp.task('index-inject', ['less', 'bundlejs'], indexInject(theme, apiResponse, nunjucksEnv, inputPath));
+const extraParams = {apiHost, protocol, blogId};
+gulp.task('index-inject', ['less', 'bundlejs'], indexInject(theme, apiResponse, nunjucksEnv, inputPath, extraParams));
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'bundlejs'], templateInject(theme, inputPath));
