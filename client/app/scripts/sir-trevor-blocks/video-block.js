@@ -157,7 +157,7 @@ export default function videoBlock(SirTrevor, config) {
                     categoryId: 22,
                 },
                 status: {
-                    privacyStatus: 'public',
+                    privacyStatus: 'unlisted',
                 },
             };
 
