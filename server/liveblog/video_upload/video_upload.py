@@ -148,6 +148,11 @@ def oauth2callback():
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = flask.request.url
+
+    # let's make sure the scheme is https when in production
+    if not LIVEBLOG_DEBUG:
+        authorization_response = authorization_response.replace('http', 'https')
+
     flow.fetch_token(authorization_response=authorization_response)
 
     credentials = flow.credentials
