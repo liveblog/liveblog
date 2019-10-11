@@ -19,7 +19,7 @@ import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
-import {TAGS} from '../../liveblog-common/constants';
+import {TAGS, ALLOW_PICK_MULTI_TAGS} from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
     'api',
@@ -85,6 +85,7 @@ export default function BlogEditController(
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
     $scope.freetypesOriginal = {};
+    $scope.liveblogSettings = {};
     $scope.showTagsSelector = false;
     $rootScope.uploadingImage = false;
     $rootScope.globalTags = null;
@@ -98,16 +99,22 @@ export default function BlogEditController(
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
+    const whereParams = {key: {$in: [TAGS, ALLOW_PICK_MULTI_TAGS]}};
 
     // let's get global tags for post only once, when the controller loads
-    api.global_preferences.query({where: {key: TAGS}})
+    api.global_preferences.query({where: whereParams})
         .then((preferences) => {
             const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
+            const otherPreferences = _.filter(preferences._items, (item) => item.key !== TAGS);
 
             if (tagSetting)
                 $rootScope.globalTags = tagSetting.value || [];
             else
                 $rootScope.globalTags = [];
+
+            _.forEach(otherPreferences, (setting) => {
+                $scope.liveblogSettings[setting.key] = setting.value;
+            });
 
             $scope.showTagsSelector = true;
         });

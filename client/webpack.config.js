@@ -309,7 +309,5 @@ const configLiveblog = (grunt) => ({
     maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
     // You might think this empty object is useless.
     // That would be a terrible mistake to make.
-    validatorMediaMetadata: {},
-
-    allowMultiTagPost: process.env.ALLOW_MULTI_TAG_POST === 'True' || false
+    validatorMediaMetadata: {}
 });

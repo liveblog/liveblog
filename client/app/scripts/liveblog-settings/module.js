@@ -1,12 +1,18 @@
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
 import {renderTagsManager} from './components/tagsManager';
+import {lbSettingsView} from './directives/lbSettingsView';
 
 LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
 function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
     // prep the settings
     $scope.settingsForm = null;
-    $scope.liveblogSettings = {language: {}, theme: {}, global_tags: []};
-    const allowedKeys = ['language', 'theme', 'global_tags'];
+    $scope.liveblogSettings = {
+        language: {},
+        theme: {},
+        global_tags: [],
+        allow_multiple_tag_selection: {value: true}, // multiple tags select is enabled by default
+    };
+    const allowedKeys = ['language', 'theme', 'global_tags', 'allow_multiple_tag_selection'];
 
     api.languages.query().then((data) => {
         $scope.languages = data._items;
@@ -23,6 +29,7 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
         _.forEach(data._items, (setting) => {
             $scope.liveblogSettings[setting.key] = setting;
         });
+
         $scope.settingsLoading = false;
     });
 
@@ -54,7 +61,8 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
 
         $q.all(reqArr).then(() => {
             notify.pop();
-            notify.info(gettext('Settings saved'));
+            notify.info(gettext('Settings saved successfully'));
+            $scope.settingsForm.$setPristine();
         }, () => {
             notify.pop();
             notify.error(gettext('Saving settings failed. Please try again later'));
@@ -112,6 +120,7 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 renderTagsManager($(element).get(0), scope.tags, scope.onTagsChange);
             },
         };
-    }]);
+    }])
+    .directive('lbSettingsView', lbSettingsView);
 
 export default liveblogSettings;

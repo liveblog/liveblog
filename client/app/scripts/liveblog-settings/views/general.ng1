@@ -1,4 +1,4 @@
-<div sd-settings-view class="general-settings">
+<div lb-settings-view class="general-settings">
     <div class="split-content">
         <div style="margin:10px">
             <button ng-click="saveSettings()" class="btn btn--primary pull-right" type="button" translate ng-disabled="!settingsForm.$dirty">Save</button>
@@ -41,6 +41,19 @@
                             </div>
                             <div ng-if="!settingsLoading" render-tags-component
                                 tags="liveblogSettings.global_tags.value" on-tags-change="onTagsChange">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label class="sd-line-input__label text-uppercase text-bold">
+                                    Multiple tags selection
+                                </label>
+                            </div>
+                            <div>
+                                <span sd-switch="" ng-model="liveblogSettings.allow_multiple_tag_selection.value"></span>
+                                <label>Allow users apply multiple tags to posts</label>
+                            </div>
                         </div>
                     </div>
                 </div>

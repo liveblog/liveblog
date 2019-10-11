@@ -197,6 +197,7 @@
                                 <div class="selector__label">Tag(s):</div>
                                 <tags-selector
                                     ng-if="showTagsSelector"
+                                    is-multi="liveblogSettings.allow_multiple_tag_selection"
                                     on-change="onTagsChange"
                                     selected-tags="currentPostTags" />
                             </div>

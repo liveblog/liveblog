@@ -12,7 +12,7 @@ export default function tagsPicker($rootScope, config) {
             let isMulti = scope.isMulti;
 
             if (typeof isMulti === 'undefined') {
-                isMulti = config.allowMultiTagPost;
+                isMulti = true;
             }
 
             if ($rootScope.globalTags) {
