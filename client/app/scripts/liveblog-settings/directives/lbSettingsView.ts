@@ -9,7 +9,7 @@ const lbSettingsView = ($route, superdesk, pageTitle) => {
         scope: {},
         transclude: true,
         templateUrl: 'scripts/apps/settings/views/settings-view.html',
-        link: (scope, elem, attrs) => {
+        link: (scope) => {
             superdesk.getMenu(superdesk.MENU_SETTINGS).then((menu) => {
                 scope.settings = menu.filter((x) => x.liveblogSetting === true);
             });

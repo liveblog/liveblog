@@ -11,8 +11,23 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
         theme: {},
         global_tags: [],
         allow_multiple_tag_selection: {value: true}, // multiple tags select is enabled by default
+        youtube_privacy_status: {value: 'unlisted'},
     };
-    const allowedKeys = ['language', 'theme', 'global_tags', 'allow_multiple_tag_selection'];
+
+    $scope.privacyStatuses = [
+        {value: 'private', label: 'Private'},
+        {value: 'public', label: 'Public'},
+        {value: 'unlisted', label: 'Unlisted'},
+    ];
+
+    // settings allowed keys
+    const allowedKeys = [
+        'language',
+        'theme',
+        'global_tags',
+        'allow_multiple_tag_selection',
+        'youtube_privacy_status',
+    ];
 
     api.languages.query().then((data) => {
         $scope.languages = data._items;

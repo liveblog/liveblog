@@ -60,7 +60,6 @@ export default function videoBlock(SirTrevor, config) {
 
         onBlockRender: function() {
             let self = this;
-
             let addContentBtns = new AddContentBtns();
             let isAdmin = self.getOptions().isAdmin();
             let uploadBlock = [
@@ -145,10 +144,11 @@ export default function videoBlock(SirTrevor, config) {
             });
         },
         uploadFile: function(file) {
+            const lbSettings = this.getOptions().liveblogSettings();
+            let self = this;
             let uploadStartTime = 0;
             let title = 'liveblog-' + Math.random().toString(36)
                 .substr(2, 5);
-            let self = this;
             let metadata = {
                 snippet: {
                     title: title,
@@ -157,7 +157,7 @@ export default function videoBlock(SirTrevor, config) {
                     categoryId: 22,
                 },
                 status: {
-                    privacyStatus: 'unlisted',
+                    privacyStatus: lbSettings.youtube_privacy_status || 'unlisted',
                 },
             };
 

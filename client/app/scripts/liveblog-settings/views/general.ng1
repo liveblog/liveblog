@@ -55,6 +55,18 @@
                                 <label>Allow users apply multiple tags to posts</label>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label for="youtubePrivacyStatus">Youtube Privacy Status</label>
+                            </div>
+                            <div>
+                                <select name="youtubePrivacyStatus"
+                                    class="row-td"
+                                    ng-options="status.value as status.label for status in privacyStatuses"
+                                    ng-model="liveblogSettings.youtube_privacy_status.value" class="form-control"></select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

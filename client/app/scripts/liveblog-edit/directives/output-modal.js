@@ -59,10 +59,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             .then((preferences) => {
                 const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
 
-                if (tagSetting)
-                    $rootScope.globalTags = tagSetting.value || [];
-                else
-                    $rootScope.globalTags = [];
+                $rootScope.globalTags = tagSetting ? tagSetting.value || [] : [];
             });
     }
 

@@ -19,7 +19,7 @@ import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
-import {TAGS, ALLOW_PICK_MULTI_TAGS} from '../../liveblog-common/constants';
+import {TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS} from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
     'api',
@@ -99,18 +99,16 @@ export default function BlogEditController(
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
-    const whereParams = {key: {$in: [TAGS, ALLOW_PICK_MULTI_TAGS]}};
+    const whereParams = {key: {$in: [TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS]}};
 
-    // let's get global tags for post only once, when the controller loads
+    // let's get global tags and settings for post only once, when the controller loads
     api.global_preferences.query({where: whereParams})
         .then((preferences) => {
             const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
             const otherPreferences = _.filter(preferences._items, (item) => item.key !== TAGS);
 
-            if (tagSetting)
-                $rootScope.globalTags = tagSetting.value || [];
-            else
-                $rootScope.globalTags = [];
+            // using rootScope here in order to access this value from other controllers
+            $rootScope.globalTags = tagSetting ? tagSetting.value || [] : [];
 
             _.forEach(otherPreferences, (setting) => {
                 $scope.liveblogSettings[setting.key] = setting.value;
@@ -651,6 +649,7 @@ export default function BlogEditController(
         // SirTrevor params that can be accessed using this.getOptions()
         // from inside of a sir trevor block
         stParams: {
+            liveblogSettings: () => $scope.liveblogSettings,
             disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;
                 // because this is called outside of angular scope from sir-trevor.
@@ -699,7 +698,6 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
-
             displayModalBox: function() {
                 function openCredentialForm() {
                     const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';

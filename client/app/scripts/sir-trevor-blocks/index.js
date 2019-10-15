@@ -168,10 +168,12 @@ angular
                 'data-icon-after': 'ADD CONTENT HERE',
             });
         };
+
         // Add toMeta method to all blocks.
         SirTrevor.Block.prototype.toMeta = function() {
             return this.getData();
         };
+
         SirTrevor.Block.prototype.getOptions = function() {
             const instance = SirTrevor.$get().getInstance(this.instanceID);
 
@@ -193,13 +195,12 @@ angular
             onBlockRender: function() {
                 var self = this;
 
-                // create and trigger a 'change' event for the $editor which is a contenteditable
-
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     const $this = $(this);
 
                     $this.data('before', $this.html());
                 });
+
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                     const $this = $(this);
 
@@ -208,7 +209,9 @@ angular
                         $this.trigger('change');
                     }
                 });
+
                 handlePlaceholder(this.$editor.filter('[contenteditable]'), self.embedPlaceholder);
+
                 // when the link field changes
                 const callServiceAndLoadData = function() {
                     let input = $(this)
@@ -216,18 +219,20 @@ angular
                         .trim();
 
                     // exit if the input field is empty
-
                     if (_.isEmpty(input)) {
                         self.getOptions().disableSubmit(true);
                         return false;
                     }
                     self.getOptions().disableSubmit(false);
+
                     // reset error messages
                     self.resetMessages();
+
                     // start a loader over the block, it will be stopped in the loadData function
                     self.loading();
                     input = replaceEmbedWithUrl(input);
                     input = fixSecureEmbed(input);
+
                     // if the input is an url, use embed services
                     if (isURI(input)) {
                         input = cleanupURL(input);
