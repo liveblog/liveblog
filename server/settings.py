@@ -139,6 +139,10 @@ CELERYBEAT_SCHEDULE = {
     'session:gc': {
         'task': 'apps.auth.session_purge',
         'schedule': crontab(minute=20)
+    },
+    'blogs:delete': {
+        'task': 'liveblog.blogs.tasks.remove_deleted_blogs',
+        'schedule': crontab(hour='*/1')  # run every hour
     }
 }
 
@@ -171,13 +175,13 @@ INSTALLED_APPS = [
     'apps.archive_broadcast',
     'apps.content_types',
 
+    'liveblog.core',
     'liveblog.prepopulate',
     'liveblog.blogs',
     'liveblog.posts',
     'liveblog.items',
     'liveblog.languages',
     'liveblog.themes',
-    'liveblog.global_preferences',
     'liveblog.client_modules',
     'liveblog.syndication',
     'liveblog.freetypes',
@@ -371,9 +375,15 @@ TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
 # will add a watermark to the live embed timeline with liveblog logo
 ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
 
+# numbers of days to remove blogs after marked for deletion
+DAYS_REMOVE_DELETED_BLOGS = int(env('DAYS_REMOVE_DELETED_BLOGS', 3))
+
 # using Flask-Cache. Using `simple` as default for simple or local environments
 # See https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching for more info
 LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
 
 # used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
 LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')
+
+# used to set single or multiple tag selection on post creating/editing
+ALLOW_MULTI_TAG_POST = env('ALLOW_MULTI_TAG_POST', False)

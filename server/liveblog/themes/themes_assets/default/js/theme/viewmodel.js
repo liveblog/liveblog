@@ -254,7 +254,8 @@ vm.getQuery = function(opts) {
       {
         "published_date": {order: 'desc', missing: '_last', unmapped_type: 'long'}
       }
-    ]
+    ],
+    "post_filter": {}
   };
 
   if (opts.fromDate) {
@@ -272,6 +273,15 @@ vm.getQuery = function(opts) {
     query.query.filtered.filter.and.push({
       terms: { post_status:  ["open", "submitted"] }
     });
+  }
+
+  // NOTE: tags should only be considered in outputs for now.
+  if (LB.output) {
+    const tags = LB.output.tags || [];
+
+    if (tags.length > 0) {
+      query.post_filter.terms = {"tags": tags}
+    }
   }
 
   if (opts.highlightsOnly === true) {

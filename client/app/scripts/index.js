@@ -166,6 +166,7 @@ const liveblogModules = [
     'liveblog.blog',
     'liveblog.themes',
     'liveblog.freetypes',
+    'liveblog.settings',
     'liveblog.advertising',
     'ngMessages',
 ];
@@ -190,10 +191,11 @@ liveblog.constant('moment', moment);
 liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
     $locationProvider.hashPrefix('');
     $routeProvider.when('/', {redirectTo: '/liveblog'});
+    $routeProvider.when('/settings', {redirectTo: '/settings/general'});
 }]);
 
-liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templateCache',
-    function($rootScope, $timeout, notify, gettext, session, $templateCache) {
+liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
+    function($rootScope, $timeout, notify, gettext, session) {
         var alertTimeout;
 
         $rootScope.$on('disconnected', (event) => {

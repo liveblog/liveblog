@@ -201,9 +201,15 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         page_limit = theme_settings.get('postsPerPage', 10)
         sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
         ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
-        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp)
+
+        # let's get the output channel tags if any
+        tags = []
+        if output:
+            tags = output.get('tags', [])
+
+        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp, tags=tags)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
-                                           ordering='newest_first', deleted=is_amp)
+                                           ordering='newest_first', deleted=is_amp, tags=tags)
 
         api_response = {
             'posts': posts,

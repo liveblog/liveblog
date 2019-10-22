@@ -17,7 +17,7 @@ const precompileParentTemplates = (theme, nunjucksEnv) => {
 
   const pathsTuples = discoverThemePaths(theme, '');
   const getPrefix = (filepath) => {
-    const themeBase = filepath.split('/templates/')[0];
+    const themeBase = filepath.split(`${path.sep}templates${path.sep}`)[0];
     return pathsTuples.find(x => x[1] === themeBase)[0];
   }
 

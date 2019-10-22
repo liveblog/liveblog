@@ -17,7 +17,7 @@
         </span>
     </div>
     <ul ng-if="consumers.length > 0">
-        <li ng-repeat="consumer in consumers track by consumer._id">
+        <li ng-repeat="consumer in consumers track by $index">
             <p>
                 <b>{{consumer.name}}</b>
                 <span>{{consumer.webhook_url}}</span>

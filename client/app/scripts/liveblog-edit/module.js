@@ -35,29 +35,31 @@ function BlogResolver(api, $route, $location, notify, gettext, blogService) {
         });
 }
 
-const app = angular.module('liveblog.edit', [
-    'SirTrevor',
-    'SirTrevorBlocks',
-    'angular-embed',
-    'angular-embed.handlers',
-    'ngRoute',
-    'superdesk.core.services.modal',
-    'superdesk.core.upload',
-    'liveblog.pages-manager',
-    'lrInfiniteScroll',
-    'liveblog.security',
-    'liveblog.freetypes',
-    'liveblog.edit.components.inactivityModal',
-])
+const app = angular.module('liveblog.edit',
+    [
+        'SirTrevor',
+        'SirTrevorBlocks',
+        'angular-embed',
+        'angular-embed.handlers',
+        'ngRoute',
+        'superdesk.core.services.modal',
+        'superdesk.core.upload',
+        'liveblog.pages-manager',
+        'lrInfiniteScroll',
+        'liveblog.security',
+        'liveblog.freetypes',
+        'liveblog.edit.components.inactivityModal',
+    ])
     .config(['superdeskProvider', function(superdesk) {
-        superdesk.activity('/liveblog/edit/:_id', {
-            label: gettext('Blog Editor'),
-            auth: true,
-            controller: BlogEditController,
-            controllerAs: 'blogEdit',
-            templateUrl: mainTpl,
-            resolve: {blog: BlogResolver},
-        })
+        superdesk
+            .activity('/liveblog/edit/:_id', {
+                label: gettext('Blog Editor'),
+                auth: true,
+                controller: BlogEditController,
+                controllerAs: 'blogEdit',
+                templateUrl: mainTpl,
+                resolve: {blog: BlogResolver},
+            })
             .activity('/liveblog/settings/:_id', {
                 label: gettext('Blog Settings'),
                 auth: true,
@@ -98,7 +100,6 @@ const app = angular.module('liveblog.edit', [
             type: 'http',
             backend: {rel: 'archive'},
         });
-        // @TODO: remove this when theme at blog level.
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'},
@@ -106,6 +107,10 @@ const app = angular.module('liveblog.edit', [
         apiProvider.api('themes', {
             type: 'http',
             backend: {rel: 'themes'},
+        });
+        apiProvider.api('consumers', {
+            type: 'http',
+            backend: {rel: 'consumers'},
         });
     }])
     .config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevorParam) {
@@ -120,16 +125,6 @@ const app = angular.module('liveblog.edit', [
             setTimeout(() => {
                 if (editorOptions.isEditorClean()) {
                     editorOptions.disableSubmit(true);
-
-                    // NOTE: this below was meant to remove the flag indicator from the
-                    // post in timeline. We don't need to remove the flag as the post is still
-                    // being edited. Clicking `delete` button doesn't mean deleting the post bu
-                    // the block in the editor.
-
-                    // const editor = SirTrevor.getInstance(0);
-                    // if (editor && editor.blocks.length === 0) {
-                    //     editorOptions.cleanUpFlag();
-                    // }
                 }
             }, 500);
         };
@@ -192,7 +187,6 @@ const app = angular.module('liveblog.edit', [
      * @param {Datetime} date iso format datetime
      * @return {String} relative time
      */
-
     .filter('reldateAutoUpdate', ['$interval', function reldateAutorUpdateFactory($interval) {
         // trigger digest every 60 seconds
         $interval(() => true, 60000);
@@ -259,4 +253,3 @@ const app = angular.module('liveblog.edit', [
     ]);
 
 export default app;
-// });

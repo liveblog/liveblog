@@ -163,7 +163,7 @@ function getDefaults(grunt) {
 
     return Object.assign(
         {
-        // application version
+            // application version
             version: version || grunt.file.readJSON(path.join(__dirname, 'package.json')).version,
 
             // iframely settings

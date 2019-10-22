@@ -206,9 +206,13 @@ def get_producer_post_id(in_syndication, post_id):
     )
 
 
-def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status',
-                                             'published_date', 'syndication_in')):
+def extract_producer_post_data(post, fields=None):
     """Extract only useful data from original producer blog post."""
+    if fields is None:
+        fields = (
+            '_id', '_updated', 'lb_highlight', 'sticky', 'post_status',
+            'published_date', 'syndication_in', 'blog', 'tags'
+        )
     return {key: post.get(key) for key in fields}
 
 

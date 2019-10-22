@@ -15,6 +15,7 @@ from flask_cors import CORS
 import superdesk
 from superdesk import get_resource_service
 
+from liveblog.core.constants import YOUTUBE_CREDENTIALS, YOUTUBE_SECRETS
 from liveblog.blogs.utils import is_s3_storage_enabled
 from liveblog.utils.api import api_error, api_response
 from settings import LIVEBLOG_DEBUG, CLIENT_URL
@@ -24,8 +25,8 @@ logger = logging.getLogger('superdesk')
 video_upload_blueprint = superdesk.Blueprint('video_upload', __name__)
 CORS(video_upload_blueprint)
 
-YT_KEY = 'youtube_secrets'
-YT_CREDENTIALS = 'youtube_credentials'
+YT_KEY = YOUTUBE_SECRETS
+YT_CREDENTIALS = YOUTUBE_CREDENTIALS
 SCHEME = 'https'
 SCOPES = ['https://www.googleapis.com/auth/youtube']
 

@@ -55,11 +55,20 @@
                 var posts_criteria = {
                     source: {
                         query: query,
-                        sort: [SORTS[self.sort]]
+                        sort: [SORTS[self.sort]],
+                        post_filter: {}
                     },
                     page: page,
                     max_results: max_results || self.maxResults
                 };
+
+                if (LB.output) {
+                    var tags = LB.output.tags || [];
+                    if (tags.length > 0) {
+                        posts_criteria.source.post_filter.terms = {"tags": tags}
+                    }
+                }
+
                 return postsService.get(posts_criteria).$promise.then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
                     self.meta = data._meta;
@@ -156,9 +165,18 @@
                         sort: [{_updated: {order: 'desc'}}],
                         query: {filtered: {filter: {and: [
                             {range: {_updated: {gt: date}}}
-                        ]}}}
+                        ]}}},
+                        post_filter: {}
                     }
                 };
+
+                if (LB.output) {
+                    var tags = LB.output.tags || [];
+                    if (tags.length > 0) {
+                        posts_criteria.source.post_filter.terms = {"tags": tags}
+                    }
+                }
+
                 return postsService.get(posts_criteria).$promise.then(function(updates) {
                     var meta = updates._meta;
                     // if

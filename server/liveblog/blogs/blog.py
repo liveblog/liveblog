@@ -38,12 +38,14 @@ class Blog:
         self._blog = blog
         self._posts = get_resource_service('client_posts')
 
-    # @TODO: refactor params, deleted was introduced as a hot fix.
-    def _posts_lookup(self, sticky=None, highlight=None, all=False, deleted=False):
+    def _posts_lookup(self, sticky=None, highlight=None, all_posts=False, deleted=False, tags=[]):
         filters = [
             {'blog': self._blog['_id']}
         ]
-        if not all:
+
+        # only return all post if parameter is specified. Otherwise
+        # get only open posts and not deleted
+        if not all_posts:
             filters.append({'post_status': 'open'})
             if not deleted:
                 filters.append({'deleted': False})
@@ -52,8 +54,13 @@ class Blog:
             filters.append({'sticky': True})
         else:
             filters.append({'sticky': False})
+
         if highlight:
             filters.append({'lb_highlight': True})
+
+        if len(tags) > 0:
+            filters.append({'tags': {'$in': tags}})
+
         return {'$and': filters}
 
     def get_ordering(self, label):
@@ -69,18 +76,36 @@ class Blog:
             original_text = div_wrapped
         return original_text
 
-    def posts(self, sticky=None, highlight=None, ordering=None, page=default_page, limit=default_page_limit, wrap=False,
-              all=False, deleted=False):
+    def posts(self, **kwargs):
+        """
+        Builds a query with the given parameters and hit mongodb to retrive the data
+        Uses `find` method from resource service. If wrap parameter is provided, the return
+        value it's a dictionary ala `python-eve` style data structure
+
+        Supported kwargs: sticky, highlight, ordering, page, limit, wrap, all_posts, deleted, tags
+
+        TODO: restrict parameters to only allowed ones
+        """
+
+        sticky = kwargs.get('sticky', None)
+        highlight = kwargs.get('highlight', None)
+        ordering = kwargs.get('ordering', None)
+        page = kwargs.get('page', self.default_page)
+        limit = kwargs.get('limit', self.default_page_limit)
+        wrap = kwargs.get('wrap', False)
+        all_posts = kwargs.get('all_posts', False)
+        deleted = kwargs.get('deleted', False)
+        tags = kwargs.get('tags', [])
+
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
-        # Fetch total.
-        results = self._posts.find(self._posts_lookup(sticky, highlight, all, deleted))
+        lookup = self._posts_lookup(sticky, highlight, all_posts, deleted, tags)
+        results = self._posts.find(lookup)
         total = results.count()
 
         # Get sorting direction.
+        sort = pymongo.DESCENDING
         if sort == 'asc':
             sort = pymongo.ASCENDING
-        else:
-            sort = pymongo.DESCENDING
 
         # Fetch posts, do pagination and sorting.
         skip = limit * (page - 1)
@@ -90,6 +115,8 @@ class Blog:
             if 'groups' not in doc:
                 continue
 
+            # TODO: optimize this chunk to get items in one call
+            # and perhaps use `packageService._get_associations`
             for group in doc['groups']:
                 if group['id'] == 'main':
                     for ref in group['refs']:
@@ -105,6 +132,10 @@ class Blog:
         for doc in posts:
             client_blog_posts.add_post_info(doc)
 
+        # now let's add authors' information
+        client_blog_posts.generate_authors_map()
+        client_blog_posts.attach_authors(posts)
+
         if wrap:
             # Wrap in python-eve style data structure
             return {
@@ -115,6 +146,5 @@ class Blog:
                     'max_results': limit
                 }
             }
-        else:
-            # Return posts.
-            return posts
+
+        return posts

@@ -1,4 +1,4 @@
-<div sd-modal="" data-model="self.modalActive" class="advertising">
+<div sd-modal="" data-model="self.modalActive" class="advertising output-channels-modal">
     <div class="modal__header">
         <button class="modal__close pull-right" ng-click="self.cancelModal()"><i class="icon-close-small"></i></button>
         <h3 class="modal__heading" translate>{{ self.output._id? 'Edit': 'Add' | translate }} output</h3>
@@ -11,22 +11,27 @@
                     <input class="sd-line-input__input" type="text" ng-model="self.output.name" maxlength="24" required>
                     <div sd-character-count data-item="self.output.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
                 </div>
+
                 <div class="sd-line-input sd-line-input--is-select">
                     <label class="sd-line-input__label" translate>Advertising collection</label>
                     <select class="sd-line-input__select" ng-model="self.output.collection" ng-options="collection._id as collection.name for collection in self.collections"></select>
                 </div>
+
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Adverts frequency</label>
                     <input class="sd-line-input__input" type="number" min="4" max="20" ng-model="self.output.settings.frequency">
                 </div>
+
                 <div class="sd-line-input sd-line-input--is-select">
                     <label class="sd-line-input__label" translate>Order</label>
                     <select class="sd-line-input__select" ng-model="self.output.settings.order" ng-options="order.value as order.title for order in self.ordering"></select>
                 </div>
+
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Background color</label>
                     <input class="sd-line-input__input" type="color" ng-model="self.output.style['background-color']">
                 </div>
+
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Background Image</label>
                     <div class="upload-form">
@@ -128,13 +133,20 @@
                     <p class="sd-line-input__message">Please note: If you change the theme assigned to your output channel, it will also change the respective output channel URL.</p>
                     <p ng-if="self.output.theme == 'amp'" class="sd-alert sd-alert--hollow sd-alert--alert"> Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.</p>
                 </div>
+
+                <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Tag(s)</label>
+                    <tags-selector
+                        ng-if="self.showTagsSelector"
+                        on-change="self.onTagsChange" selected-tags="self.output.tags" />
+                </div>
             </fieldset>
         </div>
     </div>
     <div class="modal__footer">
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="self.cancelModal()">Cancel</button>
-            <button type="button" class="btn btn-primary btn-info" translate ng-click="self.saveOutput()"            
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="self.saveOutput()"
                 ng-disabled="self.notValidName(self.output, self.outputs) || !self.output.name || !self.readyToSave || self.disableSave" >Save</button>
         </div>
     </div>

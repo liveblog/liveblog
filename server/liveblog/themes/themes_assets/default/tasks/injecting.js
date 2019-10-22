@@ -9,9 +9,11 @@ const { resolveResource, debugState } = require('./utils');
 const CWD = process.cwd();
 
 
-const indexInject = (theme, apiResponse, nunjucksEnv, inputPath) => {
+const indexInject = (theme, apiResponse, nunjucksEnv, inputPath, extraParams={}) => {
   return () => {
     const DEBUG = debugState();
+    const {blogId, apiHost, protocol} = extraParams;
+    console.log(extraParams);
 
     var nunjucksOptions = { env: nunjucksEnv };
     var testdata = require(path.resolve(`${CWD}/test`));

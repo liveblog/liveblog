@@ -1,4 +1,5 @@
 import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.ng1';
+import {TAGS} from '../../liveblog-common/constants';
 
 /**
  * @desc directive to open a modal to create or edit a channel output
@@ -40,12 +41,27 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
     self.notValidName = adsUtilSevice.uniqueNameInItems;
     self.ordering = [{title: 'Ascending', value: 1}, {title: 'Descending', value: -1}];
 
+    self.showTagsSelector = true;
+
+    self.onTagsChange = (value) => {
+        self.output.tags = value;
+    };
+
     $rootScope.$on('blog', (e, data) => {
         if (data.blog_id === self.blog._id && data.published === 1) {
             // update the blog property
             self.blog.public_urls = data.public_urls;
         }
     });
+
+    if (!$rootScope.globalTags) {
+        api.global_preferences.query({where: {key: TAGS}})
+            .then((preferences) => {
+                const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
+
+                $rootScope.globalTags = tagSetting ? tagSetting.value || [] : [];
+            });
+    }
 
     initialize().then(() => {
         self.readyToSave = true;
@@ -90,6 +106,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             style: self.output.style,
             settings: self.output.settings,
             logo_url: self.output.logo_url,
+            tags: self.output.tags,
         };
         // disable save button
 

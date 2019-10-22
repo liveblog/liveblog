@@ -1,0 +1,29 @@
+<ul class="table-header">
+    <li>
+        <div class="row-wrapper">
+            <div class="name" sd-sort
+                    data-label="{{ 'Name' | translate }}"></div>
+            <div>{{ 'Settings' | translate }}</div>
+        </div>
+    </li>
+</ul>
+
+<ul class="table-body">
+    <li
+        ng-repeat="consumer in consumers track by $index"
+        ng-if="consumer.webhook_enabled"
+        ng-click="select(consumer)"
+        ng-class="{selected: consumer === selected}">
+
+        <div class="row-wrapper">
+            <div class="name">{{ consumer.name }}</div>
+            <div class="tags">
+                <span>{{getTags(consumer).join(', ')}}</span>
+            </div>
+        </div>
+    </li>
+
+    <li class="alert alert-info" ng-show="consumers.length == 0"><p translate>No consumers registered.</p></li>
+</ul>
+
+<li class="alert alert-info" ng-show="consumers.length == null"><p translate>Loading...</p></li>

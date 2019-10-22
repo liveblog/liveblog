@@ -19,6 +19,7 @@ import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
+import {TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS} from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
     'api',
@@ -84,19 +85,41 @@ export default function BlogEditController(
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
     $scope.freetypesOriginal = {};
+    $scope.liveblogSettings = {};
+    $scope.showTagsSelector = false;
     $rootScope.uploadingImage = false;
+    $rootScope.globalTags = null;
 
     if (blog.blog_preferences.theme) {
         themesService.get(blog.blog_preferences.theme).then((themes) => {
             blog.blog_preferences.theme = themes[0];
         });
     }
+
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
-    // start listening for unread posts.
+    const whereParams = {key: {$in: [TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS]}};
 
+    // let's get global tags and settings for post only once, when the controller loads
+    api.global_preferences.query({where: whereParams})
+        .then((preferences) => {
+            const tagSetting = _.find(preferences._items, (item) => item.key === TAGS);
+            const otherPreferences = _.filter(preferences._items, (item) => item.key !== TAGS);
+
+            // using rootScope here in order to access this value from other controllers
+            $rootScope.globalTags = tagSetting ? tagSetting.value || [] : [];
+
+            _.forEach(otherPreferences, (setting) => {
+                $scope.liveblogSettings[setting.key] = setting.value;
+            });
+
+            $scope.showTagsSelector = true;
+        });
+
+    // start listening for unread posts.
     unreadPostsService.startListening(blog);
+
     // return the list of items from the editor
     function getItemsFromEditor() {
         if (!isPostFreetype()) {
@@ -272,6 +295,7 @@ export default function BlogEditController(
         }
 
         $scope.enableEditor = false;
+        $scope.showTagsSelector = false;
 
         actionDisable = typeof actionDisable === 'boolean' ? actionDisable : true;
         if ($scope.freetypeControl.reset) {
@@ -282,10 +306,16 @@ export default function BlogEditController(
         $scope.currentPost = undefined;
         $scope.sticky = false;
         $scope.highlight = false;
+        $scope.currentPostTags = [];
 
         $timeout(() => {
             $scope.enableEditor = true;
         });
+
+        // separate timeout to avoid issue with sir trevor reinitialize
+        setTimeout(() => {
+            $scope.showTagsSelector = true;
+        }, 100);
     }
 
     // retieve the blog's public url
@@ -344,6 +374,7 @@ export default function BlogEditController(
             post_status: 'open',
             sticky: $scope.sticky,
             lb_highlight: $scope.highlight,
+            tags: $scope.currentPostTags,
         };
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
@@ -371,6 +402,7 @@ export default function BlogEditController(
         syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
         selectedUsersFilter: [],
         currentPost: undefined,
+        currentPostTags: [],
         blogSecurityService: blogSecurityService,
         unreadPostsService: unreadPostsService,
         preview: false,
@@ -467,9 +499,12 @@ export default function BlogEditController(
                 cleanEditor(false);
                 let delay = 0;
 
+                $scope.showTagsSelector = false;
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
+                $scope.currentPostTags = $scope.currentPost.tags || [];
+
                 // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
                 if (isPostFreetype()) {
                     setDefautPostType();
@@ -497,6 +532,7 @@ export default function BlogEditController(
                     });
 
                     $scope.actionDisabled = false;
+                    $scope.showTagsSelector = true;
                 }, delay);
             }
 
@@ -583,6 +619,11 @@ export default function BlogEditController(
                 cleanUpFlag();
             });
         },
+
+        onTagsChange: (tags) => {
+            $scope.currentPostTags = tags;
+        },
+
         filterHighlight: function(highlight) {
             $scope.filter.isHighlight = highlight;
             self.timelineInstance.pagesManager.changeHighlight(highlight);
@@ -608,6 +649,7 @@ export default function BlogEditController(
         // SirTrevor params that can be accessed using this.getOptions()
         // from inside of a sir trevor block
         stParams: {
+            liveblogSettings: () => $scope.liveblogSettings,
             disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;
                 // because this is called outside of angular scope from sir-trevor.
@@ -656,7 +698,6 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
-
             displayModalBox: function() {
                 function openCredentialForm() {
                     const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
@@ -870,17 +911,19 @@ export default function BlogEditController(
     const inactivityModal = new InactivityModal({
         onKeepWorking: () => {
             postsService.flagPost($scope.currentPost._id);
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
         onSaveAndClose: () => {
             $scope.publish();
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
         onClose: () => {
             cleanEditor();
-            inactivityModal.instance.resetBrowserTab();
+            inactivityModal.resetBrowserTab();
         },
     });
+
+    $scope.$on('$destroy', inactivityModal.destroy);
 
     function afterPostFlagUpdate(post, flag) {
         // let's also update post if its being edited
@@ -894,8 +937,8 @@ export default function BlogEditController(
         // let's set the timeout and refresh when expired
         postsService.setFlagTimeout(post, () => {
             if ($scope.currentPost && post._id === $scope.currentPost._id) {
-                inactivityModal.openModal();
-                inactivityModal.instance.iconTabAlert();
+                inactivityModal.open();
+                inactivityModal.iconTabAlert();
             } else {
                 $scope.$apply();
             }

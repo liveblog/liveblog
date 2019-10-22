@@ -149,8 +149,8 @@
                     </div>
                 </div>
                 <!-- editor -->
-                    <div class="panel--editor" ng-show="panelState === 'editor'">
-                        <div ng-if="!preview">
+                <div class="panel--editor" ng-show="panelState === 'editor'">
+                    <div ng-if="!preview">
                         <header>
                             <h4>{{'Editor' | translate}}</h4>
                             <button class="btn btn--primary pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
@@ -164,14 +164,14 @@
                                 <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
-                        </div>
-                        <div ng-if="preview">
+                    </div>
+                    <div ng-if="preview">
                         <header>
                             <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" flow="down" sd-tooltip="{{ 'Back to edit' | translate }}">
                             ⨯
                             </span>
                         </header>
-                        </div>
+                    </div>
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
@@ -190,7 +190,17 @@
                                     freetype="selectedPostType"
                                     freetype-data="freetypesData"
                                     validation="validation"
-                                    control="freetypeControl"></freetype-render>
+                                    control="freetypeControl">
+                            </freetype-render>
+
+                            <div class="tags-selector">
+                                <div class="selector__label">Tag(s):</div>
+                                <tags-selector
+                                    ng-if="showTagsSelector"
+                                    is-multi="liveblogSettings.allow_multiple_tag_selection"
+                                    on-change="onTagsChange"
+                                    selected-tags="currentPostTags" />
+                            </div>
                         </div>
                         <div class="actions">
                             <div class="actions__options" style="display:table-row">
@@ -235,8 +245,8 @@
             </span>
             <span ng-if="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
-                    <span><strong translate>This blog is closed!</strong></span><br />
-                    <span translate >To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
+                    <span><strong translate>This blog is {{ blog.blog_status === 'deleted' ? "going to be deleted": "closed" }}!</strong></span><br />
+                    <span translate>To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
                 </div>
             </span>
         </div>

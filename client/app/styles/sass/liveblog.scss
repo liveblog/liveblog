@@ -158,15 +158,6 @@
 	}
 }
 
-//Hide liveblog tab in global settings
-:not(.blog-settings-view)>.settings-page>.tabbable.outer>.nav-stacked {
-    display: none !important;
-}
-
-:not(.blog-settings-view)>.settings-page .tabbable.outer .tab-content.outer {
-    position: inherit;
-}
-
 .btn--contact-support {
     float: right;
     position: relative;
@@ -432,7 +423,43 @@ i.icon-star.orange {
 .form-input__hint {
     color: grey;
     font-size: 1.2rem;
-    padding-top: 2px;
+    padding-top: 6px;
     padding-bottom: 2px;
     display: inline-block;
+    line-height: 1.2rem;
+}
+
+.text-red {
+    color: #b94a48 !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.text-bold {
+    font-weight: 500;
+}
+
+.mb-10 { margin-bottom: 10px; }
+.mb-20 { margin-bottom: 20px; }
+
+.flex-grid.wrap-items {
+    &.padded-grid {
+        margin-left: -15px;
+        margin-right: -15px;
+
+        .flex-item {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+}
+
+
+.styles-tab-content {
+    .sd-line-input {
+        padding-top: 0.8em !important;
+        margin-bottom: 0.8em !important;
+    }
 }

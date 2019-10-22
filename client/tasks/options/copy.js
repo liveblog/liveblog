@@ -31,7 +31,16 @@ module.exports = {
             src: [
                 '**/*.html',
             ]
-        }]
+        },
+        {
+            expand: true,
+            dot: true,
+            cwd: 'app/template/superdesk-override/',
+            dest: '<%= distDir %>/scripts/',
+            src: [
+                '**/*.html',
+            ]
+        }],
     },
     locales: {
         files: [

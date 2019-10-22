@@ -12,16 +12,6 @@ interface IInactivityModalProps {
 }
 
 class InactivityModal extends React.Component<IInactivityModalProps> {
-    favicon: JQuery<HTMLElement>;
-    initialIcon: string;
-
-    constructor(props) {
-        super(props);
-
-        this.favicon = $('link[rel="icon"]');
-        this.initialIcon = this.favicon.attr('href');
-    }
-
     handleKeepWorking(closeModal: () => void) {
         this.props.onKeepWorking();
         closeModal();
@@ -58,14 +48,6 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
         );
     }
 
-    iconTabAlert() {
-        this.favicon.attr('href', 'favicon-alert.ico');
-    }
-
-    resetBrowserTab() {
-        this.favicon.attr('href', this.initialIcon);
-    }
-
     render() {
         const bodyText = `
             The current post has been inactive in the editor for some time so the warning message
@@ -87,15 +69,38 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
 export default angular.module('liveblog.edit.components.inactivityModal', [])
     .factory('InactivityModal', () => {
         class InactiveModal {
+            initialIcon: string;
+            favicon: JQuery<HTMLElement>;
+            mountPoint: HTMLElement;
+            instance: any;
+
             constructor(props: IInactivityModalProps) {
-                const targetEl = document.createElement('div');
+                this.favicon = $('link[rel="icon"]');
+                this.initialIcon = this.favicon.attr('href');
 
-                document.body.appendChild(targetEl);
+                const mountPoint = document.createElement('div');
+                const WrappedModal = withModalContext<IInactivityModalProps>(InactivityModal);
 
-                const InactivityAlert = withModalContext<IInactivityModalProps>(InactivityModal);
+                document.body.appendChild(mountPoint);
+                this.mountPoint = mountPoint;
 
-                // eslint-disable-next-line
-                return ReactDOM.render(<InactivityAlert { ...props } />, targetEl);
+                this.instance = ReactDOM.render(<WrappedModal { ...props } />, mountPoint) as any;
+            }
+
+            open = () => {
+                this.instance.openModal();
+            }
+
+            iconTabAlert = () => {
+                this.favicon.attr('href', 'favicon-alert.ico');
+            }
+
+            resetBrowserTab = () => {
+                this.favicon.attr('href', this.initialIcon);
+            }
+
+            destroy = () => {
+                ReactDOM.unmountComponentAtNode(this.mountPoint);
             }
         }
 

@@ -42,8 +42,8 @@ export default angular
         const directive = {
             template: function(element, attr) {
                 let str = '<textarea class="sir-trevor" name="content"></textarea>';
-                // sir trevor needs a parent `form` tag.
 
+                // sir trevor needs a parent `form` tag.
                 if (!element.parent('form').length) {
                     str = '<form>' + str + '</form>';
                 }
@@ -100,15 +100,6 @@ export default angular
                 const debouncedChange = _.debounce(scope.debounceOnChange, scope.debounceTime);
 
                 element.on('keydown', debouncedChange);
-
-                // @TODO: investigate how to better `digest` out of $scope  variables.
-                // scope.$watchCollection('editor.blocks', function(blocks) {
-                //     var list = [];
-                //     _.each(blocks, function(block) {
-                //         list.push(scope.editor.get(block));
-                //     });
-                //     scope.model = list;
-                // });
             },
         };
 

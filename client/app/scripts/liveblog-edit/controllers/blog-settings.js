@@ -117,6 +117,7 @@ function BlogSettingsController(
         newBlog: angular.copy(blog),
         deactivateTheme: config.subscriptionLevel === 'solo',
         blogPreferences: angular.copy(blog.blog_preferences),
+        consumersSettings: angular.copy(blog.consumers_settings),
         availableLanguages: [],
         original_creator: {},
         availableThemes: [],
@@ -160,6 +161,25 @@ function BlogSettingsController(
         embedMultiHight: false,
         outputs: [],
         outputEmbedCodeTpl: outputEmbedCodeTpl,
+        selectedConsumer: null,
+        selectedConsumerTags: [],
+        showTagsSelector: true,
+        onConsumerTagsChange: function(tags) {
+            if (!vm.selectedConsumer) return;
+
+            const id = vm.selectedConsumer._id;
+            let settings = vm.newBlog.consumers_settings || {};
+
+            if (id in settings) {
+                settings[id].tags = tags;
+            } else {
+                settings[id] = {tags: tags};
+            }
+
+            vm.newBlog.consumers_settings = settings;
+            vm.forms.dirty = true;
+            $scope.$apply();
+        },
         loadOutputs: function(silent = false) {
             if (!silent) {
                 vm.outputsLoading = true;
@@ -248,8 +268,10 @@ function BlogSettingsController(
             });
         },
         changeTab: function(tab) {
-            // outputs does not dirty the blog settings
-            if (vm.tab && vm.tab !== 'outputs') {
+            // outputs and consumer does not dirty the blog settings
+            const notDirty = ['outputs', 'consumers'];
+
+            if (vm.tab && notDirty.indexOf(vm.tab) === -1) {
                 vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
             }
             vm.tab = tab;
@@ -338,6 +360,7 @@ function BlogSettingsController(
                 members: members,
                 posts_limit: vm.newBlog.posts_limit,
                 users_can_comment: vm.newBlog.users_can_comment,
+                consumers_settings: vm.newBlog.consumers_settings,
             };
 
             angular.extend(vm.newBlog, changedBlog);
@@ -352,6 +375,7 @@ function BlogSettingsController(
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
                     vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    vm.consumersSettings = angular.copy(blog.consumers_settings);
                     // remove accepted users from the queue
                     if (vm.acceptedMembers.length) {
                         _.each(vm.acceptedMembers, (member) => {
@@ -422,16 +446,24 @@ function BlogSettingsController(
             });
         },
     });
+
     // retieve the blog's public url
     const qPublicUrl = blogService.getPublicUrl(blog).then((url) => {
         vm.publicUrl = url;
     });
-    // load available languages
 
+    // load available languages
     api('languages')
         .query()
         .then((data) => {
             vm.availableLanguages = data._items;
+        });
+
+    // load consumers
+    api('consumers')
+        .query()
+        .then((data) => {
+            vm.consumers = data._items;
         });
 
     // load available themes

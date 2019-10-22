@@ -6,7 +6,7 @@ from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
-from superdesk.resource import Resource, build_custom_hateoas
+from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
@@ -26,19 +26,30 @@ logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
+# monkey patch so we can update superdesk core resources in Elastic
+# TODO: figure out if there is a better way to achieve this
+# We need the tags to be not_analyzed to be able to filter by array
+schema_patch = {
+    'tags': {
+        'type': 'list',
+        'default': [],
+        'mapping': not_analyzed
+    }
+}
+
+ArchiveResource.schema.update(schema_patch)
+
+
 def get_publisher():
     publisher = getattr(flask.g, 'user', None)
     if not publisher:
         return None
-    return {k: publisher.get(k, None) for k in ('_created',
-                                                '_etag',
-                                                '_id',
-                                                '_updated',
-                                                'username',
-                                                'display_name',
-                                                'sign_off',
-                                                'byline',
-                                                'email')}
+
+    publisher_keys = (
+        '_created', '_etag', '_id', '_updated', 'username',
+        'display_name', 'sign_off', 'byline', 'email')
+
+    return {k: publisher.get(k, None) for k in publisher_keys}
 
 
 def private_draft_filter():
@@ -78,6 +89,7 @@ class PostsVersionsService(BaseService):
 class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
+        'search_backend': 'elastic',
         'elastic_filter_callback': private_draft_filter,
         'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': DEFAULT_POSTS_ORDER
@@ -136,7 +148,7 @@ class PostsResource(ArchiveResource):
             'type': 'string',
             'nullable': True
         },
-        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True)
+        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True),
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
     mongo_indexes = {

@@ -25,6 +25,10 @@ class OutputsResource(Resource):
             'type': 'string',
             'nullable': True
         },
+        'tags': {
+            'type': 'list',
+            'default': []
+        },
         'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
         'logo': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
         'logo_url': {
