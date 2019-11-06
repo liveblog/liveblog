@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import Select from 'react-select';
 import { ActionMeta } from 'react-select/src/types'; // eslint-disable-line
+import { Styles } from 'react-select/src/styles'; // eslint-disable-line
 
 interface IProps {
     tags: Array<string>;
@@ -11,6 +12,45 @@ interface IProps {
     onChange: (value: Array<string>) => void;
 }
 
+const selectStyles: Styles = {
+    control: (provided, state) => {
+        const styles = {
+            ...provided,
+            borderRadius: '3px',
+            minHeight: '32px',
+            borderColor: '#d9d9d9',
+        };
+
+        if (state.menuIsOpen || state.isFocused) {
+            styles.borderColor = '#5ea9c8';
+            styles.boxShadow = '0px 2px 10px rgba(0, 0, 0, 0.15)';
+        }
+
+        return styles;
+    },
+
+    dropdownIndicator: (provided) => {
+        return {
+            ...provided,
+            padding: '6px',
+        };
+    },
+
+    clearIndicator: (provided) => {
+        return {
+            ...provided,
+            padding: '6px',
+        };
+    },
+
+    valueContainer: (provided) => {
+        return {
+            ...provided,
+            padding: '2px 3px',
+        };
+    },
+};
+
 const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     const options = _.map(props.tags, (x) => ({ label: x, value: x }));
     const selectedTags = _.map(props.selectedTags, (x) => ({ label: x, value: x }));
@@ -18,6 +58,8 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     return (
         <React.Fragment>
             <Select
+                className="react__tags__selector"
+                styles={selectStyles}
                 isMulti={props.isMulti}
                 placeholder="Type in or select from the dropdown"
                 onChange={(value: any, action: ActionMeta) => {

@@ -277,6 +277,19 @@
                     text-transform: uppercase;
                     height: 18px;
                 }
+
+                input {
+                    min-height: 32px;
+                    height: unset;
+                    border-radius: 3px;
+                    padding-top: 2px;
+                    padding-bottom: 2px;
+                }
+
+                .react__tags__selector input {
+                    min-height: unset;
+                }
+
                 .editor {
                     textarea {
                         border: 1px solid #dfdfdf !important;
@@ -900,13 +913,18 @@
     }
 }
 
-.tags-selector {
+.tags-selector,
+.schedule-selector {
     position: relative;
     top: 20px;
 
     .selector__label {
         margin-bottom: 5px;
     }
+}
+
+.schedule-selector {
+    top: 30px;
 }
 
 .preview-layout.consumers-settings {
