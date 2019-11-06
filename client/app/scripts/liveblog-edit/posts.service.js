@@ -391,6 +391,15 @@ export default function postsService(api, $q, userList, session) {
         }, seconds * 1000);
     }
 
+    const saveWithStatus = (status) =>
+        (blogId, post, items, sticky, highlight) =>
+            savePost(
+                blogId,
+                post,
+                items,
+                {post_status: status, sticky: sticky, lb_highlight: highlight}
+            );
+
     return {
         getPosts: getPosts,
         getLatestUpdateDate: getLatestUpdateDate,
@@ -400,22 +409,9 @@ export default function postsService(api, $q, userList, session) {
         removeFlagPost: removeFlagPost,
         syncRemoveFlag: syncRemoveFlag,
         setFlagTimeout: setFlagTimeout,
-        saveDraft: function(blogId, post, items, sticky, highlight) {
-            return savePost(
-                blogId,
-                post,
-                items,
-                {post_status: 'draft', sticky: sticky, lb_highlight: highlight}
-            );
-        },
-        saveContribution: function(blogId, post, items, sticky, highlight) {
-            return savePost(
-                blogId,
-                post,
-                items,
-                {post_status: 'submitted', sticky: sticky, lb_highlight: highlight}
-            );
-        },
+        saveDraft: saveWithStatus('draft'),
+        saveContribution: saveWithStatus('submitted'),
+        saveScheduledPost: saveWithStatus('scheduled'),
         remove: removePost,
     };
 }

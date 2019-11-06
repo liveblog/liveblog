@@ -16,22 +16,36 @@
 </div>
 
 <section class="main-section blogedit">
-
     <!-- left sidebar -->
     <div class="side-menu">
-        <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}" title="{{ 'Editor' | translate }}" >
+        <button class="navbtn" ng-click="openPanel('editor')"
+            ng-class="{'active': panelState === 'editor'}"
+            sd-tooltip="{{ 'Editor' | translate }}"
+            flow="right"
+            title="{{ 'Editor' | translate }}"
+        >
             <i class="lb-big-icon-editor" alt="editor"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}" title="{{ 'Contributions' | translate }}">
+        <button class="navbtn" ng-click="openPanel('contributions')"
+            ng-class="{'active': panelState === 'contributions'}"
+            sd-tooltip="{{ 'Contributions' | translate }}"
+            flow="right" title="{{ 'Contributions' | translate }}"
+        >
             <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">
-            {{ unreadPostsService.countContributions() }}</span>
+                {{ unreadPostsService.countContributions() }}
+            </span>
             <i class="lb-big-icon-contributions" alt="contributions"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}" title="{{ 'Drafts' | translate }}">
+        <button class="navbtn" ng-click="openPanel('drafts')"
+            ng-class="{'active': panelState === 'drafts'}"
+            sd-tooltip="{{ 'Drafts' | translate }}"
+            flow="right" title="{{ 'Drafts' | translate }}">
             <i class="lb-big-icon-archive" alt="draft posts"></i>
         </button>
         <button
             class="navbtn"
+            sd-tooltip="{{ 'Ingest' | translate }}"
+            flow="right"
             title="{{ 'Ingest' | translate }}"
             ng-if="syndicationEnabled"
             lb-notifications-count
@@ -43,10 +57,12 @@
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
             ng-class="{'active': panelState === 'comments'}"
-            title="{{ 'Comments' | translate }}">
-                <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
-                <i class="lb-big-icon-comments" alt="comments posts"></i>
-
+            sd-tooltip="{{ 'Comments' | translate }}"
+            flow="right"
+            title="{{ 'Comments' | translate }}"
+        >
+            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
+            <i class="lb-big-icon-comments" alt="comments posts"></i>
         </button>
     </div>
 
@@ -201,18 +217,28 @@
                                     on-change="onTagsChange"
                                     selected-tags="currentPostTags" />
                             </div>
+                            <div class="schedule-selector" ng-if="scheduled">
+                                <div class="selector__label">Publish on:</div>
+                                <input type="date" value="" />
+                            </div>
                         </div>
                         <div class="actions">
                             <div class="actions__options" style="display:table-row">
-                                <div style="display:table-cell"></div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleSticky();" flow="down" sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                    <div ng-click="toggleSticky();" flow="up" sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
                                         <span class="actions__label" translate>PIN POST</span><span class="actions__icon"><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleHighlight();" flow="down" sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                    <div ng-click="toggleHighlight();" flow="up" sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
                                         <span class="actions__label" translate>HIGHTLIGHT POST</span><span class="actions__icon"><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
+                                    </div>
+                                </div>
+                                <div style="display:table-cell">
+                                    <div ng-click="toggleScheduler();" flow="up" sd-tooltip="{{ 'Schedule Post' | translate }}" ng-class="{'option-not-activated': !scheduled}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                        <span class="actions__label" translate>SCHEDULE POST</span><span class="actions__icon">
+                                            <i class="icon-calendar rotate" ng-class="{'blue': scheduled}"></i>
+                                        </span>
                                     </div>
                                 </div>
                             </div>

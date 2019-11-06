@@ -306,6 +306,7 @@ export default function BlogEditController(
         $scope.currentPost = undefined;
         $scope.sticky = false;
         $scope.highlight = false;
+        $scope.scheduled = false;
         $scope.currentPostTags = [];
 
         $timeout(() => {
@@ -410,6 +411,7 @@ export default function BlogEditController(
         actionDisabled: true,
         sticky: false,
         highlight: false,
+        scheduled: false,
         filter: {isHighlight: false},
         selectPostTypeDialog: false,
         selectedPostType: 'Default',
@@ -487,6 +489,9 @@ export default function BlogEditController(
         toggleHighlight: function() {
             $scope.highlight = !$scope.highlight;
         },
+        toggleScheduler: function() {
+            $scope.scheduled = !$scope.scheduled;
+        },
         showSaveAsDraft: function() {
             if (angular.isDefined($scope.currentPost)) {
                 return $scope.currentPost.original_creator === session.identity._id;
@@ -503,6 +508,7 @@ export default function BlogEditController(
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
+                $scope.scheduled = $scope.currentPost.post_status === 'scheduled';
                 $scope.currentPostTags = $scope.currentPost.tags || [];
 
                 // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
@@ -521,7 +527,6 @@ export default function BlogEditController(
 
                         if (angular.isDefined(itm)) {
                             if (isItemFreetype(itm.item_type)) {
-                                // post it freetype so we need to reder it
                                 loadFreetypeItem(itm);
                             } else {
                                 const data = _.extend({}, itm, itm.meta);

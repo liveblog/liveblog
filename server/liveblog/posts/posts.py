@@ -108,7 +108,7 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment'],
+            'allowed': ['open', 'draft', 'submitted', 'comment', 'scheduled'],
             'default': 'open'
         },
         'lb_highlight': {
@@ -131,6 +131,9 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         },
         'unpublished_date': {
+            'type': 'datetime'
+        },
+        'publish_at': {
             'type': 'datetime'
         },
         'publisher': {
@@ -275,7 +278,7 @@ class PostsService(ArchiveService):
             updates['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
-        # check if updates `content` is diffrent then the original.
+        # check if updates `content` is different then the original.
         content_diff = False
         if not updates.get('groups', False):
             content_diff = False
