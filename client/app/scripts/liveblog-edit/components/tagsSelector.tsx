@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import _ from 'lodash';
 import Select from 'react-select';
+import _ from 'lodash';
 import { ActionMeta } from 'react-select/src/types'; // eslint-disable-line
 import { Styles } from 'react-select/src/styles'; // eslint-disable-line
 
@@ -29,26 +29,20 @@ const selectStyles: Styles = {
         return styles;
     },
 
-    dropdownIndicator: (provided) => {
-        return {
-            ...provided,
-            padding: '6px',
-        };
-    },
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        padding: '6px',
+    }),
 
-    clearIndicator: (provided) => {
-        return {
-            ...provided,
-            padding: '6px',
-        };
-    },
+    clearIndicator: (provided) => ({
+        ...provided,
+        padding: '6px',
+    }),
 
-    valueContainer: (provided) => {
-        return {
-            ...provided,
-            padding: '2px 3px',
-        };
-    },
+    valueContainer: (provided) => ({
+        ...provided,
+        padding: '2px 3px',
+    }),
 };
 
 const TagsSelector: React.FunctionComponent<IProps> = (props) => {

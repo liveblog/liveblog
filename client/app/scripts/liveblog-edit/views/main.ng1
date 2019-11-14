@@ -219,7 +219,7 @@
                             </div>
                             <div class="schedule-selector" ng-if="scheduled">
                                 <div class="selector__label">Publish on:</div>
-                                <input type="date" value="" />
+                                <date-time-picker label="Mundo" />
                             </div>
                         </div>
                         <div class="actions">
