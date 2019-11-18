@@ -14,8 +14,10 @@ import _ from 'lodash';
 import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
+import {DELETED_STATE} from '../../liveblog-bloglist/controllers/constants';
 
 import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.ng1';
+
 
 BlogSettingsController.$inject = [
     '$scope',
@@ -27,16 +29,13 @@ BlogSettingsController.$inject = [
     'gettext',
     'modal',
     '$q',
-    'upload',
     'datetimeHelper',
     'config',
     'blogSecurityService',
     'moment',
     'superdesk',
-    'urls',
     '$rootScope',
     'postsService',
-
 ];
 
 function BlogSettingsController(
@@ -49,13 +48,11 @@ function BlogSettingsController(
     gettext,
     modal,
     $q,
-    upload,
     datetimeHelper,
     config,
     blogSecurityService,
     moment,
     superdesk,
-    urls,
     $rootScope,
     postsService
 ) {
@@ -404,20 +401,39 @@ function BlogSettingsController(
             return deferred.promise;
         },
         askRemoveBlog: function() {
-            modal.confirm(gettext('Are you sure you want to delete the blog?'))
+            modal.confirm(`The blog will be in <b>Deleted Blogs</b> tab during ${config.daysRemoveDeletedBlogs}
+                day(s), after that period will be removed permanently.<br /><br />
+                Are you sure you want to delete this blog?`)
                 .then(() => {
                     vm.removeBlog();
                 });
         },
         removeBlog: function() {
-            api.blogs.remove(angular.copy(vm.blog)).then((message) => {
+            const blog = vm.blog;
+            const changedBlog = {
+                blog_status: DELETED_STATE.code,
+            };
+
+            let newBlog = angular.copy(blog);
+
+            angular.extend(newBlog, changedBlog);
+            delete newBlog._latest_version;
+            delete newBlog._current_version;
+            delete newBlog._version;
+            delete newBlog.marked_for_not_publication;
+            delete newBlog._type;
+            delete newBlog.selected;
+            delete newBlog.firstcreated;
+            newBlog.original_creator = blog.original_creator._id;
+
+            blogService.update(blog, newBlog).then((resp) => {
                 notify.pop();
-                notify.info(gettext('Blog removed'));
+                notify.info(gettext('The blog will be deleted'));
                 $location.path('/liveblog');
             }, () => {
                 notify.pop();
                 notify.error(gettext('Something went wrong'));
-                $location.path('/liveblog/edit/' + vm.blog._id);
+                $location.path('/liveblog/edit/' + blog._id);
             });
         },
         close: function() {

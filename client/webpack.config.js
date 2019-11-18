@@ -230,24 +230,24 @@ const configApp = (grunt) => ({
     // if environment name is not set
     isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
 
-        debug: grunt.option('debug-mode') || false,
-        embedly: {
-            key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
-        },
-        facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
-        syndication: process.env.SYNDICATION || false,
-        marketplace: process.env.MARKETPLACE || false,
-        themeCreationRestrictions: {team: 5},
-        excludedTheme: 'angular',
-        assignableUsers: {
-            solo: 2,
-            team: 4
-        },
-        subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
-        blogCreationRestrictions: {
-            solo: 1,
-            team: 3
-        },
+    debug: grunt.option('debug-mode') || false,
+    embedly: {
+        key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+    },
+    facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
+    syndication: process.env.SYNDICATION || false,
+    marketplace: process.env.MARKETPLACE || false,
+    themeCreationRestrictions: {team: 5},
+    excludedTheme: 'angular',
+    assignableUsers: {
+        solo: 2,
+        team: 4
+    },
+    subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+    blogCreationRestrictions: {
+        solo: 1,
+        team: 3
+    },
 
     // override language translations
     langOverride: {},
@@ -305,6 +305,8 @@ const configLiveblog = (grunt) => ({
         solo: 1,
         team: 3
     },
+
+    daysRemoveDeletedBlogs: process.env.DAYS_REMOVE_DELETED_BLOGS || 3,
 
     maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
     // You might think this empty object is useless.
