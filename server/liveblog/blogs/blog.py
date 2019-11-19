@@ -130,7 +130,9 @@ class Blog:
         # Enrich documents
         client_blog_posts = get_resource_service('client_blog_posts')
         for doc in posts:
-            client_blog_posts.add_post_info(doc)
+            client_blog_posts.calculate_post_type(doc)
+            client_blog_posts.attach_syndication(doc)
+            client_blog_posts.extract_author_ids(doc)
 
         # now let's add authors' information
         client_blog_posts.generate_authors_map()
