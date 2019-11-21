@@ -17,8 +17,14 @@ export default function lbUserSelectList(api) {
             scope.search = null;
             scope.users = {};
 
+            scope.done = false;
+            scope.searching = false;
+
             const _refresh = function() {
                 scope.users = {};
+                scope.searching = true;
+                scope.done = false;
+
                 return api('users').query({where: JSON.stringify({
                     $or: [
                         {username: {$regex: scope.search, $options: '-i'}},
@@ -28,6 +34,9 @@ export default function lbUserSelectList(api) {
                     ],
                 })})
                     .then((result) => {
+                        scope.searching = false;
+
+                        // let's exclude current user
                         for (var i = 0; i < result._items.length; i++) {
                             var obj = result._items[i];
 
@@ -47,9 +56,10 @@ export default function lbUserSelectList(api) {
                             return !found;
                         });
                         scope.selected = null;
+                        scope.done = true;
                     });
             };
-            const refresh = _.debounce(_refresh, 1000);
+            const refresh = _.debounce(_refresh, 500);
 
             scope.$watch('search', () => {
                 if (scope.search) {
