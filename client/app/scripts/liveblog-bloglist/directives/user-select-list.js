@@ -6,6 +6,7 @@ export default function lbUserSelectList(api) {
             members: '=',
             user: '=',
             onchoose: '&',
+            showinactive: '=',
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
         link: function(scope, elem, attrs) {
@@ -25,14 +26,22 @@ export default function lbUserSelectList(api) {
                 scope.searching = true;
                 scope.done = false;
 
-                return api('users').query({where: JSON.stringify({
+                const filters = {
                     $or: [
                         {username: {$regex: scope.search, $options: '-i'}},
                         {first_name: {$regex: scope.search, $options: '-i'}},
                         {last_name: {$regex: scope.search, $options: '-i'}},
                         {email: {$regex: scope.search, $options: '-i'}},
                     ],
-                })})
+                };
+
+                if (scope.showinactive !== true) {
+                    filters.is_active = true;
+                    filters.needs_activation = false;
+                }
+
+                return api('users')
+                    .query({where: JSON.stringify(filters)})
                     .then((result) => {
                         scope.searching = false;
 
