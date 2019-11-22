@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.12",
+    "version": "3.5.13",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -70,6 +70,10 @@
                 {
                     "value": "sr-cy",
                     "label": "Српски"
+                },
+                {
+                    "value": "es",
+                    "label": "Español"
                 }
             ],
             "default": "en"
@@ -750,6 +754,37 @@
             "Updated": "Ажурирано",
             "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
             "credit:": "аутор:"
+        }, "es": {
+            "Highlights": "Destacados",
+            "Comment by": "Comentario por",
+            "Powered by": "Powered by",
+            "Advertisement": "Publicidad",
+            "Cancel": "Cancelar",
+            "Comment": "Comentar",
+            "Comment *": "Comentario *",
+            "Comment should be maximum 300 characters in length": "El comentario debe tener una longitud máxima de 300 caracteres",
+            "Editorial": "Editorial",
+            "Load more posts": "Cargar más entradas",
+            "Loading": "Cargando",
+            "Name *": "Nombre *",
+            "Name should be maximum 30 characters in length": "El nombre debe tener una longitud máxima de 30 carateres",
+            "Newest first": "Nuevos primero",
+            "No posts for now": "No hay artículos por ahora",
+            "Oldest first": "Antiguos primero",
+            "One pinned post": "Un artículo fijado",
+            "pinned posts": "artículos fijados",
+            "Please fill in your Comment": "Por favor complete su Comentario",
+            "Please fill in your Name": "Por favor complete su Nombre",
+            "Post a comment": "Publicar comentario",
+            "See one new update": "Ver actualización",
+            "See new updates": "Ver actualizaciones",
+            "Send": "Envíado",
+            "Show all posts": "Mostrar todos los artículos",
+            "Show highlighted post only": "Mostrar solo los artículos destacados",
+            "Sort by:": "Ordenar por",
+            "Updated": "Actualizado",
+            "Your comment is being reviewed and will be published as soon as it's approved": "Su comentario se está revisando y se publicará tan pronto como se apruebe",
+            "credit:": "Crédito:"
         }
     }
 }
