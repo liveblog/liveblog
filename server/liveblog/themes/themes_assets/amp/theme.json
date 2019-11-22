@@ -402,6 +402,38 @@
             "Updated": "Actualizado",
             "Your comment is being reviewed and will be published as soon as it's approved": "Su comentario se está revisando y se publicará tan pronto como se apruebe",
             "credit:": "Crédito:"
+        },
+        "pt": {
+            "Highlights": "Em foco",
+            "Comment by": "Comentado por",
+            "Powered by": "Alimenté par",
+            "Advertisement": "Publicidade",
+            "Cancel": "Cancelar",
+            "Comment": "Comentário",
+            "Comment *": "Comentário *",
+            "Comment should be maximum 300 characters in length": "Um comentário deve conter no máximo 300 caracteres",
+            "Editorial": "Editorial",
+            "Load more posts": "Carregar mais",
+            "Loading": "Carregando",
+            "Name *": "Nome *",
+            "Name should be maximum 30 characters in length": "O nome deve conter no máximo 30 caracteres",
+            "Newest first": "Mais recentes no topo",
+            "No posts for now": "Nenhum conteúdo no momento",
+            "Oldest first": "Mais antigos no topo",
+            "One pinned post": "Conteúdo fixado",
+            "pinned posts": "Conteúdos fixados",
+            "Please fill in your Comment": "Escreva aqui",
+            "Please fill in your Name": "Escreva seu nome",
+            "Post a comment": "Enviar comentário",
+            "See one new update": "Ver a nova mensagem",
+            "See new updates": "Ver novas mensagens",
+            "Send": "Enviar",
+            "Show all posts": "Mostrar todas publicações",
+            "Show highlighted post only": "Mostrar apenas publicações em foco",
+            "Sort by:": "Filtrar por:",
+            "Updated": "Atualizar",
+            "Your comment is being reviewed and will be published as soon as it's approved": "Seu comentário aguarda aprovação",
+            "credit:": "crédito:"
         }
     }
 }
