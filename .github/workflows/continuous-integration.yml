@@ -17,10 +17,18 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Installing required services
-      run: sudo docker run --name mongo -d -p 27017:27017 mongo:3.4.23 
     - name: Install, build, and test
       run: |
         cd client/ && npm install
       env:
         CI: true
+        
+    services:
+      nginx:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+      redis:
+        image: redis
+        ports:
+          - 6379/tcp
