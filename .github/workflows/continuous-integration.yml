@@ -76,13 +76,6 @@ jobs:
         npm install
         npm run lint
 
-    - name: Start backend services
-      working-directory: ./server
-      run: |
-        (nohup honcho start &)
-        (nohup sudo python -m smtpd -n -c DebuggingServer localhost:2225 &)
-        (nohup python -m http.server 9000 &)
-
     - name: Initialize app data
       working-directory: ./server
       run: |
@@ -92,12 +85,19 @@ jobs:
         python manage.py register_local_themes
         python manage.py register_bloglist
 
+    - name: Start backend services
+      working-directory: ./server
+      run: |
+        (nohup honcho start &)
+        (nohup sudo python -m smtpd -n -c DebuggingServer localhost:2225 &)
+
     - name: Build client and run end to end tests
       working-directory: ./client
       run: |
         grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
         cd dist
         while [ ! -f index.html ]; do sleep .5; done
+        (nohup python -m http.server 9000 &)
         cd ../
         export DISPLAY=:99.0
         /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
