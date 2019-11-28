@@ -32,3 +32,7 @@ jobs:
         image: redis
         ports:
           - 6379/tcp
+      elasticsearch-1.7.2:
+        image: barnybug/elasticsearch:1.7.2
+        ports: 
+          - 9200/tcp
