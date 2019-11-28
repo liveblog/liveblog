@@ -1,80 +1,4305 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
 
 # Liveblog
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+A Liveblog owns one ore more themes and consists of one or more Posts.
+And every Post consists of one ore more Items.
 
-## Questions Collection [/questions]
+Every resource is addressable via the API.
 
-### List All Questions [GET]
+# Response Format
+
+All liveblog content is delivered as JSON data. Images, audio clips, videos and other media
+assets are delivered as files.
+
+# HTTP Verbs
+
+| Action    | Verb      | Description                                        |
+| --------- | :-------: | -------------------------------------------------: |
+| Create    | POST      | Used for creating resources                        |
+| Create    | PUT       | Used for replacing resources or collections        |
+| Replace   | PUT       |                                                    |
+| Read      | GET, HEAD | Used for retrieving resources                      |
+| Update    | PATCH     | Used for updating resources with partial JSON data |
+| Delete    | DELETE    | Used for deleting resources |
+
+Update and delete operations on resources must provide an **Etag** of the resource and this **Etag** has to be sent as **"If-Match"** HTTP-header.
+
+# Status Codes
+
+Whenever something goes wrong with an API request, the server produces an error.
+The error message contains an appropriate HTTP status code in the header and a
+JSON response in the body.
+
+| HTTP Status Code    | Error Code         | Description                                                  |
+| ------------------- | :----------------: | -----------------------------------------------------------: |
+| 400                 | BadRequest         | The request is malformed or a required parameter is missing. |
+| 401                 | Unauthorized       | The authorization token is not valid.                        |
+| 403                 | Forbidden          |                                                              |
+| 404                 | NotFound           | The requested resource/endpoint can not be found.            |
+| 412                 | PreconditionFailed |                                                              |
+| 500                 | InternalError      | Something has gone wrong on our end.                         |
+
+# Authentication
+
+All requests must be authenticated using auth token from Liveblog via `Authorization` header:
+
+```
+Authorization: Token <token-from-liveblog>
+```
+
+See [Auth](#reference/authentication) section for details about retrieving an auth-token.
+
+# Group Resources
+
+## GET /
+
+List available resources.
 
 + Response 200 (application/json)
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
+        {
+            "_links": {
+                "child": [
                     {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
+                        "href": "filter_conditions/parameters",
+                        "title": "filter_conditions/parameters"
+                    },
+                    {
+                        "href": "feeding_services_allowed",
+                        "title": "feeding_services_allowed"
+                    },
+                    {
+                        "href": "client_items",
+                        "title": "client_items"
+                    },
+                    {
+                        "href": "client_comments",
+                        "title": "client_comments"
+                    },
+                    {
+                        "href": "analytics",
+                        "title": "analytics"
+                    },
+                    {
+                        "href": "users/<original_creator>/content",
+                        "title": "user_content"
+                    },
+                    {
+                        "href": "archive/<guid>/copy",
+                        "title": "copy"
+                    },
+                    {
+                        "href": "saved_activity_reports",
+                        "title": "saved_activity_reports"
+                    },
+                    {
+                        "href": "client_blogs",
+                        "title": "client_blogs"
+                    },
+                    {
+                        "href": "content_types",
+                        "title": "content_types"
+                    },
+                    {
+                        "href": "content_filters/test",
+                        "title": "content_filter_tests"
+                    },
+                    {
+                        "href": "blogs",
+                        "title": "blogs"
+                    },
+                    {
+                        "href": "users/<user_id>/desks",
+                        "title": "user_desks"
+                    },
+                    {
+                        "href": "dictionaries",
+                        "title": "dictionaries"
+                    },
+                    {
+                        "href": "blogs/<blog_id>/request_membership",
+                        "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/request_membership"
+                    },
+                    {
+                        "href": "formatters",
+                        "title": "formatters"
+                    },
+                    {
+                        "href": "workqueue",
+                        "title": "workqueue"
+                    },
+                    {
+                        "href": "products",
+                        "title": "products"
+                    },
+                    {
+                        "href": "roles",
+                        "title": "roles"
+                    },
+                    {
+                        "href": "syndication_in",
+                        "title": "syndication_in"
+                    },
+                    {
+                        "href": "search_providers_allowed",
+                        "title": "search_providers_allowed"
+                    },
+                    {
+                        "href": "legal_archive",
+                        "title": "legal_archive"
+                    },
+                    {
+                        "href": "consumers",
+                        "title": "consumers"
+                    },
+                    {
+                        "href": "search_providers_proxy",
+                        "title": "search_providers_proxy"
+                    },
+                    {
+                        "href": "stages",
+                        "title": "stages"
+                    },
+                    {
+                        "href": "archive/<item_id>/unlock",
+                        "title": "archive_unlock"
+                    },
+                    {
+                        "href": "products/test",
+                        "title": "product_tests"
+                    },
+                    {
+                        "href": "auth_xmpp",
+                        "title": "auth_xmpp"
+                    },
+                    {
+                        "href": "syndication_out",
+                        "title": "syndication_out"
+                    },
+                    {
+                        "href": "client_blogs/<blog_id>/posts",
+                        "title": "client_blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+                    },
+                    {
+                        "href": "users/<user_id>/sessions",
+                        "title": "clear_sessions"
+                    },
+                    {
+                        "href": "search",
+                        "title": "search"
+                    },
+                    {
+                        "href": "syndication/blogs",
+                        "title": "syndication/blogs"
+                    },
+                    {
+                        "href": "rule_sets",
+                        "title": "rule_sets"
+                    },
+                    {
+                        "href": "archive/<guid>/duplicate",
+                        "title": "duplicate"
+                    },
+                    {
+                        "href": "content_api",
+                        "title": "content_api"
+                    },
+                    {
+                        "href": "all_saved_searches",
+                        "title": "all_saved_searches"
+                    },
+                    {
+                        "href": "change_user_password",
+                        "title": "change_user_password"
+                    },
+                    {
+                        "href": "items",
+                        "title": "items"
+                    },
+                    {
+                        "href": "ingest_providers",
+                        "title": "ingest_providers"
+                    },
+                    {
+                        "href": "request_membership",
+                        "title": "request_membership"
+                    },
+                    {
+                        "href": "collections",
+                        "title": "collections"
+                    },
+                    {
+                        "href": "saved_searches",
+                        "title": "saved_searches"
+                    },
+                    {
+                        "href": "tasks",
+                        "title": "tasks"
+                    },
+                    {
+                        "href": "archive/<original_id>/resend",
+                        "title": "archive_resend"
+                    },
+                    {
+                        "href": "allowed_values",
+                        "title": "allowed_values"
+                    },
+                    {
+                        "href": "archive/<target_id>/link",
+                        "title": "archive_link"
+                    },
+                    {
+                        "href": "validators",
+                        "title": "validators"
+                    },
+                    {
+                        "href": "legal_publish_queue",
+                        "title": "legal_publish_queue"
+                    },
+                    {
+                        "href": "blogs/<blog_id>/posts",
+                        "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+                    },
+                    {
+                        "href": "spellcheck",
+                        "title": "spellcheck"
+                    },
+                    {
+                        "href": "archive/publish",
+                        "title": "archive_publish"
+                    },
+                    {
+                        "href": "desks/<desk_id>/sluglines",
+                        "title": "desks/<regex(\"[a-f0-9]{24}\"):desk_id>/sluglines"
+                    },
+                    {
+                        "href": "desks",
+                        "title": "desks"
+                    },
+                    {
+                        "href": "blogslist",
+                        "title": "blogslist"
+                    },
+                    {
+                        "href": "archive/<item>/comments",
+                        "title": "archive/<path:item>/comments"
+                    },
+                    {
+                        "href": "saved_searches/<saved_search_id>/items",
+                        "title": "saved_search_items"
+                    },
+                    {
+                        "href": "producers",
+                        "title": "producers"
+                    },
+                    {
+                        "href": "routing_schemes",
+                        "title": "routing_schemes"
+                    },
+                    {
+                        "href": "marked_for_desks",
+                        "title": "marked_for_desks"
+                    },
+                    {
+                        "href": "workspaces",
+                        "title": "workspaces"
+                    },
+                    {
+                        "href": "marked_for_highlights",
+                        "title": "marked_for_highlights"
+                    },
+                    {
+                        "href": "preferences",
+                        "title": "preferences"
+                    },
+                    {
+                        "href": "posts",
+                        "title": "posts"
+                    },
+                    {
+                        "href": "filter_conditions",
+                        "title": "filter_conditions"
+                    },
+                    {
+                        "href": "audit",
+                        "title": "audit"
+                    },
+                    {
+                        "href": "vocabularies",
+                        "title": "vocabularies"
+                    },
+                    {
+                        "href": "upload",
+                        "title": "upload"
+                    },
+                    {
+                        "href": "suggestions/<item_id>",
+                        "title": "suggestions/<regex(\"[\\w,.:_-]+\"):item_id>"
+                    },
+                    {
+                        "href": "archive/spike",
+                        "title": "archive_spike"
+                    },
+                    {
+                        "href": "auth_db",
+                        "title": "auth_db"
+                    },
+                    {
+                        "href": "publish_queue",
+                        "title": "publish_queue"
+                    },
+                    {
+                        "href": "subscriber_token",
+                        "title": "subscriber_token"
+                    },
+                    {
+                        "href": "picture_renditions",
+                        "title": "picture_renditions"
+                    },
+                    {
+                        "href": "backend_meta",
+                        "title": "backend_meta"
+                    },
+                    {
+                        "href": "syndication/blogs/<blog_id>/posts",
+                        "title": "syndication/blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+                    },
+                    {
+                        "href": "archive/<original_id>/rewrite",
+                        "title": "archive_rewrite"
+                    },
+                    {
+                        "href": "activity",
+                        "title": "activity"
+                    },
+                    {
+                        "href": "validate",
+                        "title": "validate"
+                    },
+                    {
+                        "href": "auth",
+                        "title": "auth"
+                    },
+                    {
+                        "href": "archive/<guid>/move",
+                        "title": "move"
+                    },
+                    {
+                        "href": "comments",
+                        "title": "comments"
+                    },
+                    {
+                        "href": "content_templates_apply",
+                        "title": "content_templates_apply"
+                    },
+                    {
+                        "href": "global_preferences",
+                        "title": "global_preferences"
+                    },
+                    {
+                        "href": "archive/<item_id>/lock",
+                        "title": "archive_lock"
+                    },
+                    {
+                        "href": "reset_user_password",
+                        "title": "reset_user_password"
+                    },
+                    {
+                        "href": "activity_reports",
+                        "title": "activity_reports"
+                    },
+                    {
+                        "href": "io_errors",
+                        "title": "io_errors"
+                    },
+                    {
+                        "href": "client_users",
+                        "title": "client_users"
+                    },
+                    {
+                        "href": "picture_crop",
+                        "title": "picture_crop"
+                    },
+                    {
+                        "href": "archive",
+                        "title": "archive"
+                    },
+                    {
+                        "href": "users/<user_id>/groups",
+                        "title": "users/<regex(\"[a-f0-9]{24}\"):user_id>/groups"
+                    },
+                    {
+                        "href": "search_providers",
+                        "title": "search_providers"
+                    },
+                    {
+                        "href": "ingest",
+                        "title": "ingest"
+                    },
+                    {
+                        "href": "users",
+                        "title": "users"
+                    },
+                    {
+                        "href": "macros",
+                        "title": "macros"
+                    },
+                    {
+                        "href": "client_advertisement_outputs",
+                        "title": "client_advertisement_outputs"
+                    },
+                    {
+                        "href": "auth_xmpp_activated",
+                        "title": "auth_xmpp_activated"
+                    },
+                    {
+                        "href": "archive/correct",
+                        "title": "archive_correct"
+                    },
+                    {
+                        "href": "languages",
+                        "title": "languages"
+                    },
+                    {
+                        "href": "outputs",
+                        "title": "outputs"
+                    },
+                    {
+                        "href": "privileges",
+                        "title": "privileges"
+                    },
+                    {
+                        "href": "blogs/<blog_id>/bloganalytics",
+                        "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/bloganalytics"
+                    },
+                    {
+                        "href": "advertisements",
+                        "title": "advertisements"
+                    },
+                    {
+                        "href": "spikes",
+                        "title": "spikes"
+                    },
+                    {
+                        "href": "themes",
+                        "title": "themes"
+                    },
+                    {
+                        "href": "content_filters",
+                        "title": "content_filters"
+                    },
+                    {
+                        "href": "client_posts",
+                        "title": "client_posts"
+                    },
+                    {
+                        "href": "archived",
+                        "title": "archived"
+                    },
+                    {
+                        "href": "users/<user_id>/blogs",
+                        "title": "users/<regex(\"[a-f0-9]{24}\"):user_id>/blogs"
+                    },
+                    {
+                        "href": "archive/unspike",
+                        "title": "archive_unspike"
+                    },
+                    {
+                        "href": "archive/<item_id>/broadcast",
+                        "title": "archive_broadcast"
+                    },
+                    {
+                        "href": "content_templates",
+                        "title": "content_templates"
+                    },
+                    {
+                        "href": "feed_parsers_allowed",
+                        "title": "feed_parsers_allowed"
+                    },
+                    {
+                        "href": "marketed/blogs",
+                        "title": "marketed/blogs"
+                    },
+                    {
+                        "href": "blogs/<blog_id>/items",
+                        "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/items"
+                    },
+                    {
+                        "href": "subscribers",
+                        "title": "subscribers"
+                    },
+                    {
+                        "href": "archive_autosave",
+                        "title": "archive_autosave"
+                    },
+                    {
+                        "href": "sessions",
+                        "title": "sessions"
+                    },
+                    {
+                        "href": "client_advertisement_collections",
+                        "title": "client_advertisement_collections"
+                    },
+                    {
+                        "href": "ingest/<id>/fetch",
+                        "title": "fetch"
+                    },
+                    {
+                        "href": "highlights",
+                        "title": "highlights"
+                    },
+                    {
+                        "href": "groups",
+                        "title": "groups"
+                    },
+                    {
+                        "href": "generate_highlights",
+                        "title": "generate_highlights"
+                    },
+                    {
+                        "href": "freetypes",
+                        "title": "freetypes"
+                    },
+                    {
+                        "href": "item_comments",
+                        "title": "item_comments"
+                    },
+                    {
+                        "href": "archive/kill",
+                        "title": "archive_kill"
+                    },
+                    {
+                        "href": "client_advertisements",
+                        "title": "client_advertisements"
+                    },
+                    {
+                        "href": "published",
+                        "title": "published"
+                    },
+                    {
+                        "href": "archive/translate",
+                        "title": "translate"
+                    },
+                    {
+                        "href": "client_item_comments",
+                        "title": "client_item_comments"
                     }
                 ]
             }
-        ]
+        }
 
-### Create a New Question [POST]
+# Group Authentication
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+## Auth [/auth_db]
+
+### Authenticate [POST]
+
+An auth-token is provided by the response, which should be used for subsequent requests.
+
++ Request (application/json;charset=UTF-8)
+
+        {
+            "username": "admin",
+            "password": "admin"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "_created": "2018-01-17T14:43:12+00:00",
+            "_etag": "5d63dca15edfd9c4bd8210f40739fa28ffc643b2",
+            "_id": "5a5f61004810135a1289b6c9",
+            "_links": {
+                "self": {
+                    "href": "auth_db/5a5f61004810135a1289b6c9",
+                    "title": "Auth_db"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-17T14:43:12+00:00",
+            "token": "f7c816dd-3a80-4e68-8d87-46d06b77e5e4",
+            "user": "5a5f5eb34810136266dcaf5d",
+            "username": "admin"
+        }
+
++ Response 403 (application/json)
+
+        {
+            "_message": "Liveblog mobile can not access on this subscription",
+            "_status": "ERR"
+        }
+
++ Response 401 (application/json)
+
+        {
+            "_issues": {
+                "credentials": 1
+              },
+            "_message": "",
+            "_status": "ERR"
+        }
+
+
+# Group User Management
+
+**Authentication required.**
+
+## User [/users/{_id}]
+
+A single User resource. Users have to be activated and can added as author to a Live Blog.
+
++ Parameters
+    + _id (string) ... User id.
+
++ Model (application/json)
+
+        {
+            "_created": "2018-01-17T16:44:43+00:00",
+            "_etag": "fe4eb64a6de5947596b68869513f1dd14ef0fbd3",
+            "_id": "5a5f7d7b4810135a0c599503",
+            "_links": {
+                "collection": {
+                    "href": "users",
+                    "title": "users"
+                },
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "users/5a5f7d7b4810135a0c599503",
+                    "title": "User"
+                }
+            },
+            "_updated": "2018-01-17T16:44:43+00:00",
+            "dateline_source": "SF",
+            "display_name": "John Doe",
+            "email": "john.doe@email.com",
+            "first_name": "John",
+            "invisible_stages": [],
+            "is_active": true,
+            "is_enabled": true,
+            "last_name": "Doe",
+            "needs_activation": true,
+            "phone": "0223456789",
+            "role": null,
+            "sign_off": "JD",
+            "user_preferences": {
+                "agg:view": {
+                    "active": {}
+                },
+                "archive:view": {
+                    "allowed": [
+                        "mgrid",
+                        "compact"
+                    ],
+                    "category": "archive",
+                    "default": "mgrid",
+                    "label": "Users archive view format",
+                    "type": "string",
+                    "view": "mgrid"
+                },
+                "article:default:place": {
+                    "category": "article_defaults",
+                    "label": "Place",
+                    "place": [],
+                    "type": "list"
+                },
+                "categories:preferred": {
+                    "category": "categories",
+                    "label": "Preferred Categories",
+                    "selected": {},
+                    "type": "dict"
+                },
+                "dashboard:ingest": {
+                    "providers": []
+                },
+                "dateline:located": {
+                    "category": "article_defaults",
+                    "label": "Located",
+                    "type": "dict"
+                },
+                "desks:preferred": {
+                    "category": "desks",
+                    "label": "Preferred Desks",
+                    "selected": {},
+                    "type": "dict"
+                },
+                "destination:active": {},
+                "editor:theme": {
+                    "theme": "",
+                    "type": "string"
+                },
+                "email:notification": {
+                    "category": "notifications",
+                    "default": true,
+                    "enabled": true,
+                    "label": "Send notifications via email",
+                    "type": "bool"
+                },
+                "feature:preview": {
+                    "category": "feature",
+                    "default": false,
+                    "enabled": false,
+                    "label": "Enable Feature Preview",
+                    "privileges": [
+                        "feature_preview"
+                    ],
+                    "type": "bool"
+                },
+                "singleline:view": {
+                    "category": "rows",
+                    "default": false,
+                    "enabled": null,
+                    "label": "Enable Single Line View",
+                    "type": "bool"
+                },
+                "spellchecker:status": {
+                    "default": true,
+                    "enabled": true,
+                    "type": "bool"
+                },
+                "templates:recent": {},
+                "workqueue:items": {
+                    "items": []
+                },
+                "workspace:active": {
+                    "type": "string",
+                    "workspace": ""
+                }
+            },
+            "user_type": "user",
+            "username": "john"
+        }
+
+### Create user [POST]
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "first_name": "John",
+            "last_name": "Doe",
+            "username": "john",
+            "email": "john.doe@email.com",
+            "password": "a3r546465676bgyhyyehy",
+            "phone": "0223456789"
         }
 
 + Response 201 (application/json)
 
+        {
+         "_created": "2018-01-17T16:44:43+00:00",
+         "_etag": "fe4eb64a6de5947596b68869513f1dd14ef0fbd3",
+         "_id": "5a5f7d7b4810135a0c599503",
+         "_links": {
+              "self": {
+                   "href": "users/5a5f7d7b4810135a0c599503",
+                   "title": "User"
+              }
+         },
+         "_status": "OK",
+         "_updated": "2018-01-17T16:44:43+00:00",
+         "dateline_source": "SF",
+         "display_name": "John Doe",
+         "email": "john.doe@email.com",
+         "first_name": "John",
+         "invisible_stages": [],
+         "is_active": true,
+         "is_enabled": true,
+         "last_name": "Doe",
+         "needs_activation": true,
+         "phone": "0223456789",
+         "role": null,
+         "sign_off": "JD",
+         "user_preferences": {
+              "agg:view": {
+                   "active": {}
+              },
+              "archive:view": {
+                   "allowed": ["mgrid", "compact"],
+                   "category": "archive",
+                   "default": "mgrid",
+                   "label": "Users archive view format",
+                   "type": "string",
+                   "view": "mgrid"
+              },
+              "article:default:place": {
+                   "category": "article_defaults",
+                   "label": "Place",
+                   "place": [],
+                   "type": "list"
+              },
+              "categories:preferred": {
+                   "category": "categories",
+                   "label": "Preferred Categories",
+                   "selected": {},
+                   "type": "dict"
+              },
+              "dashboard:ingest": {
+                   "providers": []
+              },
+              "dateline: located ": {
+                   "category ": "article_defaults ",
+                   "label ": "Located ",
+                   "type ": "dict "
+              },
+              "desks: preferred ": {
+                   "category ": "desks ",
+                   "label ": "Preferred Desks ",
+                   "selected ": {},
+                   "type ": "dict "
+              },
+              "destination: active ": {},
+              "editor: theme ": {
+                   "theme ": "",
+                   "type ": "string "
+              },
+              "email: notification ": {
+                   "category ": "notifications ",
+                   "default ": true,
+                   "enabled ": true,
+                   "label ": "Send notifications via email ",
+                   "type ": "bool "
+              },
+              "feature: preview ": {
+                   "category ": "feature ",
+                   "default ": false,
+                   "enabled ": false,
+                   "label ": "Enable Feature Preview ",
+                   "privileges ": ["feature_preview "],
+                   "type ": "bool "
+              },
+              "singleline: view ": {
+                   "category ": "rows ",
+                   "default ": false,
+                   "enabled ": null,
+                   "label ": "Enable Single Line View ",
+                   "type ": "bool "
+              },
+              "spellchecker: status ": {
+                   "default ": true,
+                   "enabled ": true,
+                   "type ": "bool "
+              },
+              "templates: recent ": {},
+              "workqueue: items ": {
+                   "items ": []
+              },
+              "workspace: active ": {
+                   "type ": "string ",
+                   "workspace ": ""
+              }
+         },
+         "user_type ": "user ",
+         "username ": "john "
+    }
+
++ Response 400 (application/json)
+
+        {
+            "_error": {
+                "code": 400,
+                "message": "Insertion failure: 1 document(s) contain(s) error(s)"
+            },
+            "_status": "ERR",
+            "_issues": {
+                "username": {
+                    "unique": 1,
+                    "required": 1
+                },
+                "email": {
+                    "unique": 1,
+                    "required": 1,
+                    "pattern": 1
+                }
+            }
+        }
+
+### Retrieve a User [GET]
+
++ Request (application/json)
+
++ Response 200
+
+    [User][]
+
++ Response 404
+
+### Update User [PATCH]
+
++ Request (application/json)
     + Headers
 
-            Location: /questions/2
+            If-Match: xyz
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
+                "last_name": "Baz"
+            }
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+        {
+            "_error": {
+                "code": 403,
+                "message": "An etag must be provided to edit a document"
+            },
+            "_status": "ERR"
+        }
+
+### Disable a User [DELETE]
+
++ Request
+    + Headers
+
+            If-Match: xyz
+
++ Response 204
+
++ Response 412 (Precondition failed)
+
+        {
+            "_error": {
+                "code": 412,
+                "message": "Client and server etags don't match"
+            },
+            "_status": "ERR"
+        }
+
+## Reset user password [/reset_user_password]
+
+### Initiate reset user password [POST]
+
++ Request (application/json)
+
+        {
+            "email": "foo@bar.com"
+        }
+
++ Response 201 (application/json)
+
+        {
+            "_created": "2018-01-19T13:17:08+00:00",
+            "_etag": "e6e54d348672b1e244d6157d1e36f25964f64ba3",
+            "_id": "5a61efd44810132800f3c260",
+            "_links": {
+                "self": {
+                    "href": "reset_user_password/5a61efd44810132800f3c260",
+                    "title": "Reset_user_password"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T13:17:08+00:00",
+            "email": "john.doe@email.com",
+            "expire_time": "2018-01-20T13:17:08+00:00"
+        }
+
+## User Search [/users{?page,max_results,where,sort}]
+
+### List Users [GET]
+
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of users to be returned
+    + where (optional, object) ... Filtering
+    + sort (optional, object) ... Sorting
+
++ Response 200 (application/json)
+
+        {
+            "_items": [{
+                    "_created": "2018-01-17T16:59:57+00:00",
+                    "_etag": "96462672970d117aaa915e23399a67debd3acdd7",
+                    "_id": "5a5f810d4810135a184febcd",
+                    "_links": {
+                        "self": {
+                            "href": "users/5a5f810d4810135a184febcd",
+                            "title": "User"
+                        }
+                    },
+                    "_updated": "2018-01-17T16:59:57+00:00",
+                    "dateline_source": "SF",
+                    "display_name": "John Hammer",
+                    "email": "john.hammer@email.com",
+                    "first_name": "John",
+                    "invisible_stages": [],
+                    "is_active": true,
+                    "is_enabled": true,
+                    "last_name": "Hammer",
+                    "needs_activation": true,
+                    "phone": "asdasdas",
+                    "role": null,
+                    "sign_off": "JH",
+                    "user_preferences": {
+                        "agg:view": {
+                            "active": {}
+                        },
+                        "archive:view": {
+                            "allowed": [
+                                "mgrid",
+                                "compact"
+                            ],
+                            "category": "archive",
+                            "default": "mgrid",
+                            "label": "Users archive view format",
+                            "type": "string",
+                            "view": "mgrid"
+                        },
+                        "article:default:place": {
+                            "category": "article_defaults",
+                            "label": "Place",
+                            "place": [],
+                            "type": "list"
+                        },
+                        "categories:preferred": {
+                            "category": "categories",
+                            "label": "Preferred Categories",
+                            "selected": {},
+                            "type": "dict"
+                        },
+                        "dashboard:ingest": {
+                            "providers": []
+                        },
+                        "dateline:located": {
+                            "category": "article_defaults",
+                            "label": "Located",
+                            "type": "dict"
+                        },
+                        "desks:preferred": {
+                            "category": "desks",
+                            "label": "Preferred Desks",
+                            "selected": {},
+                            "type": "dict"
+                        },
+                        "destination:active": {},
+                        "editor:theme": {
+                            "theme": "",
+                            "type": "string"
+                        },
+                        "email:notification": {
+                            "category": "notifications",
+                            "default": true,
+                            "enabled": true,
+                            "label": "Send notifications via email",
+                            "type": "bool"
+                        },
+                        "feature:preview": {
+                            "category": "feature",
+                            "default": false,
+                            "enabled": false,
+                            "label": "Enable Feature Preview",
+                            "privileges": [
+                                "feature_preview"
+                            ],
+                            "type": "bool"
+                        },
+                        "singleline:view": {
+                            "category": "rows",
+                            "default": false,
+                            "enabled": null,
+                            "label": "Enable Single Line View",
+                            "type": "bool"
+                        },
+                        "spellchecker:status": {
+                            "default": true,
+                            "enabled": true,
+                            "type": "bool"
+                        },
+                        "templates:recent": {},
+                        "workqueue:items": {
+                            "items": []
+                        },
+                        "workspace:active": {
+                            "type": "string",
+                            "workspace": ""
+                        }
+                    },
+                    "user_type": "user",
+                    "username": "joe"
+                },
+                {
+                    "_created": "2018-01-17T16:44:43+00:00",
+                    "_etag": "fe4eb64a6de5947596b68869513f1dd14ef0fbd3",
+                    "_id": "5a5f7d7b4810135a0c599503",
+                    "_links": {
+                        "self": {
+                            "href": "users/5a5f7d7b4810135a0c599503",
+                            "title": "User"
+                        }
+                    },
+                    "_updated": "2018-01-17T16:44:43+00:00",
+                    "dateline_source": "SF",
+                    "display_name": "John Doe",
+                    "email": "john.doe@email.com",
+                    "first_name": "John",
+                    "invisible_stages": [],
+                    "is_active": true,
+                    "is_enabled": true,
+                    "last_name": "Doe",
+                    "needs_activation": true,
+                    "phone": "0223456789",
+                    "role": null,
+                    "sign_off": "JD",
+                    "user_preferences": {
+                        "agg:view": {
+                            "active": {}
+                        },
+                        "archive:view": {
+                            "allowed": [
+                                "mgrid",
+                                "compact"
+                            ],
+                            "category": "archive",
+                            "default": "mgrid",
+                            "label": "Users archive view format",
+                            "type": "string",
+                            "view": "mgrid"
+                        },
+                        "article:default:place": {
+                            "category": "article_defaults",
+                            "label": "Place",
+                            "place": [],
+                            "type": "list"
+                        },
+                        "categories:preferred": {
+                            "category": "categories",
+                            "label": "Preferred Categories",
+                            "selected": {},
+                            "type": "dict"
+                        },
+                        "dashboard:ingest": {
+                            "providers": []
+                        },
+                        "dateline:located": {
+                            "category": "article_defaults",
+                            "label": "Located",
+                            "type": "dict"
+                        },
+                        "desks:preferred": {
+                            "category": "desks",
+                            "label": "Preferred Desks",
+                            "selected": {},
+                            "type": "dict"
+                        },
+                        "destination:active": {},
+                        "editor:theme": {
+                            "theme": "",
+                            "type": "string"
+                        },
+                        "email:notification": {
+                            "category": "notifications",
+                            "default": true,
+                            "enabled": true,
+                            "label": "Send notifications via email",
+                            "type": "bool"
+                        },
+                        "feature:preview": {
+                            "category": "feature",
+                            "default": false,
+                            "enabled": false,
+                            "label": "Enable Feature Preview",
+                            "privileges": [
+                                "feature_preview"
+                            ],
+                            "type": "bool"
+                        },
+                        "singleline:view": {
+                            "category": "rows",
+                            "default": false,
+                            "enabled": null,
+                            "label": "Enable Single Line View",
+                            "type": "bool"
+                        },
+                        "spellchecker:status": {
+                            "default": true,
+                            "enabled": true,
+                            "type": "bool"
+                        },
+                        "templates:recent": {},
+                        "workqueue:items": {
+                            "items": []
+                        },
+                        "workspace:active": {
+                            "type": "string",
+                            "workspace": ""
+                        }
+                    },
+                    "user_type": "user",
+                    "username": "john"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "users",
+                    "title": "users"
+                }
+            },
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 2
+            }
+        }
+
+# Group Roles Management
+
+There are three levels of permission within Live Blog: Contributor, Editor and Administrator.
+See <a href="https://sourcefabricberlin.zendesk.com/hc/en-us/articles/214971446-Understanding-User-Roles">docs</a>
+to learn more.
+
+**Authentication required.**
+
+## Roles [/roles/{_id}]
+
+
++ Parameters
+    + _id (string) ... Roles id.
+
++ Model (application/json)
+
+        {
+            "_created": "2018-01-19T13:46:10+00:00",
+            "_etag": "7d39723342d5acf0bccfba591e1aceb49bf10b9d",
+            "_id": "5a61f6a248101327fc6199d6",
+            "_links": {
+                "self": {
+                    "href": "roles/5a61f6a248101327fc6199d6",
+                    "title": "Role"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T13:46:10+00:00",
+            "name": "Editor"
+        }
+
+### Create role [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Editor"
+        }
+
++ Response 201 (application/json)
+
+        {
+            "_created": "2018-01-19T13:46:10+00:00",
+            "_etag": "7d39723342d5acf0bccfba591e1aceb49bf10b9d",
+            "_id": "5a61f6a248101327fc6199d6",
+            "_links": {
+                "self": {
+                    "href": "roles/5a61f6a248101327fc6199d6",
+                    "title": "Role"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T13:46:10+00:00",
+            "name": "Editor"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "_error": {
+                "code": 400,
+                "message": "Insertion failure: 1 document(s) contain(s) error(s)"
+            },
+            "_issues": {
+                "foo": "unknown field",
+                "name": {
+                    "required": 1
+                }
+            },
+            "_status": "ERR"
+        }
+
+
+### Retrieve a Role [GET]
+
++ Response 200 (application/json)
+
+        {
+            "_created": "2018-01-19T13:46:10+00:00",
+            "_etag": "7d39723342d5acf0bccfba591e1aceb49bf10b9d",
+            "_id": "5a61f6a248101327fc6199d6",
+            "_links": {
+                "collection": {
+                    "href": "roles",
+                    "title": "roles"
+                },
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "roles/5a61f6a248101327fc6199d6",
+                    "title": "Role"
+                }
+            },
+            "_updated": "2018-01-19T13:46:10+00:00",
+            "name": "Editor"
+        }
+
++ Response 404
+
+### Update Roles [PATCH]
+
++ Request (application/json)
+    + Headers
+
+            If-Match: xyz
+
+    + Body
+
+            {"name": "Editor"}
+
++ Response 200 (application/json)
+
+        {
+            "_created": "2018-01-19T13:46:10+00:00",
+            "_etag": "39702ba9bd38c4ea535593cc2a7aabc4c37313db",
+            "_id": "5a61f6a248101327fc6199d6",
+            "_links": {
+                "self": {
+                    "href": "roles/5a61f6a248101327fc6199d6",
+                    "title": "Role"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T14:19:53+00:00",
+            "name": "Editor"
+        }
+
++ Response 412
+
+        {
+            "_error": {
+                "code": 412,
+                "message": "Client and server etags don't match"
+            },
+            "_status": "ERR"
+        }
+
+### Hard Delete a Roles [DELETE]
+
++ Request
+    + Headers
+
+            If-Match: xyz
+
++ Response 204
+
++ Response 412
+
+        {
+            "_error": {
+                "code": 412,
+                "message": "Client and server etags don't match"
+            },
+            "_status": "ERR"
+        }
+
+## Roles Search [/roles{?page,max_results,where,sort}]
+
+### List all Roles [GET]
+
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of roles to be returned
+    + where (optional, object) ... Filtering
+    + sort (optional, object) ... Sorting
+
++ Response 200 (application/json)
+
+        {
+            "_items": [
+                {
+                    "_created": "2018-01-19T13:46:10+00:00",
+                    "_etag": "7d39723342d5acf0bccfba591e1aceb49bf10b9d",
+                    "_id": "5a61f6a248101327fc6199d6",
+                    "_links": {
+                        "self": {
+                            "href": "roles/5a61f6a248101327fc6199d6",
+                            "title": "Role"
+                        }
+                    },
+                    "_updated": "2018-01-19T13:46:10+00:00",
+                    "name": "Editor"
+                },
+                {
+                    "_created": "2018-01-19T13:55:34+00:00",
+                    "_etag": "7424fad655911fa2b13237f68918a09c1ecc48e4",
+                    "_id": "5a61f8d6481013280693eba7",
+                    "_links": {
+                        "self": {
+                            "href": "roles/5a61f8d6481013280693eba7",
+                            "title": "Role"
+                        }
+                    },
+                    "_updated": "2018-01-19T13:55:34+00:00",
+                    "name": "Contributor"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "roles",
+                    "title": "roles"
+                }
+            },
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 2
+            }
+        }
+
+
+# Group Blogs
+
+Administrators and Editors can create, update and delete blogs.
+
+**Authentication required.**
+
+## Blogs item [/blogs/{_id}]
+
+A single Blogs resource
+
++ Parameters
+    - _id (string, `1`) ... Blogs item identifier.
+
++ Model (application/json)
+
+        {
+            "_created": "2018-01-19T14:26:45+00:00",
+            "_etag": "843a222370403f6203ca4102220b1d94a003619f",
+            "_id": "5a62002548101327f3b5a585",
+            "_links": {
+                "self": {
+                    "href": "blogs/5a62002548101327f3b5a585",
+                    "title": "Blog"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T14:26:45+00:00",
+            "blog_preferences": {},
+            "blog_status": "open",
+            "category": "",
+            "firstcreated": "2018-01-19T14:26:45+00:00",
+            "last_created_post": {},
+            "last_updated_post": {},
+            "market_enabled": false,
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "posts_order_sequence": 0,
+            "start_date": "2018-01-19T14:26:45+00:00",
+            "syndication_enabled": false,
+            "title": "Foo",
+            "total_posts": 0,
+            "versioncreated": "2018-01-19T14:26:45+00:00"
+        }
+
+### Create blog [POST]
+
++ Request (application/json)
+
+        {
+            "title": "Foo",
+            "blog_status": "open"
+        }
+
++ Response 201 (application/json)
+
+    [Blogs item][]
+
+### Retrieve a Blog [GET]
+
++ Response 200 (application/json)
+
+    [Blogs item][]
+
++ Response 404
+
+### Update Blog [PATCH]
+
+You can update blog properties, for example adding a description.
+Or you can archive a liveblog *{"blog_status": "closed"}*.
+
++ Request (application/json)
+
+        {
+            "title": "Test Blog",
+            "description": "This is test blog.",
+            "blog_status": "closed"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "_created": "2018-01-19T14:26:45+00:00",
+            "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+            "_id": "5a62002548101327f3b5a585",
+            "_links": {
+                "self": {
+                    "href": "blogs/5a62002548101327f3b5a585",
+                    "title": "Blog"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T14:33:47+00:00",
+            "blog_preferences": {},
+            "blog_status": "closed",
+            "category": "",
+            "description": "This is test blog.",
+            "last_created_post": {},
+            "last_updated_post": {},
+            "market_enabled": false,
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "posts_order_sequence": 0,
+            "start_date": "2018-01-19T14:26:45+00:00",
+            "syndication_enabled": false,
+            "title": "Test Blog",
+            "total_posts": 0,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T14:33:47+00:00"
+        }
+
++ Response 403
+
+### Delete a Blog [DELETE]
+
++ Request (application/json)
+
+        {}
+
++ Response 204
+
++ Response 412
+
+        {
+            "_error": {
+                "code": 412,
+                "message": "Client and server etags don't match"
+            },
+            "_status": "ERR"
+        }
+
+## Blogs collection [/blogs{?page,max_results,source}]
+
+### List all blogs [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+
++ Response 200 (application/json)
+
+        {
+            "_items": [
+                {
+                    "_created": "2018-01-19T14:34:55+00:00",
+                    "_etag": "df8d8430fa7307ec47264a8bff85cb6e48a907c0",
+                    "_id": "5a62020f48101327f72135d5",
+                    "_links": {
+                        "self": {
+                            "href": "blogs/5a62020f48101327f72135d5",
+                            "title": "Blog"
+                        }
+                    },
+                    "_type": "blogs",
+                    "_updated": "2018-01-19T14:37:41+00:00",
+                    "blog_preferences": {},
+                    "blog_status": "closed",
+                    "category": "",
+                    "description": "This is another test blog.",
+                    "firstcreated": "2018-01-19T14:34:55+00:00",
+                    "last_created_post": {},
+                    "last_updated_post": {},
+                    "market_enabled": false,
+                    "original_creator": "5a5f5eb34810136266dcaf5d",
+                    "posts_order_sequence": 0,
+                    "start_date": "2018-01-19T14:34:55+00:00",
+                    "syndication_enabled": false,
+                    "title": "Test",
+                    "total_posts": 0,
+                    "version_creator": "5a5f5eb34810136266dcaf5d",
+                    "versioncreated": "2018-01-19T14:37:41+00:00"
+                },
+                {
+                    "_created": "2018-01-19T14:26:45+00:00",
+                    "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+                    "_id": "5a62002548101327f3b5a585",
+                    "_links": {
+                        "self": {
+                            "href": "blogs/5a62002548101327f3b5a585",
+                            "title": "Blog"
+                        }
+                    },
+                    "_type": "blogs",
+                    "_updated": "2018-01-19T14:33:47+00:00",
+                    "blog_preferences": {},
+                    "blog_status": "open",
+                    "category": "",
+                    "description": "This is test blog.",
+                    "firstcreated": "2018-01-19T14:26:45+00:00",
+                    "last_created_post": {},
+                    "last_updated_post": {},
+                    "market_enabled": false,
+                    "original_creator": "5a5f5eb34810136266dcaf5d",
+                    "posts_order_sequence": 0,
+                    "start_date": "2018-01-19T14:26:45+00:00",
+                    "syndication_enabled": false,
+                    "title": "Foobla",
+                    "total_posts": 0,
+                    "version_creator": "5a5f5eb34810136266dcaf5d",
+                    "versioncreated": "2018-01-19T14:33:47+00:00"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "blogs",
+                    "title": "blogs"
+                }
+            },
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 2
+            }
+        }
+
+### List open blogs [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + source = `{"query":{"filtered":{"filter":{"term":{"blog_status":"open"}}}}}` (optional, object) ... Filtering for open blogs.
+
++ Response 200 (application/json)
+
+        {
+            "_items": [
+                {
+                    "_created": "2018-01-19T14:26:45+00:00",
+                    "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+                    "_id": "5a62002548101327f3b5a585",
+                    "_links": {
+                        "self": {
+                            "href": "blogs/5a62002548101327f3b5a585",
+                            "title": "Blog"
+                        }
+                    },
+                    "_type": "blogs",
+                    "_updated": "2018-01-19T14:33:47+00:00",
+                    "blog_preferences": {},
+                    "blog_status": "open",
+                    "category": "",
+                    "description": "This is test blog.",
+                    "firstcreated": "2018-01-19T14:26:45+00:00",
+                    "last_created_post": {},
+                    "last_updated_post": {},
+                    "market_enabled": false,
+                    "original_creator": "5a5f5eb34810136266dcaf5d",
+                    "posts_order_sequence": 0,
+                    "start_date": "2018-01-19T14:26:45+00:00",
+                    "syndication_enabled": false,
+                    "title": "Foobla",
+                    "total_posts": 0,
+                    "version_creator": "5a5f5eb34810136266dcaf5d",
+                    "versioncreated": "2018-01-19T14:33:47+00:00"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "blogs",
+                    "title": "blogs"
+                }
+            },
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 1
+            }
+        }
+
+### List closed blogs [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + source = `{"query":{"filtered":{"filter":{"term":{"blog_status":"closed"}}}}}` (optional, object) ... Filtering for closed blogs.
+
++ Response 200 (application/json)
+    {
+        "_items": [
+            {
+                "_created": "2018-01-19T14:34:55+00:00",
+                "_etag": "df8d8430fa7307ec47264a8bff85cb6e48a907c0",
+                "_id": "5a62020f48101327f72135d5",
+                "_links": {
+                    "self": {
+                        "href": "blogs/5a62020f48101327f72135d5",
+                        "title": "Blog"
+                    }
+                },
+                "_type": "blogs",
+                "_updated": "2018-01-19T14:37:41+00:00",
+                "blog_preferences": {},
+                "blog_status": "closed",
+                "category": "",
+                "description": "This is another test blog.",
+                "firstcreated": "2018-01-19T14:34:55+00:00",
+                "last_created_post": {},
+                "last_updated_post": {},
+                "market_enabled": false,
+                "original_creator": "5a5f5eb34810136266dcaf5d",
+                "posts_order_sequence": 0,
+                "start_date": "2018-01-19T14:34:55+00:00",
+                "syndication_enabled": false,
+                "title": "Test",
+                "total_posts": 0,
+                "version_creator": "5a5f5eb34810136266dcaf5d",
+                "versioncreated": "2018-01-19T14:37:41+00:00"
+            }
+        ],
+        "_links": {
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "blogs",
+                "title": "blogs"
+            }
+        },
+        "_meta": {
+            "max_results": 25,
+            "page": 1,
+            "total": 1
+        }
+    }
+
+## Blogs membership request [/request_membership/{_id}]
+
+### Create a membership request to a blog [POST]
+
++ Request (application/json)
+
+        {
+            "blog": "5a62002548101327f3b5a585"
+        }
+
++ Response 201 (application/json)
+
+        {
+            "_created": "2018-01-19T14:58:48+00:00",
+            "_etag": "5db76b7ed3ec33782adc487cca21490efdeaf609",
+            "_id": "5a6207a8481013280693eba9",
+            "_links": {
+                "self": {
+                    "href": "request_membership/5a6207a8481013280693eba9",
+                    "title": "Request_membership"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T14:58:48+00:00",
+            "blog": "5a62002548101327f3b5a585",
+            "original_creator": "5a5f5eb34810136266dcaf5d"
+        }
+
+
+# Group Items
+
+A blog post consists of one or more single items. Items can have different types, for example **text** or **quote**.
+
+**Authentication required.**
+
+## Items item [/items/{_id}]
+
+A single Items resource
+
++ Parameters
+    - _id (string, `1`) ... Items item identifier.
+
++ Model (application/json)
+
+        {
+            "_created": "2018-01-19T15:03:56+00:00",
+            "_current_version": 1,
+            "_etag": "1391b879b7e3174019416193115dc76db65488c0",
+            "_id": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "_latest_version": 1,
+            "_links": {
+                "self": {
+                    "href": "items/urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                    "title": "Item"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T15:03:56+00:00",
+            "event_id": "tag:localhost:2018:6b96361a-0ea1-4b7e-96f3-33e51297b45a",
+            "family_id": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "firstcreated": "2018-01-19T15:03:56+00:00",
+            "flags": {
+                "marked_archived_only": false,
+                "marked_for_legal": false,
+                "marked_for_not_publication": false,
+                "marked_for_sms": false
+            },
+            "format": "HTML",
+            "genre": [
+                {
+                    "name": "Article (news)",
+                    "qcode": "Article"
+                }
+            ],
+            "group_type": "default",
+            "guid": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "language": "en",
+            "meta": {},
+            "operation": "create",
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "particular_type": "item",
+            "place": [],
+            "priority": 3,
+            "pubstatus": "usable",
+            "schedule_settings": {
+                "time_zone": null,
+                "utc_embargo": null
+            },
+            "sign_off": "ADM",
+            "source": "Liveblog",
+            "state": "draft",
+            "text": "foo-item",
+            "type": "text",
+            "unique_id": 1,
+            "unique_name": "#1",
+            "urgency": 3,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T15:03:56+00:00"
+        }
+
+
+### Create  an item [POST]
+
++ Request (application/json)
+
+        {
+            "text": "foo-item"
+        }
+
++ Response 201 (application/json)
+
+        [Items item][]
+
+### Retrieve an Item [GET]
+
++ Response 200 (application/json)
+
+        [Items item][]
+
++ Response 404
+
+### Update Item [PATCH]
+
++ Request (application/json)
+
+        {"text": "New foo-item text."}
+
++ Response 200 (application/json)
+
+        {
+            "_created": "2018-01-19T15:03:56+00:00",
+            "_current_version": 2,
+            "_etag": "55989409db505d15a43f1a150e68251f39d5b498",
+            "_id": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "_latest_version": 2,
+            "_links": {
+                "self": {
+                    "href": "items/urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                    "title": "Item"
+                }
+            },
+            "_status": "OK",
+            "_updated": "2018-01-19T15:06:05+00:00",
+            "event_id": "tag:localhost:2018:6b96361a-0ea1-4b7e-96f3-33e51297b45a",
+            "family_id": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "firstcreated": "2018-01-19T15:03:56+00:00",
+            "flags": {
+                "marked_archived_only": false,
+                "marked_for_legal": false,
+                "marked_for_not_publication": false,
+                "marked_for_sms": false
+            },
+            "format": "HTML",
+            "genre": [
+                {
+                    "name": "Article (news)",
+                    "qcode": "Article"
+                }
+            ],
+            "group_type": "default",
+            "guid": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+            "language": "en",
+            "meta": {},
+            "operation": "update",
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "particular_type": "item",
+            "place": [],
+            "priority": 3,
+            "pubstatus": "usable",
+            "schedule_settings": {
+                "time_zone": null,
+                "utc_embargo": null
+            },
+            "sign_off": "ADM",
+            "source": "Liveblog",
+            "state": "draft",
+            "text": "New foo-item text.",
+            "type": "text",
+            "unique_id": 1,
+            "unique_name": "#1",
+            "urgency": 3,
+            "version": 2,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T15:06:05+00:00"
+        }
+
++ Response 403
+
+### Delete an Item [DELETE]
+
++ Request (application/json)
+
+        {}
+
++ Response 204
+
+## Items collection [/items{?page,max_results}]
+
+### List all items [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+
++ Response 200 (application/json)
+
+        {
+            "_items": [
+                {
+                    "_current_version": 3,
+                    "_latest_version": 3,
+                    "_links": {
+                        "self": {
+                            "href": "items/urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                            "title": "Item"
+                        }
+                    },
+                    "_type": "archive",
+                    "event_id": "tag:localhost:2018:6b96361a-0ea1-4b7e-96f3-33e51297b45a",
+                    "family_id": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                    "firstcreated": "2018-01-19T15:03:56+00:00",
+                    "flags": {
+                        "marked_archived_only": false,
+                        "marked_for_legal": false,
+                        "marked_for_not_publication": false,
+                        "marked_for_sms": false
+                    },
+                    "format": "HTML",
+                    "genre": [
+                        {
+                            "name": "Article (news)",
+                            "qcode": "Article"
+                        }
+                    ],
+                    "group_type": "default",
+                    "guid": "urn:newsml:localhost:2018-01-19T16:03:56.281385:2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                    "language": "en",
+                    "meta": {},
+                    "operation": "update",
+                    "original_creator": "5a5f5eb34810136266dcaf5d",
+                    "particular_type": "item",
+                    "place": [],
+                    "priority": 3,
+                    "pubstatus": "usable",
+                    "schedule_settings": {
+                        "time_zone": null,
+                        "utc_embargo": null
+                    },
+                    "sign_off": "ADM",
+                    "source": "Liveblog",
+                    "state": "draft",
+                    "text": "New foo-item text.",
+                    "type": "text",
+                    "unique_id": 1,
+                    "unique_name": "#1",
+                    "urgency": 3,
+                    "uri": "None/items/urn%3Anewsml%3Alocalhost%3A2018-01-19T16%3A03%3A56.281385%3A2ec2eada-eac5-41f3-9d54-fe4d9952eca1",
+                    "version": 2,
+                    "version_creator": "5a5f5eb34810136266dcaf5d",
+                    "versioncreated": "2018-01-19T15:06:51+00:00"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "href": "/",
+                    "title": "home"
+                },
+                "self": {
+                    "href": "api/items/?",
+                    "title": "items"
+                }
+            },
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 1
+            }
+        }
+
+
+# Group Posts
+
+A blog post consists of one or more single items.
+
+**Authentication required.**
+
+## Posts item [/items/{_id}]
+
+A single Posts resource
+
++ Parameters
+    - _id (string, `urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64`) ... Posts item identifier.
+
++ Model (application/json)
+    {
+        "_created": "2018-01-19T15:20:12+00:00",
+        "_current_version": 1,
+        "_etag": "a132fdc192d1185f922d16d7afe6c2d81aa7e40d",
+        "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+        "_latest_version": 1,
+        "_links": {
+            "collection": {
+                "href": "posts",
+                "title": "posts"
+            },
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "posts/urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "title": "Post"
+            }
+        },
+        "_updated": "2018-01-19T15:20:12+00:00",
+        "blog": "5a62002548101327f3b5a585",
+        "content_updated_date": "2018-01-19T15:20:12+00:00",
+        "deleted": false,
+        "event_id": "tag:localhost:2018:990cd92d-97bd-4ca2-85cc-9f96c094db2e",
+        "family_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+        "firstcreated": "2018-01-19T15:20:12+00:00",
+        "flags": {
+            "marked_archived_only": false,
+            "marked_for_legal": false,
+            "marked_for_not_publication": false,
+            "marked_for_sms": false
+        },
+        "format": "HTML",
+        "genre": [
+            {
+                "name": "Article (news)",
+                "qcode": "Article"
+            }
+        ],
+        "groups": [
+            {
+                "id": "root",
+                "refs": [
                     {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
+                        "idRef": "main"
+                    }
+                ],
+                "role": "grpRole:NEP"
+            },
+            {
+                "id": "main",
+                "refs": [],
+                "role": "grpRole:main"
+            }
+        ],
+        "guid": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+        "headline": "Foo post",
+        "language": "en",
+        "lb_highlight": false,
+        "operation": "create",
+        "order": 0,
+        "original_creator": "5a5f5eb34810136266dcaf5d",
+        "particular_type": "post",
+        "place": [],
+        "post_status": "open",
+        "priority": 3,
+        "published_date": "2018-01-19T15:20:12+00:00",
+        "publisher": {
+            "_created": "2018-01-17T14:33:23+00:00",
+            "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+            "_id": "5a5f5eb34810136266dcaf5d",
+            "_updated": "2018-01-19T14:59:39+00:00",
+            "byline": null,
+            "display_name": "admin",
+            "email": "admin@example.com",
+            "sign_off": "ADM",
+            "username": "admin"
+        },
+        "pubstatus": "usable",
+        "schedule_settings": {
+            "time_zone": null,
+            "utc_embargo": null
+        },
+        "sign_off": "ADM",
+        "source": "Liveblog",
+        "state": "draft",
+        "sticky": false,
+        "type": "composite",
+        "unique_id": 5,
+        "unique_name": "#5",
+        "urgency": 3,
+        "version_creator": "5a5f5eb34810136266dcaf5d",
+        "versioncreated": "2018-01-19T15:20:12+00:00"
+    }
+
+### Create a post [POST]
+
+To create a Post with an Item, you have to connect the Item with a Post resource.
+
++ Request (application/json)
+
+    {
+        "blog": "5a6f12d0f8728e00eddd12fe",
+        "groups": [{
+            "id": "root",
+            "refs": [{
+                "idRef": "main"
+            }],
+            "role": "grpRole:NEP"
+        }, {
+            "id": "main",
+            "refs": [{
+                "residRef": "urn:newsml:localhost:2018-02-19T14:11:31.626522:fac1a6d8-1114-4f6a-a295-3682a198f2b5"
+            }],
+            "role": "grpRole:Main"
+        }]
+    }
+
++ Response 201
+
+    {
+        "_created": "2018-02-19T13:13:50+00:00",
+        "_current_version": 1,
+        "_etag": "ff0a6cfe06b993bcf4d79f07fa1002c00c8747d4",
+        "_id": "urn:newsml:localhost:2018-02-19T14:13:50.246717:7e567eab-a50d-41af-8bac-d88c90e7f08a",
+        "_latest_version": 1,
+        "_links": {
+            "self": {
+                "href": "posts/urn:newsml:localhost:2018-02-19T14:13:50.246717:7e567eab-a50d-41af-8bac-d88c90e7f08a",
+                "title": "Post"
+            }
+        },
+        "_status": "OK",
+        "_updated": "2018-02-19T13:13:50+00:00",
+        "blog": "5a6f12d0f8728e00eddd12fe",
+        "byline": "my byline",
+        "content_updated_date": "2018-02-19T13:13:50+00:00",
+        "deleted": false,
+        "event_id": "tag:localhost:2018:1fbd919d-4b0a-49c3-bee3-74d24c288113",
+        "family_id": "urn:newsml:localhost:2018-02-19T14:13:50.246717:7e567eab-a50d-41af-8bac-d88c90e7f08a",
+        "firstcreated": "2018-02-19T13:13:50+00:00",
+        "flags": {
+            "marked_archived_only": false,
+            "marked_for_legal": false,
+            "marked_for_not_publication": false,
+            "marked_for_sms": false
+        },
+        "format": "HTML",
+        "genre": [
+            {
+                "name": "Article (news)",
+                "qcode": "Article"
+            }
+        ],
+        "groups": [
+            {
+                "id": "root",
+                "refs": [
+                    {
+                        "idRef": "main"
+                    }
+                ],
+                "role": "grpRole:NEP"
+            },
+            {
+                "id": "main",
+                "refs": [
+                    {
+                        "guid": "urn:newsml:localhost:2018-02-19T14:11:31.626522:fac1a6d8-1114-4f6a-a295-3682a198f2b5",
+                        "residRef": "urn:newsml:localhost:2018-02-19T14:11:31.626522:fac1a6d8-1114-4f6a-a295-3682a198f2b5",
+                        "type": "text"
+                    }
+                ],
+                "role": "grpRole:Main"
+            }
+        ],
+        "guid": "urn:newsml:localhost:2018-02-19T14:13:50.246717:7e567eab-a50d-41af-8bac-d88c90e7f08a",
+        "language": "en",
+        "lb_highlight": false,
+        "operation": "create",
+        "order": 1,
+        "original_creator": "572c5f3d098f6b069db03c92",
+        "particular_type": "post",
+        "place": [],
+        "post_status": "open",
+        "priority": 3,
+        "published_date": "2018-02-19T13:13:50+00:00",
+        "publisher": {
+            "_created": "2016-05-06T09:09:17+00:00",
+            "_etag": "34795ee75bd4686880558bd0b04c51aaee4801ef",
+            "_id": "572c5f3d098f6b069db03c92",
+            "_updated": "2018-02-19T12:29:53+00:00",
+            "byline": "my byline",
+            "display_name": "Live Blog",
+            "email": "admin@example.com",
+            "sign_off": "ADM",
+            "username": "admin"
+        },
+        "pubstatus": "usable",
+        "schedule_settings": {
+            "time_zone": null,
+            "utc_embargo": null
+        },
+        "sign_off": "ADM",
+        "source": "Liveblog",
+        "state": "draft",
+        "sticky": false,
+        "type": "composite",
+        "unique_id": 4737,
+        "unique_name": "#4737",
+        "urgency": 3,
+        "version_creator": "572c5f3d098f6b069db03c92",
+        "versioncreated": "2018-02-19T13:13:50+00:00"
+    }
+
+### Retrieve a Post [GET]
+
++ Response 200 (application/json)
+
+    [Posts item][]
+
++ Response 404
+
+### Update Post [PATCH]
+
++ Request (application/json)
+
+        {"headline": "Foo post title"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+### Delete a Post [DELETE]
+
++ Request (application/json)
+
++ Response 204
+
+## Posts collection [/posts{?page,max_results}]
+
+
+### List all posts [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+
++ Response 200 (application/json)
+     {
+        "_items": [
+            {
+                "_created": "2018-01-19T15:20:12+00:00",
+                "_current_version": 2,
+                "_etag": "9ea532d2501ccb798831a2457c23763a1931edff",
+                "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "_latest_version": 2,
+                "_links": {
+                    "self": {
+                        "href": "posts/urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                        "title": "Post"
+                    }
+                },
+                "_type": "archive",
+                "_updated": "2018-01-19T15:23:57+00:00",
+                "blog": "5a62002548101327f3b5a585",
+                "content_updated_date": "2018-01-19T15:20:12+00:00",
+                "deleted": false,
+                "event_id": "tag:localhost:2018:990cd92d-97bd-4ca2-85cc-9f96c094db2e",
+                "family_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "firstcreated": "2018-01-19T15:20:12+00:00",
+                "flags": {
+                    "marked_archived_only": false,
+                    "marked_for_legal": false,
+                    "marked_for_not_publication": false,
+                    "marked_for_sms": false
+                },
+                "format": "HTML",
+                "genre": [
+                    {
+                        "name": "Article (news)",
+                        "qcode": "Article"
+                    }
+                ],
+                "groups": [
+                    {
+                        "id": "root",
+                        "refs": [
+                            {
+                                "idRef": "main"
+                            }
+                        ],
+                        "role": "grpRole:NEP"
+                    },
+                    {
+                        "id": "main",
+                        "refs": [],
+                        "role": "grpRole:main"
+                    }
+                ],
+                "guid": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "headline": "Foo post title",
+                "language": "en",
+                "lb_highlight": false,
+                "operation": "update",
+                "order": 0,
+                "original_creator": "5a5f5eb34810136266dcaf5d",
+                "particular_type": "post",
+                "place": [],
+                "post_status": "open",
+                "priority": 3,
+                "published_date": "2018-01-19T15:20:12+00:00",
+                "publisher": {
+                    "_created": "2018-01-17T14:33:23+00:00",
+                    "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                    "_id": "5a5f5eb34810136266dcaf5d",
+                    "_updated": "2018-01-19T14:59:39+00:00",
+                    "byline": null,
+                    "display_name": "admin",
+                    "email": "admin@example.com",
+                    "sign_off": "ADM",
+                    "username": "admin"
+                },
+                "pubstatus": "usable",
+                "schedule_settings": {
+                    "time_zone": null,
+                    "utc_embargo": null
+                },
+                "sign_off": "ADM",
+                "source": "Liveblog",
+                "state": "draft",
+                "sticky": false,
+                "type": "composite",
+                "unique_id": 5,
+                "unique_name": "#5",
+                "unpublished_date": "2018-01-19T15:23:57+00:00",
+                "urgency": 3,
+                "version": 2,
+                "version_creator": "5a5f5eb34810136266dcaf5d",
+                "versioncreated": "2018-01-19T15:23:57+00:00"
+            },
+            {
+                "_created": "2018-01-19T15:19:45+00:00",
+                "_current_version": 1,
+                "_etag": "6f58421916c6d6de37b2d7d8451da069b9bf1e88",
+                "_id": "urn:newsml:localhost:2018-01-19T16:19:45.602344:d2f8ee42-68b3-496d-99ca-2fec4f35db4a",
+                "_latest_version": 1,
+                "_links": {
+                    "self": {
+                        "href": "posts/urn:newsml:localhost:2018-01-19T16:19:45.602344:d2f8ee42-68b3-496d-99ca-2fec4f35db4a",
+                        "title": "Post"
+                    }
+                },
+                "_type": "archive",
+                "_updated": "2018-01-19T15:19:45+00:00",
+                "content_updated_date": "2018-01-19T15:19:45+00:00",
+                "deleted": false,
+                "event_id": "tag:localhost:2018:d362c4ce-78ed-46c5-b9ab-635e203c3e86",
+                "family_id": "urn:newsml:localhost:2018-01-19T16:19:45.602344:d2f8ee42-68b3-496d-99ca-2fec4f35db4a",
+                "firstcreated": "2018-01-19T15:19:45+00:00",
+                "flags": {
+                    "marked_archived_only": false,
+                    "marked_for_legal": false,
+                    "marked_for_not_publication": false,
+                    "marked_for_sms": false
+                },
+                "format": "HTML",
+                "genre": [
+                    {
+                        "name": "Article (news)",
+                        "qcode": "Article"
+                    }
+                ],
+                "groups": [
+                    {
+                        "id": "root",
+                        "refs": [
+                            {
+                                "idRef": "main"
+                            }
+                        ],
+                        "role": "grpRole:NEP"
+                    },
+                    {
+                        "id": "main",
+                        "refs": [],
+                        "role": "grpRole:main"
+                    }
+                ],
+                "guid": "urn:newsml:localhost:2018-01-19T16:19:45.602344:d2f8ee42-68b3-496d-99ca-2fec4f35db4a",
+                "headline": "Foo post",
+                "language": "en",
+                "lb_highlight": false,
+                "operation": "create",
+                "order": 0,
+                "original_creator": "5a5f5eb34810136266dcaf5d",
+                "particular_type": "post",
+                "place": [],
+                "post_status": "open",
+                "priority": 3,
+                "published_date": "2018-01-19T15:19:45+00:00",
+                "publisher": {
+                    "_created": "2018-01-17T14:33:23+00:00",
+                    "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                    "_id": "5a5f5eb34810136266dcaf5d",
+                    "_updated": "2018-01-19T14:59:39+00:00",
+                    "byline": null,
+                    "display_name": "admin",
+                    "email": "admin@example.com",
+                    "sign_off": "ADM",
+                    "username": "admin"
+                },
+                "pubstatus": "usable",
+                "schedule_settings": {
+                    "time_zone": null,
+                    "utc_embargo": null
+                },
+                "sign_off": "ADM",
+                "source": "Liveblog",
+                "state": "draft",
+                "sticky": false,
+                "type": "composite",
+                "unique_id": 4,
+                "unique_name": "#4",
+                "urgency": 3,
+                "version_creator": "5a5f5eb34810136266dcaf5d",
+                "versioncreated": "2018-01-19T15:19:45+00:00"
+            },
+            {
+                "_created": "2018-01-19T15:19:00+00:00",
+                "_current_version": 1,
+                "_etag": "67b9be361729bbc53e851b3752c3ebb5ffb99372",
+                "_id": "urn:newsml:localhost:2018-01-19T16:19:00.449150:3fbb68e3-8dc2-4ae4-96c1-860030039b97",
+                "_latest_version": 1,
+                "_links": {
+                    "self": {
+                        "href": "posts/urn:newsml:localhost:2018-01-19T16:19:00.449150:3fbb68e3-8dc2-4ae4-96c1-860030039b97",
+                        "title": "Post"
+                    }
+                },
+                "_type": "archive",
+                "_updated": "2018-01-19T15:19:00+00:00",
+                "content_updated_date": "2018-01-19T15:19:00+00:00",
+                "deleted": false,
+                "event_id": "tag:localhost:2018:24f30831-1ca9-4d7c-ad68-3bdf63f059b7",
+                "family_id": "urn:newsml:localhost:2018-01-19T16:19:00.449150:3fbb68e3-8dc2-4ae4-96c1-860030039b97",
+                "firstcreated": "2018-01-19T15:19:00+00:00",
+                "flags": {
+                    "marked_archived_only": false,
+                    "marked_for_legal": false,
+                    "marked_for_not_publication": false,
+                    "marked_for_sms": false
+                },
+                "format": "HTML",
+                "genre": [
+                    {
+                        "name": "Article (news)",
+                        "qcode": "Article"
+                    }
+                ],
+                "groups": [
+                    {
+                        "id": "root",
+                        "refs": [
+                            {
+                                "idRef": "main"
+                            }
+                        ],
+                        "role": "grpRole:NEP"
+                    },
+                    {
+                        "id": "main",
+                        "refs": [],
+                        "role": "grpRole:main"
+                    }
+                ],
+                "guid": "urn:newsml:localhost:2018-01-19T16:19:00.449150:3fbb68e3-8dc2-4ae4-96c1-860030039b97",
+                "headline": "Foo post",
+                "language": "en",
+                "lb_highlight": false,
+                "operation": "create",
+                "order": 0,
+                "original_creator": "5a5f5eb34810136266dcaf5d",
+                "particular_type": "post",
+                "place": [],
+                "post_status": "open",
+                "priority": 3,
+                "published_date": "2018-01-19T15:19:00+00:00",
+                "publisher": {
+                    "_created": "2018-01-17T14:33:23+00:00",
+                    "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                    "_id": "5a5f5eb34810136266dcaf5d",
+                    "_updated": "2018-01-19T14:59:39+00:00",
+                    "byline": null,
+                    "display_name": "admin",
+                    "email": "admin@example.com",
+                    "sign_off": "ADM",
+                    "username": "admin"
+                },
+                "pubstatus": "usable",
+                "schedule_settings": {
+                    "time_zone": null,
+                    "utc_embargo": null
+                },
+                "sign_off": "ADM",
+                "source": "Liveblog",
+                "state": "draft",
+                "sticky": false,
+                "type": "composite",
+                "unique_id": 3,
+                "unique_name": "#3",
+                "urgency": 3,
+                "version_creator": "5a5f5eb34810136266dcaf5d",
+                "versioncreated": "2018-01-19T15:19:00+00:00"
+            }
+        ],
+        "_links": {
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "posts",
+                "title": "posts"
+            }
+        },
+        "_meta": {
+            "max_results": 25,
+            "page": 1,
+            "total": 3
+        }
+    }
+## Blog posts [/blogs/{_id}/posts]
+
++ Parameters
+    - _id (string) ... Blog id.
+
+### List the posts for given blogs [GET]
+
++ Response 200 (application/json)
+    {
+        "_items": [
+            {
+                "_created": "2018-01-19T15:20:12+00:00",
+                "_current_version": 2,
+                "_etag": "9ea532d2501ccb798831a2457c23763a1931edff",
+                "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "_links": {
+                    "self": {
+                        "href": "/posts/urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                        "title": "Posts"
+                    }
+                },
+                "_type": "archive",
+                "_updated": "2018-01-19T15:23:57+00:00",
+                "blog": "5a62002548101327f3b5a585",
+                "content_updated_date": "2018-01-19T15:20:12+00:00",
+                "deleted": false,
+                "event_id": "tag:localhost:2018:990cd92d-97bd-4ca2-85cc-9f96c094db2e",
+                "family_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "firstcreated": "2018-01-19T15:20:12+00:00",
+                "flags": {
+                    "marked_archived_only": false,
+                    "marked_for_legal": false,
+                    "marked_for_not_publication": false,
+                    "marked_for_sms": false
+                },
+                "format": "HTML",
+                "genre": [
+                    {
+                        "name": "Article (news)",
+                        "qcode": "Article"
+                    }
+                ],
+                "groups": [
+                    {
+                        "id": "root",
+                        "refs": [
+                            {
+                                "idRef": "main"
+                            }
+                        ],
+                        "role": "grpRole:NEP"
+                    },
+                    {
+                        "id": "main",
+                        "refs": [],
+                        "role": "grpRole:main"
+                    }
+                ],
+                "guid": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "headline": "Foo post title",
+                "language": "en",
+                "lb_highlight": false,
+                "operation": "update",
+                "order": 0,
+                "original_creator": "5a5f5eb34810136266dcaf5d",
+                "particular_type": "post",
+                "place": [],
+                "post_status": "open",
+                "priority": 3,
+                "published_date": "2018-01-19T15:20:12+00:00",
+                "publisher": {
+                    "_created": "2018-01-17T14:33:23+00:00",
+                    "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                    "_id": "5a5f5eb34810136266dcaf5d",
+                    "_updated": "2018-01-19T14:59:39+00:00",
+                    "byline": null,
+                    "display_name": "admin",
+                    "email": "admin@example.com",
+                    "sign_off": "ADM",
+                    "username": "admin"
+                },
+                "pubstatus": "usable",
+                "schedule_settings": {
+                    "time_zone": null,
+                    "utc_embargo": null
+                },
+                "sign_off": "ADM",
+                "source": "Liveblog",
+                "state": "draft",
+                "sticky": false,
+                "type": "composite",
+                "unique_id": 5,
+                "unique_name": "#5",
+                "unpublished_date": "2018-01-19T15:23:57+00:00",
+                "urgency": 3,
+                "version": 2,
+                "version_creator": "5a5f5eb34810136266dcaf5d",
+                "versioncreated": "2018-01-19T15:23:57+00:00"
+            }
+        ],
+        "_links": {
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "blogs/5a62002548101327f3b5a585/posts",
+                "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+            }
+        },
+        "_meta": {
+            "max_results": 25,
+            "page": 1,
+            "total": 1
+        }
+    }
+
+# Group Themes
+
+Each instance of Live Blog comes with one or more System Themes installed.
+
+**Authentication required.**
+
+## Themes item [/themes/{_id}]
+
++ Parameters
+    - _id (string, `1`) ... Themes item identifier.
+
++ Model (application/json)
+
+        {
+        "_created": "1970-01-01T00:00:00+00:00",
+        "_etag": "f24c098514f50b78099a8fff9e190064edb60813",
+        "_id": "564dc9dd67ed61001ba590f5",
+        "_links": {
+            "self": {
+                "href": "themes/564dc9dd67ed61001ba590f5",
+                "title": "Theme"}},
+        "_updated": "1970-01-01T00:00:00+00:00",
+        "abstract": true,
+        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+        "label": "Angular Based Theme",
+        "license": "AGPL-3.0",
+        "name": "angular",
+        "options": {
+            "0": {
+                "default": 20,
+                "help": "Set the number of posts you want to see at the initialization",
+                "label": "Number of posts per page",
+                "name": "postsPerPage",
+                "type": "number"
+                 },
+            "1": {
+                "default": "?",
+                "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?...",
+                "label": "Permalink Delimiter",
+                "name": "permalinkDelimiter"
+                 },
+        "repository": {
+            "type": "git",
+            "url": "git@github.com:liveblog/lb-theme-angular.git",
+            "scripts": ["//code.jquery.com/jquery-1.11.3.min.js"],
+            "version": "1.1.0"
+            }
+        }
+
+### Retrieve a Theme [GET]
+
++ Response 200 (application/json)
+
+    [Themes item][]
+
++ Response 404
+
+### Update Theme [PATCH]
+
++ Request (application/json)
+
+        {"name": "new-theme"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
+### Change blog theme [PATCH /blog/{_blog_id}]
+
++ Request (application/json)
+
+        { "blog_preferences": {"theme": "theme-demo"}}
+
+
++ Response  (application/json)
+
+    {
+    "_created": "2018-01-29T12:25:52+00:00",
+    "_etag": "289a913e0894ced2097879969b78ad5bff342742",
+    "_id": "5a6f12d0f8728e00eddd12fe",
+    "_links": {
+        "self": {
+            "href": "blogs/5a6f12d0f8728e00eddd12fe",
+            "title": "Blog"
+        }
+    },
+    "_status": "OK",
+    "_updated": "2018-02-19T12:43:59+00:00",
+    "blog_preferences": {
+        "language": "en",
+        "theme": "theme-demo"
+    },
+    "blog_status": "open",
+    "category": "",
+    "description": "API test playground",
+    "last_created_post": {},
+    "last_updated_post": {},
+    "market_enabled": false,
+    "members": [],
+    "original_creator": "572c5f3d098f6b069db03c92",
+    "posts_order_sequence": 0,
+    "public_url": "https://test.liveblog.pro/test/blogs/5a6f12d0f8728e00eddd12fe/index.html",
+    "public_urls": {
+        "output": {},
+        "theme": {}
+    },
+    "start_date": "2018-01-29T12:25:52+00:00",
+    "syndication_enabled": true,
+    "theme_settings": {
+        "authorNameFormat": "display_name",
+        "autoApplyEdits": false,
+        "autoApplyUpdates": true,
+        "blockSearchEngines": true,
+        "canComment": true,
+        "clientDatetimeOnly": true,
+        "datetimeFormat": "lll",
+        "gaCode": "",
+        "hasHighlights": true,
+        "language": "de",
+        "permalinkDelimiter": "?",
+        "postOrder": "editorial",
+        "postsPerPage": 10,
+        "removeStylesESI": false,
+        "renderForESI": true,
+        "showAuthor": true,
+        "showAuthorAvatar": true,
+        "showDescription": true,
+        "showGallery": true,
+        "showImage": false,
+        "showLiveblogLogo": true,
+        "showSyndicatedAuthor": true,
+        "showTitle": true,
+        "showUpdateDatetime": false,
+        "stickyPosition": "bottom"
+    },
+    "title": "API docs",
+    "total_posts": 0,
+    "version_creator": "572c5f3d098f6b069db03c92",
+    "versioncreated": "2018-02-19T12:43:59+00:00"
+}
+
+### Delete a Theme [DELETE]
+
++ Request (application/json)
+
+        {}
++ Response 204
+
+### List all themes [GET /themes/{?page,max_results}]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+
++ Response 200 (application/json)
+
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/thems/1"}},
+                    "name": "angular_based",
+                    "_updated": "2015-10-16T08:34:00+0000",
+                    "_id": "564dc9dd67ed61001ba590f5",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "author":"Edouard Richard <edouard.richard@sourcefabric.org>",
+                    "_etag": "f24c098514f50b78099a8fff9e190064edb60813"
+                },
+                {
+                    "_links": {"self": {"href": "/thems/2"}},
+                    "name": "Actual Dog",
+                    "_updated": "2015-11-16T08:34:00+0000",
+                    "_id": "564dc9dd67ed61001ba590f5",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "author":"Edouard Richard <edouard.richard@sourcefabric.org>",
+                    "_etag": "f24c098514f40c78099a8fff9e190064edb60916"
+                }
+            ]
+        }
+
+# Group Embeds
+
+## Blogs [/client_blogs/{_id}]
+
+A single Blog resource.
++ Parameters
+    + _id (string) ... Blogs id.
+
++ Model (application/json)
+    {
+        "_created": "2018-01-19T14:26:45+00:00",
+        "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+        "_id": "5a62002548101327f3b5a585",
+        "_links": {
+            "self": {
+                "href": "client_blogs/5a62002548101327f3b5a585",
+                "title": "Client_blog"
+            }
+        },
+        "_type": "blogs",
+        "_updated": "2018-01-19T15:25:27+00:00",
+        "blog_preferences": {},
+        "blog_status": "open",
+        "category": "",
+        "description": "This is test blog.",
+        "firstcreated": "2018-01-19T14:26:45+00:00",
+        "last_created_post": {
+            "_id": "urn:newsml:localhost:2018-01-19T16:24:55.082992:8c8ceb69-59bc-44cc-b3ac-a5bf2f9ccccf",
+            "_updated": "2018-01-19T15:24:55+00:00"
+        },
+        "last_updated_post": {
+            "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+            "_updated": "2018-01-19T15:23:57+00:00"
+        },
+        "market_enabled": false,
+        "original_creator": "5a5f5eb34810136266dcaf5d",
+        "posts_order_sequence": 2,
+        "start_date": "2018-01-19T14:26:45+00:00",
+        "syndication_enabled": false,
+        "title": "Foobla",
+        "total_posts": 1,
+        "version_creator": "5a5f5eb34810136266dcaf5d",
+        "versioncreated": "2018-01-19T14:33:47+00:00"
+    }
+
+### Retrieve a single Blog [GET]
+
++ Response 200 (application/json)
+
+    {
+        "_created": "2018-01-19T14:26:45+00:00",
+        "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+        "_id": "5a62002548101327f3b5a585",
+        "_links": {
+            "self": {
+                "href": "client_blogs/5a62002548101327f3b5a585",
+                "title": "Client_blog"
+            }
+        },
+        "_type": "blogs",
+        "_updated": "2018-01-19T15:25:27+00:00",
+        "blog_preferences": {},
+        "blog_status": "open",
+        "category": "",
+        "description": "This is test blog.",
+        "firstcreated": "2018-01-19T14:26:45+00:00",
+        "last_created_post": {
+            "_id": "urn:newsml:localhost:2018-01-19T16:24:55.082992:8c8ceb69-59bc-44cc-b3ac-a5bf2f9ccccf",
+            "_updated": "2018-01-19T15:24:55+00:00"
+        },
+        "last_updated_post": {
+            "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+            "_updated": "2018-01-19T15:23:57+00:00"
+        },
+        "market_enabled": false,
+        "original_creator": "5a5f5eb34810136266dcaf5d",
+        "posts_order_sequence": 2,
+        "start_date": "2018-01-19T14:26:45+00:00",
+        "syndication_enabled": false,
+        "title": "Foobla",
+        "total_posts": 1,
+        "version_creator": "5a5f5eb34810136266dcaf5d",
+        "versioncreated": "2018-01-19T14:33:47+00:00"
+    }
+
++ Response 404
+
+### List all Blogs [GET[/client_blogs/{?page,max_results}]
+
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of blogs to be returned
+
+
++ Response 200 (application/json)
+
+{
+    "_items": [
+        {
+            "_created": "2018-01-19T14:26:45+00:00",
+            "_etag": "28078c9a5e1cd42d9bbb1abaa23344ed763ce0bf",
+            "_id": "5a62002548101327f3b5a585",
+            "_links": {
+                "self": {
+                    "href": "client_blogs/5a62002548101327f3b5a585",
+                    "title": "Client_blog"
+                }
+            },
+            "_type": "blogs",
+            "_updated": "2018-01-19T15:25:27+00:00",
+            "blog_preferences": {},
+            "blog_status": "open",
+            "category": "",
+            "description": "This is test blog.",
+            "firstcreated": "2018-01-19T14:26:45+00:00",
+            "last_created_post": {
+                "_id": "urn:newsml:localhost:2018-01-19T16:24:55.082992:8c8ceb69-59bc-44cc-b3ac-a5bf2f9ccccf",
+                "_updated": "2018-01-19T15:24:55+00:00"
+            },
+            "last_updated_post": {
+                "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                "_updated": "2018-01-19T15:23:57+00:00"
+            },
+            "market_enabled": false,
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "posts_order_sequence": 2,
+            "start_date": "2018-01-19T14:26:45+00:00",
+            "syndication_enabled": false,
+            "title": "Foobla",
+            "total_posts": 1,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T14:33:47+00:00"
+        },
+        {
+            "_created": "2018-01-19T14:34:55+00:00",
+            "_etag": "df8d8430fa7307ec47264a8bff85cb6e48a907c0",
+            "_id": "5a62020f48101327f72135d5",
+            "_links": {
+                "self": {
+                    "href": "client_blogs/5a62020f48101327f72135d5",
+                    "title": "Client_blog"
+                }
+            },
+            "_type": "blogs",
+            "_updated": "2018-01-19T14:37:41+00:00",
+            "blog_preferences": {},
+            "blog_status": "closed",
+            "category": "",
+            "description": "This is another test blog.",
+            "firstcreated": "2018-01-19T14:34:55+00:00",
+            "last_created_post": {},
+            "last_updated_post": {},
+            "market_enabled": false,
+            "original_creator": "5a5f5eb34810136266dcaf5d",
+            "posts_order_sequence": 0,
+            "start_date": "2018-01-19T14:34:55+00:00",
+            "syndication_enabled": false,
+            "title": "Test",
+            "total_posts": 0,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T14:37:41+00:00"
+        }
+    ],
+    "_links": {
+        "parent": {
+            "href": "/",
+            "title": "home"
+        },
+        "self": {
+            "href": "client_blogs",
+            "title": "client_blogs"
+        }
+    },
+    "_meta": {
+        "max_results": 25,
+        "page": 1,
+        "total": 2
+    }
+}
+
+## Blog posts [/blogs/{_id}/posts]
+
++ Parameters
+    - _id (string) ... Blog id.
+
+### List the posts for given blogs [GET]
+
++ Response 200 (application/json)
+{
+    "_items": [
+        {
+            "_created": "2018-01-19T15:20:12+00:00",
+            "_current_version": 2,
+            "_etag": "9ea532d2501ccb798831a2457c23763a1931edff",
+            "_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+            "_links": {
+                "self": {
+                    "href": "/posts/urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+                    "title": "Posts"
+                }
+            },
+            "_type": "archive",
+            "_updated": "2018-01-19T15:23:57+00:00",
+            "blog": "5a62002548101327f3b5a585",
+            "content_updated_date": "2018-01-19T15:20:12+00:00",
+            "deleted": false,
+            "event_id": "tag:localhost:2018:990cd92d-97bd-4ca2-85cc-9f96c094db2e",
+            "family_id": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+            "firstcreated": "2018-01-19T15:20:12+00:00",
+            "flags": {
+                "marked_archived_only": false,
+                "marked_for_legal": false,
+                "marked_for_not_publication": false,
+                "marked_for_sms": false
+            },
+            "format": "HTML",
+            "genre": [
+                {
+                    "name": "Article (news)",
+                    "qcode": "Article"
+                }
+            ],
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [],
+                    "role": "grpRole:main"
+                }
+            ],
+            "guid": "urn:newsml:localhost:2018-01-19T16:20:12.992320:59df9de8-ad46-420d-b8ae-c7178cc71d64",
+            "headline": "Foo post title",
+            "language": "en",
+            "lb_highlight": false,
+            "operation": "update",
+            "order": 0,
+            "original_creator": {
+                "_created": "2018-01-17T14:33:23+00:00",
+                "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                "_id": "5a5f5eb34810136266dcaf5d",
+                "_updated": "2018-01-22T13:16:18+00:00",
+                "display_name": "admin",
+                "email": "admin@example.com",
+                "invisible_stages": [],
+                "is_active": true,
+                "is_enabled": true,
+                "needs_activation": false,
+                "role": null,
+                "session_preferences": {
+                    "5a65dd464810131cb2d022d1": {
+                        "desk:items": [],
+                        "desk:last_worked": "",
+                        "pinned:items": [],
+                        "scratchpad:items": [],
+                        "stage:items": []
+                    },
+                    "5a65e4224810131cae9192ec": {
+                        "desk:items": [],
+                        "desk:last_worked": "",
+                        "pinned:items": [],
+                        "scratchpad:items": [],
+                        "stage:items": []
+                    }
+                },
+                "sign_off": "ADM",
+                "user_preferences": {
+                    "agg:view": {
+                        "active": {}
+                    },
+                    "archive:view": {
+                        "allowed": [
+                            "mgrid",
+                            "compact"
+                        ],
+                        "category": "archive",
+                        "default": "mgrid",
+                        "label": "Users archive view format",
+                        "type": "string",
+                        "view": "mgrid"
+                    },
+                    "article:default:place": {
+                        "category": "article_defaults",
+                        "label": "Place",
+                        "place": [],
+                        "type": "list"
+                    },
+                    "categories:preferred": {
+                        "category": "categories",
+                        "label": "Preferred Categories",
+                        "selected": {},
+                        "type": "dict"
+                    },
+                    "dashboard:ingest": {
+                        "providers": []
+                    },
+                    "dateline:located": {
+                        "category": "article_defaults",
+                        "label": "Located",
+                        "type": "dict"
+                    },
+                    "desks:preferred": {
+                        "category": "desks",
+                        "label": "Preferred Desks",
+                        "selected": {},
+                        "type": "dict"
+                    },
+                    "destination:active": {},
+                    "editor:theme": {
+                        "theme": "",
+                        "type": "string"
+                    },
+                    "email:notification": {
+                        "category": "notifications",
+                        "default": true,
+                        "enabled": true,
+                        "label": "Send notifications via email",
+                        "type": "bool"
+                    },
+                    "feature:preview": {
+                        "category": "feature",
+                        "default": false,
+                        "enabled": false,
+                        "label": "Enable Feature Preview",
+                        "privileges": [
+                            "feature_preview"
+                        ],
+                        "type": "bool"
+                    },
+                    "singleline:view": {
+                        "category": "rows",
+                        "default": false,
+                        "enabled": null,
+                        "label": "Enable Single Line View",
+                        "type": "bool"
+                    },
+                    "spellchecker:status": {
+                        "default": true,
+                        "enabled": true,
+                        "type": "bool"
+                    },
+                    "templates:recent": {},
+                    "workqueue:items": {
+                        "items": []
+                    },
+                    "workspace:active": {
+                        "type": "string",
+                        "workspace": ""
+                    }
+                },
+                "user_type": "administrator",
+                "username": "admin"
+            },
+            "particular_type": "post",
+            "place": [],
+            "post_items_type": null,
+            "post_status": "open",
+            "priority": 3,
+            "published_date": "2018-01-19T15:20:12+00:00",
+            "publisher": {
+                "_created": "2018-01-17T14:33:23+00:00",
+                "_etag": "a3cc5568d44ef1f198a27fe20e4ee149c3c7a847",
+                "_id": "5a5f5eb34810136266dcaf5d",
+                "_updated": "2018-01-19T14:59:39+00:00",
+                "byline": null,
+                "display_name": "admin",
+                "email": "admin@example.com",
+                "sign_off": "ADM",
+                "username": "admin"
+            },
+            "pubstatus": "usable",
+            "schedule_settings": {
+                "time_zone": null,
+                "utc_embargo": null
+            },
+            "sign_off": "ADM",
+            "source": "Liveblog",
+            "state": "draft",
+            "sticky": false,
+            "type": "composite",
+            "unique_id": 5,
+            "unique_name": "#5",
+            "unpublished_date": "2018-01-19T15:23:57+00:00",
+            "urgency": 3,
+            "version": 2,
+            "version_creator": "5a5f5eb34810136266dcaf5d",
+            "versioncreated": "2018-01-19T15:23:57+00:00"
+        }
+    ],
+    "_links": {
+        "parent": {
+            "href": "/",
+            "title": "home"
+        },
+        "self": {
+            "href": "client_blogs/5a62002548101327f3b5a585/posts",
+            "title": "client_blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+        }
+    },
+    "_meta": {
+        "max_results": 25,
+        "page": 1,
+        "total": 1
+    }
+}
+
+# Group Syndication
+
+Before posts can be delivered from one liveblog instance to another Liveblog instance,
+a consumer/producer relationship between those two instances has to be established.
+
+See https://wiki.sourcefabric.org/display/LIVEBLOG/Syndication+-+User+Manual
+
+**Authentication required.**
+
+## Handle syndication for a blog [/blogs/{_id}]
+
++ Parameters
+    + _id (string) ... Blog id.
+
+### Activate syndication for a blog [PATCH]
+
++ Request (application/json;charset=UTF-8)
+
+        {
+            "syndication_enabled": true
+        }
+
++ Response 200 (application/json)
+
+    {
+        "_created": "2018-01-29T12:25:52+00:00",
+        "_etag": "ea0c9cc9cd81ee053f25930488a4e7c1ada78e37",
+        "_id": "5a6f12d0f8728e00eddd12fe",
+        "_links": {
+            "self": {
+                "href": "blogs/5a6f12d0f8728e00eddd12fe",
+                "title": "Blog"
+            }
+        },
+        "_status": "OK",
+        "_updated": "2018-01-29T15:18:41+00:00",
+        "blog_preferences": {
+            "language": "en",
+            "theme": "default"
+        },
+        "blog_status": "open",
+        "category": "",
+        "description": "API test playground",
+        "last_created_post": {},
+        "last_updated_post": {},
+        "market_enabled": false,
+        "members": [],
+        "original_creator": "572c5f3d098f6b069db03c92",
+        "posts_order_sequence": 0,
+        "public_url": "https://test.liveblog.pro/test/blogs/5a6f12d0f8728e00eddd12fe/index.html",
+        "public_urls": {
+            "output": {},
+            "theme": {}
+        },
+        "start_date": "2018-01-29T12:25:52+00:00",
+        "syndication_enabled": true,
+        "theme_settings": {
+            "authorNameFormat": "display_name",
+            "autoApplyUpdates": true,
+            "blockSearchEngines": true,
+            "canComment": false,
+            "clientDatetimeOnly": true,
+            "datetimeFormat": "lll",
+            "gaCode": "",
+            "hasHighlights": true,
+            "language": "de",
+            "permalinkDelimiter": "?",
+            "postOrder": "editorial",
+            "postsPerPage": 10,
+            "removeStylesESI": false,
+            "renderForESI": true,
+            "showAuthor": true,
+            "showAuthorAvatar": true,
+            "showDescription": false,
+            "showGallery": true,
+            "showImage": false,
+            "showLiveblogLogo": false,
+            "showSyndicatedAuthor": true,
+            "showTitle": true,
+            "showUpdateDatetime": true,
+            "stickyPosition": "bottom"
+        },
+        "title": "API docs",
+        "total_posts": 0,
+        "version_creator": "572c5f3d098f6b069db03c92",
+        "versioncreated": "2018-01-29T15:18:41+00:00"
+    }
+
+### Deactivate syndication for a blog [PATCH]
+
++ Request (application/json;charset=UTF-8)
+
+        {
+            "syndication_enabled": false
+        }
+
++ Response 200 (application/json)
+
+    {
+        "_created": "2018-01-29T12:25:52+00:00",
+        "_etag": "8bb3d4efa5e46672365bd185f8649bc33841e433",
+        "_id": "5a6f12d0f8728e00eddd12fe",
+        "_links": {
+            "self": {
+                "href": "blogs/5a6f12d0f8728e00eddd12fe",
+                "title": "Blog"
+            }
+        },
+        "_status": "OK",
+        "_updated": "2018-01-29T15:56:20+00:00",
+        "blog_preferences": {
+            "language": "en",
+            "theme": "default"
+        },
+        "blog_status": "open",
+        "category": "",
+        "description": "API test playground",
+        "last_created_post": {},
+        "last_updated_post": {},
+        "market_enabled": false,
+        "members": [],
+        "original_creator": "572c5f3d098f6b069db03c92",
+        "posts_order_sequence": 0,
+        "public_url": "https://test.liveblog.pro/test/blogs/5a6f12d0f8728e00eddd12fe/index.html",
+        "public_urls": {
+            "output": {},
+            "theme": {}
+        },
+        "start_date": "2018-01-29T12:25:52+00:00",
+        "syndication_enabled": false,
+        "theme_settings": {
+            "authorNameFormat": "display_name",
+            "autoApplyUpdates": true,
+            "blockSearchEngines": true,
+            "canComment": false,
+            "clientDatetimeOnly": true,
+            "datetimeFormat": "lll",
+            "gaCode": "",
+            "hasHighlights": true,
+            "language": "de",
+            "permalinkDelimiter": "?",
+            "postOrder": "editorial",
+            "postsPerPage": 10,
+            "removeStylesESI": false,
+            "renderForESI": true,
+            "showAuthor": true,
+            "showAuthorAvatar": true,
+            "showDescription": false,
+            "showGallery": true,
+            "showImage": false,
+            "showLiveblogLogo": false,
+            "showSyndicatedAuthor": true,
+            "showTitle": true,
+            "showUpdateDatetime": true,
+            "stickyPosition": "bottom"
+        },
+        "title": "API docs",
+        "total_posts": 0,
+        "version_creator": "572c5f3d098f6b069db03c92",
+        "versioncreated": "2018-01-29T15:56:20+00:00"
+    }
+
+## Producer [/producers/{_id}]
+
+A single Producer resource.
+
++ Parameters
+    - _id (string, `1`) ... Producer item identifier.
+
++ Model (application/json)
+
+    {
+        "_created": "2017-04-30T15:37:56+00:00",
+        "_etag": "fea9954889af5f88b0cccbc3cd8306c17daf10a6",
+        "_id": "590604d4f8728e00f0103527",
+        "_links": {
+            "collection": {
+                "href": "producers",
+                "title": "producers"
+            },
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "producers/590604d4f8728e00f0103527",
+                "title": "Producer"
+            }
+        },
+        "_updated": "2017-04-30T15:41:17+00:00",
+        "api_status": "enabled",
+        "api_url": "https://demo-api.liveblog.pro/api/",
+        "consumer_api_key": "4bcc4bbdc1f2434046d139856b181bda031c9503",
+        "contacts": [
+            {
+                "email": "dd@dd",
+                "first_name": "d",
+                "last_name": "s"
+            }
+        ],
+        "name": "demo"
+    }
+
+### List producers [GET]
+
++ Response 200 (application/json)
+{
+    "_items": [
+        {
+            "_created": "2017-04-30T15:37:56+00:00",
+            "_etag": "fea9954889af5f88b0cccbc3cd8306c17daf10a6",
+            "_id": "590604d4f8728e00f0103527",
+            "_links": {
+                "self": {
+                    "href": "producers/590604d4f8728e00f0103527",
+                    "title": "Producer"
+                }
+            },
+            "_updated": "2017-04-30T15:41:17+00:00",
+            "api_status": "enabled",
+            "api_url": "https://demo-api.liveblog.pro/api/",
+            "consumer_api_key": "4bcc4bbdc1f2434046d139856b181bda031c9503",
+            "contacts": [
+                {
+                    "email": "dd@dd",
+                    "first_name": "d",
+                    "last_name": "s"
+                }
+            ],
+            "name": "demo"
+        },
+        {
+            "_created": "2017-04-27T19:33:00+00:00",
+            "_etag": "85e8a01a42cb80b40b8de1f216b33203df5df0e4",
+            "_id": "5902476cf8728e00f0103503",
+            "_links": {
+                "self": {
+                    "href": "producers/5902476cf8728e00f0103503",
+                    "title": "Producer"
+                }
+            },
+            "_updated": "2017-04-28T13:28:04+00:00",
+            "api_status": "enabled",
+            "api_url": "https://test.liveblog.pro/api/",
+            "consumer_api_key": "68f851b23bd4d5bfb404fd2a2d35c86f6ee19a05",
+            "contacts": [
+                {
+                    "email": "dd@dd",
+                    "first_name": "d",
+                    "last_name": "s"
+                }
+            ],
+            "name": "synd2"
+        }
+    ],
+    "_links": {
+        "parent": {
+            "href": "/",
+            "title": "home"
+        },
+        "self": {
+            "href": "producers",
+            "title": "producers"
+        }
+    },
+    "_meta": {
+        "max_results": 25,
+        "page": 1,
+        "total": 2
+    }
+}
+
+
+### Retrieve a producer [GET]
+
++ Request (application/json)
+
++ Response 200
+
+    [Producer][]
+
++ Response 404
+
+
+
+### List of syndicatable blogs of a producer [GET /producers/{_id}/blogs{?page,max_results,source}]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + source = {} (optional, object) ... Filtering, example: `{"query":{"filtered":{"filter":[{"term":{"blog_status":"open"}},{"term":{"syndication_enabled":true}}]}}}`
+
++ Response 200 (application/json)
+    {
+        "_items": [
+            {
+                "_created": "2017-11-14T21:14:02+00:00",
+                "_etag": "681fa8c2118cbc67538aadba823482365dab03b6",
+                "_id": "5a0b5c9a758d9300ebf6adf1",
+                "_links": {
+                    "self": {
+                        "href": "syndication/blogs/5a0b5c9a758d9300ebf6adf1",
+                        "title": "Syndication_blog"
+                    }
+                },
+                "_type": "blogs",
+                "_updated": "2018-01-27T17:04:32+00:00",
+                "blog_preferences": {
+                    "language": "en",
+                    "theme": "default"
+                },
+                "blog_status": "open",
+                "category": "",
+                "description": "Naregs Blog for syndication",
+                "firstcreated": "2017-11-14T21:14:02+00:00",
+                "last_created_post": {
+                    "_id": "urn:newsml:localhost:2017-11-16T00:33:23.662085:81b9ca31-725b-4d2f-911f-b2b36766374e",
+                    "_updated": "2017-11-15T23:33:23+00:00"
+                },
+                "last_updated_post": {
+                    "_id": "urn:newsml:localhost:2017-11-14T22:51:57.045625:9f165faa-fad9-43fa-a038-06df4fe19d52",
+                    "_updated": "2017-11-14T21:52:04+00:00"
+                },
+                "market_enabled": false,
+                "members": [],
+                "original_creator": "57552eeffe01ce06d3f5541f",
+                "picture": "urn:newsml:localhost:2017-11-14T22:14:19.092454:1d179ddf-d7d1-489c-8cd7-c047361b25a8",
+                "picture_renditions": {
+                    "baseImage": {
+                        "height": 1080,
+                        "href": "https://demo.liveblog.pro/demo/20171114221112/1201cd4b202073656af31f5aee8cc274fbafaf9128d94bbf6fd60802cd196ccd.gif",
+                        "media": "demo/20171114221112/1201cd4b202073656af31f5aee8cc274fbafaf9128d94bbf6fd60802cd196ccd.gif",
+                        "mimetype": "image/gif",
+                        "width": 1080
+                    },
+                    "original": {
+                        "height": 550,
+                        "href": "https://demo.liveblog.pro/demo/20171114221112/072b17efeae7f8281ab2d8be670406f7e8854dc1e7d8b83a4032bf58caee50bd.gif",
+                        "media": "demo/20171114221112/072b17efeae7f8281ab2d8be670406f7e8854dc1e7d8b83a4032bf58caee50bd.gif",
+                        "mimetype": "image/gif",
+                        "width": 550
+                    },
+                    "thumbnail": {
+                        "height": 320,
+                        "href": "https://demo.liveblog.pro/demo/20171114221112/10a350c9ff579c6e66a9707739ac269cb542d0da68521116a8057d4abab75caf.gif",
+                        "media": "demo/20171114221112/10a350c9ff579c6e66a9707739ac269cb542d0da68521116a8057d4abab75caf.gif",
+                        "mimetype": "image/gif",
+                        "width": 320
+                    },
+                    "viewImage": {
+                        "height": 720,
+                        "href": "https://demo.liveblog.pro/demo/20171114221112/e640ab31dbc61845e61910982553aedb17ae70f53331e5c2560d4e680b2685f3.gif",
+                        "media": "demo/20171114221112/e640ab31dbc61845e61910982553aedb17ae70f53331e5c2560d4e680b2685f3.gif",
+                        "mimetype": "image/gif",
+                        "width": 720
+                    }
+                },
+                "picture_url": "https://demo.liveblog.pro/demo/20171114221112/e640ab31dbc61845e61910982553aedb17ae70f53331e5c2560d4e680b2685f3.gif",
+                "posts_order_sequence": 22,
+                "public_url": "https://demo.liveblog.pro/demo/blogs/5a0b5c9a758d9300ebf6adf1/index.html",
+                "public_urls": {
+                    "output": {},
+                    "theme": {}
+                },
+                "start_date": "2017-11-14T21:14:02+00:00",
+                "syndication_enabled": true,
+                "theme_settings": {
+                    "authorNameFormat": "display_name",
+                    "authorNameLinksToEmail": false,
+                    "autoApplyEdits": false,
+                    "autoApplyUpdates": true,
+                    "blockSearchEngines": true,
+                    "canComment": false,
+                    "clientDatetimeOnly": false,
+                    "datetimeFormat": "lll",
+                    "gaCode": "",
+                    "hasHighlights": false,
+                    "infinitScroll": true,
+                    "language": "de",
+                    "livestream": false,
+                    "livestreamAutoplay": false,
+                    "loadNewPostsManually": true,
+                    "permalinkDelimiter": "?",
+                    "postOrder": "editorial",
+                    "postsPerPage": 10,
+                    "removeStylesESI": false,
+                    "renderForESI": false,
+                    "showAuthor": true,
+                    "showAuthorAvatar": true,
+                    "showDescription": false,
+                    "showGallery": false,
+                    "showImage": false,
+                    "showLiveblogLogo": true,
+                    "showSocialShare": true,
+                    "showSyndicatedAuthor": false,
+                    "showTitle": false,
+                    "showUpdateDatetime": false,
+                    "stickyPosition": "bottom"
+                },
+                "title": "SyndicateAdmin",
+                "total_posts": 15,
+                "version_creator": "57552eeffe01ce06d3f5541f",
+                "versioncreated": "2017-11-14T21:21:41+00:00"
+            },
+            {
+                "_created": "2017-09-21T17:58:04+00:00",
+                "_etag": "3b3f7d61b34394b4ad35f18ae62040a427356ca1",
+                "_id": "59c3fdac758d933d1148d2ad",
+                "_links": {
+                    "self": {
+                        "href": "syndication/blogs/59c3fdac758d933d1148d2ad",
+                        "title": "Syndication_blog"
+                    }
+                },
+                "_type": "blogs",
+                "_updated": "2018-01-29T12:11:58+00:00",
+                "blog_preferences": {
+                    "language": "en",
+                    "theme": "classic"
+                },
+                "blog_status": "open",
+                "category": "",
+                "description": "",
+                "firstcreated": "2017-09-21T17:58:04+00:00",
+                "market_enabled": false,
+                "members": [],
+                "original_creator": "57552eeffe01ce06d3f5541f",
+                "posts_order_sequence": 17,
+                "public_url": "https://demo.liveblog.pro/demo/blogs/59c3fdac758d933d1148d2ad/index.html",
+                "public_urls": {
+                    "output": {},
+                    "theme": {}
+                },
+                "start_date": "2017-09-21T19:58:04+00:00",
+                "syndication_enabled": true,
+                "theme_settings": {
+                    "authorNameFormat": "display_name",
+                    "authorNameLinksToEmail": false,
+                    "autoApplyEdits": false,
+                    "autoApplyUpdates": false,
+                    "blockSearchEngines": true,
+                    "canComment": true,
+                    "datetimeFormat": "lll",
+                    "gaCode": "",
+                    "hasHighlights": true,
+                    "infinitScroll": false,
+                    "language": "en",
+                    "livestream": false,
+                    "livestreamAutoplay": false,
+                    "loadNewPostsManually": true,
+                    "permalinkDelimiter": "?",
+                    "postOrder": "editorial",
+                    "postsPerPage": 10,
+                    "removeStylesESI": false,
+                    "renderForESI": false,
+                    "showAuthor": true,
+                    "showAuthorAvatar": true,
+                    "showDescription": true,
+                    "showGallery": true,
+                    "showImage": true,
+                    "showLiveblogLogo": true,
+                    "showSocialShare": true,
+                    "showSyndicatedAuthor": false,
+                    "showTitle": true,
+                    "showUpdateDatetime": true,
+                    "stickyPosition": "bottom"
+                },
+                "title": "NaregDemoSept21",
+                "version_creator": "57552eeffe01ce06d3f5541f",
+                "versioncreated": "2017-09-21T17:58:16+00:00"
+            },
+            {
+                "_created": "2017-05-31T12:10:29+00:00",
+                "_etag": "ff56c6c1246f9f644c8712340af0cd7bffb40987",
+                "_id": "592eb2b5758d9300e56918b7",
+                "_links": {
+                    "self": {
+                        "href": "syndication/blogs/592eb2b5758d9300e56918b7",
+                        "title": "Syndication_blog"
+                    }
+                },
+                "_type": "blogs",
+                "_updated": "2018-01-29T15:46:50+00:00",
+                "blog_preferences": {
+                    "language": "en",
+                    "theme": "default"
+                },
+                "blog_status": "open",
+                "category": "",
+                "description": "",
+                "firstcreated": "2017-05-31T12:10:29+00:00",
+                "last_created_post": {
+                    "_id": "urn:newsml:localhost:2018-01-29T16:46:49.228179:a374164f-f0ee-4e53-aa45-9277dfcb5db8",
+                    "_updated": "2018-01-29T15:46:49+00:00"
+                },
+                "last_updated_post": {
+                    "_id": "urn:newsml:localhost:2018-01-29T05:30:11.782717:f478b0ad-f488-46c8-babb-bc1b72b8cdfb",
+                    "_updated": "2018-01-29T04:43:09+00:00"
+                },
+                "market_enabled": false,
+                "members": [
+                    {
+                        "user": "5a0c198f758d9300ebf6ae71"
+                    }
+                ],
+                "original_creator": "57552eeffe01ce06d3f5541f",
+                "posts_order_sequence": 1861,
+                "public_url": "https://demo.liveblog.pro/demo/blogs/592eb2b5758d9300e56918b7/index.html",
+                "public_urls": {
+                    "output": {},
+                    "theme": {}
+                },
+                "start_date": "2017-05-31T20:10:29+00:00",
+                "syndication_enabled": true,
+                "theme_settings": {
+                    "authorNameFormat": "display_name",
+                    "authorNameLinksToEmail": false,
+                    "autoApplyEdits": false,
+                    "autoApplyUpdates": true,
+                    "blockSearchEngines": true,
+                    "canComment": false,
+                    "clientDatetimeOnly": false,
+                    "datetimeFormat": "lll",
+                    "gaCode": "",
+                    "hasHighlights": false,
+                    "infinitScroll": true,
+                    "language": "en",
+                    "livestream": false,
+                    "livestreamAutoplay": false,
+                    "loadNewPostsManually": true,
+                    "permalinkDelimiter": "?",
+                    "postOrder": "editorial",
+                    "postsPerPage": 10,
+                    "removeStylesESI": false,
+                    "renderForESI": false,
+                    "showAuthor": true,
+                    "showAuthorAvatar": true,
+                    "showDescription": false,
+                    "showGallery": false,
+                    "showImage": false,
+                    "showLiveblogLogo": true,
+                    "showSocialShare": true,
+                    "showSyndicatedAuthor": false,
+                    "showTitle": false,
+                    "showUpdateDatetime": false,
+                    "stickyPosition": "bottom"
+                },
+                "title": "Kurioses Blog (dpa)",
+                "total_posts": 899,
+                "version_creator": "57552eeffe01ce06d3f5541f",
+                "versioncreated": "2017-11-15T10:55:57+00:00"
+            },
+            {
+                "_created": "2017-04-06T11:15:50+00:00",
+                "_etag": "4d8e078edbf7a1d626803ff98474b061bafc061a",
+                "_id": "58e62366758d93e0480343a0",
+                "_links": {
+                    "self": {
+                        "href": "syndication/blogs/58e62366758d93e0480343a0",
+                        "title": "Syndication_blog"
+                    }
+                },
+                "_type": "blogs",
+                "_updated": "2018-01-29T12:12:05+00:00",
+                "blog_preferences": {
+                    "language": "en",
+                    "last_scorecard": {
+                        "away": {
+                            "name": "Harina",
+                            "score": "0",
+                            "scorers": [
+                                {
+                                    "name": "",
+                                    "time": ""
+                                }
+                            ]
+                        },
+                        "candidate": {
+                            "img1": {
+                                "picture_url": ""
+                            },
+                            "img2": {
+                                "picture_url": ""
+                            },
+                            "img3": {
+                                "picture_url": ""
+                            },
+                            "img4": {
+                                "picture_url": ""
+                            },
+                            "name1": "",
+                            "name2": "",
+                            "name3": "",
+                            "name4": "",
+                            "score1": "",
+                            "score2": "",
+                            "score3": "",
+                            "score4": ""
+                        },
+                        "home": {
+                            "name": "Pimentón",
+                            "score": "2",
+                            "scorers": [
+                                {
+                                    "name": "Pepe",
+                                    "time": "1"
+                                },
+                                {
+                                    "name": "Paco",
+                                    "time": "5"
+                                }
+                            ]
+                        },
+                        "image": {
+                            "picture_url": ""
+                        },
+                        "link": "",
+                        "poll": {
+                            "source": ""
+                        },
+                        "remember": "",
+                        "text": "",
+                        "timestamp": "",
+                        "year": {
+                            "result1": "",
+                            "result2": "",
+                            "result3": "",
+                            "result4": "",
+                            "until4": "",
+                            "year1": "",
+                            "year2": "",
+                            "year3": "",
+                            "year4": ""
+                        }
+                    },
+                    "theme": "classic"
+                },
+                "blog_status": "open",
+                "category": "",
+                "description": "<p>World Pride 2017</p>",
+                "firstcreated": "2017-04-06T11:15:50+00:00",
+                "last_created_post": {
+                    "_id": "urn:newsml:localhost:2017-11-10T18:27:30.704311:b546552d-84fc-41e9-9463-1916b698eba3",
+                    "_updated": "2017-11-10T17:27:30+00:00"
+                },
+                "last_updated_post": {
+                    "_id": "urn:newsml:localhost:2017-11-10T18:25:21.039789:923ef39a-bf26-4831-9618-36477a51cc56",
+                    "_updated": "2017-11-10T17:25:30+00:00"
+                },
+                "market_enabled": false,
+                "members": [],
+                "original_creator": "582c5597fe01ce066bbbfa07",
+                "picture": "urn:newsml:localhost:2017-07-31T12:57:03.169136:bb062ce6-75cd-4f84-adca-9d2de97784ce",
+                "picture_url": "https://demo.liveblog.pro/demo/20170731120756/dedfef74a4c8d2dbef54b9dc7bad4397d37fe3c3892efd93c98b323b0a329756.jpg",
+                "posts_order_sequence": 31,
+                "public_url": "https://demo.liveblog.pro/demo/blogs/58e62366758d93e0480343a0/index.html",
+                "public_urls": {
+                    "output": {},
+                    "theme": {}
+                },
+                "start_date": "2017-04-06T16:15:50+00:00",
+                "syndication_enabled": true,
+                "theme_settings": {
+                    "authorNameFormat": "display_name",
+                    "authorNameLinksToEmail": false,
+                    "autoApplyEdits": false,
+                    "autoApplyUpdates": false,
+                    "blockSearchEngines": true,
+                    "canComment": true,
+                    "datetimeFormat": "lll",
+                    "gaCode": "",
+                    "hasHighlights": true,
+                    "infinitScroll": false,
+                    "language": "en",
+                    "livestream": false,
+                    "livestreamAutoplay": false,
+                    "loadNewPostsManually": true,
+                    "permalinkDelimiter": "?",
+                    "postOrder": "editorial",
+                    "postsPerPage": 10,
+                    "removeStylesESI": false,
+                    "renderForESI": false,
+                    "showAuthor": true,
+                    "showAuthorAvatar": true,
+                    "showDescription": true,
+                    "showGallery": true,
+                    "showImage": true,
+                    "showLiveblogLogo": true,
+                    "showSocialShare": true,
+                    "showSyndicatedAuthor": false,
+                    "showTitle": true,
+                    "showUpdateDatetime": true,
+                    "stickyPosition": "bottom"
+                },
+                "title": "JLO",
+                "total_posts": 8,
+                "version_creator": "57552eeffe01ce06d3f5541f",
+                "versioncreated": "2017-11-09T20:12:34+00:00"
+            }
+        ],
+        "_links": {
+            "parent": {
+                "href": "/",
+                "title": "home"
+            },
+            "self": {
+                "href": "syndication/blogs",
+                "title": "syndication/blogs"
+            }
+        },
+        "_meta": {
+            "max_results": 25,
+            "page": 1,
+            "total": 4
+        }
+    }
+
+
+## Handle subscriptions [/producers/{producer_id}/syndicate/{blog_id}]
+
++ Parameters
+    + producer_id (string) ... ID of producer.
+    + blog_id (string) ... Blog-ID of producer-blog to subscribe.
+
+### Add subscription to a liveblog [POST]
+
++ Request (application/json)
+    {
+        "consumer_blog_id":"5a6f12d0f8728e00eddd12fe",
+        "auto_publish":true,
+        "auto_retrieve":true
+    }
+
++ Response 201 (application/json)
+
+    {
+        "_status": "OK",
+        "token": "cc58064459e6fb8dad776c94ee5cbd50306dd239",
+        "producer_blog_title": "Kurioses Blog (dpa)",
+        "consumer_blog_id": "5a6f12d0f8728e00eddd12fe"
+    }
+
+## List subscriptions [/syndication_in/{_id}]
+
++ Parameters
+    + _id (string) ... ID of subscription
+
+### List subscriptions of a liveblog [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + where = `{"blog_id": "5a6f12d0f8728e00eddd12fe"}` (optional, object) ... Filtering
+
++ Response 200 (application/json)
+{
+    "_items": [
+        {
+            "_created": "2018-01-29T17:07:35+00:00",
+            "_etag": "14b6ba14af12d6ca6ba8f1bd650575a78fde9785",
+            "_id": "5a6f54d7f8728e00eddd1305",
+            "_links": {
+                "self": {
+                    "href": "syndication_in/5a6f54d7f8728e00eddd1305",
+                    "title": "Syndication_in"
+                }
+            },
+            "_updated": "2018-01-29T17:07:35+00:00",
+            "auto_publish": true,
+            "auto_retrieve": true,
+            "blog_id": "5a6f12d0f8728e00eddd12fe",
+            "blog_token": "4096f32aaa8a65d6d8df9735b0f7343a306fac9b",
+            "producer_blog_id": "592eb2b5758d9300e56918b7",
+            "producer_blog_title": "Kurioses Blog (dpa)",
+            "producer_id": "590604d4f8728e00f0103527",
+            "start_date": null
+        }
+    ],
+    "_links": {
+        "parent": {
+            "href": "/",
+            "title": "home"
+        },
+        "self": {
+            "href": "syndication_in?where={\"blog_id\":\"5a6f12d0f8728e00eddd12fe\"}",
+            "title": "syndication_in"
+        }
+    },
+    "_meta": {
+        "max_results": 25,
+        "page": 1,
+        "total": 1
+    }
+}
+
+### Update subscription [PATCH]
+
++ Request (application/json)
+    {
+        "auto_publish":false,
+        "auto_retrieve":true
+    }
+
++ Response 200 (application/json)
+    {
+    "_created": "2018-01-29T17:07:35+00:00",
+    "_etag": "9afb17fed2486ab0c889c5e71b24eb75eef18e76",
+    "_id": "5a6f54d7f8728e00eddd1305",
+    "_links": {
+        "self": {
+            "href": "syndication_in/5a6f54d7f8728e00eddd1305",
+            "title": "Syndication_in"
+        }
+    },
+    "_status": "OK",
+    "_updated": "2018-01-29T17:15:44+00:00",
+    "auto_publish": false,
+    "auto_retrieve": true,
+    "blog_id": "5a6f12d0f8728e00eddd12fe",
+    "blog_token": "4096f32aaa8a65d6d8df9735b0f7343a306fac9b",
+    "producer_blog_id": "592eb2b5758d9300e56918b7",
+    "producer_blog_title": "Kurioses Blog (dpa)",
+    "producer_id": "590604d4f8728e00f0103527",
+    "start_date": null
+}
+
+### Remove subscription [DELETE]
+
++ Request (application/json)
+
++ Response 204 (application/json)
+
+### Creating comment amp [POST]
+
++ Request (application/json)
+    {
+        "text": "test",
+        "commenter": "gyan",
+        "client_blog": "5b9f846f6281bb4408ad4948"
+    }
+
++ Response 201 (application/json)
+    {
+        "_id": "urn:newsml:localhost:2018-09-18T12:24:12.607966:e912259a-e537-4321-9ca7-6fb9bb0d56b3",
+        "groups": [
+            {
+                "id": "root",
+                "role": "grpRole:NEP",
+                "refs": [{"idRef": "main"}]
+            },
+            {
+                "id": "main",
+                "role": "grpRole:Main",
+                "refs": [
+                    {
+                        "residRef": "urn:newsml:localhost:2018-09-18T12:24:12.433147:c287623f-c8c3-4fcb-9af9-1cbb3bbe4902",
+                        "guid": "urn:newsml:localhost:2018-09-18T12:24:12.433147:c287623f-c8c3-4fcb-9af9-1cbb3bbe4902",
+                        "type": "text",
+                        "item": {
+                            "_id": "urn:newsml:localhost:2018-09-18T12:24:12.433147:c287623f-c8c3-4fcb-9af9-1cbb3bbe4902",
+                            "original_creator": "None",
+                            "unique_id": 1107,
+                            "flags": {
+                                "marked_archived_only": false,
+                                "marked_for_legal": false,
+                                "marked_for_not_publication": false,
+                                "marked_for_sms": false
+                            },
+                            "linked_in_packages": [
+                                {
+                                    "package": "urn:newsml:localhost:2018-09-18T12:24:12.607966:e912259a-e537-4321-9ca7-6fb9bb0d56b3"
+                                }
+                            ],
+                            "_etag": "3e327500e6bf5a3cbad3a446afca8781516a3819",
+                            "item_type": "comment",
+                            "type": "text",
+                            "commenter": "gyan",
+                            "family_id": "urn:newsml:localhost:2018-09-18T12:24:12.433147:c287623f-c8c3-4fcb-9af9-1cbb3bbe4902",
+                            "firstcreated": "2018-09-18T06:54:12+00:00",
+                            "meta": {},
+                            "particular_type": "item",
+                            "state": "draft",
+                            "unique_name": "#1107",
+                            "operation": "create",
+                            "_created": "2018-09-18T06:54:12+00:00",
+                            "urgency": 3,
+                            "priority": 3,
+                            "_updated": "2018-09-18T06:54:12+00:00",
+                            "version_creator": "",
+                            "pubstatus": "usable",
+                            "schedule_settings": {
+                                "utc_embargo": null,
+                                "time_zone": null
+                            },
+                            "event_id": "tag:localhost:2018:4c380f52-17f5-4651-bfc3-486eefbe7112",
+                            "format": "HTML",
+                            "language": "en",
+                            "text": "test",
+                            "genre": [
+                                {
+                                    "qcode": "Article",
+                                    "name": "Article (news)"
+                                }
+                            ],
+                            "group_type": "default",
+                            "guid": "urn:newsml:localhost:2018-09-18T12:24:12.433147:c287623f-c8c3-4fcb-9af9-1cbb3bbe4902",
+                            "blog": "5b9f846f6281bb4408ad4948",
+                            "versioncreated": "2018-09-18T06:54:12+00:00",
+                            "source": "Liveblog"
+                        }
                     }
                 ]
             }
+        ],
+        "unique_id": 1108,
+        "flags": {
+            "marked_archived_only": false,
+            "marked_for_legal": false,
+            "marked_for_not_publication": false,
+            "marked_for_sms": false
+        },
+        "sticky": false,
+        "lb_highlight": false,
+        "_etag": "a991a9ed96bdfa56d3b0992c59eba7b5eb59ee2a",
+        "deleted": false,
+        "post_status": "comment",
+        "type": "composite",
+        "family_id": "urn:newsml:localhost:2018-09-18T12:24:12.607966:e912259a-e537-4321-9ca7-6fb9bb0d56b3",
+        "original_creator": "",
+        "firstcreated": "2018-09-18T06:54:12+00:00",
+        "order": 13.0,
+        "particular_type": "post",
+        "state": "draft",
+        "unique_name": "#1108",
+        "operation": "create",
+        "_created": "2018-09-18T06:54:12+00:00",
+        "urgency": 3,
+        "priority": 3,
+        "_updated": "2018-09-18T06:54:12+00:00",
+        "version_creator": "",
+        "pubstatus": "usable",
+        "schedule_settings": {
+            "utc_embargo": null,
+            "time_zone": null
+        },
+        "event_id": "tag:localhost:2018:c6df0a4f-0e30-47f2-85b4-4cf0eea6a3f5",
+        "format": "HTML",
+        "language": "en",
+        "genre": [
+            {
+                "qcode": "Article",
+                "name": "Article (news)"
+            }
+        ],
+        "guid": "urn:newsml:localhost:2018-09-18T12:24:12.607966:e912259a-e537-4321-9ca7-6fb9bb0d56b3",
+        "blog": "5b9f846f6281bb4408ad4948",
+        "versioncreated": "2018-09-18T06:54:12+00:00",
+        "source": "Liveblog"
+    }
+
++ Response 400 (application/json)
+    {
+        "_issues": "Allowed length: between 1 and 300. You exceeded the allowed length",
+        "_message": "",
+        "_status": "ERR"
+    }

@@ -5,7 +5,7 @@ from superdesk import get_resource_service
 from liveblog.items.items import drag_and_drop_blueprint
 from bson import ObjectId
 import datetime
-from mock import patch
+from unittest.mock import patch
 import flask
 
 
