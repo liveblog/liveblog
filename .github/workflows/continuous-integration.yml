@@ -1,6 +1,6 @@
 name: Liveblog CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -42,17 +42,13 @@ jobs:
         ports:
           - 9200:9200
 
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x]
-
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup Nodejs ${{ matrix.node-version }}
+    - name: Setup Nodejs 8.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 8.x
 
     - name: Setup Python 3.5
       uses: actions/setup-python@v1
