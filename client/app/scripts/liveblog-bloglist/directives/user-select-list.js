@@ -6,6 +6,7 @@ export default function lbUserSelectList(api) {
             members: '=',
             user: '=',
             onchoose: '&',
+            showinactive: '=',
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
         link: function(scope, elem, attrs) {
@@ -17,17 +18,34 @@ export default function lbUserSelectList(api) {
             scope.search = null;
             scope.users = {};
 
+            scope.done = false;
+            scope.searching = false;
+
             const _refresh = function() {
                 scope.users = {};
-                return api('users').query({where: JSON.stringify({
+                scope.searching = true;
+                scope.done = false;
+
+                const filters = {
                     $or: [
                         {username: {$regex: scope.search, $options: '-i'}},
                         {first_name: {$regex: scope.search, $options: '-i'}},
                         {last_name: {$regex: scope.search, $options: '-i'}},
                         {email: {$regex: scope.search, $options: '-i'}},
                     ],
-                })})
+                };
+
+                if (scope.showinactive !== true) {
+                    filters.is_active = true;
+                    filters.needs_activation = false;
+                }
+
+                return api('users')
+                    .query({where: JSON.stringify(filters)})
                     .then((result) => {
+                        scope.searching = false;
+
+                        // let's exclude current user
                         for (var i = 0; i < result._items.length; i++) {
                             var obj = result._items[i];
 
@@ -47,9 +65,10 @@ export default function lbUserSelectList(api) {
                             return !found;
                         });
                         scope.selected = null;
+                        scope.done = true;
                     });
             };
-            const refresh = _.debounce(_refresh, 1000);
+            const refresh = _.debounce(_refresh, 500);
 
             scope.$watch('search', () => {
                 if (scope.search) {

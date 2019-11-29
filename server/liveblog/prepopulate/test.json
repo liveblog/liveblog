@@ -26,7 +26,8 @@
         "password": "admin",
         "user_type": "administrator",
         "email": "abc@other.com",
-        "sign_off": "abc"
+        "sign_off": "abc",
+        "needs_activation": false
     },
     "id_name": "-id admin-"
 },
@@ -40,7 +41,8 @@
         "user_type": "administrator",
         "password": "editor",
         "email": "editor@other.com",
-        "sign_off": "eo"
+        "sign_off": "eo",
+        "needs_activation": false
     }
 },
 {
@@ -53,7 +55,8 @@
         "user_type": "user",
         "password": "contributor",
         "email": "contributor@other.com",
-        "sign_off": "co"
+        "sign_off": "co",
+        "needs_activation": false
     },
     "id_name": "-id contributor-"
 
