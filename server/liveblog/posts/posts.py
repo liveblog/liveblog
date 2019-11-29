@@ -20,6 +20,7 @@ from liveblog.common import check_comment_length, get_user
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed
+from .mixins import AuthorsMixin
 
 
 logger = logging.getLogger('superdesk')
@@ -512,7 +513,7 @@ class BlogPostsResource(Resource):
     privileges = {'GET': 'posts'}
 
 
-class BlogPostsService(ArchiveService):
+class BlogPostsService(ArchiveService, AuthorsMixin):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
@@ -534,6 +535,12 @@ class BlogPostsService(ArchiveService):
                 ref_id = assoc.get('residRef', None)
                 if ref_id is not None:
                     assoc['item'] = related_items[ref_id]
+
+            self.extract_author_ids(doc)
+
+        # now that we have authors id, let's hit db once
+        self.generate_authors_map()
+        self.attach_authors(docs)
 
         return docs
 

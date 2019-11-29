@@ -13,7 +13,6 @@ BlogListController.$inject = [
     'notify',
     'config',
     'urls',
-    'moment',
     'modal',
     'blogService',
 ];
@@ -31,7 +30,6 @@ export default function BlogListController(
     notify,
     config,
     urls,
-    moment,
     modal,
     blogService
 ) {
@@ -122,17 +120,10 @@ export default function BlogListController(
     };
 
     $scope.askRemoveBlog = function() {
-        modal.confirm(gettext('Are you sure you want to delete the blog(s)?'))
+        modal.confirm(`The blog(s) will be in <b>Deleted Blogs</b> tab during ${config.daysRemoveDeletedBlogs}
+            day(s), after that period will be removed permanently.<br /><br />
+            Are you sure you want to delete the blog(s)?`)
             .then(() => {
-                // var selectedBlogs = [];
-
-                // angular.forEach($scope.blogs._items, (blog) => {
-                //     if (blog.selected) {
-                //         bulkDelete(blog);
-                //     }
-                // });
-
-                // $scope.blogs._items = $scope.blogs._items.filter((el) => selectedBlogs.indexOf(el) < 0);
                 $scope.bulkAction(DELETED_STATE);
             });
     };

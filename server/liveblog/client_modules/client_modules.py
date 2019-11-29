@@ -1,6 +1,5 @@
 import json
 import logging
-from bson import ObjectId
 from itertools import groupby
 from distutils.util import strtobool
 from eve.utils import config
@@ -24,6 +23,7 @@ from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, 
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
+from liveblog.posts.mixins import AuthorsMixin
 from liveblog.utils.api import api_error, api_response
 
 
@@ -233,97 +233,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     item_url = item_url
 
 
-class ClientBlogPostsService(BlogPostsService):
-    authors = []
-    authors_map = {}
-
-    def add_post_info(self, doc, items=None):
-        # users collection will be used many times here
-        # so we need to cache it and reuse it the object to avoid hitting db
-
-        def _append_author(item):
-            author_id = item.get('original_creator', None)
-            try:
-                author_id = ObjectId(author_id)
-                self.authors.append(author_id)
-            except Exception as err:
-                logger.debug("Unable to add author id to map. {}".format(err))
-
-        items = items or []
-        items_refs = [assoc for group in doc.get('groups', []) for assoc in group.get('refs', [])]
-
-        if not items:
-            for ref in items_refs:
-                item = ref.get('item')
-                if item:
-                    items.append(item)
-                    _append_author(item)
-
-        items_length = len(items)
-        post_items_type = None
-
-        if items_length:
-            if items_length == 1:
-                if items[0].get('item_type', '').lower().startswith('advertisement'):
-                    post_items_type = 'advertisement'
-                elif items[0].get('item_type', '').lower() == 'embed':
-                    post_items_type = 'embed'
-                    if 'provider_name' in items[0]['meta']:
-                        post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-                else:
-                    post_items_type = items[0].get('item_type')
-            elif items_length == 2 and not all([item['item_type'] == 'embed' for item in items]):
-                if items[1].get('item_type', '').lower() == 'embed' and items[0].get('item_type', '').lower() == 'text':
-                    post_items_type = 'embed'
-                    if 'provider_name' in items[1]['meta']:
-                        post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
-                elif (items[0].get('item_type', '').lower() == 'embed' and
-                        items[1].get('item_type', '').lower() == 'text'):
-                    post_items_type = 'embed'
-                    if 'provider_name' in items[0]['meta']:
-                        post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-
-            elif items_length > 1:
-                for k, g in groupby(items, key=lambda i: i['item_type']):
-                    if k == 'image' and sum(1 for _ in g) > 1:
-                        post_items_type = 'slideshow'
-                        break
-        if doc.get('syndication_in'):
-            doc['syndication_in'] = get_resource_service('syndication_in')\
-                .find_one(req=None, _id=doc['syndication_in'])
-
-        doc['post_items_type'] = post_items_type
-
-        # Bring the client user in the posts so we can post.original_creator.X - LBSD-2010
-        _append_author(doc)
-
-        return doc
-
-    def generate_authors_map(self):
-        """
-        Gets users information from database based on a list of predefined ids
-        The idea behind the method is to reduce the impact on DB
-        """
-        ids = set(self.authors)
-
-        for user in get_resource_service('users').find({'_id': {'$in': ids}}):
-            author_id = str(user.get('_id'))
-            self.authors_map[author_id] = user
-
-    def attach_authors(self, posts):
-        """
-        Simply gets authors id from items related and for post itself
-        """
-        for post in posts:
-            post_author_id = str(post['original_creator'])
-            post['original_creator'] = self.authors_map.get(post_author_id)
-
-            items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
-            for ref in items_refs:
-                item = ref.get('item')
-                if item:
-                    author_id = str(item['original_creator'])
-                    item['original_creator'] = self.authors_map.get(author_id)
+class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
 
     def get(self, req, lookup):
         allowed_params = {
@@ -350,7 +260,9 @@ class ClientBlogPostsService(BlogPostsService):
 
             # let's complete the post info before cache
             for post in blog_posts.docs:
-                self.add_post_info(post)
+                self.calculate_post_type(post)
+                self.attach_syndication(post)
+                self.extract_author_ids(post)
 
             self.generate_authors_map()
             self.attach_authors(blog_posts.docs)
@@ -359,8 +271,55 @@ class ClientBlogPostsService(BlogPostsService):
 
         return blog_posts
 
+    def calculate_post_type(self, doc, items=None):
+        items = items or self._get_related_items(doc)
+        items_length = len(items)
+        post_items_type = None
+
+        if not items_length:
+            return doc
+
+        if items_length == 1:
+            post_items_type = items[0].get('item_type', '')
+            first_item_type = post_items_type.lower()
+
+            if first_item_type.startswith('advertisement'):
+                post_items_type = 'advertisement'
+
+            elif first_item_type == 'embed':
+                post_items_type = 'embed'
+                if 'provider_name' in items[0]['meta']:
+                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
+
+        elif items_length == 2 and not all([item['item_type'] == 'embed' for item in items]):
+            if items[1].get('item_type', '').lower() == 'embed' and items[0].get('item_type', '').lower() == 'text':
+                post_items_type = 'embed'
+                if 'provider_name' in items[1]['meta']:
+                    post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
+            elif (items[0].get('item_type', '').lower() == 'embed' and
+                    items[1].get('item_type', '').lower() == 'text'):
+                post_items_type = 'embed'
+                if 'provider_name' in items[0]['meta']:
+                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
+
+        elif items_length > 1:
+            for k, g in groupby(items, key=lambda i: i['item_type']):
+                if k == 'image' and sum(1 for _ in g) > 1:
+                    post_items_type = 'slideshow'
+                    break
+
+        doc['post_items_type'] = post_items_type
+
+        return doc
+
+    def attach_syndication(self, doc):
+        if doc.get('syndication_in'):
+            doc['syndication_in'] = get_resource_service('syndication_in')\
+                .find_one(req=None, _id=doc['syndication_in'])
+
     def on_fetched(self, blog):
-        """Override parent's class method as we don't need it"""
+        """Parent's class attach editing flag information so, we don't need it
+        for frontend. Let's override the method with empty block"""
         pass
 
 

@@ -250,16 +250,16 @@
                                 <h3 translate class="inline-block">Owner</h3>
                                 <a ng-click="settings.openOwner = true" class="open-modal" data-button="CHANGE OWNER" translate>CHANGE OWNER</a>
                             </div>
-                            <div class="dropdown-content" ng-show="settings.openOwner" ng-click=" $event.stopPropagation();">
+                            <div class="dropdown-content" ng-show="settings.openOwner" ng-click="$event.stopPropagation();">
                                 <div class="user-select">
                                     <div>
                                         <form>
-                                            <label for="assignee-search" translate>Chose new owner</label>
+                                            <label for="assignee-search" translate>Choose new owner</label>
                                             <input type="text" name="assignee-search" ng-model="settings.search">
                                         </form>
                                         <div class="search-result">
                                             <ul class="users-list-embed">
-                                                 <a>Team</a>
+                                                <a>Team</a>
                                                 <li ng-repeat="member in settings.members track by member._id" ng-click="settings.temp_selected_owner = member" ng-class="{'active': settings.temp_selected_owner._id === member._id}">
                                                     <figure class="avatar small"><img sd-user-avatar data-user="member" alt="{{member.display_name || member.username }}"></figure>
                                                     <div class="name">{{member.display_name}}</div>
@@ -375,7 +375,8 @@
                                             lb-user-select-list
                                             ng-if="!settings.hasReachedMembersLimit()"
                                             data-members="settings.posibleMembers"
-                                            data-onchoose="settings.addMember(user)" data-user="settings.original_creator"></div>
+                                            data-onchoose="settings.addMember(user)"
+                                            data-user="settings.original_creator"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">

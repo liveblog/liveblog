@@ -1,0 +1,16 @@
+<form>
+    <input type="text" ng-model="search" sd-focus-element data-append-element=".field" data-append-class="active" tabindex="{{tabindex}}" class="searchbar searchbar-large">
+</form>
+<div class="search-result" ng-show="search"
+    ng-class="{'searching': searching, 'no-records': !users._items.length}"
+>
+    <ul class="users-list-embed">
+        <li ng-repeat="user in users._items" ng-class="{active: user === selected, 'inactive' : !user.is_enabled || !user.is_active}" ng-click="choose(user)">
+            <figure class="avatar small"><img sd-user-avatar data-user="user"></figure>
+            <div class="name">{{ getUserDisplay(user) }}</div>
+        </li>
+    </ul>
+
+    <p ng-show="!users._items.length && done">No users found</p>
+    <p ng-show="searching">Searching...</p>
+</div>

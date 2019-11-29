@@ -1,0 +1,103 @@
+name: Liveblog CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      SYNDICATION_VALIDATE_AUTH: 0
+      MAIL_SERVER: 'localhost'
+      MAIL_PORT: 2225
+      MAIL_USERNAME: __EMPTY__
+      MAIL_PASSWORD: __EMPTY__
+      MAIL_USE_TLS: 0
+      MAIL_USE_SSL: 0
+      MAIL_DEBUG: 1
+      MAIL_SUPPRESS_SEND: true
+      # Using travis encrypted keys didn't solve the issue with cross-forks Pull Requests
+      # So, we can use the test key taken from http://embed.ly/code site
+      EMBEDLY_KEY: fd92ebbc52fc43fb98f69e50e7893c13
+      SUPERDESK_URL: 'http://localhost:5000/api'
+      SUPERDESK_CLIENT_URL: 'http://localhost:9000'
+      WEB_CONCURRENCY: 3
+      WEB_TIMEOUT: 8
+      SUPERDESK_TESTING: true
+      MARKETPLACE: true
+      SYNDICATION: true
+
+    services:
+      nginx:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      elasticsearch-1.7.2:
+        image: barnybug/elasticsearch:1.7.2
+        ports:
+          - 9200:9200
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup Nodejs 8.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8.x
+
+    - name: Setup Python 3.5
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+        architecture: x64
+
+    - name: Install Python dependencies and run tests
+      working-directory: ./server
+      run: |
+        pip install -r dev-requirements.txt
+        nosetests --all-modules --nocapture
+        behave --format progress2 --logging-level ERROR
+        flake8
+
+    - name: Install Nodejs dependencies and lint
+      working-directory: ./client
+      run: |
+        npm config set loglevel warn
+        npm install -g grunt-cli
+        npm install
+        npm run lint
+
+    - name: Initialize app data
+      working-directory: ./server
+      run: |
+        python app_init_elastic.py
+        python manage.py app:initialize_data
+        python manage.py users:create -u admin -p admin -e 'admin@example.com' --admin
+        python manage.py register_local_themes
+        python manage.py register_bloglist
+
+    - name: Start backend services
+      working-directory: ./server
+      run: |
+        (nohup honcho start &)
+        (nohup sudo python -m smtpd -n -c DebuggingServer localhost:2225 &)
+
+    - name: Build client and run end to end tests
+      working-directory: ./client
+      run: |
+        grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+        cd dist
+        while [ ! -f index.html ]; do sleep .5; done
+        (nohup python -m http.server 9000 &)
+        cd ../
+        export DISPLAY=:99.0
+        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
+        export CHROME_BIN=`which google-chrome`
+        $CHROME_BIN --version
+        npm run webdriver-update
+        npm run e2e

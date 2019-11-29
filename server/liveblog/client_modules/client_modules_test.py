@@ -474,8 +474,9 @@ class ClientModuleTestCase(TestCase):
                 req=None, client_blog=ObjectId("5ab90249fd16ad1752b39b74"))
             self.assertIsNotNone(response, True)
 
-    def test_add_post_info(self):
-        doc = self.blog_post_service.add_post_info(self.blog_posts[0])
+    def test_post_type_and_author(self):
+        doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
+        self.blog_post_service.calculate_post_type(self.blog_posts[0])
 
         # TODO: split this test in two
         self.blog_post_service.generate_authors_map()

@@ -494,7 +494,7 @@ export default function BlogEditController(
         },
         showSaveAsDraft: function() {
             if (angular.isDefined($scope.currentPost)) {
-                return $scope.currentPost.original_creator === session.identity._id;
+                return $scope.currentPost.original_creator._id === session.identity._id;
             }
 
             return true;
@@ -574,6 +574,7 @@ export default function BlogEditController(
                 .then((post) => {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
+                    cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
@@ -591,6 +592,7 @@ export default function BlogEditController(
                 .then((post) => {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
+                    cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;

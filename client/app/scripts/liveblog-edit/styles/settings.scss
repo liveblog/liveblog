@@ -221,9 +221,17 @@ $PADDING: 20px;
     min-height: 240px;
 }
 
-.edit-contributors {
+.edit-contributors.edit-contributors {
     .search-result {
-        top: 69px!important;
+        top: 69px;
+        width: 440px;
+        left: 20px;
+    }
+
+    .search-result.no-records,
+    .search-result.searching {
+        height: 38px;
+        overflow: hidden;
     }
 }
 .pending-blog-member {
