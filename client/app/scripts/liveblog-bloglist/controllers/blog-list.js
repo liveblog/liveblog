@@ -1,4 +1,5 @@
 import {ACTIVE_STATE, ARCHIVED_STATE, DELETED_STATE} from './constants';
+import _ from 'lodash';
 
 BlogListController.$inject = [
     '$scope',
@@ -31,7 +32,7 @@ export default function BlogListController(
     config,
     urls,
     modal,
-    blogService
+    blogService,
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -259,7 +260,7 @@ export default function BlogListController(
             form.URL = config.url;
         }
 
-        if (form.hasOwnProperty('media') || form.hasOwnProperty('url')) {
+        if (_.has(form, 'media') || _.has(form, 'url')) {
             // return a promise of upload which will call the success/error callback
             return urls.resource('archive').then((uploadUrl) => upload.start({
                 method: 'POST',
@@ -420,7 +421,7 @@ export default function BlogListController(
     };
 
     $scope.hasReachedMembersLimit = function() {
-        if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel)) {
+        if (!_.has(config.assignableUsers, config.subscriptionLevel)) {
             return false;
         }
 

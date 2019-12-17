@@ -180,7 +180,7 @@ export default function postsService(api, $q, userList, session) {
         const syndIds = [];
 
         // This means the syndication module is not enabled
-        if (!api.hasOwnProperty('syndicationIn')) {
+        if (!_.has(api, 'syndicationIn')) {
             return posts;
         }
 

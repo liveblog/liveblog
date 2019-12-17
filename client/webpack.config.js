@@ -105,7 +105,8 @@ module.exports = function makeConfig(grunt) {
                     exclude: /node_modules/,
                     options: {
                         configFile: './.eslintrc.js',
-                        ignorePath: './.eslintignore'
+                        ignorePath: './.eslintignore',
+                        formatter: require('eslint/lib/cli-engine/formatters/stylish')
                     }
                 },
                 {

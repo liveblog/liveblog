@@ -1,4 +1,5 @@
 /* eslint complexity: ["error", 12] */
+import _ from 'lodash';
 import postsTpl from 'scripts/liveblog-edit/views/posts.ng1';
 
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
@@ -151,7 +152,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     if (!$element.hasClass('timeline-posts-list')
                         && $scope.lbPostsStatus !== 'comment'
                         && eventParams.posts
-                        && eventParams.posts[0].hasOwnProperty('syndication_in')) {
+                        && _.has(eventParams.posts[0], 'syndication_in')) {
                         return false;
                     }
 
@@ -167,7 +168,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                         self.isLoading = true;
                         self.pagesManager.retrieveUpdate(true).then(() => {
                             // Regenerate the embed otherwise the image doesn't appear
-                            if (window.hasOwnProperty('instgrm')) {
+                            if (_.has(window, 'instgrm')) {
                                 window.instgrm.Embeds.process();
                             }
 

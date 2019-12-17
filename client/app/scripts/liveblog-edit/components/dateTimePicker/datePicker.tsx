@@ -1,13 +1,13 @@
 /* eslint react/no-multi-comp: 0 */
 import React from 'react';
-import moment from 'moment'; // eslint-disable-line
+import moment from 'moment'; // eslint-disable-line no-unused-vars
 import Select from 'react-select';
-import { MenuProps } from 'react-select/src/components/Menu'; // eslint-disable-line
+import { MenuProps } from 'react-select/src/components/Menu'; // eslint-disable-line no-unused-vars
 import Calendar from 'react-calendar/dist/entry.nostyle';
 
 import { connect } from 'liveblog-common/lb-redux';
 import * as Actions from './actions';
-import { IStore } from './types'; // eslint-disable-line
+import { IStore } from './types'; // eslint-disable-line no-unused-vars
 
 import IndicatorsContainer from './indicators';
 

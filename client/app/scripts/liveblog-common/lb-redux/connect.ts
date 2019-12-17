@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Context } from './context';
 
 // TODO: complete typings for this below
-export const connect = (mapStateToProps: any, mapDispatchToProps) => {
+export const connect = (mapStateToProps: any, mapDispatchToProps?: any) => {
     return (Component) => {
         const WrappedComponent = (ownProps) => {
             const { state, dispatch } = useContext(Context);

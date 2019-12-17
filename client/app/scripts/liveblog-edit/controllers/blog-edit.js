@@ -864,10 +864,10 @@ export default function BlogEditController(
     // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
         if ($scope.panelState !== 'ingest'
-            && data.hasOwnProperty('posts')
-            && data.hasOwnProperty('created')) {
+            && _.has(data, 'posts')
+            && _.has(data, 'created')) {
             const syndPosts = data.posts
-                .filter((post) => post.hasOwnProperty('syndication_in'));
+                .filter((post) => _.has(post, 'syndication_in'));
 
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }

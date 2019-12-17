@@ -322,7 +322,7 @@ function BlogSettingsController(
             vm.acceptedMembers.push(user);
         },
         hasReachedMembersLimit: function() {
-            if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel)) {
+            if (!_.has(config.assignableUsers, config.subscriptionLevel)) {
                 return false;
             }
 
