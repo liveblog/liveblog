@@ -335,7 +335,7 @@ class ClientOutputPostsService(ClientBlogPostsService):
             return 'output not found', 404
 
         new_args = req.args.copy()
-        query_source = json.loads(new_args['source'])
+        query_source = json.loads(new_args.get('source', '{}'))
         query_source['post_filter'] = {'terms': {'tags': output['tags']}}
         new_args['source'] = json.dumps(query_source)
         req.args = new_args
