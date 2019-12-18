@@ -323,6 +323,28 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         pass
 
 
+class ClientOutputPostsResource(ClientBlogPostsResource):
+    url = 'client_blogs/<regex("[a-f0-9]{24}"):blog_id>/<regex("[a-f0-9]{24}"):output_id>/posts'
+
+
+class ClientOutputPostsService(ClientBlogPostsService):
+
+    def get(self, req, lookup):
+        output = get_resource_service('outputs').find_one(req=None, _id=lookup.get('output_id'))
+        if not output:
+            return 'output not found', 404
+
+        new_args = req.args.copy()
+        query_source = json.loads(new_args['source'])
+        query_source['post_filter'] = {'terms': {'tags': output['tags']}}
+        new_args['source'] = json.dumps(query_source)
+        req.args = new_args
+
+        del lookup['output_id']
+
+        return super().get(req, lookup)
+
+
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):
     """Check if the request contains only allowed parameters.
 
