@@ -1,8 +1,13 @@
 import logging
+from flask import request
 from superdesk import get_resource_service
 from bson.objectid import ObjectId
 
 logger = logging.getLogger('superdesk')
+
+AGENT_MOBILE_ANDROID = "okhttp/"
+AGENT_MOBILE_IOS = "org.sourcefabric.LiveBlogReporter"
+AGENT_MOBILE_GENERIC = "cz.adminit.liveblog"
 
 
 class AuthorsMixin(object):
@@ -33,11 +38,15 @@ class AuthorsMixin(object):
         """
         def _append_author(item):
             author_id = item.get('original_creator', None)
+
             try:
+                if isinstance(author_id, dict):
+                    author_id = author_id.get('_id', '')
+
                 author_id = ObjectId(author_id)
                 self.authors_list.append(author_id)
             except Exception as err:
-                logger.debug("Unable to add author id to map. {}".format(err))
+                logger.warning("Unable to add author id to map. {}".format(err))
 
         items = items or self._get_related_items(doc)
         for item in items:
@@ -60,16 +69,37 @@ class AuthorsMixin(object):
             author_id = str(user.get('_id'))
             self.authors_map[author_id] = user
 
-    def attach_authors(self, posts):
-        """Simply gets author id from items related and for post itself and adds author info"""
+    def attach_authors(self, posts, useID=False):
+        """
+        Simply gets author id from items related and for post itself and adds author info
+
+        NOTE: param `userID` is a temporal fix for the mobile app. It should be removed when
+        it's fixed properly in the mobile app.
+        """
+
+        try:
+            user_agent = request.user_agent.string
+            logger.warning('Looking for user agent mobile app %s' % user_agent)
+
+            is_mobile_app = any([
+                (AGENT_MOBILE_IOS in user_agent),
+                (AGENT_MOBILE_GENERIC in user_agent),
+                (AGENT_MOBILE_ANDROID in user_agent)
+            ])
+        except RuntimeError:
+            # RuntimeError happens when out of the context
+            # it will be thrown when running celery tasks to update blog in S3
+            # so we don't care about the mobile app thing.
+            is_mobile_app = False
 
         for post in posts:
             post_author_id = str(post['original_creator'])
-            post['original_creator'] = self.authors_map.get(post_author_id)
+
+            post['original_creator'] = post_author_id if is_mobile_app else self.authors_map.get(post_author_id)
 
             items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
             for ref in items_refs:
                 item = ref.get('item')
                 if item:
                     author_id = str(item['original_creator'])
-                    item['original_creator'] = self.authors_map.get(author_id)
+                    item['original_creator'] = author_id if is_mobile_app else self.authors_map.get(author_id)
