@@ -18,3 +18,4 @@ google-auth-oauthlib==0.2.0
 redis>=2.10.5,<3.0
 elasticsearch==1.9.0
 kombu<4.3.0
+werkzeug<1.0
