@@ -43,10 +43,13 @@ class AuthorsMixin(object):
                 if isinstance(author_id, dict):
                     author_id = author_id.get('_id', '')
 
-                author_id = ObjectId(author_id)
-                self.authors_list.append(author_id)
+                # author_id might be an empty string, for instance when the post is syndicated in
+                # for this case we use the syndicated_creator in `attach_authors` method
+                if author_id:
+                    author_id = ObjectId(author_id)
+                    self.authors_list.append(author_id)
             except Exception as err:
-                logger.warning("Unable to add author id to map. {}".format(err))
+                logger.warning('Unable to add author id to map. {}'.format(err))
 
         items = items or self._get_related_items(doc)
         for item in items:
@@ -69,13 +72,8 @@ class AuthorsMixin(object):
             author_id = str(user.get('_id'))
             self.authors_map[author_id] = user
 
-    def attach_authors(self, posts, useID=False):
-        """
-        Simply gets author id from items related and for post itself and adds author info
-
-        NOTE: param `userID` is a temporal fix for the mobile app. It should be removed when
-        it's fixed properly in the mobile app.
-        """
+    def attach_authors(self, posts):
+        """Simply gets author id from items related and for post itself and adds author info"""
 
         try:
             user_agent = request.user_agent.string
@@ -96,6 +94,20 @@ class AuthorsMixin(object):
             post_author_id = str(post['original_creator'])
 
             post['original_creator'] = post_author_id if is_mobile_app else self.authors_map.get(post_author_id)
+
+            if post.get('syndication_in') and not post['original_creator']:
+                ref = None
+
+                try:
+                    for group in post['groups']:
+                        if group['id'] == 'main':
+                            ref = group['refs'][0]['item']
+                except Exception as err:
+                    logger.warning('Imposible to get the main item for the post {}. Error: {}'.format(post, err))
+
+                if ref:
+                    syndicated_creator = ref.get('syndicated_creator', {})
+                    post['original_creator'] = syndicated_creator.get('_id') if is_mobile_app else syndicated_creator
 
             items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
             for ref in items_refs:
