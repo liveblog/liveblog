@@ -77,7 +77,7 @@ class AuthorsMixin(object):
 
         try:
             user_agent = request.user_agent.string
-            logger.warning('Looking for user agent mobile app %s' % user_agent)
+            logger.debug('Looking for user agent mobile app %s' % user_agent)
 
             is_mobile_app = any([
                 (AGENT_MOBILE_IOS in user_agent),

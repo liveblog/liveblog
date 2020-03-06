@@ -20,6 +20,9 @@ loggers:
   superdesk.ws:
     handlers: [console]
     level: DEBUG
+  superdesk.websockets_comms:
+    handlers: [console]
+    level: DEBUG
   liveblog.ws:
     handlers: [console]
     level: DEBUG
