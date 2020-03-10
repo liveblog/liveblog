@@ -72,9 +72,7 @@ class AuthorsMixin(object):
             author_id = str(user.get('_id'))
             self.authors_map[author_id] = user
 
-    def attach_authors(self, posts):
-        """Simply gets author id from items related and for post itself and adds author info"""
-
+    def _is_mobile_app(self):
         try:
             user_agent = request.user_agent.string
             logger.debug('Looking for user agent mobile app %s' % user_agent)
@@ -90,10 +88,40 @@ class AuthorsMixin(object):
             # so we don't care about the mobile app thing.
             is_mobile_app = False
 
+        return is_mobile_app
+
+    def _set_by_line(self, post, author_dict):
+        """
+        This is a temporary workaround for mobile app. They should use our new approach
+        which is attaches the whole user info in the `original_creator` attribute. This is not
+        used by the webapp
+        """
+
+        if not self._is_mobile_app():
+            return
+
+        # by now, the original_creator has been set for a syndicated_in post
+        # so we are fine when using original_creator instead of syndicated_creator
+        # creator = post.get('original_creator')
+        creator = author_dict
+
+        if not post.get('byline') and isinstance(creator, dict):
+            byline = creator.get('byline')
+            if not byline:
+                byline = creator.get('display_name')
+
+            post['byline'] = byline
+
+    def attach_authors(self, posts):
+        """Simply gets author id from items related and for post itself and adds author info"""
+
+        is_mobile_app = self._is_mobile_app()
+
         for post in posts:
             post_author_id = str(post['original_creator'])
+            author_dict = self.authors_map.get(post_author_id)
 
-            post['original_creator'] = post_author_id if is_mobile_app else self.authors_map.get(post_author_id)
+            post['original_creator'] = post_author_id if is_mobile_app else author_dict
 
             if post.get('syndication_in') and not post['original_creator']:
                 ref = None
@@ -108,6 +136,9 @@ class AuthorsMixin(object):
                 if ref:
                     syndicated_creator = ref.get('syndicated_creator', {})
                     post['original_creator'] = syndicated_creator.get('_id') if is_mobile_app else syndicated_creator
+                    author_dict = syndicated_creator
+
+            self._set_by_line(post, author_dict)
 
             items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
             for ref in items_refs:
