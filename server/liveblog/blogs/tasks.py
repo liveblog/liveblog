@@ -307,6 +307,13 @@ def remove_deleted_blogs():
             logger.info('Blog "{}" with id "{}" removed as was marked for deletion'.format(blog['title'], blog['_id']))
 
             blog_id = blog['_id']
-            blog_service.on_delete(blog)
-            blog_service.delete(lookup={'_id': blog_id})
-            archive_service.delete(lookup={'blog': ObjectId(blog_id)})
+            try:
+                blog_service.on_delete(blog)
+                blog_service.delete(lookup={'_id': blog_id})
+                archive_service.delete(lookup={'blog': ObjectId(blog_id)})
+            except SuperdeskApiError as err:
+                # NOTE: for now we are only skipping the error when the blog
+                # is syndicated. We don't catch other issues because we need to
+                # know what is happening for those cases. For this specific one it's
+                # ok as it doesn't compromise any functionality
+                logger.info('There was a problem removing the blog. {}'.format(err))
