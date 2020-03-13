@@ -262,10 +262,6 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             for post in blog_posts.docs:
                 self.calculate_post_type(post)
                 self.attach_syndication(post)
-                self.extract_author_ids(post)
-
-            self.generate_authors_map()
-            self.attach_authors(blog_posts.docs)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
