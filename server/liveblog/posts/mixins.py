@@ -1,7 +1,10 @@
 import logging
 from flask import request
-from superdesk import get_resource_service
 from bson.objectid import ObjectId
+
+from superdesk import get_resource_service
+from settings import MOBILE_APP_WORKAROUND
+
 
 logger = logging.getLogger('superdesk')
 
@@ -49,7 +52,7 @@ class AuthorsMixin(object):
                     author_id = ObjectId(author_id)
                     self.authors_list.append(author_id)
             except Exception as err:
-                logger.warning('Unable to add author id to map. {}'.format(err))
+                logger.info('Unable to add author id to map. {}'.format(err))
 
         items = items or self._get_related_items(doc)
         for item in items:
@@ -73,6 +76,9 @@ class AuthorsMixin(object):
             self.authors_map[author_id] = user
 
     def _is_mobile_app(self):
+        if not MOBILE_APP_WORKAROUND:
+            return False
+
         try:
             user_agent = request.user_agent.string
             logger.debug('Looking for user agent mobile app %s' % user_agent)
@@ -102,7 +108,6 @@ class AuthorsMixin(object):
 
         # by now, the original_creator has been set for a syndicated_in post
         # so we are fine when using original_creator instead of syndicated_creator
-        # creator = post.get('original_creator')
         creator = author_dict
 
         if not post.get('byline') and isinstance(creator, dict):
