@@ -156,6 +156,8 @@ export default function postsService(api, $q, userList, session) {
      * information later (profile_url, name, etc)
      *
      * @param       {Object} obj         Post or item belonging to post
+     *
+     * @TODO: remove this in next release as it's all coming from backend
      */
     function _completeUser(obj) {
         if (obj.commenter) {

@@ -117,34 +117,51 @@ class AuthorsMixin(object):
 
             post['byline'] = byline
 
+    def get_main_item(self, post):
+        """It gets the first related item of a post. If the post is syndicated"""
+        is_syndicated = post.get('syndication_in')
+        main_item = {}
+
+        try:
+            for group in post['groups']:
+                if group['id'] == 'main':
+                    if is_syndicated:
+                        for ref in group['refs']:
+                            syndicated_creator = ref.get('item', {}).get('syndicated_creator')
+                            if syndicated_creator:
+                                main_item = ref.get('item')
+                                break
+                    else:
+                        main_item = group['refs'][0]['item']
+                        break
+
+        except Exception as err:
+            logger.info('Imposible to get the main item for the post {}. Error: {}'.format(post, err))
+
+        return main_item
+
     def attach_authors(self, posts):
         """Simply gets author id from items related and for post itself and adds author info"""
 
         is_mobile_app = self._is_mobile_app()
 
         for post in posts:
-            post_author_id = str(post['original_creator'])
-            author_dict = self.authors_map.get(post_author_id)
+            post_author_id = str(post.get('original_creator', '__not_found__'))
+            original_creator = self.authors_map.get(post_author_id)
+            main_item = self.get_main_item(post)
 
-            post['original_creator'] = post_author_id if is_mobile_app else author_dict
+            if not original_creator:
+                if main_item.get('item_type') == 'comment':
+                    original_creator = {'display_name': main_item.get('commenter'), '_id': None}
 
-            if post.get('syndication_in') and not post['original_creator']:
-                ref = None
+                elif post.get('syndication_in'):
+                    original_creator = main_item.get('syndicated_creator', {})
 
-                try:
-                    for group in post['groups']:
-                        if group['id'] == 'main':
-                            ref = group['refs'][0]['item']
-                except Exception as err:
-                    logger.warning('Imposible to get the main item for the post {}. Error: {}'.format(post, err))
+            post['original_creator'] = original_creator.get('_id') if is_mobile_app else original_creator
 
-                if ref:
-                    syndicated_creator = ref.get('syndicated_creator', {})
-                    post['original_creator'] = syndicated_creator.get('_id') if is_mobile_app else syndicated_creator
-                    author_dict = syndicated_creator
+            self._set_by_line(post, original_creator)
 
-            self._set_by_line(post, author_dict)
-
+            # TODO: check if we really need to complete items' author info. Most likely is only needed for post
             items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
             for ref in items_refs:
                 item = ref.get('item')
