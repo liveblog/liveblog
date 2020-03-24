@@ -10,7 +10,8 @@ const handlers = require('./handlers'),
   pageview = require('./pageview'),
   localAnalytics = require('./local-analytics'),
   videoObserver = require('./video-observer'),
-  adsManager = require('./ads-manager');
+  adsManager = require('./ads-manager'),
+  gdpr = require('./gdpr');
 
 require("iframe-resizer/js/iframeResizer.contentWindow.min.js");
 module.exports = {
@@ -23,6 +24,8 @@ module.exports = {
     viewmodel.init();
     localAnalytics.hit();
     pageview.init();
+
+    gdpr.init();
 
     adsManager.init();
     videoObserver.init();
