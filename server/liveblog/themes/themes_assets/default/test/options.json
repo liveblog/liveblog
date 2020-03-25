@@ -34,7 +34,7 @@
       "showUpdateDatetime": true,
       "showSharingButtons": true,
       "showPermalinkButton": true,
-      "youtubePrivateMode": true,
+      "youtubePrivateMode": false,
       "showRelativeDate": true
     },
     "start_date":"2017-03-08T12:30:20+00:00",
