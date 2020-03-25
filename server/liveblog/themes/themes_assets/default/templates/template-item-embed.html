@@ -14,17 +14,21 @@
         {% endif %}
     </div>
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
-    <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
+    <template class="consent_awaiting">
+        <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
+    </template>
 {% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
     <blockquote class="embedly-card" data-card-controls="0">
         <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <blockquote class="instagram-media" data-instgrm-version="12" data-instgrm-captioned>
-        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
-        <p>{{ ref.item.meta.title }}</p>
-    </blockquote>
+    <template class="consent_awaiting">
+        <blockquote class="instagram-media" data-instgrm-version="12" data-instgrm-captioned>
+            <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
+            <p>{{ ref.item.meta.title }}</p>
+        </blockquote>
+    </template>
 {% elif ref.item.meta.provider_name|lower == 'brightcove' and ref.item.meta.html %}
     <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
     <div class="item--embed__info">

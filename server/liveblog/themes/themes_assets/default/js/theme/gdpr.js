@@ -73,6 +73,10 @@ const checkAndSetPlaceholders = () => {
             }
 
             embed.replaceWith(embed.content);
+
+            setTimeout(() => {
+                instgrm.Embeds.process();
+            }, 500);
         });
     }
 };
