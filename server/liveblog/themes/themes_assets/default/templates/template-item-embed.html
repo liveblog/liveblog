@@ -8,22 +8,24 @@
                 src="{{ref.item.meta.url | replace("http:","https:") | replace("youtube.com","youtube-nocookie.com") | replace("watch?v=","embed/")}}">
             </iframe>
         {% else %}
-        <template class="consent_awaiting">
+        <template class="lb_consent--awaiting">
             {{ ref.item.meta.html | safe }}
         </template>
         {% endif %}
     </div>
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
-    <template class="consent_awaiting">
+    <template class="lb_consent--awaiting">
         <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
     </template>
 {% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
+    <template class="lb_consent--awaiting">
     <blockquote class="embedly-card" data-card-controls="0">
         <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
+    </template>
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <template class="consent_awaiting">
+    <template class="lb_consent--awaiting">
         <blockquote class="instagram-media" data-instgrm-version="12" data-instgrm-captioned>
             <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
             <p>{{ ref.item.meta.title }}</p>

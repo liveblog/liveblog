@@ -20,6 +20,8 @@
 
   {% include "template-watermark.html" %}
 
+  {% include "template-gdpr-consent-placeholder.html" %}
+
   {% if settings.stickyPosition == 'top'%}
     <div class="timeline-top timeline-top--loaded">
       <section data-timeline-sticky class="lb-posts list-group{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
@@ -144,8 +146,6 @@
 
 
 </div>
-
-{% include "template-embed-providers.html" %}
 
 {% if include_js_options %}
   <script type="text/javascript">
