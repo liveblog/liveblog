@@ -2,42 +2,41 @@ var cookiesEnabler = require('cookies-enabler');
 
 const COOKIE_NAME = '__lb_consent_cookie__';
 const COOKIE_LIFE_DAYS = 365;
-const CONSENT_SUBJECTS_SELECTOR = 'template.consent_awaiting';
+const CONSENT_SUBJECTS_SELECTOR = 'template.lb_consent--awaiting';
+const CONSENT_PLACEHOLDER_TMPL = 'template#lb_consent--placeholder-tmpl';
+const PLACEHOLDER_SELECTOR = 'lb_consent--placeholder';
 
 // TODO: probably get rid of this plugin. For now temptatively
 // will be used for scripts loading
-const setupCookiesEnabler = () => {
+const wireCookiesEnabler = () => {
+
+    if (isConsentGiven())
+        return;
+
     cookiesEnabler.init({
-        scriptClass: 'lb_consent--script',
-        iframeClass: 'lb_consent--iframe',
+        // scriptClass: 'lb_consent--script',
 
-        acceptClass: 'ce-accept',
-        dismissClass: 'ce-dismiss',
-        disableClass: 'ce-disable',
+        acceptClass: 'lb-content--accept',
+        // dismissClass: 'ce-dismiss',
+        // disableClass: 'ce-disable',
 
-        bannerClass: 'ce-banner',
-        bannerHTML: ' ',
         eventScroll: false,
-
-        scrollOffset: 200,
-
         clickOutside: false,
 
         cookieName: COOKIE_NAME,
         cookieDuration: COOKIE_LIFE_DAYS,
         wildcardDomain: true,
 
-        iframesPlaceholder: true,
-        iframesPlaceholderHTML:
-            '<p>This content is not available without cookies. <a href=#" class="ce-accept">Enable Cookies</a>"</p>',
-        iframesPlaceholderClass: 'lb_consent--iframe-placeholder',
+        // I'll take care of iframes myself
+        iframesPlaceholder: false,
+        bannerHTML: ' ',
 
         // Callbacks
         onEnable: () => {
-            checkAndSetPlaceholders();
+            checkAndHandlePlaceholders();
         },
-        onDismiss: '',
-        onDisable: ''
+        // onDismiss: '',
+        // onDisable: ''
     });
 };
 
@@ -51,42 +50,43 @@ const isConsentGiven = () => getCookieValue(COOKIE_NAME) === 'Y';
 
 const getNodesAwaitingConsent = () => document.querySelectorAll(CONSENT_SUBJECTS_SELECTOR);
 
-const checkAndSetPlaceholders = () => {
+const checkAndHandlePlaceholders = () => {
     const embedNodes = getNodesAwaitingConsent();
 
-    if (!isConsentGiven()) {
-        const placeholder = document.querySelector('template#lb_consent-placeholder-tmpl');
+    if (isConsentGiven()) {
+        embedNodes.forEach((embed) => {
+            const prev = embed.previousElementSibling;
+
+            if (prev && prev.classList.contains(PLACEHOLDER_SELECTOR))
+                prev.remove();
+
+            embed.replaceWith(embed.content);
+        });
+
+        setTimeout(() => {
+            instgrm.Embeds.process();
+            twttr.widgets.load();
+        }, 500);
+    } else {
+        const placeholder = document.querySelector(CONSENT_PLACEHOLDER_TMPL);
 
         embedNodes.forEach((embed) => {
             const clone = placeholder.content.cloneNode(true);
             const parent = embed.parentNode;
 
-            parent.insertBefore(clone, embed);
-            setupCookiesEnabler();
+            if (!embed.hasAttribute('data-no-placeholder'))
+                parent.insertBefore(clone, embed);
         });
-    } else {
-        embedNodes.forEach((embed) => {
-            const prev = embed.previousElementSibling;
 
-            if (prev && prev.classList.contains('lb_consent-placeholder')) {
-                prev.remove();
-            }
-
-            embed.replaceWith(embed.content);
-
-            setTimeout(() => {
-                instgrm.Embeds.process();
-            }, 500);
-        });
+        wireCookiesEnabler();
     }
 };
 
 module.exports = {
-
     init: () => {
-        // first step to setup the cookies plugin
-        setupCookiesEnabler();
+        wireCookiesEnabler();
+        checkAndHandlePlaceholders();
+    },
 
-        checkAndSetPlaceholders();
-    }
+    wireCookiesEnabler: wireCookiesEnabler
 };
