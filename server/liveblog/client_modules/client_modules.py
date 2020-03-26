@@ -262,10 +262,6 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             for post in blog_posts.docs:
                 self.calculate_post_type(post)
                 self.attach_syndication(post)
-                self.extract_author_ids(post)
-
-            self.generate_authors_map()
-            self.attach_authors(blog_posts.docs)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
@@ -321,6 +317,28 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         """Parent's class attach editing flag information so, we don't need it
         for frontend. Let's override the method with empty block"""
         pass
+
+
+class ClientOutputPostsResource(ClientBlogPostsResource):
+    url = 'client_blogs/<regex("[a-f0-9]{24}"):blog_id>/<regex("[a-f0-9]{24}"):output_id>/posts'
+
+
+class ClientOutputPostsService(ClientBlogPostsService):
+
+    def get(self, req, lookup):
+        output = get_resource_service('outputs').find_one(req=None, _id=lookup.get('output_id'))
+        if not output:
+            return 'output not found', 404
+
+        new_args = req.args.copy()
+        query_source = json.loads(new_args.get('source', '{}'))
+        query_source['post_filter'] = {'terms': {'tags': output['tags']}}
+        new_args['source'] = json.dumps(query_source)
+        req.args = new_args
+
+        del lookup['output_id']
+
+        return super().get(req, lookup)
 
 
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):

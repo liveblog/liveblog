@@ -28,6 +28,7 @@ services:
     - redis-server
 
 addons:
+  chrome: stable
   apt:
     sources:
     - mongodb-3.0-precise
@@ -44,7 +45,6 @@ addons:
     - git
     - libgnome-keyring-dev
     - g++-4.8
-    - google-chrome-stable
 
 cache:
   directories:

@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * @author ps / @___paul
  */
@@ -11,10 +12,11 @@ const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const commentItemEndpoint = `${apiHost}api/client_items`;
 const commentPostEndpoint = `${apiHost}api/client_comments`;
 
-var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
-  , settings = LB.settings
-  , vm = {}
-  , latestUpdate;
+var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
+var settings = LB.settings;
+var vm = {};
+var latestUpdate;
+
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -98,7 +100,11 @@ vm.getPosts = function(opts) {
     sticky: opts.sticky
   });
 
-  var page = opts.fromDate? '' : `&page=${opts.page?opts.page:'1'}`;
+  if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
+    endpoint = `${apiHost}api/client_blogs/${LB.blog._id}/${LB.output._id}/posts`;
+  }
+
+  var page = opts.fromDate ? '' : `&page=${opts.page?opts.page:'1'}`;
   var qs = '?max_results=' + settings.postsPerPage + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
@@ -254,8 +260,7 @@ vm.getQuery = function(opts) {
       {
         "published_date": {order: 'desc', missing: '_last', unmapped_type: 'long'}
       }
-    ],
-    "post_filter": {}
+    ]
   };
 
   if (opts.fromDate) {
@@ -273,15 +278,6 @@ vm.getQuery = function(opts) {
     query.query.filtered.filter.and.push({
       terms: { post_status:  ["open", "submitted"] }
     });
-  }
-
-  // NOTE: tags should only be considered in outputs for now.
-  if (LB.output) {
-    const tags = LB.output.tags || [];
-
-    if (tags.length > 0) {
-      query.post_filter.terms = {"tags": tags}
-    }
   }
 
   if (opts.highlightsOnly === true) {
