@@ -332,7 +332,11 @@ class ClientOutputPostsService(ClientBlogPostsService):
 
         new_args = req.args.copy()
         query_source = json.loads(new_args.get('source', '{}'))
-        query_source['post_filter'] = {'terms': {'tags': output['tags']}}
+
+        tags = output.get('tags', [])
+        if len(tags) > 0:
+            query_source['post_filter'] = {'terms': {'tags': tags}}
+
         new_args['source'] = json.dumps(query_source)
         req.args = new_args
 
