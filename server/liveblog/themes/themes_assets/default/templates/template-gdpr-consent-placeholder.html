@@ -1,6 +1,12 @@
 <template id="lb_consent--placeholder-tmpl">
     <div class="lb_consent--placeholder">
-        This content is not available without cookies.
-        <a href="javascript:;" class="lb-content--accept">Enable Cookies</a>
+        <img src="{{ assets_root }}images/consent-placeholder.svg" />
+        <div class="lb_consent--description">
+            Please click 'Activate' to see the social media posts.
+            Learn more about our data protection policy on this <a href="#">page</a>
+            <button href="javascript:;" class="comment__button lb-content--accept">
+                Activate
+            </button>
+        </div>
     </div>
 </template>

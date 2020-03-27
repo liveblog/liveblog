@@ -53,6 +53,8 @@ const getNodesAwaitingConsent = () => document.querySelectorAll(CONSENT_SUBJECTS
 const checkAndHandlePlaceholders = () => {
     const embedNodes = getNodesAwaitingConsent();
 
+    console.log(isConsentGiven());
+
     if (isConsentGiven()) {
         embedNodes.forEach((embed) => {
             const prev = embed.previousElementSibling;
