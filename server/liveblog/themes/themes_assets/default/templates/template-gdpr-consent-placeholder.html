@@ -2,8 +2,7 @@
     <div class="lb_consent--placeholder">
         <img src="{{ assets_root }}images/consent-placeholder.svg" />
         <div class="lb_consent--description">
-            Please click 'Activate' to see the social media posts.
-            Learn more about our data protection policy on this <a href="#">page</a>
+            {{settings.gdprConsentText|safe}}
             <button href="javascript:;" class="comment__button lb-content--accept">
                 Activate
             </button>

@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 var cookiesEnabler = require('cookies-enabler');
 
 const COOKIE_NAME = '__lb_consent_cookie__';
@@ -75,9 +76,13 @@ const checkAndHandlePlaceholders = () => {
         embedNodes.forEach((embed) => {
             const clone = placeholder.content.cloneNode(true);
             const parent = embed.parentNode;
+            const prev = embed.previousElementSibling;
 
-            if (!embed.hasAttribute('data-no-placeholder'))
-                parent.insertBefore(clone, embed);
+            // if placeholder is already there or if skip is provided
+            if (prev && prev.classList.contains(PLACEHOLDER_SELECTOR) || embed.hasAttribute('data-no-placeholder'))
+                return;
+
+            parent.insertBefore(clone, embed);
         });
 
         wireCookiesEnabler();

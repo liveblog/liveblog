@@ -1,4 +1,5 @@
 {% if ref.item.meta.provider_name|lower == 'youtube' and ref.item.meta.html %}
+    <template class="lb_consent--awaiting">
     <div class="item--embed__element lb-responsive-video">
         {% if settings.youtubePrivateMode and false %}
             <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
@@ -8,11 +9,10 @@
                 src="{{ref.item.meta.url | replace("http:","https:") | replace("youtube.com","youtube-nocookie.com") | replace("watch?v=","embed/")}}">
             </iframe>
         {% else %}
-        <template class="lb_consent--awaiting">
             {{ ref.item.meta.html | safe }}
-        </template>
         {% endif %}
     </div>
+    </template>
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
     <template class="lb_consent--awaiting">
         <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
@@ -26,7 +26,7 @@
     </template>
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
     <template class="lb_consent--awaiting">
-        <blockquote class="instagram-media" data-instgrm-version="12" data-instgrm-captioned>
+        <blockquote class="instagram-media" data-instgrm-version="12">
             <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
             <p>{{ ref.item.meta.title }}</p>
         </blockquote>

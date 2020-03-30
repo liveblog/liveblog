@@ -48,6 +48,7 @@ var buttons = {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
+        .then(view.consent.init)
         .then(view.adsManager.refreshAds)
         .then(view.updateTimestamps)
         .catch(catchError);
@@ -144,6 +145,7 @@ function loadSort(sortBy) {
     .then(view.renderTimeline)
     .then(view.displayNewPosts)
     .then(view.toggleSortBtn(sortBy))
+    .then(view.consent.init)
     .then(view.adsManager.refreshAds)
     .catch(catchError);
 }

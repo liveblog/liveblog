@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.15",
+    "version": "3.5.18",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-930b50c8f9.css"],
-    "devScripts": ["dist/default-440179aff5.js"],
-    "styles": ["dist/default-930b50c8f9.css"],
-    "scripts": ["dist/default-440179aff5.js"],
+    "devStyles": ["dist/default-6b23b2d8aa.css"],
+    "devScripts": ["dist/default-0cc6120486.js"],
+    "styles": ["dist/default-6b23b2d8aa.css"],
+    "scripts": ["dist/default-0cc6120486.js"],
     "options": [
         {
             "name": "language",
@@ -412,6 +412,13 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to prompt user to load updates"
+        },
+        {
+            "name": "gdprConsentText",
+            "label": "GDPR Consent Placeholder Text",
+            "type": "text",
+            "default": "Please click <b>Activate</b> to see the social media posts. Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
+            "help": "This text will be shown in the GDPR placeholder"
         }
     ],
     "styleOptions": [
