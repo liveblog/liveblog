@@ -1,5 +1,5 @@
 /* eslint-disable curly */
-var cookiesEnabler = require('cookies-enabler');
+import * as Cookies from 'js-cookie';
 
 const COOKIE_NAME = '__lb_consent_cookie__';
 const COOKIE_LIFE_DAYS = 365;
@@ -7,54 +7,34 @@ const CONSENT_SUBJECTS_SELECTOR = 'template.lb_consent--awaiting';
 const CONSENT_PLACEHOLDER_TMPL = 'template#lb_consent--placeholder-tmpl';
 const PLACEHOLDER_SELECTOR = 'lb_consent--placeholder';
 
-// TODO: probably get rid of this plugin. For now temptatively
-// will be used for scripts loading
-const wireCookiesEnabler = () => {
 
+const wireCookiesEnabler = () => {
     if (isConsentGiven())
         return;
 
-    cookiesEnabler.init({
-        // scriptClass: 'lb_consent--script',
+    const acceptBtns = document.getElementsByClassName('lb-content--accept');
 
-        acceptClass: 'lb-content--accept',
-        // dismissClass: 'ce-dismiss',
-        // disableClass: 'ce-disable',
+    if (acceptBtns.length > 0) {
+        Array.from(acceptBtns).forEach((btn) => {
+            btn.addEventListener('click', (ev) => {
+                ev.preventDefault();
 
-        eventScroll: false,
-        clickOutside: false,
-
-        cookieName: COOKIE_NAME,
-        cookieDuration: COOKIE_LIFE_DAYS,
-        wildcardDomain: true,
-
-        // I'll take care of iframes myself
-        iframesPlaceholder: false,
-        bannerHTML: ' ',
-
-        // Callbacks
-        onEnable: () => {
-            checkAndHandlePlaceholders();
-        },
-        // onDismiss: '',
-        // onDisable: ''
-    });
+                Cookies.set(COOKIE_NAME, 'Y', {
+                    expires: COOKIE_LIFE_DAYS,
+                    sameSite: 'lax'
+                });
+                checkAndHandlePlaceholders();
+            });
+        });
+    }
 };
 
-const getCookieValue = (a) => {
-    // eslint-disable-next-line newline-after-var
-    let b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
-    return b ? b.pop() : '';
-};
-
-const isConsentGiven = () => getCookieValue(COOKIE_NAME) === 'Y';
+const isConsentGiven = () => Cookies.get(COOKIE_NAME) === 'Y';
 
 const getNodesAwaitingConsent = () => document.querySelectorAll(CONSENT_SUBJECTS_SELECTOR);
 
 const checkAndHandlePlaceholders = () => {
     const embedNodes = getNodesAwaitingConsent();
-
-    console.log(isConsentGiven());
 
     if (isConsentGiven()) {
         embedNodes.forEach((embed) => {
