@@ -13,7 +13,12 @@
                 'views/gallery.html': '/themes_assets/classic/views/gallery.html',
                 'views/generic-embed.html': '/themes_assets/classic/views/generic-embed.html',
                 'views/item.html': '/themes_assets/classic/views/item.html',
-                'views/posts.html': '/themes_assets/classic/views/posts.html'
+                'views/posts.html': '/themes_assets/classic/views/posts.html',
+                'views/embeds/twitter.html': '/themes_assets/classic/views/embeds/twitter.html',
+                'views/embeds/facebook.html': '/themes_assets/classic/views/embeds/facebook.html',
+                'views/embeds/instagram.html': '/themes_assets/classic/views/embeds/instagram.html',
+                'views/embeds/generic.html': '/themes_assets/classic/views/embeds/generic.html',
+                'views/embeds/consent-placeholder.html': '/themes_assets/classic/views/embeds/consent-placeholder.html'
             }
         });
 })(angular);

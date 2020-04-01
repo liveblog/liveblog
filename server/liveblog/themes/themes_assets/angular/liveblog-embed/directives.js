@@ -37,11 +37,48 @@
                                 .width(newWidth)
                                 .height(newWidth * iframe.data('aspectRatio'));
                         }
-                        
+
                     }
                     angular.element($window).bind('resize', _.debounce(resize, 1000));
                 }
             };
+        }])
+        .directive('lbGdprEmbedConsent', ['config', 'asset', function(config, asset) {
+            return {
+                template: '<ng-include src="getTemplateUrl()" />',
+                scope: {
+                    item: '=',
+                    timeline: '='
+                },
+                restrict: 'E',
+                controller: function($scope) {
+                    //function used on the ng-include to resolve the template
+                    $scope.getTemplateUrl = function() {
+                        var item = $scope.item;
+                        var templateName = "";
+
+                        if (config.settings.enableGdprConsent) {
+                            // TODO: add the BlackList checker here
+                            switch (item.meta.provider_name) {
+                                case "Twitter":
+                                case "Facebook":
+                                case "Instagram":
+                                    templateName = "views/embeds/" + item.meta.provider_name.toLowerCase() + ".html";
+                                    break;
+                                default:
+                                    templateName = "views/embeds/generic.html";
+                                    break;
+                            }
+                        }
+
+                        console.log($scope.timeline);
+
+                        templateName = "views/embeds/consent-placeholder.html";
+
+                        return asset.templateUrl(templateName);
+                    }
+                }
+            }
         }])
         .directive('lbTwitterCard', [function() {
             return {
@@ -82,7 +119,7 @@
                         scope.isSelected = function(item) {
                             return item.order === scope.selected();
                         };
-                        
+
                         scope.show = function() {
                             scope.listVisible = true;
                         };
@@ -92,7 +129,7 @@
                                 scope.$apply(function() {
                                     scope.listVisible = false;
                                 });
-                            } 
+                            }
                         });
 
                         scope.$watch("selected()", function(value) {

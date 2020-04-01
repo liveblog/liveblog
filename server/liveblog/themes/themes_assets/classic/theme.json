@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.3.30",
+    "version": "3.3.74",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -320,6 +320,20 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the syndicated author"
+        },
+        {
+            "name": "enableGdprConsent",
+            "label": "Enable GDPR Consent",
+            "type": "checkbox",
+            "default": false,
+            "help": "If users will see a placeholder on embeds until consent is given"
+        },
+        {
+            "name": "gdprConsentText",
+            "label": "GDPR Consent Placeholder Text",
+            "type": "text",
+            "default": "Please click <b>Activate</b> to see the social media posts. Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
+            "help": "This text will be shown in the GDPR placeholder"
         }
     ]
 }

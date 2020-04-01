@@ -70,11 +70,12 @@
                 <lb-item
                     ident="true"
                     item="item"
+                    timeline="timeline"
                     gallery="ctrl.showGallery(post)"></lb-item>
             </div>
         </div>
         <div ng-if="!post.fullDetails || $first">
-            <lb-item item="item" gallery="ctrl.showGallery(post)"></lb-item>
+            <lb-item timeline="timeline" item="item" gallery="ctrl.showGallery(post)"></lb-item>
         </div>
     </div>
     <div
