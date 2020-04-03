@@ -1,38 +1,42 @@
 {% if ref.item.meta.provider_name|lower == 'youtube' and ref.item.meta.html %}
-    <template class="lb_consent--awaiting">
-    <div class="item--embed__element lb-responsive-video">
-        {% if settings.youtubePrivateMode and false %}
+    {% if settings.youtubePrivateMode %}
+        <div class="item--embed__element lb-responsive-video">
             <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
                 title="{{ref.item.meta.title}}"
                 width="{{ref.item.meta.thumbnail_width}}"
                 height="{{ref.item.meta.thumbnail_height}}"
                 src="{{ref.item.meta.url | replace("http:","https:") | replace("youtube.com","youtube-nocookie.com") | replace("watch?v=","embed/")}}">
             </iframe>
-        {% else %}
-            {{ ref.item.meta.html | safe }}
-        {% endif %}
-    </div>
-    </template>
+        </div>
+    {% else %}
+        <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+            <div class="item--embed__element lb-responsive-video">
+                {{ ref.item.meta.html | safe }}
+            </div>
+        </template>
+    {% endif %}
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
-    <template class="lb_consent--awaiting">
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
         <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
     </template>
 {% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
-    <template class="lb_consent--awaiting">
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
     <blockquote class="embedly-card" data-card-controls="0">
         <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
     </template>
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <template class="lb_consent--awaiting">
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
         <blockquote class="instagram-media" data-instgrm-version="12">
             <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
             <p>{{ ref.item.meta.title }}</p>
         </blockquote>
     </template>
 {% elif ref.item.meta.provider_name|lower == 'brightcove' and ref.item.meta.html %}
-    <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+        <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
+    </template>
     <div class="item--embed__info">
         {% if ref.item.meta.title %}
         <div class="item--embed__title">
@@ -45,7 +49,9 @@
     </div>
 {% else %}
     {% if ref.item.meta.html %}
-    <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+        <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
+    </template>
     {% endif %}
 
     {% if (ref.item.meta.title or ref.item.meta.description or ref.item.meta.credit or (not ref.item.meta.html and ref.item.meta.thumbnail_url)) %}

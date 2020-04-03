@@ -33,27 +33,50 @@ const isConsentGiven = () => Cookies.get(COOKIE_NAME) === 'Y';
 
 const getNodesAwaitingConsent = () => document.querySelectorAll(CONSENT_SUBJECTS_SELECTOR);
 
+const domainRequiresConsent = (providerUrl) => {
+    if (!providerUrl)
+        return false;
+
+    let domains = LB.settings.gdprConsentDomains;
+
+    if (domains.length > 0) {
+        // get domains and remove possible blank spaces
+        domains = domains.split(',');
+        domains = domains.map((x) => x.trim().toLowerCase());
+
+        let embedDomain = new URL(providerUrl).hostname;
+
+        embedDomain = embedDomain.replace('www.', '');
+
+        return domains.indexOf(embedDomain) !== -1;
+    }
+
+    return false;
+};
+
+const exposeContent = (embedNode) => {
+    const prev = embedNode.previousElementSibling;
+
+    if (prev && prev.classList.contains(PLACEHOLDER_SELECTOR))
+        prev.remove();
+
+    embedNode.replaceWith(embedNode.content);
+};
+
 const checkAndHandlePlaceholders = () => {
     const embedNodes = getNodesAwaitingConsent();
 
-    if (isConsentGiven()) {
-        embedNodes.forEach((embed) => {
-            const prev = embed.previousElementSibling;
-
-            if (prev && prev.classList.contains(PLACEHOLDER_SELECTOR))
-                prev.remove();
-
-            embed.replaceWith(embed.content);
-        });
-
-        setTimeout(() => {
-            instgrm.Embeds.process();
-            twttr.widgets.load();
-        }, 500);
-    } else {
+    if (LB.settings.enableGdprConsent && !isConsentGiven()) {
         const placeholder = document.querySelector(CONSENT_PLACEHOLDER_TMPL);
 
         embedNodes.forEach((embed) => {
+            const providerUrl = embed.getAttribute('data-provider-url');
+
+            if (!domainRequiresConsent(providerUrl)) {
+                exposeContent(embed);
+                return;
+            }
+
             const clone = placeholder.content.cloneNode(true);
             const parent = embed.parentNode;
             const prev = embed.previousElementSibling;
@@ -66,6 +89,13 @@ const checkAndHandlePlaceholders = () => {
         });
 
         wireCookiesEnabler();
+    } else {
+        embedNodes.forEach(exposeContent);
+
+        setTimeout(() => {
+            instgrm.Embeds.process();
+            twttr.widgets.load();
+        }, 500);
     }
 };
 

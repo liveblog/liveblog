@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.23",
+    "version": "3.5.25",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-684ac30962.css"],
-    "devScripts": ["dist/default-debb6f65cc.js"],
-    "styles": ["dist/default-684ac30962.css"],
-    "scripts": ["dist/default-debb6f65cc.js"],
+    "devStyles": ["dist/default-5c57075561.css"],
+    "devScripts": ["dist/default-3e248931a9.js"],
+    "styles": ["dist/default-5c57075561.css"],
+    "scripts": ["dist/default-3e248931a9.js"],
     "options": [
         {
             "name": "language",
@@ -414,11 +414,31 @@
             "help": "Turn off to prompt user to load updates"
         },
         {
+            "name": "enableGdprConsent",
+            "label": "Enable GDPR Consent",
+            "type": "checkbox",
+            "default": false,
+            "help": "If users will see a placeholder on embeds until consent is given"
+        },
+        {
             "name": "gdprConsentText",
             "label": "GDPR Consent Placeholder Text",
             "type": "text",
-            "default": "Please click <b>Activate</b> to see the social media posts. Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "Please click <b>Activate</b> to see the social media posts. <br />Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
             "help": "This text will be shown in the GDPR placeholder"
+        },
+        {
+            "name": "gdprConsentDomains",
+            "label": "Embed from Domains Requiring Consent",
+            "type": "text",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "twitter.com, facebook.com, instagram.com, youtube.com",
+            "help": "Domains separated by comma that will require user's consent to display embeds"
         }
     ],
     "styleOptions": [
