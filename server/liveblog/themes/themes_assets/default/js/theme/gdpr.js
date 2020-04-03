@@ -12,7 +12,7 @@ const wireCookiesEnabler = () => {
     if (isConsentGiven())
         return;
 
-    const acceptBtns = document.getElementsByClassName('lb-content--accept');
+    const acceptBtns = document.getElementsByClassName('lb_consent--accept');
 
     if (acceptBtns.length > 0) {
         Array.from(acceptBtns).forEach((btn) => {

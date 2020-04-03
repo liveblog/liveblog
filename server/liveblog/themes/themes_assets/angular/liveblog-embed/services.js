@@ -18,7 +18,7 @@
                             && $injector.get('assets_simplified_path'),
                     ret = path;
                 /**
-                 * `assets_simplified_path` constant is added 
+                 * `assets_simplified_path` constant is added
                  * to keep backwards compatibility for old themes.
                  */
                 if(config.debug && config.templates && config.templates[path]) {
@@ -37,6 +37,32 @@
             };
 
             this.imageUrl = this.templateUrl;
+
+            this.$get = function() {
+                return this;
+            };
+        }])
+        .provider('cookies', [function() {
+            this.read = function(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0;i < ca.length;i++) {
+                    var c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+            };
+
+            this.write = function(name, value, days) {
+                var expires = "", date = new Date();
+
+                if (days) {
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + value + expires + "; path=/";
+            }
 
             this.$get = function() {
                 return this;

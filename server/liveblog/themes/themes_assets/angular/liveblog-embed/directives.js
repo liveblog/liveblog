@@ -1,3 +1,7 @@
+const COOKIE_NAME = '__lb_consent_cookie__';
+const COOKIE_LIFE_DAYS = 365;
+const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
+
 (function(angular) {
     'use strict';
     angular.module('liveblog-embed')
@@ -43,22 +47,64 @@
                 }
             };
         }])
-        .directive('lbGdprEmbedConsent', ['config', 'asset', function(config, asset) {
-            return {
-                template: '<ng-include src="getTemplateUrl()" />',
-                scope: {
-                    item: '=',
-                    timeline: '='
-                },
-                restrict: 'E',
-                controller: function($scope) {
-                    //function used on the ng-include to resolve the template
-                    $scope.getTemplateUrl = function() {
-                        var item = $scope.item;
-                        var templateName = "";
+        .directive('lbGdprEmbedConsent', [
+            'config', 'asset', 'cookies', '$timeout',
+            function(config, asset, cookies, $timeout) {
+                return {
+                    template: '<ng-include src="getTemplateUrl()" />',
+                    scope: {
+                        item: '=',
+                        timeline: '='
+                    },
+                    restrict: 'E',
+                    link: function(scope, elem, attrs) {
+                        $timeout(function () {
+                            var acceptButton = angular.element(elem).find(CONSENT_ACCEPT_SELECTOR);
+                            acceptButton.on('click', function(ev) {
+                                ev.preventDefault();
 
-                        if (config.settings.enableGdprConsent) {
-                            // TODO: add the BlackList checker here
+                                cookies.write(COOKIE_NAME, 'Y', COOKIE_LIFE_DAYS);
+                            });
+                        });
+                    },
+                    controller: function($scope) {
+                        var consentIsGiven = function() {
+                            return cookies.read(COOKIE_NAME) === 'Y';
+                        };
+
+                        var domainRequiresConsent = function(providerUrl) {
+                            if (!providerUrl)
+                                return false;
+
+                            var domains = config.settings.gdprConsentDomains;
+
+                            if (domains.length > 0) {
+                                // get domains and remove possible blank spaces
+                                domains = domains.split(',');
+                                domains = domains.map(function(x) {return x.trim().toLowerCase()});
+
+                                var embedDomain = new URL(providerUrl).hostname;
+                                embedDomain = embedDomain.replace('www.', '');
+
+                                return domains.indexOf(embedDomain) !== -1;
+                            }
+
+                            return false;
+                        };
+
+                        // used on the ng-include to resolve the template
+                        $scope.getTemplateUrl = function() {
+                            var item = $scope.item;
+                            var templateName;
+
+                            if (config.settings.enableGdprConsent) {
+                                const providerUrl = item.meta.provider_url;
+
+                                if (!consentIsGiven() && domainRequiresConsent(providerUrl)) {
+                                    return asset.templateUrl("views/embeds/consent-placeholder.html");
+                                }
+                            }
+
                             switch (item.meta.provider_name) {
                                 case "Twitter":
                                 case "Facebook":
@@ -69,17 +115,13 @@
                                     templateName = "views/embeds/generic.html";
                                     break;
                             }
+
+                            return asset.templateUrl(templateName);
                         }
-
-                        console.log($scope.timeline);
-
-                        templateName = "views/embeds/consent-placeholder.html";
-
-                        return asset.templateUrl(templateName);
                     }
                 }
             }
-        }])
+        ])
         .directive('lbTwitterCard', [function() {
             return {
                 restrict: 'E',
