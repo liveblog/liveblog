@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.25",
+    "version": "3.5.27",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-5c57075561.css"],
-    "devScripts": ["dist/default-3e248931a9.js"],
+    "devScripts": ["dist/default-743ccb55a6.js"],
     "styles": ["dist/default-5c57075561.css"],
-    "scripts": ["dist/default-3e248931a9.js"],
+    "scripts": ["dist/default-743ccb55a6.js"],
     "options": [
         {
             "name": "language",
