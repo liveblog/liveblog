@@ -42,7 +42,7 @@
                 return this;
             };
         }])
-        .provider('cookies', [function() {
+        .service('cookies', function() {
             this.read = function(name) {
                 var nameEQ = name + "=";
                 var ca = document.cookie.split(';');
@@ -63,9 +63,5 @@
                 }
                 document.cookie = name + "=" + value + expires + "; path=/";
             }
-
-            this.$get = function() {
-                return this;
-            };
-        }]);
+        });
 })(angular);

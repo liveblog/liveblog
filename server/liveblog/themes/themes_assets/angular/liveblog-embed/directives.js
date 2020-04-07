@@ -67,7 +67,7 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
                             });
                         });
                     },
-                    controller: function($scope) {
+                    controller: ['$scope', function($scope) {
                         var consentIsGiven = function() {
                             return cookies.read(COOKIE_NAME) === 'Y';
                         };
@@ -118,7 +118,7 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
 
                             return asset.templateUrl(templateName);
                         }
-                    }
+                    }]
                 }
             }
         ])
