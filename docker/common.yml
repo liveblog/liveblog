@@ -59,6 +59,18 @@ superdesk:
    - SUPERDESK_WS_URL=ws://127.0.0.1/ws
    - SUPERDESK_CLIENT_URL=http://127.0.0.1
    - SUPERDESK_TESTING=True
+   - EMBED_PROTOCOL=http://
+   - LIVEBLOG_DEBUG=False
+   - SYNDICATION=True
+   - MONGO_DBNAME=superdesk
+   - SUBSCRIPTION_LEVEL=network
+   - LIVEBLOG_CACHE_TYPE=redis
+   - LIVEBLOG_CACHE_REDIS_URL=redis://redis:6379/12
+   - BOTO_CONFIG=/doesnotexist
+   - SYNDICATION_VALIDATE_AUTH=0
+   - MAIL_SUPPRESS_SEND=False
+   - EMBEDLY_KEY=82645d4daa7742cc891c21506d28235e
+   - OAUTHLIB_INSECURE_TRANSPORT=1
   volumes:
    - ../results/server/unit:/opt/superdesk/results-unit/
    - ../results/server/behave:/opt/superdesk/results-behave/
