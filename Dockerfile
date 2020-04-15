@@ -1,21 +1,17 @@
 # import base image
-FROM ubuntu:trusty
+FROM ubuntu:bionic
 
 # install system-wide dependencies,
 # python3 and the build-time dependencies for c modules
 RUN apt-get update && \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 python3 python3-dev python3-pip python3-lxml \
-build-essential libffi-dev git \
-libtiff5-dev libjpeg8-dev zlib1g-dev \
+build-essential libffi-dev git locales \
+libtiff5-dev libjpeg8-dev zlib1g-dev libmagic-dev \
 libfreetype6-dev liblcms2-dev libwebp-dev \
 curl libfontconfig nodejs npm nginx \
 && echo "\ndaemon off;" >> /etc/nginx/nginx.conf \
-&& rm /etc/nginx/sites-enabled/default \
-&& ln --symbolic /usr/bin/nodejs /usr/bin/node
-
-RUN npm install -g npm
-RUN npm -g install grunt-cli
+&& rm /etc/nginx/sites-enabled/default
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
@@ -41,13 +37,16 @@ EXPOSE 5100
 ENV PYTHONUNBUFFERED 1
 ENV C_FORCE_ROOT "False"
 ENV CELERYBEAT_SCHEDULE_FILENAME /tmp/celerybeatschedule.db
+ENV TZ Europe/London
 
 # install server dependencies
 COPY ./server/requirements.txt /tmp/requirements.txt
-RUN cd /tmp && pip3 install -U -r /tmp/requirements.txt
+RUN python3 -m pip install --upgrade pip setuptools wheel
+RUN cd /tmp && python3 -m pip install -U -r /tmp/requirements.txt
 
 # install client dependencies
 COPY ./client/package.json /opt/superdesk/client/
+RUN npm install -g npm grunt-cli
 RUN cd ./client && npm install
 
 # copy server sources
@@ -58,5 +57,3 @@ COPY ./client /opt/superdesk/client
 
 # TODO: this is hack to update basic themes during bamboo deployment
 COPY ./server/liveblog/themes/themes_assets/ /opt/superdesk/themes_assets/
-
-RUN cd ./client && npm i
