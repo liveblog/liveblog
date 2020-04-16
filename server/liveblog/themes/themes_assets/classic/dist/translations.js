@@ -38,36 +38,43 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} autor: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('de', {
+  "Activate": "Aktivieren",
   "Advertisement": "Werbung",
   "Cancel": "Abbrechen",
   "Comment": "Kommentar",
-  "Comment *": "Kommentar",
+  "Comment *": "Kommentar *",
   "Comment should be maximum 300 characters in length.": "Kommentar darf maximal 300 Zeichen lang sein.",
   "Editorial": "Redaktionell",
   "Load more posts": "Mehr Einträge laden",
   "Loading": "Lade",
   "Name *": "Name",
-  "Name should be maximum 30 characters in length.": "Name darf maximal 30 Zeichen lang sein",
+  "Name should be maximum 30 characters in length.": "Name darf maximal 30 Zeichen lang sein.",
   "Newest first": "Neueste zuerst",
-  "No posts for now.": "Kein Beitrag vorhanden",
+  "No posts for now.": "Kein Beitrag vorhanden.",
   "Oldest first": "Älteste zuerst",
   "One pinned post": [
     "Angehefteter Eintrag",
     "{{$count}} Angeheftete Einträge"
   ],
-  "Please fill in your Comment.": "Bitte Kommentar hier eintragen",
-  "Please fill in your Name.": "Bitte Namen hier eintragen",
+  "Please fill in your Comment.": "Bitte Kommentar hier eintragen.",
+  "Please fill in your Name.": "Bitte Namen hier eintragen.",
   "Post a comment": "Kommentar posten",
   "See one new update": [
     "Neuen Beitrag anzeigen",
     "Neue Beiträge anzeigen"
   ],
   "Send": "Abschicken",
+  "Share this post on Email": "Diesen Beitrag per E-Mail teilen",
+  "Share this post on Facebook": "Teile diesen Beitrag auf Facebook",
+  "Share this post on Google+": "Teile diesen Beitrag auf Google+",
+  "Share this post on Linkedin": "Teile diesen Beitrag auf Linkedin",
+  "Share this post on Twitter": "Teile diesen Beitrag auf Twitter",
   "Show all posts": "Alle Beiträge anzeigen",
   "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
-  "Sort by:": "Ordnen nach",
+  "Social Share": "Soziales Teilen",
+  "Sort by:": "Ordnen nach:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}",
-  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,",
+  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung.",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} Bild: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fi', {
