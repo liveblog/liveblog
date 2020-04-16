@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.27",
+    "version": "3.6.0",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-5c57075561.css"],
-    "devScripts": ["dist/default-743ccb55a6.js"],
+    "devScripts": ["dist/default-ec7d4e65e3.js"],
     "styles": ["dist/default-5c57075561.css"],
-    "scripts": ["dist/default-743ccb55a6.js"],
+    "scripts": ["dist/default-ec7d4e65e3.js"],
     "options": [
         {
             "name": "language",
@@ -510,7 +510,8 @@
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
           "Your comment is being reviewed and will be published as soon as it's approved": "Váš komentář se kontroluje a bude publikován, jakmile bude schválen",
-          "credit:": " autor:"
+          "credit:": " autor:",
+          "Activate": "Aktivovat"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
@@ -541,7 +542,8 @@
           "Sort by:": "Ordnen nach",
           "Updated": "Aktualisiert am",
           "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
-          "credit:": "Bild:"
+          "credit:": "Bild:",
+          "Activate": "Aktivieren"
         }, "fi": {
           "Highlights": "Kohokohtia",
           "Comment by": "Comment by",
@@ -572,7 +574,8 @@
           "Sort by:": "Järjestä:",
           "Updated": "Päivitetty",
           "Your comment is being reviewed and will be published as soon as it's approved": "Kommenttisi tarkistetaan ja julkaistaan heti, kun se on hyväksytty",
-          "credit:": "©"
+          "credit:": "©",
+          "Activate": "Aktivoida"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
           "Comment by": "Commentaire de",
@@ -603,7 +606,8 @@
           "Sort by:": "Trier par:",
           "Updated": "Mise à jour",
           "Your comment is being reviewed and will be published as soon as it's approved": "Votre commentaire est en cours de révision et sera publié dès qu'il aura été approuvé",
-          "credit:": "crédit:"
+          "credit:": "crédit:",
+          "Activate": "Activer"
         }, "nl": {
           "Highlights": "Highlights",
           "Comment by": "Commentaar door",
@@ -631,7 +635,8 @@
           "Send": "Verzenden",
           "Sort by:": "Sorteer:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Uw opmerking wordt beoordeeld en wordt gepubliceerd zodra deze is goedgekeurd",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Activeren"
         }, "no": {
           "Highlights": "Høydepunkter",
           "Comment by": "Kommentar av",
@@ -662,7 +667,8 @@
           "Sort by:": "Sortér etter:",
           "Updated": "Oppdatert",
           "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar blir gjennomgått og vil bli publisert så snart den er godkjent",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Aktiver"
         }, "ro": {
           "Highlights": "Repere",
           "Comment by": "Comentariu de",
@@ -690,7 +696,8 @@
           "Send": "Trimite",
           "Sort by:": "Ordonează după:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Comentariul dvs. este revizuit și va fi publicat de îndată ce va fi aprobat",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Activati"
         }, "sv": {
             "Highlights": "Höjdpunkter",
             "Comment by": "Kommentar av",
@@ -722,7 +729,8 @@
             "Sort by:": "Sortera enligt:",
             "Updated": "Uppdaterat",
             "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar granskas och publiceras så snart den godkänns",
-            "credit:": "källa:"
+            "credit:": "källa:",
+            "Activate": "Aktivera"
         }, "sr": {
             "Highlights": "Najvažnije",
             "Comment by": "Komentar postavio",
@@ -753,7 +761,8 @@
             "Sort by:": "Sortiraj:",
             "Updated": "Ažurirano",
             "Your comment is being reviewed and will be published as soon as it's approved": "Vaš komentar se pregledava i biće objavljen čim bude odobren",
-            "credit:": "autor:"
+            "credit:": "autor:",
+            "Activate": "Aktivirati"
         }, "sr-cy": {
             "Highlights": "Најважније",
             "Comment by": "Коментар поставио",
@@ -784,7 +793,8 @@
             "Sort by:": "Сортирај:",
             "Updated": "Ажурирано",
             "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
-            "credit:": "аутор:"
+            "credit:": "аутор:",
+            "Activate": "Активирати"
         }, "es": {
             "Highlights": "Destacados",
             "Comment by": "Comentario por",
@@ -815,7 +825,8 @@
             "Sort by:": "Ordenar por",
             "Updated": "Actualizado",
             "Your comment is being reviewed and will be published as soon as it's approved": "Su comentario se está revisando y se publicará tan pronto como se apruebe",
-            "credit:": "Crédito:"
+            "credit:": "Crédito:",
+            "Activate": "Activar"
         }, "pt": {
             "Highlights": "Em foco",
             "Comment by": "Comentado por",
@@ -846,7 +857,8 @@
             "Sort by:": "Filtrar por:",
             "Updated": "Atualizar",
             "Your comment is being reviewed and will be published as soon as it's approved": "Seu comentário aguarda aprovação",
-            "credit:": "crédito:"
+            "credit:": "crédito:",
+            "Activate": "Ativar"
         }
     }
 }
