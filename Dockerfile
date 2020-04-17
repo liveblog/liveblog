@@ -20,11 +20,10 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # setup the environment
-WORKDIR /opt/superdesk/
+WORKDIR /opt/server/
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/superdesk_vhost.conf /etc/nginx/sites-enabled/superdesk.conf
 COPY ./docker/start.sh /opt/superdesk/start.sh
-CMD /opt/superdesk/start.sh
 
 # client ports
 EXPOSE 9000
@@ -39,21 +38,24 @@ ENV C_FORCE_ROOT "False"
 ENV CELERYBEAT_SCHEDULE_FILENAME /tmp/celerybeatschedule.db
 ENV TZ Europe/London
 
+RUN python3 -m pip install --upgrade pip setuptools wheel
+RUN npm install -g npm grunt-cli
+
 # install server dependencies
 COPY ./server/requirements.txt /tmp/requirements.txt
-RUN python3 -m pip install --upgrade pip setuptools wheel
 RUN cd /tmp && python3 -m pip install -U -r /tmp/requirements.txt
 
 # install client dependencies
-COPY ./client/package.json /opt/superdesk/client/
-RUN npm install -g npm grunt-cli
+COPY ./client/package.json ./client/
 RUN cd ./client && npm install
 
 # copy server sources
-COPY ./server /opt/superdesk
+COPY ./server .
 
 # copy client sources
-COPY ./client /opt/superdesk/client
+COPY ./client ./client
 
 # TODO: this is hack to update basic themes during bamboo deployment
-COPY ./server/liveblog/themes/themes_assets/ /opt/superdesk/themes_assets/
+COPY ./server/liveblog/themes/themes_assets/ ./themes_assets/
+
+CMD /opt/superdesk/start.sh
