@@ -23,7 +23,7 @@ ENV LC_ALL en_US.UTF-8
 WORKDIR /opt/server/
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/superdesk_vhost.conf /etc/nginx/sites-enabled/superdesk.conf
-COPY ./docker/start.sh /opt/superdesk/start.sh
+COPY ./docker/start.sh ./start.sh
 
 # client ports
 EXPOSE 9000
@@ -58,4 +58,4 @@ COPY ./client ./client
 # TODO: this is hack to update basic themes during bamboo deployment
 COPY ./server/liveblog/themes/themes_assets/ ./themes_assets/
 
-CMD /opt/superdesk/start.sh
+CMD /opt/server/start.sh
