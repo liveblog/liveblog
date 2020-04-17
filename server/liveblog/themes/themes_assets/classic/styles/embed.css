@@ -642,12 +642,16 @@ article blockquote li:before {
 .ro .sorting-bar__orders {
     padding-left: 95px;
 }
+
+.sr_CY .sorting-bar__orders,
+.sr .sorting-bar__orders,
+.fr .sorting-bar__orders,
+.fi .sorting-bar__orders,
+.cs .sorting-bar__orders,
 .en .sorting-bar__orders {
     padding-left: 70px;
 }
-.fr .sorting-bar__orders {
-    padding-left: 50px;
-}
+
 .de .sorting-bar__orders {
     padding-left: 75px;
 }
