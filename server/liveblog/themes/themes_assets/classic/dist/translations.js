@@ -236,7 +236,8 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Sort by:": "Ordonează după:",
   "Your comment was sent for approval.": "Comentariul tău a fost trimis spre aprobare."
 });
-  gettextCatalog.setStrings('sr-cy', {
+  gettextCatalog.setStrings('sr_CY', {
+  "Activate": "Активирати",
   "Advertisement": "Реклама",
   "Cancel": "Откажи",
   "Comment": "Коментар",
@@ -255,7 +256,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Погледајте {{$count}} истакнута поста",
     "Погледајте {{$count}} истакнутих постова"
   ],
-  "Please fill in your Comment.": "Молимо унесите ваш коментар",
+  "Please fill in your Comment.": "Молимо унесите ваш коментар.",
   "Please fill in your Name.": "Молимо унесите ваше име.",
   "Post a comment": "Поставите коментар",
   "See one new update": [
@@ -272,6 +273,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} аутор: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('sr', {
+  "Activate": "Aktivirati",
   "Advertisement": "Reklama",
   "Cancel": "Otkaži",
   "Comment": "Komentar",
