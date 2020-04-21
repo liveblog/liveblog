@@ -257,9 +257,9 @@ export default function videoBlock(SirTrevor, config) {
             }
 
             // set the description
-            if (_.has(data, 'caption')) {
+            if (_.has(data, 'description')) {
                 html.find('.description-preview')
-                    .html(data.caption);
+                    .html(data.description);
             }
 
             // set the credit
