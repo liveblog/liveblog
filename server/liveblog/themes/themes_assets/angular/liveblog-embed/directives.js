@@ -98,7 +98,11 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
                             var templateName;
 
                             if (config.settings.enableGdprConsent) {
-                                const providerUrl = item.meta.provider_url;
+                                var providerUrl = item.meta.provider_url;
+
+                                // we need a workaround for old youtube videos directly uploaded
+                                if (item.meta.provider_name === "YoutubeUpload")
+                                    providerUrl = "https://www.youtube.com";
 
                                 if (!consentIsGiven() && domainRequiresConsent(providerUrl)) {
                                     return asset.templateUrl("views/embeds/consent-placeholder.html");
