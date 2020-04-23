@@ -231,7 +231,7 @@ class PostsService(ArchiveService):
         posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
-            blog_id = doc.get('blog')
+            blog_id = doc.get('client_blog')
             post = {}
             post['id'] = doc.get('_id')
             post['blog'] = blog_id
