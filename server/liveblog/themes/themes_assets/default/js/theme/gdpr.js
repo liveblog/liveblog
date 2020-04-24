@@ -33,25 +33,39 @@ const isConsentGiven = () => Cookies.get(COOKIE_NAME) === 'Y';
 
 const getNodesAwaitingConsent = () => document.querySelectorAll(CONSENT_SUBJECTS_SELECTOR);
 
-const domainRequiresConsent = (providerUrl) => {
-    if (!providerUrl)
-        return false;
-
+const domainRequiresConsent = (providerUrl, node) => {
     let domains = LB.settings.gdprConsentDomains;
+    let requiresConsent = false;
 
     if (domains.length > 0) {
         // get domains and remove possible blank spaces
         domains = domains.split(',');
         domains = domains.map((x) => x.trim().toLowerCase());
 
-        let embedDomain = new URL(providerUrl).hostname;
+        if (providerUrl) {
+            let embedDomain = new URL(providerUrl).hostname;
 
-        embedDomain = embedDomain.replace('www.', '');
+            embedDomain = embedDomain.replace('www.', '');
+            requiresConsent = domains.indexOf(embedDomain) !== -1;
+        } else {
+            // NOTE: there are cases of embeds made from the mobile app
+            // that there are no providerUrl attribute in meta data
+            // let's try to handle them here
+            let embedContent = node.content.children[0].innerHTML;
 
-        return domains.indexOf(embedDomain) !== -1;
+            if (embedContent.indexOf('iframe') > -1 || embedContent.indexOf('script') > -1) {
+                domains.forEach((d) => {
+                    var domain = d.replace('www.', '');
+
+                    if (embedContent.indexOf(domain) > -1) {
+                        requiresConsent = true;
+                    }
+                });
+            }
+        }
     }
 
-    return false;
+    return requiresConsent;
 };
 
 const exposeContent = (embedNode) => {
@@ -69,10 +83,13 @@ const checkAndHandlePlaceholders = () => {
     if (LB.settings.enableGdprConsent && !isConsentGiven()) {
         const placeholder = document.querySelector(CONSENT_PLACEHOLDER_TMPL);
 
+        debugger; // eslint-disable-line
+        console.log(embedNodes); // eslint-disable-line
+
         embedNodes.forEach((embed) => {
             const providerUrl = embed.getAttribute('data-provider-url');
 
-            if (!domainRequiresConsent(providerUrl)) {
+            if (!domainRequiresConsent(providerUrl, embed)) {
                 exposeContent(embed);
                 return;
             }
