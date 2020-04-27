@@ -23,17 +23,14 @@
     </template>
 {% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
     <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-    <blockquote class="embedly-card" data-card-controls="0">
-        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
-        <p>{{ ref.item.meta.title }}</p>
-    </blockquote>
-    </template>
-{% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-        <blockquote class="instagram-media" data-instgrm-version="12">
+        <blockquote class="embedly-card" data-card-controls="0">
             <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
             <p>{{ ref.item.meta.title }}</p>
         </blockquote>
+    </template>
+{% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
+    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+        {% include "template-embed-instagram.html" %}
     </template>
 {% elif ref.item.meta.provider_name|lower == 'brightcove' and ref.item.meta.html %}
     <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">

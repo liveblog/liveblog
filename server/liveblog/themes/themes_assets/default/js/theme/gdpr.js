@@ -110,8 +110,13 @@ const checkAndHandlePlaceholders = () => {
         embedNodes.forEach(exposeContent);
 
         setTimeout(() => {
-            instgrm.Embeds.process();
-            twttr.widgets.load();
+            try{
+                instgrm.Embeds.process();
+            } catch(err) {console.log('instgrm script not ready')}
+
+            try{
+                twttr.widgets.load();
+            } catch(err) {console.log('twttr script not ready')}
         }, 500);
     }
 };
