@@ -9,18 +9,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: posts.html:23
+#: embeds/consent-placeholder.html:6
+msgid "Activate"
+msgstr "Aktivovat"
+
+#: posts.html:62
 msgid "Advertisement"
-msgstr "reklama"
+msgstr "Reklama"
 
 #: comments.html:37
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: template.html:46
+#: template.html:60
 msgid "Comment"
 msgstr "Váš příspěvek"
 
@@ -32,15 +36,15 @@ msgstr "Text *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Maximální délka textu je 300 znaků."
 
-#: main.js:49 template.html:13
+#: main.js:155 template.html:27
 msgid "Editorial"
-msgstr "redakční"
+msgstr "Redakční"
 
-#: template.html:98
+#: template.html:116
 msgid "Load more posts"
 msgstr "Načíst další"
 
-#: template.html:101
+#: template.html:119
 msgid "Loading"
 msgstr "Načítám"
 
@@ -52,19 +56,19 @@ msgstr "Jméno *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Maximální délka jména je 30 znaků."
 
-#: main.js:52 template.html:17
+#: main.js:158 template.html:31
 msgid "Newest first"
-msgstr "nejnovější"
+msgstr "Nejnovější"
 
-#: template.html:59
+#: template.html:74
 msgid "No posts for now."
 msgstr "Žádné příspěvky."
 
-#: main.js:55 template.html:21
+#: main.js:161 template.html:35
 msgid "Oldest first"
-msgstr "nejstarší"
+msgstr "Nejstarší"
 
-#: template.html:83
+#: template.html:99
 msgid "One pinned post"
 msgid_plural "{{$count}} pinned posts"
 msgstr[0] "Jeden připnutý příspěvek"
@@ -83,7 +87,7 @@ msgstr "Napište své jméno."
 msgid "Post a comment"
 msgstr "Otázka / komentář"
 
-#: template.html:67
+#: template.html:82
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Zobraz 1 nový příspěvek"
@@ -94,19 +98,43 @@ msgstr[2] "Zobraz {{$count}} nových příspěvků"
 msgid "Send"
 msgstr "Odeslat"
 
-#: template.html:38
+#: posts.html:46
+msgid "Share this post on Email"
+msgstr ""
+
+#: posts.html:22
+msgid "Share this post on Facebook"
+msgstr ""
+
+#: posts.html:40
+msgid "Share this post on Google+"
+msgstr ""
+
+#: posts.html:34
+msgid "Share this post on Linkedin"
+msgstr ""
+
+#: posts.html:28
+msgid "Share this post on Twitter"
+msgstr ""
+
+#: template.html:52
 msgid "Show all posts"
 msgstr "Zobrazit všechny"
 
-#: template.html:37
+#: template.html:51
 msgid "Show highlighted post only"
 msgstr "Zobraz jen zvýrazněné příspěvky"
 
-#: template.html:11 template.html:27
+#: posts.html:17
+msgid "Social Share"
+msgstr ""
+
+#: template.html:25 template.html:41
 msgid "Sort by:"
 msgstr "Řazení:"
 
-#: posts.html:38
+#: posts.html:81
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Aktualizace {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -114,6 +142,6 @@ msgstr "Aktualizace {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Váš text byl úspěšně odeslán. Čeká na schválení."
 
-#: item.html:18
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} autor: {{ item.meta.credit }}"

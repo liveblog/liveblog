@@ -1,3 +1,5 @@
+{% set meta = ref.item.meta %}
+
 {% if ref.item.meta.provider_name|lower == 'youtube' and ref.item.meta.html %}
     {% if settings.youtubePrivateMode %}
         <div class="item--embed__element lb-responsive-video">
@@ -63,7 +65,9 @@
             <div class="item--embed__info">
                 {% if ref.item.meta.title %}
                 <div class="item--embed__title">
-                    <a href="{{ ref.item.meta.original_url }}" target="_blank" title="{{ ref.item.meta.title }}">{{ ref.item.meta.title }}</a>
+                    <a href="{% if meta.original_url %}{{ meta.original_url }}{% else %}{{ meta.url }}{% endif %}" target="_blank">
+                        {{ ref.item.meta.title }}
+                    </a>
                 </div>
                 {% endif %}
 

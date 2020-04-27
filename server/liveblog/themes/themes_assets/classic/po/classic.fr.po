@@ -10,9 +10,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 2.3\n"
 
-#: posts.html:23
+#: embeds/consent-placeholder.html:6
+msgid "Activate"
+msgstr "Activer"
+
+#: posts.html:62
 msgid "Advertisement"
 msgstr "Publicité"
 
@@ -20,7 +24,7 @@ msgstr "Publicité"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: template.html:46
+#: template.html:60
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -30,17 +34,17 @@ msgstr "Commentaire *"
 
 #: comments.html:31
 msgid "Comment should be maximum 300 characters in length."
-msgstr "Un commentaire ne peut excéder 300 signes"
+msgstr "Un commentaire ne peut excéder 300 signes."
 
-#: main.js:49 template.html:13
+#: main.js:155 template.html:27
 msgid "Editorial"
 msgstr "Éditorial"
 
-#: template.html:98
+#: template.html:116
 msgid "Load more posts"
 msgstr "Afficher plus de messages"
 
-#: template.html:101
+#: template.html:119
 msgid "Loading"
 msgstr "Chargement"
 
@@ -50,21 +54,21 @@ msgstr "Nom *"
 
 #: comments.html:23
 msgid "Name should be maximum 30 characters in length."
-msgstr "Le nom ne peut excéder 30 signes"
+msgstr "Le nom ne peut excéder 30 signes."
 
-#: main.js:52 template.html:17
+#: main.js:158 template.html:31
 msgid "Newest first"
 msgstr "Le plus récent d'abord"
 
-#: template.html:59
+#: template.html:74
 msgid "No posts for now."
 msgstr "Aucun message pour le moment."
 
-#: main.js:55 template.html:21
+#: main.js:161 template.html:35
 msgid "Oldest first"
 msgstr "Plus ancien en premier"
 
-#: template.html:83
+#: template.html:99
 msgid "One pinned post"
 msgid_plural "{{$count}} pinned posts"
 msgstr[0] "Voir le nouveau message"
@@ -82,7 +86,7 @@ msgstr "Votre nom."
 msgid "Post a comment"
 msgstr "Envoyer un commentaire"
 
-#: template.html:67
+#: template.html:82
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Voir le nouveau message"
@@ -92,19 +96,43 @@ msgstr[1] "Voir {{$count}} nouveaux messages"
 msgid "Send"
 msgstr "Envoyer"
 
-#: template.html:38
+#: posts.html:46
+msgid "Share this post on Email"
+msgstr "Partagez ce message par e-mail"
+
+#: posts.html:22
+msgid "Share this post on Facebook"
+msgstr "Partagez ce message par Facebook"
+
+#: posts.html:40
+msgid "Share this post on Google+"
+msgstr "Partagez ce message par Google+"
+
+#: posts.html:34
+msgid "Share this post on Linkedin"
+msgstr "Partagez ce message par Linkedin"
+
+#: posts.html:28
+msgid "Share this post on Twitter"
+msgstr "Partagez ce message par Twitter"
+
+#: template.html:52
 msgid "Show all posts"
 msgstr "Afficher tous les messages"
 
-#: template.html:37
+#: template.html:51
 msgid "Show highlighted post only"
 msgstr "Afficher uniquement les messages en surbrillance"
 
-#: template.html:11 template.html:27
+#: posts.html:17
+msgid "Social Share"
+msgstr "Partage Social"
+
+#: template.html:25 template.html:41
 msgid "Sort by:"
 msgstr "Trier par:"
 
-#: posts.html:38
+#: posts.html:81
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Mise à jour {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -112,6 +140,6 @@ msgstr "Mise à jour {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Votre commentaire a été envoyé et est en attente de validation."
 
-#: item.html:18
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} crédit: {{ item.meta.credit }}"

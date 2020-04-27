@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 var gulp = require('gulp'),
@@ -16,7 +17,7 @@ config.get = function(key) {
 }
 
 gulp.task('pot', function () {
-    return gulp.src(['*.html', '*.js', 'views/*.html'])
+    return gulp.src(['*.html', '*.js', 'views/**/*.html'])
         .pipe($.angularGettext.extract('classic.pot', {}))
         .pipe(gulp.dest('po/'));
 });
@@ -146,4 +147,4 @@ var zipTask = function(){
 
 gulp.task('zip', zipTask);
 
-gulp.task('make',['build'], zipTask);
+gulp.task('make', ['build'], zipTask);
