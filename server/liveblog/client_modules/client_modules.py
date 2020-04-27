@@ -388,14 +388,14 @@ def create_amp_comment():
     item_data = dict()
     item_data['text'] = data['text']
     item_data['commenter'] = data['commenter']
-    item_data['client_blog'] = data['client_blog']
+    item_data['blog'] = data['client_blog']
     item_data['item_type'] = "comment"
     items = get_resource_service('client_items')
     item_id = items.post([item_data])[0]
 
     comment_data = dict()
     comment_data["post_status"] = "comment"
-    comment_data["client_blog"] = item_data['client_blog']
+    comment_data["blog"] = item_data['blog']
     comment_data["groups"] = [{
         "id": "root",
         "refs": [{"idRef": "main"}],
