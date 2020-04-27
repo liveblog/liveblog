@@ -39,7 +39,7 @@ export default function unreadPostsService($rootScope) {
 
     // get the count of current contribution.
     function countContributions() {
-        return contributions.length;
+        return contributions.filter((contribution) => contribution.blog === blog._id).length;
     }
 
     // get the count of current comments.
