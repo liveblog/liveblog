@@ -1,8 +1,8 @@
-var COOKIE_NAME = '__lb_consent_cookie__';
-var COOKIE_LIFE_DAYS = 365;
+var CONSENT_KEY = '__lb_consent_key__';
+var CONSENT_LIFE_DAYS = 365;
 var CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
 
-var domainRequiresConsent = function (providerUrl, embedContent) {
+var domainRequiresConsent = function(providerUrl, embedContent) {
     var domains = LB.settings.gdprConsentDomains;
     var requiresConsent = false;
 
@@ -81,8 +81,8 @@ var domainRequiresConsent = function (providerUrl, embedContent) {
             };
         }])
         .directive('lbGdprEmbedConsent', [
-            'config', 'asset', 'cookies', '$timeout',
-            function(config, asset, cookies, $timeout) {
+            'config', 'asset', 'Storage', '$timeout',
+            function(config, asset, Storage, $timeout) {
                 return {
                     template: '<ng-include src="getTemplateUrl()" />',
                     scope: {
@@ -97,13 +97,13 @@ var domainRequiresConsent = function (providerUrl, embedContent) {
                             acceptButton.on('click', function(ev) {
                                 ev.preventDefault();
 
-                                cookies.write(COOKIE_NAME, 'Y', COOKIE_LIFE_DAYS);
+                                Storage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
                             });
                         }, 50);
                     },
                     controller: ['$scope', function($scope) {
                         var consentIsGiven = function() {
-                            return cookies.read(COOKIE_NAME) === 'Y';
+                            return Storage.read(CONSENT_KEY) === 'Y';
                         };
 
                         // used on the ng-include to resolve the template

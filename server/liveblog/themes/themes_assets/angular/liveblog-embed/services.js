@@ -42,26 +42,41 @@
                 return this;
             };
         }])
-        .service('cookies', function() {
+        .service('Storage', function() {
             this.read = function(name) {
-                var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
-                for(var i=0;i < ca.length;i++) {
-                    var c = ca[i];
-                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                var itemStr = localStorage.getItem(name);
+
+                // if the item doesn't exist, return null
+                if (!itemStr)
+                    return null;
+
+                var item = JSON.parse(itemStr);
+                var now = new Date();
+
+                // compare the expiry time of the item with the current time
+                if (now.getTime() > item.expiry) {
+                    // If the item is expired, delete the item from storage
+                    // and return null
+                    localStorage.removeItem(name);
+                    return null;
                 }
-                return null;
+
+                return item.value;
             };
 
             this.write = function(name, value, days) {
-                var expires = "", date = new Date();
+                var date = new Date();
 
-                if (days) {
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + value + expires + ";path=/;SameSite=Lax;";
-            }
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+
+                // `item` is an object which contains the original value
+                // as well as the time when it's supposed to expire
+                var item = {
+                    value: value,
+                    expiry: date.getTime(),
+                };
+
+                localStorage.setItem(name, JSON.stringify(item));
+            };
         });
 })(angular);
