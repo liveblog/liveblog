@@ -83,9 +83,6 @@ const checkAndHandlePlaceholders = () => {
     if (LB.settings.enableGdprConsent && !isConsentGiven()) {
         const placeholder = document.querySelector(CONSENT_PLACEHOLDER_TMPL);
 
-        debugger; // eslint-disable-line
-        console.log(embedNodes); // eslint-disable-line
-
         embedNodes.forEach((embed) => {
             const providerUrl = embed.getAttribute('data-provider-url');
 
