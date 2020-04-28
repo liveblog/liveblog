@@ -8,6 +8,7 @@ const helpers = require('./helpers');
 const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
+const gdpr = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 
 const nunjucksEnv = new nunjucks.Environment();
@@ -404,5 +405,6 @@ module.exports = {
   permalink: permalink,
   clearCommentDialog: clearCommentDialog,
   checkPending: checkPending,
-  adsManager: adsManager
+  adsManager: adsManager,
+  consent: gdpr
 };

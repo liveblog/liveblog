@@ -1,9 +1,43 @@
-<!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
-<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script>
-<script async defer src="https://platform.twitter.com/widgets.js"></script>
+<script>
+    function processInstagram() {
+        try{
+            instgrm.Embeds.process();
+            console.log('processing instagram embeds');
+        } catch(err) {console.log('instgrm script not loaded')}
+    }
+
+    function processTwitter() {
+        try{
+            twttr.widgets.load();
+            console.log('processing twitter embeds');
+        } catch(err) {console.log('twttr script not loaded')}
+    }
+
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v6.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+</script>
+
+<template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
+<script async defer src="https://platform.instagram.com/en_US/embeds.js" onload="processInstagram()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
+<script async defer src="https://platform.twitter.com/widgets.js" onload="processTwitter()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
 <script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
 <script async defer src="https://www.youtube.com/player_api"></script>
-<script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
+</template>
+
+<script src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 <style class="embedly-css">
     .card .hdr{
       display: none;
@@ -82,4 +116,4 @@
         });
     }
 </script>
-<script async defer src="//cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>
+<script async defer src="https://cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>

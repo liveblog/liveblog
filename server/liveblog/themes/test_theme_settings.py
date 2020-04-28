@@ -634,6 +634,23 @@ class ThemeSettingsTestCase(TestCase):
                     'type': 'checkbox',
                     'default': False,
                     'help': 'If the users will see the datetime only on client rendered'
+                },
+                {
+                    "name": "enableGdprConsent",
+                    "label": "Enable GDPR Consent",
+                    "type": "checkbox",
+                    "default": False,
+                    "help": "If users will see a placeholder on embeds until consent is given"
+                },
+                {
+                    "name": "gdprConsentText",
+                    "label": "GDPR Consent Placeholder Text",
+                    "type": "text",
+                    "dependsOn": {
+                        "enableGdprConsent": True
+                    },
+                    "default": "Test placeholder for gdpr message",
+                    "help": "This text will be shown in the GDPR placeholder"
                 }
             ],
             'i18n': {
@@ -1339,7 +1356,8 @@ class ThemeSettingsTestCase(TestCase):
                 "showSyndicatedAuthor": False,
                 "showTitle": False,
                 "showUpdateDatetime": False,
-                "stickyPosition": "bottom"
+                "stickyPosition": "bottom",
+                "enableGdprConsent": False
             },
             "title": "title: end to end Seven",
             "total_posts": 6,

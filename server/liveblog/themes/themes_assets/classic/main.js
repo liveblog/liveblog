@@ -317,6 +317,7 @@
                 scope: {
                     ident: '=',
                     item: '=',
+                    timeline: '=',
                     gallery: '=',
                     hideInfo: '@'
                 },

@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.3.30",
+    "version": "3.4.0",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -25,7 +25,7 @@
         "dist/styles.min.css"
     ],
     "devScripts": [
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.11/angular-animate.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.js",
         "vendors/jquery.justifiedGallery.min.js",
@@ -36,7 +36,7 @@
         "main.js"
     ],
     "scripts": [
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.11/angular-animate.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "dist/scripts.min.js"
     ],
@@ -83,7 +83,7 @@
                     "label": "Srpski"
                 },
                 {
-                    "value": "sr-cy",
+                    "value": "sr_CY",
                     "label": "Српски"
                 }
             ],
@@ -320,6 +320,33 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the syndicated author"
+        },
+        {
+            "name": "enableGdprConsent",
+            "label": "Enable GDPR Consent",
+            "type": "checkbox",
+            "default": false,
+            "help": "If users will see a placeholder on embeds until consent is given"
+        },
+        {
+            "name": "gdprConsentText",
+            "label": "GDPR Consent Placeholder Text",
+            "type": "text",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "Please click <b>Activate</b> to see the social media posts. <br />Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
+            "help": "This text will be shown in the GDPR placeholder"
+        },
+        {
+            "name": "gdprConsentDomains",
+            "label": "Embed from Domains Requiring Consent",
+            "type": "text",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "twitter.com, facebook.com, instagram.com, youtube.com",
+            "help": "Domains separated by comma that will require user's consent to display embeds"
         }
     ]
 }

@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 var gulp = require('gulp'),
@@ -16,11 +17,11 @@ config.get = function(key) {
 }
 
 gulp.task('pot', function () {
-    return gulp.src(['*.html', '*.js', 'views/*.html'])
+    return gulp.src(['*.html', '*.js', 'views/**/*.html'])
         .pipe($.angularGettext.extract('classic.pot', {}))
         .pipe(gulp.dest('po/'));
 });
- 
+
 // copy the vendors needed files in the destination folder.
 gulp.task('copy_vendors', function () {
     return gulp.src(['styles/default-skin/*.*'])
@@ -43,7 +44,7 @@ gulp.task('translations', function () {
 });
 
 gulp.task('templates', function () {
-  return gulp.src(['views/*.html'])
+  return gulp.src(['views/**/*.html'])
     .pipe($.htmlmin({
         collapseWhitespace: true,
         removeComments: true,
@@ -66,10 +67,10 @@ gulp.task('build', ['translations', 'templates', 'copy_vendors'], function() {
                 styles: []
             }, to: {
                 scripts: [],
-                styles: []                
+                styles: []
             }
         };
-    
+
     if(theme.devScripts && theme.devScripts.length) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.
@@ -146,4 +147,4 @@ var zipTask = function(){
 
 gulp.task('zip', zipTask);
 
-gulp.task('make',['build'], zipTask);
+gulp.task('make', ['build'], zipTask);

@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.5.14",
+    "version": "3.6.0",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-930b50c8f9.css"],
-    "devScripts": ["dist/default-916348eba3.js"],
-    "styles": ["dist/default-930b50c8f9.css"],
-    "scripts": ["dist/default-916348eba3.js"],
+    "devStyles": ["dist/default-9dfe3a67e9.css"],
+    "devScripts": ["dist/default-96ee44392a.js"],
+    "styles": ["dist/default-9dfe3a67e9.css"],
+    "scripts": ["dist/default-96ee44392a.js"],
     "options": [
         {
             "name": "language",
@@ -412,6 +412,33 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to prompt user to load updates"
+        },
+        {
+            "name": "enableGdprConsent",
+            "label": "Enable GDPR Consent",
+            "type": "checkbox",
+            "default": false,
+            "help": "If users will see a placeholder on embeds until consent is given"
+        },
+        {
+            "name": "gdprConsentText",
+            "label": "GDPR Consent Placeholder Text",
+            "type": "text",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "Please click <b>Activate</b> to see the social media posts. <br />Learn more about our data protection policy on this <a target='_blank' href='https://liveblog.pro/en/termsofuse/'>page</a><br>",
+            "help": "This text will be shown in the GDPR placeholder"
+        },
+        {
+            "name": "gdprConsentDomains",
+            "label": "Embed from Domains Requiring Consent",
+            "type": "text",
+            "dependsOn": {
+                "enableGdprConsent": true
+            },
+            "default": "twitter.com, facebook.com, instagram.com, youtube.com",
+            "help": "Domains separated by comma that will require user's consent to display embeds"
         }
     ],
     "styleOptions": [
@@ -483,7 +510,8 @@
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
           "Your comment is being reviewed and will be published as soon as it's approved": "Váš komentář se kontroluje a bude publikován, jakmile bude schválen",
-          "credit:": " autor:"
+          "credit:": " autor:",
+          "Activate": "Aktivovat"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
@@ -514,7 +542,8 @@
           "Sort by:": "Ordnen nach",
           "Updated": "Aktualisiert am",
           "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
-          "credit:": "Bild:"
+          "credit:": "Bild:",
+          "Activate": "Aktivieren"
         }, "fi": {
           "Highlights": "Kohokohtia",
           "Comment by": "Comment by",
@@ -545,7 +574,8 @@
           "Sort by:": "Järjestä:",
           "Updated": "Päivitetty",
           "Your comment is being reviewed and will be published as soon as it's approved": "Kommenttisi tarkistetaan ja julkaistaan heti, kun se on hyväksytty",
-          "credit:": "©"
+          "credit:": "©",
+          "Activate": "Aktivoida"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
           "Comment by": "Commentaire de",
@@ -576,7 +606,8 @@
           "Sort by:": "Trier par:",
           "Updated": "Mise à jour",
           "Your comment is being reviewed and will be published as soon as it's approved": "Votre commentaire est en cours de révision et sera publié dès qu'il aura été approuvé",
-          "credit:": "crédit:"
+          "credit:": "crédit:",
+          "Activate": "Activer"
         }, "nl": {
           "Highlights": "Highlights",
           "Comment by": "Commentaar door",
@@ -604,7 +635,8 @@
           "Send": "Verzenden",
           "Sort by:": "Sorteer:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Uw opmerking wordt beoordeeld en wordt gepubliceerd zodra deze is goedgekeurd",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Activeren"
         }, "no": {
           "Highlights": "Høydepunkter",
           "Comment by": "Kommentar av",
@@ -635,7 +667,8 @@
           "Sort by:": "Sortér etter:",
           "Updated": "Oppdatert",
           "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar blir gjennomgått og vil bli publisert så snart den er godkjent",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Aktiver"
         }, "ro": {
           "Highlights": "Repere",
           "Comment by": "Comentariu de",
@@ -663,7 +696,8 @@
           "Send": "Trimite",
           "Sort by:": "Ordonează după:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Comentariul dvs. este revizuit și va fi publicat de îndată ce va fi aprobat",
-          "credit:": "credit:"
+          "credit:": "credit:",
+          "Activate": "Activati"
         }, "sv": {
             "Highlights": "Höjdpunkter",
             "Comment by": "Kommentar av",
@@ -695,7 +729,8 @@
             "Sort by:": "Sortera enligt:",
             "Updated": "Uppdaterat",
             "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar granskas och publiceras så snart den godkänns",
-            "credit:": "källa:"
+            "credit:": "källa:",
+            "Activate": "Aktivera"
         }, "sr": {
             "Highlights": "Najvažnije",
             "Comment by": "Komentar postavio",
@@ -726,7 +761,8 @@
             "Sort by:": "Sortiraj:",
             "Updated": "Ažurirano",
             "Your comment is being reviewed and will be published as soon as it's approved": "Vaš komentar se pregledava i biće objavljen čim bude odobren",
-            "credit:": "autor:"
+            "credit:": "autor:",
+            "Activate": "Aktivirati"
         }, "sr-cy": {
             "Highlights": "Најважније",
             "Comment by": "Коментар поставио",
@@ -757,7 +793,8 @@
             "Sort by:": "Сортирај:",
             "Updated": "Ажурирано",
             "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
-            "credit:": "аутор:"
+            "credit:": "аутор:",
+            "Activate": "Активирати"
         }, "es": {
             "Highlights": "Destacados",
             "Comment by": "Comentario por",
@@ -788,7 +825,8 @@
             "Sort by:": "Ordenar por",
             "Updated": "Actualizado",
             "Your comment is being reviewed and will be published as soon as it's approved": "Su comentario se está revisando y se publicará tan pronto como se apruebe",
-            "credit:": "Crédito:"
+            "credit:": "Crédito:",
+            "Activate": "Activar"
         }, "pt": {
             "Highlights": "Em foco",
             "Comment by": "Comentado por",
@@ -819,7 +857,8 @@
             "Sort by:": "Filtrar por:",
             "Updated": "Atualizar",
             "Your comment is being reviewed and will be published as soon as it's approved": "Seu comentário aguarda aprovação",
-            "credit:": "crédito:"
+            "credit:": "crédito:",
+            "Activate": "Ativar"
         }
     }
 }

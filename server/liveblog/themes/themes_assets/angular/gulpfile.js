@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 var gulp = require('gulp'),
@@ -20,7 +21,7 @@ gulp.task('pot', function () {
         .pipe($.angularGettext.extract('classic.pot', {}))
         .pipe(gulp.dest('po/'));
 });
- 
+
 gulp.task('translations', function () {
     return gulp.src('po/*.po')
         .pipe($.angularGettext.compile({format: 'json'}))
@@ -60,10 +61,10 @@ gulp.task('build', ['translations', 'templates'], function() {
                 styles: []
             }, to: {
                 scripts: [],
-                styles: []                
+                styles: []
             }
         };
-    
+
     if(theme.devScripts) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.

@@ -11,9 +11,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 2.3\n"
 
-#: posts.html:23
+#: embeds/consent-placeholder.html:6
+msgid "Activate"
+msgstr "Activati"
+
+#: posts.html:62
 msgid "Advertisement"
 msgstr "Reclamă"
 
@@ -21,7 +25,7 @@ msgstr "Reclamă"
 msgid "Cancel"
 msgstr "Anulează"
 
-#: template.html:46
+#: template.html:60
 msgid "Comment"
 msgstr "Comentează"
 
@@ -33,15 +37,15 @@ msgstr "Comentariu *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
 
-#: main.js:49 template.html:13
+#: main.js:155 template.html:27
 msgid "Editorial"
-msgstr "editorial"
+msgstr "Editorial"
 
-#: template.html:98
+#: template.html:116
 msgid "Load more posts"
 msgstr "Încarcă mai multe posturi"
 
-#: template.html:101
+#: template.html:119
 msgid "Loading"
 msgstr "Se încarcă"
 
@@ -53,19 +57,19 @@ msgstr "Numele *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Numele nu poate fi mai lung de 30 de caractere."
 
-#: main.js:52 template.html:17
+#: main.js:158 template.html:31
 msgid "Newest first"
 msgstr "Cele mai noi"
 
-#: template.html:59
+#: template.html:74
 msgid "No posts for now."
 msgstr "Deocamdata nu sunt articole."
 
-#: main.js:55 template.html:21
+#: main.js:161 template.html:35
 msgid "Oldest first"
 msgstr "Cele mai vechi"
 
-#: template.html:83
+#: template.html:99
 msgid "One pinned post"
 msgid_plural "{{$count}} pinned posts"
 msgstr[0] "Vezi un articol nou"
@@ -84,7 +88,7 @@ msgstr "Completează numele."
 msgid "Post a comment"
 msgstr "Scrie un comentariu"
 
-#: template.html:67
+#: template.html:82
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Vezi un articol nou"
@@ -95,19 +99,43 @@ msgstr[2] "Vezi {{$count}} de articole noi"
 msgid "Send"
 msgstr "Trimite"
 
-#: template.html:38
+#: posts.html:46
+msgid "Share this post on Email"
+msgstr ""
+
+#: posts.html:22
+msgid "Share this post on Facebook"
+msgstr ""
+
+#: posts.html:40
+msgid "Share this post on Google+"
+msgstr ""
+
+#: posts.html:34
+msgid "Share this post on Linkedin"
+msgstr ""
+
+#: posts.html:28
+msgid "Share this post on Twitter"
+msgstr ""
+
+#: template.html:52
 msgid "Show all posts"
 msgstr ""
 
-#: template.html:37
+#: template.html:51
 msgid "Show highlighted post only"
 msgstr ""
 
-#: template.html:11 template.html:27
+#: posts.html:17
+msgid "Social Share"
+msgstr ""
+
+#: template.html:25 template.html:41
 msgid "Sort by:"
 msgstr "Ordonează după:"
 
-#: posts.html:38
+#: posts.html:81
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
@@ -115,6 +143,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr "Comentariul tău a fost trimis spre aprobare."
 
-#: item.html:18
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

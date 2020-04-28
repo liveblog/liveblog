@@ -29,12 +29,11 @@
       "showGallery":true,
       "stickyPosition": "bottom",
       "gaCode": "UA-XXXXX-Y",
-      "language": "de",
       "showSyndicatedAuthor": true,
       "showUpdateDatetime": true,
       "showSharingButtons": true,
       "showPermalinkButton": true,
-      "youtubePrivateMode": true,
+      "youtubePrivateMode": false,
       "showRelativeDate": true
     },
     "start_date":"2017-03-08T12:30:20+00:00",
@@ -135,7 +134,7 @@
           "score":"1"
         }
       },
-      "language":"de",
+      "language":"en",
       "theme":"default"
     },
     "picture_url":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/e5541e88d7ddd13d96c0a4c547ecef343ddfb0b20db22f8700a93cbde369dfd3.png",
@@ -185,7 +184,7 @@
     "infinitScroll":false,
     "stickyPosition": "bottom",
     "gaCode": "UA-XXXXX-Y",
-    "language": "de",
+    "language": "en",
     "showSyndicatedAuthor": true,
     "showUpdateDatetime": true,
     "showSharingButtons": true,
