@@ -4,7 +4,7 @@
     </div>
     <div ng-switch-default>
         <div ng-switch="item.item_type" ng-class="{'lb-item': ident}">
-            <div ng-switch-when="embed">
+            <div ng-switch-when="embed|video" ng-switch-when-separator="|">
                 <lb-gdpr-embed-consent item="item" timeline="timeline" />
             </div>
             <div ng-switch-when="image" ng-if="!gallery">

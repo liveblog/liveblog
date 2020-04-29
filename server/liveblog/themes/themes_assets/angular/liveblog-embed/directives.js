@@ -1,6 +1,39 @@
-const COOKIE_NAME = '__lb_consent_cookie__';
-const COOKIE_LIFE_DAYS = 365;
-const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
+var CONSENT_KEY = '__lb_consent_key__';
+var CONSENT_LIFE_DAYS = 365;
+var CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
+
+var domainRequiresConsent = function(providerUrl, embedContent) {
+    var domains = LB.settings.gdprConsentDomains;
+    var requiresConsent = false;
+
+    if (domains.length > 0) {
+        // get domains and remove possible blank spaces
+        domains = domains.split(',');
+        domains = domains.map(function(x) {return x.trim().toLowerCase()});
+
+        if (providerUrl) {
+            var embedDomain = new URL(providerUrl).hostname;
+
+            embedDomain = embedDomain.replace('www.', '');
+            requiresConsent = domains.indexOf(embedDomain) !== -1;
+        } else {
+            // NOTE: there are cases of embeds made from the mobile app
+            // that there are no providerUrl attribute in meta data
+            // let's try to handle them here
+            if (embedContent.indexOf('iframe') > -1 || embedContent.indexOf('script') > -1) {
+                domains.forEach(function(d) {
+                    var domain = d.replace('www.', '');
+
+                    if (embedContent.indexOf(domain) > -1) {
+                        requiresConsent = true;
+                    }
+                });
+            }
+        }
+    }
+
+    return requiresConsent;
+};
 
 (function(angular) {
     'use strict';
@@ -48,8 +81,8 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
             };
         }])
         .directive('lbGdprEmbedConsent', [
-            'config', 'asset', 'cookies', '$timeout',
-            function(config, asset, cookies, $timeout) {
+            'config', 'asset', 'Storage', '$timeout',
+            function(config, asset, Storage, $timeout) {
                 return {
                     template: '<ng-include src="getTemplateUrl()" />',
                     scope: {
@@ -60,36 +93,17 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
                     link: function(scope, elem, attrs) {
                         $timeout(function () {
                             var acceptButton = angular.element(elem).find(CONSENT_ACCEPT_SELECTOR);
+
                             acceptButton.on('click', function(ev) {
                                 ev.preventDefault();
 
-                                cookies.write(COOKIE_NAME, 'Y', COOKIE_LIFE_DAYS);
+                                Storage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
                             });
-                        });
+                        }, 50);
                     },
                     controller: ['$scope', function($scope) {
                         var consentIsGiven = function() {
-                            return cookies.read(COOKIE_NAME) === 'Y';
-                        };
-
-                        var domainRequiresConsent = function(providerUrl) {
-                            if (!providerUrl)
-                                return false;
-
-                            var domains = config.settings.gdprConsentDomains;
-
-                            if (domains.length > 0) {
-                                // get domains and remove possible blank spaces
-                                domains = domains.split(',');
-                                domains = domains.map(function(x) {return x.trim().toLowerCase()});
-
-                                var embedDomain = new URL(providerUrl).hostname;
-                                embedDomain = embedDomain.replace('www.', '');
-
-                                return domains.indexOf(embedDomain) !== -1;
-                            }
-
-                            return false;
+                            return Storage.read(CONSENT_KEY) === 'Y';
                         };
 
                         // used on the ng-include to resolve the template
@@ -98,9 +112,13 @@ const CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
                             var templateName;
 
                             if (config.settings.enableGdprConsent) {
-                                const providerUrl = item.meta.provider_url;
+                                var providerUrl = item.meta.provider_url;
 
-                                if (!consentIsGiven() && domainRequiresConsent(providerUrl)) {
+                                // we need a workaround for old youtube videos directly uploaded
+                                if (item.meta.provider_name === "YoutubeUpload")
+                                    providerUrl = "https://www.youtube.com";
+
+                                if (!consentIsGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
                                     return asset.templateUrl("views/embeds/consent-placeholder.html");
                                 }
                             }

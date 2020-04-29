@@ -1,0 +1,34 @@
+{% set meta = ref.item.meta %}
+{% set description = meta.description %}
+
+{% if not description %}
+    {% set description = meta.caption %}
+{% endif %}
+
+<template class="lb_consent--awaiting" data-provider-url="https://www.youtube.com">
+    <div class="item--embed__element">{{ meta.html | safe }}</div>
+</template>
+
+{% if meta.title or description or meta.credit %}
+    <article class="item--embed item--embed__wrapper">
+        {% if meta.title or description or meta.credit %}
+            <div class="item--embed__info">
+                {% if meta.title %}
+                <div class="item--embed__title">
+                    <a href="{% if meta.original_url %}{{ meta.original_url }}{% else %}{{ meta.url }}{% endif %}" target="_blank">
+                        {{ meta.title }}
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if description %}
+                <div class="item--embed__description">{{ description }}</div>
+                {% endif %}
+
+                {% if meta.credit %}
+                <div class="item--embed__credit">{{ meta.credit }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </article>
+{% endif %}

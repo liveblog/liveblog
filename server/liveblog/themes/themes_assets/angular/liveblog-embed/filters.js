@@ -11,6 +11,8 @@
             };
         }]).filter('outboundAnchors', function() {
             return function(text) {
+                if (!text) return '';
+
                 return text.replace(/<a([^>]*)>/g, function(match, attr){
                                 if(attr.indexOf('target') === -1) {
                                     return '<a' + attr + ' target="_blank">';
@@ -64,6 +66,8 @@
                 ' '
             ];
             return function(markup) {
+                if (!markup) return '';
+
                 regx.forEach(function(regx, id) {
                     markup = markup.replace(regx, replaced[id]);
                 });

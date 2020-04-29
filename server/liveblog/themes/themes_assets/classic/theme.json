@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.4.3",
+    "version": "3.4.1",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -25,7 +25,7 @@
         "dist/styles.min.css"
     ],
     "devScripts": [
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.11/angular-animate.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.js",
         "vendors/jquery.justifiedGallery.min.js",
@@ -36,7 +36,7 @@
         "main.js"
     ],
     "scripts": [
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.11/angular-animate.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "dist/scripts.min.js"
     ],

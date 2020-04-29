@@ -257,9 +257,9 @@ export default function videoBlock(SirTrevor, config) {
             }
 
             // set the description
-            if (_.has(data, 'caption')) {
+            if (_.has(data, 'description')) {
                 html.find('.description-preview')
-                    .html(data.caption);
+                    .html(data.description);
             }
 
             // set the credit
@@ -330,12 +330,15 @@ export default function videoBlock(SirTrevor, config) {
 
         retrieveData: function() {
             const data = this.getData();
+            const originalID = getYoutubeID(data.html);
 
             return {
                 html: data.html,
-                original_id: getYoutubeID(data.html),
+                original_id: originalID,
                 provider_name: 'YoutubeUpload',
-                caption: this.$('[name=caption]').text(),
+                provider_url: 'https://www.youtube.com/',
+                url: `https://www.youtube.com/watch?v=${originalID}`,
+                description: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
                 title: this.$('[name=title]').text(),
             };

@@ -41,7 +41,6 @@
     "gulp-watch": "^4.3.5",
     "iframe-resizer": "^3.5.14",
     "imagesloaded": "^4.1.4",
-    "js-cookie": "^2.2.1",
     "liveblog-shared-tools": "eos87/liveblog-shared-tools",
     "lory.js": "^2.5.3",
     "moment": "^2.18.1",
