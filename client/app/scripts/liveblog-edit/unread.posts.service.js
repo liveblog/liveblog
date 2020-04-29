@@ -39,12 +39,12 @@ export default function unreadPostsService($rootScope) {
 
     // get the count of current contribution.
     function countContributions() {
-        return contributions.length;
+        return contributions.filter((contribution) => contribution.blog === blog._id).length;
     }
 
     // get the count of current comments.
     function countComments() {
-        return comments.length;
+        return comments.filter((comment) => comment.blog === blog._id).length;
     }
 
     // reset the current state and keep the previous vector.

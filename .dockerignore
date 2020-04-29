@@ -1,0 +1,11 @@
+data
+.git*
+Dockerfile
+.DS_Store
+**/*.pyc
+__pycache__
+*.pyo
+*.pyd
+*.log
+*.tox
+*.md

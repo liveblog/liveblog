@@ -117,6 +117,9 @@ export default function BlogEditController(
             $scope.showTagsSelector = true;
         });
 
+    // stop listening to previous blog
+    unreadPostsService.stopListening();
+
     // start listening for unread posts.
     unreadPostsService.startListening(blog);
 

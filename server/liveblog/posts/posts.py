@@ -244,7 +244,6 @@ class PostsService(ArchiveService):
                 synd_in = get_resource_service('syndication_in').find_one(_id=synd_in_id, req=None)
                 if synd_in:
                     post['auto_publish'] = synd_in.get('auto_publish')
-
             posts.append(post)
             app.blog_cache.invalidate(blog_id)
 
