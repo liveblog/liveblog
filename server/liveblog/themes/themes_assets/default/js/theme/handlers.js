@@ -58,6 +58,22 @@ var buttons = {
       view.toggleSortDropdown();
     },
 
+    "[data-js-tags_filter_dropdown_button]": () => {
+      view.toggleTagsFilterDropdown();
+    },
+
+    "[data-tags-filter-option]": (elems) => {
+      return () => {
+        const tags = Object.values(elems).filter(el => el.checked).map(el => el.value);
+        return viewmodel.loadPosts({
+          notDeleted: true,
+          tags: tags
+        }).then(view.renderTimeline)
+          .then(view.displayNewPosts)
+          .catch(catchError);
+      };
+    },
+
     "[data-js-orderby_ascending]": () => {
       loadSort('ascending');
     },
@@ -102,8 +118,16 @@ var buttons = {
 
   attach: function() {
     Object.keys(buttons.handlers).forEach((handler) => {
-      let el = helpers.getElems(handler)[0];
+      const elems = helpers.getElems(handler);
 
+      if (handler === "[data-tags-filter-option]") {
+        elems.forEach((el) => {
+          el.addEventListener('click', buttons.handlers[handler](elems), false);
+        })
+        return;
+      }
+
+      const el = elems[0]
       if (!el) {
         return false;
       }

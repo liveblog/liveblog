@@ -97,7 +97,8 @@ vm.getPosts = function(opts) {
     highlightsOnly: settings.onlyHighlighted || false,
     notDeleted: opts.notDeleted,
     fromDate: opts.fromDate ? opts.fromDate : false,
-    sticky: opts.sticky
+    sticky: opts.sticky,
+    tags: opts.tags
   });
 
   if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
@@ -278,6 +279,14 @@ vm.getQuery = function(opts) {
     query.query.filtered.filter.and.push({
       terms: { post_status:  ["open", "submitted"] }
     });
+  }
+
+  if (opts.tags && opts.tags.length > 0) {
+    query.post_filter = {
+      "terms": {
+        "tags": opts.tags
+      }
+    };
   }
 
   if (opts.highlightsOnly === true) {

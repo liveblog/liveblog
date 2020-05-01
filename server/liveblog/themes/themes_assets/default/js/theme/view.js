@@ -277,6 +277,21 @@ function toggleSortDropdown(open) {
 }
 
 /**
+ * Toggles tags filter dropdown visibility
+ * @param {Boolean} open
+ */
+function toggleTagsFilterDropdown(open) {
+  if (open !== undefined) {
+    document.querySelector('.tags-filter-bar__dropdownContent')
+      .classList.toggle('tags-filter-bar__dropdownContent--active', open);
+  } else {
+    document.querySelector('.tags-filter-bar__dropdownContent')
+      .classList.toggle('tags-filter-bar__dropdownContent--active');
+  }
+  window.playersState = {};
+}
+
+/**
  * Conditionally hide load-more button.
  * @param {bool} hide
  */
@@ -406,5 +421,6 @@ module.exports = {
   clearCommentDialog: clearCommentDialog,
   checkPending: checkPending,
   adsManager: adsManager,
-  consent: gdpr
+  consent: gdpr,
+  toggleTagsFilterDropdown: toggleTagsFilterDropdown
 };
