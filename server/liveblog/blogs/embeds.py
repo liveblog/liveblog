@@ -219,7 +219,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         embed_template = embed_env.from_string(template_content)
         
         # fetch global_tags to display in tags filter dropdown 
-        global_tags = get_resource_service('global_preferences').get_global_prefs()['global_tags']
+        global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
         template_content = embed_template.render(
             blog=blog,
