@@ -217,6 +217,10 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         }
         embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
         embed_template = embed_env.from_string(template_content)
+        
+        # fetch global_tags to display in tags filter dropdown 
+        global_tags = get_resource_service('global_preferences').get_global_prefs()['global_tags']
+
         template_content = embed_template.render(
             blog=blog,
             output=output,
@@ -226,7 +230,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             api_response=api_response,
             assets_root=assets_root,
             i18n=i18n,
-            api_host=api_host
+            api_host=api_host,
+            global_tags=global_tags
         )
 
     asyncTheme = theme.get('asyncTheme', False)
