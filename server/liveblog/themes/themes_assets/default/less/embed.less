@@ -450,6 +450,7 @@
   // Title Bar
   .tags-filter-bar {
     margin-right: 10px;
+    margin-bottom: 8px;
   }
   .tags-filter-bar__title {
     float: none;
@@ -484,9 +485,8 @@
   }
   .tags-filter-bar__dropdownBtn {
     display: block;
-    min-width: 120px;
+    min-width: 110px;
     background: transparent url('../images/dropdown_arrow.svg') right center no-repeat;
-    padding-right: 20px;
     cursor: pointer;
     padding-left: .5rem;
     position: relative;
@@ -503,7 +503,7 @@
       margin-top: 10px;
       margin-left: 5px;
       box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.5);
-      width: 110px;
+      width: 100px;
       max-height: 80px;
       overflow-y: scroll;
     }
@@ -1196,7 +1196,13 @@ body .scorecard-top__info {
       }
       .sorting-bar__dropdownBtn {
         display: block;
-        min-width: 120px;
+        min-width: 60px;
+        padding-right: 18px;
+      }
+      .tags-filter-bar__dropdownBtn{
+        display: block;
+        min-width: 60px;
+        padding-right: 18px;
       }
       .sorting-bar__dropdownContent {
         display: none;
@@ -1306,6 +1312,7 @@ body .scorecard-top__info {
 
       .sorting-bar {
           margin-top: -6px;
+          width: 35%;
       }
 
       .sorting-bar__title {
@@ -1332,8 +1339,9 @@ body .scorecard-top__info {
       }
 
       .tags-filter-bar {
-        margin-top: -6px;
+        width: 35%;
       }
+
       .tags-filter-bar__title {
           display: none;
       }
@@ -1410,7 +1418,25 @@ body .scorecard-top__info {
       .header-bar {
           margin: 10px 0 0 0px;
       }
-
+      
+      .sorting-bar {
+        margin-top: -6px;
+        width: 35%;
+      }
+      
+      .tags-filter-bar {
+        width: 35%;
+      }
+      .sorting-bar__dropdownBtn {
+        display: block;
+        min-width: 40px;
+        padding-right: 15px;
+      }
+      .tags-filter-bar__dropdownBtn{
+        display: block;
+        min-width: 40px;
+        padding-right: 15px;
+      }
       article.lb-post:after {
         display: inline-block;
         margin: 0;
