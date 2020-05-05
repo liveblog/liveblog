@@ -281,13 +281,8 @@ function toggleSortDropdown(open) {
  * @param {Boolean} open
  */
 function toggleTagsFilterDropdown(open) {
-  if (open !== undefined) {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active', open);
-  } else {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active');
-  }
+  document.querySelector('.tags-filter-bar__dropdownContent')
+    .classList.toggle('tags-filter-bar__dropdownContent--active', open);
   window.playersState = {};
 }
 

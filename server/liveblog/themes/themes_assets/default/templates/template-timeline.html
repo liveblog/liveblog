@@ -73,27 +73,23 @@
         </div>
       </div>
     {% endif %}
-      <div class="tags-filter-bar">
-        <div class="tags-filter-bar__orders">
-          <div class="tags-filter-bar__dropdownBtn" data-js-tags_filter_dropdown_button>
-            Tags Filter
+    {% if global_tags %}
+    <div class="tags-filter-bar">
+      <div class="tags-filter-bar__orders">
+        <div class="tags-filter-bar__dropdownBtn" data-js-tags_filter_dropdown_button>
+          Tags Filter
+        </div>
+        <div class="tags-filter-bar__dropdownContent">
+          {% for tag in global_tags -%}
+          <div class="tags-filter-bar__order">
+            <input type="checkbox" name="tags-filter-tag-{{ tag }}" value="{{ tag }}" data-tags-filter-option/>
+            <label for="tags-filter-tag-{{ tag }}">{{ tag }}</label>
           </div>
-          <div class="tags-filter-bar__dropdownContent">
-            {% if global_tags %}
-              {% for tag in global_tags -%}
-              <div class="tags-filter-bar__order">
-                <input type="checkbox" name="tags-filter-tag-{{ tag }}" value="{{ tag }}" data-tags-filter-option/>
-                <label for="tags-filter-tag-{{ tag }}">{{ tag }}</label>
-              </div>
-              {%- endfor %}
-            {% else %}
-              <div class="tags-filter-no_filter">
-                No Filter Available
-              </div>
-            {% endif %}
-          </div>
+          {%- endfor %}
         </div>
       </div>
+    </div>
+    {% endif %}
     <div class="header-bar__actions"></div>
       {% if settings.hasHighlights %}
           <button class="header-bar__highlight" data-js-show-highlighted><span>{{ translate('Highlights') }}</span></button>
