@@ -58,13 +58,8 @@ var buttons = {
       view.toggleSortDropdown();
     },
 
-    "[data-js-tags_filter_dropdown_button]": (elems) => {
-      const tags = Object.values(elems).filter(el => el.checked).map(el => el.value);
-      if ( tags.length > 0 ) {
-        view.toggleTagsFilterDropdown(true);
-      }else{
-        view.toggleTagsFilterDropdown(false);
-      }
+    "[data-js-tags_filter_dropdown_button]": () => {
+      view.toggleTagsFilterDropdown();
     },
 
     "[data-tags-filter-option]": (elems) => {
