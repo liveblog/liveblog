@@ -139,6 +139,8 @@
         }
 
         applyOutputStyle();
+        
+        const global_tags = window.LB.blog.blog_preferences.global_tags;
 
         // define view model
         angular.extend(vm, {
@@ -161,6 +163,9 @@
                 name: gettext('Oldest first'),
                 order: 'oldest_first'
             }],
+            tagsFilterOptions: global_tags ? global_tags.map(function(tag) {
+                return { name: tag };
+            }) : [],
             orderBy: function(order_by) {
                 //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
                 if(window.location.hash) {
@@ -169,6 +174,18 @@
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
+                    vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
+                });
+            },
+            filterBy: function(filter_by) {
+                //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
+                if(window.location.hash) {
+                    window.location.hash = window.location.hash.replace(/&gid=[^&]+/g,'').replace(/&pid=[^&]+/g, '');
+                }
+                vm.loading = true;
+                vm.finished = false;
+                vm.pagesManager.filterPosts(filter_by).then(function(data) {
                     vm.loading = false;
                     vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });
