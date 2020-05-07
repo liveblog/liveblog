@@ -49,8 +49,7 @@
         api_host: '{{ api_host }}',
         assets_root: '{{ assets_root }}',
         debug: {{ debug | tojson | safe }},
-        i18n: {{ i18n | tojson | safe }},
-        global_tags: {{ global_tags | tojson | safe }}
+        i18n: {{ i18n | tojson | safe }}
     };
 </script>
     {% if debug %}
