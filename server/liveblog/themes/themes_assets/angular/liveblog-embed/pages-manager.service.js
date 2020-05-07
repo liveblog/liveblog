@@ -47,7 +47,8 @@
              * @param {integer} [max_results=self.maxResults] - The maximum number of results to retrieve
              * @returns {promise}
              */
-            function retrievePage(page, max_results) {
+            function retrievePage(page, opts) {
+                opts = opts || {};
                 var query = self.highlight?
                 {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {lb_highlight: true}}, {not: {term: {deleted: true}}}]}}}:
                 {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
@@ -59,8 +60,14 @@
                         post_filter: {}
                     },
                     page: page,
-                    max_results: max_results || self.maxResults
+                    max_results: opts.max_results || self.maxResults
                 };
+
+                if (opts.tags && opts.tags.length !== 0) {
+                        posts_criteria.source.post_filter.terms = {
+                            "tags": opts.tags || []
+                        }
+                    }
 
                 if (LB.output) {
                     var tags = LB.output.tags || [];
@@ -86,6 +93,12 @@
                 resetPageCounter();
                 return fetchNewPage();
             }
+
+            function filterPosts(tags) {
+                    self.pages = [];
+                    resetPageCounter();
+                    return fetchNewPage({tags: tags});
+                }
 
             /**
              * Change the order in the future posts request, remove exising post and load a new page
@@ -115,7 +128,7 @@
              * Fetch a new page of posts and add it to the Pages Manager.
              * @returns {promise}
              */
-            function fetchNewPage() {
+            function fetchNewPage(opts) {
                 var promise = $q.when();
                 // for the first time, retrieve the updates just to know the latest update date
                 if (self.pages.length === 0) {
@@ -128,7 +141,7 @@
                     var step = checkStep();
                     //increase the number of pages loaded
                     self.pagesLoaded = self.pagesLoaded + 1 + step;
-                    return loadPage(self.pagesLoaded);
+                    return loadPage(self.pagesLoaded, opts);
                 });
             }
 
@@ -357,10 +370,10 @@
              * @param {interger} page - index of the desired page
              * @returns {promise}
              */
-            function loadPage(page) {
+            function loadPage(page, opts) {
                 page = page || self.pages.length;
                 var items = [];
-                return retrievePage(page).then(function(posts) {
+                return retrievePage(page, opts).then(function(posts) {
                     //checking for dupes (until we make pagination with "startIndex")
                     _.forEach(posts._items, function(post) {
                         var postIndex = getPostPageIndexes(post);
@@ -466,6 +479,10 @@
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
                 changeOrder: changeOrder,
+                /**
+                 * Filter the posts on selecting the tags
+                 */
+                filterPosts: filterPosts,
                 /**
                  * Setter or Getter the order in the future posts request.
                  */

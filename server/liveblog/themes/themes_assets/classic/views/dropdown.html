@@ -1,13 +1,21 @@
 <div class="dropdown-container" ng-class="{ 'show': listVisible }">
 	<div class="dropdown-display" ng-click="show();" ng-class="{ 'clicked': listVisible }">
-		<span ng-if="!isPlaceholder">{{display | translate}}</span>
-		<span class="placeholder" ng-if="isPlaceholder">{{placeholder}}</span>
+		<span ng-if="!isPlaceholder && type == 'single_select'">{{display | translate}}</span>
+		<span class="placeholder" ng-if="isPlaceholder || type == 'multiple_select'">{{placeholder}}</span>
 		<i class="icon-chevron-down"></i>
 	</div>
-	<div class="dropdown-list">
+	<div class="dropdown-list" ng-if="type == 'single_select'">
 		<div>
 			<div ng-repeat="item in list" ng-click="select(item)" ng-class="{ 'selected': isSelected(item) }">
 				<span>{{item.name | translate}}</span>
+				<i class="icon-checkmark icon--white"></i>
+			</div>
+		</div>
+	</div>
+	<div class="dropdown-list" ng-if="type == 'multiple_select'">
+		<div>
+			<div ng-repeat="item in list">
+				<input type="checkbox" ng-click="check(item)">{{item.name | translate}}</input>
 				<i class="icon-checkmark icon--white"></i>
 			</div>
 		</div>
