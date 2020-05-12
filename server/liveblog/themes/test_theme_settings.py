@@ -2639,24 +2639,23 @@ class ThemeSettingsTestCase(TestCase):
         self.assertNotEqual(assets_root, -1)
 
     def test_is_amp(self):
-        with self.app.app_context():
-            response = self.client.get('/embed/5abe10614d003d5f22ce005e/theme/amp')
-            data = str(response.data)
-            self.assertEqual(response.status_code, 200)
-            # response contains data
-            self.assertIsNotNone(data, True)
-            # blog title
-            title = data.find('<title>title: end to end Seven</title>')
-            self.assertNotEqual(title, -1)
-            # Test: Add AMP compatible css
-            amp_styles = data.find('<style amp-boilerplate>')
-            self.assertNotEqual(amp_styles, -1)
-            # test amp img
-            amp_img = data.find(
-                '<amp-img src="image.png"\\n  width="1"\\n  height="1"\\n  layout="fixed"\\n  alt="AMP"></amp-img>')
-            self.assertNotEqual(amp_img, -1)
-            # amp live-list
-            amp_live_list = data.find(
-                '<amp-live-list\\n    layout="container"\\n    data-poll-interval="15000"\\n    ' +
-                'data-max-items-per-page="110"\\n    id="amp-live-list-insert-blog"\\n    class="timeline-body">\\')
-            self.assertNotEqual(amp_live_list, -1)
+        response = self.client.get('/embed/5abe10614d003d5f22ce005e/theme/amp')
+        data = str(response.data)
+        self.assertEqual(response.status_code, 200)
+        # response contains data
+        self.assertIsNotNone(data, True)
+        # blog title
+        title = data.find('<title>title: end to end Seven</title>')
+        self.assertNotEqual(title, -1)
+        # Test: Add AMP compatible css
+        amp_styles = data.find('<style amp-boilerplate>')
+        self.assertNotEqual(amp_styles, -1)
+        # test amp img
+        amp_img = data.find(
+            '<amp-img src="image.png"\\n  width="1"\\n  height="1"\\n  layout="fixed"\\n  alt="AMP"></amp-img>')
+        self.assertNotEqual(amp_img, -1)
+        # amp live-list
+        amp_live_list = data.find(
+            '<amp-live-list\\n    layout="container"\\n    data-poll-interval="15000"\\n    ' +
+            'data-max-items-per-page="110"\\n    id="amp-live-list-insert-blog"\\n    class="timeline-body">\\')
+        self.assertNotEqual(amp_live_list, -1)
