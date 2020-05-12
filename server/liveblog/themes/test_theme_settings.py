@@ -1,5 +1,6 @@
 import liveblog.themes as themeapp
 import liveblog.blogs as blogapp
+import liveblog.core as global_preferences
 from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
@@ -36,6 +37,7 @@ class ThemeSettingsTestCase(TestCase):
             foo.setup_called()
             themeapp.init_app(self.app)
             blogapp.init_app(self.app)
+            global_preferences.init_app(self.app)
             client_modules_app.init_app(self.app)
             self.app.register_blueprint(embed_blueprint)
             self.client = self.app.test_client()
