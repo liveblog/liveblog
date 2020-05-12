@@ -30,7 +30,7 @@ export default function blogService(api, $q, $rootScope, config) {
     * @param {object} blog
     * @return {promise} public_url
     **/
-    function getPublicUrl(blog) {
+    function getPublicUrl(blog, $scope = {}) {
         const deferred = $q.defer();
         let publicUrl;
 
@@ -49,7 +49,9 @@ export default function blogService(api, $q, $rootScope, config) {
                     notifListener();
                     // return the url
                     // fix https issue
-                    publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://');
+                    publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://',
+                        config.embed_protocol);
+                    $scope.publicUrl = publicUrl;
                 }
             });
         }
