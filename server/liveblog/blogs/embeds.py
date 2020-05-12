@@ -217,8 +217,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         }
         embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
         embed_template = embed_env.from_string(template_content)
-        
-        # fetch global_tags to display in tags filter dropdown 
+
+        # fetch global_tags to display in tags filter dropdown
         global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
         template_content = embed_template.render(
