@@ -63,16 +63,17 @@
                     max_results: opts.max_results || self.maxResults
                 };
 
-                if (opts.tags && opts.tags.length !== 0) {
+                if (LB.output && (!opts.tags || opts.tags.length === 0)) {
+                    const tags = LB.output.tags || [];
+                    if (tags.length > 0) {
                         posts_criteria.source.post_filter.terms = {
-                            "tags": opts.tags || []
+                            "tags": tags
                         }
                     }
-
-                if (LB.output) {
-                    var tags = LB.output.tags || [];
-                    if (tags.length > 0) {
-                        posts_criteria.source.post_filter.terms = {"tags": tags}
+                }
+                else if (opts.tags && opts.tags.length !== 0) {
+                    posts_criteria.source.post_filter.terms = {
+                        "tags": opts.tags
                     }
                 }
 

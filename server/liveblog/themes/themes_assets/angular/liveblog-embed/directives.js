@@ -181,10 +181,10 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
 
                         scope.check = function(item) {
                             const tagIndex = scope.selectedTags.indexOf(item.name);
-                            if (tagIndex == -1) {
+                            if (tagIndex === -1) {
                                 scope.selectedTags.push(item.name);
                             } else {
-                                scope.selectedTags.pop(tagIndex);
+                                scope.selectedTags.splice(tagIndex, 1);
                             }
                             scope.tags({tags: scope.selectedTags});
                         }
