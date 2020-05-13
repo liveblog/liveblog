@@ -207,10 +207,10 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         dropdown_tags = []
         if output:
             tags = output.get('tags', [])
-            if len(tags) > 0:
+            if len(tags) > 1:
                 dropdown_tags = tags
 
-        if len(dropdown_tags) == 0:
+        if (len(dropdown_tags) == 0) and (len(tags) != 1):
             # fetch global_tags to display in tags filter dropdown
             dropdown_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
