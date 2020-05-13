@@ -204,8 +204,15 @@ def embed(blog_id, theme=None, output=None, api_host=None):
 
         # let's get the output channel tags if any
         tags = []
+        dropdown_tags = []
         if output:
             tags = output.get('tags', [])
+            if len(tags) > 0:
+                dropdown_tags = tags
+
+        if len(dropdown_tags) == 0:
+            # fetch global_tags to display in tags filter dropdown
+            dropdown_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
         posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp, tags=tags)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
@@ -218,9 +225,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
         embed_template = embed_env.from_string(template_content)
 
-        # fetch global_tags to display in tags filter dropdown
-        global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
-
         template_content = embed_template.render(
             blog=blog,
             output=output,
@@ -231,7 +235,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             assets_root=assets_root,
             i18n=i18n,
             api_host=api_host,
-            global_tags=global_tags
+            global_tags=dropdown_tags
         )
 
     asyncTheme = theme.get('asyncTheme', False)
