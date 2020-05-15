@@ -141,20 +141,23 @@
         applyOutputStyle();
         
         // let's get the output channel tags if any
-        var tags = [];
+        
         var dropdown_tags = [];
-        if (window.LB.output) {
-            tags = window.LB.output.tags;
-            if (tags.length > 1) {
-                dropdown_tags = tags;
+        if (window.LB.settings.showTagsDropdown) {
+            var tags = [];
+            if (window.LB.output) {
+                tags = window.LB.output.tags;
+                if (tags.length > 1) {
+                    dropdown_tags = tags;
+                }
+            }
+
+            if (dropdown_tags.length === 0 && tags.length !== 1) {
+                // fetch global_tags to display in tags filter dropdown
+                dropdown_tags = window.LB.blog.blog_preferences.global_tags;
             }
         }
-
-        if (dropdown_tags.length ==0 && tags.length !== 1) {
-            // fetch global_tags to display in tags filter dropdown
-            dropdown_tags = window.LB.blog.blog_preferences.global_tags;
-        }
-
+        
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,

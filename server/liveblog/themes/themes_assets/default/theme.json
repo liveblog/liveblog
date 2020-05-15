@@ -134,6 +134,13 @@
             "help": "Turn off to hide the “powered by Live Blog” logo"
         },
         {
+            "name": "showTagsDropdown",
+            "label": "Show Tags Dropdown",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to hide the Tags Dropdown"
+        },
+        {
             "name": "date-group",
             "label": "Date time Format",
             "type": "groupheading"

@@ -166,6 +166,13 @@
             "help": "Show the author avatar on posts"
         },
         {
+            "name": "showTagsDropdown",
+            "label": "Show Tags Dropdown",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to hide the Tags Dropdown"
+        },
+        {
             "name": "authorNameFormat",
             "label": "Author name format",
             "type": "select",
