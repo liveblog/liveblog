@@ -140,11 +140,11 @@
 
         applyOutputStyle();
         
-        // let's get the output channel tags if any
-        
+
         var dropdown_tags = [];
         if (window.LB.settings.showTagsDropdown) {
             var tags = [];
+            // let's get the output channel tags if any
             if (window.LB.output) {
                 tags = window.LB.output.tags;
                 if (tags.length > 1) {

@@ -64,11 +64,11 @@ interface IThemeSettings extends IDict {
     showGallery: boolean;
     showImage: boolean;
     showLiveblogLogo: boolean;
-    showTagsDropdown: boolean;
     showPermalinkButton: boolean;
     showRelativeDate: boolean;
     showSharingButtons: boolean;
     showSyndicatedAuthor: boolean;
+    showTagsDropdown: boolean;
     showTitle: boolean;
     showUpdateDatetime: boolean;
     stickyPosition: string;
