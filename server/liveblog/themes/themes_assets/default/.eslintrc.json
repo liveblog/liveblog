@@ -16,13 +16,14 @@
         "json_options": false
     },
 
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
         "ecmaFeatures": {
             "modules": true,
             "globalReturn": false,
-            "experimentalObjectRestSpread": true
+            "jsx": true
         }
     },
 
@@ -107,7 +108,7 @@
         "computed-property-spacing": 2,
         "consistent-this": [2, "self"],
         "func-call-spacing": 2,
-        "indent": [2, 4],
+        "indent": [2, 4, { "SwitchCase": 1 }],
         "key-spacing": 2,
         "keyword-spacing": 2,
         "linebreak-style": [2, "unix"],

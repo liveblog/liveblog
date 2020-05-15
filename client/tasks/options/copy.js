@@ -63,6 +63,17 @@ module.exports = {
             src: ['index.html']
         }]
     },
+    embedScript: {
+        files: [
+            {
+                expand: true,
+                dot: true,
+                cwd: '<%= distDir %>',
+                dest: '<%= distDir %>/embed.js',
+                src: ['embedScript.bundle.js']
+            }
+        ]
+    },
     sirTrevor: {
         files: [{
             expand: true,

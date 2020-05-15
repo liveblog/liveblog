@@ -35,7 +35,8 @@ module.exports = function makeConfig(grunt) {
 
     return {
         entry: {
-            app: 'app/scripts/index.js'
+            app: 'app/scripts/index.js',
+            embedScript: 'app/scripts/liveblog-embed-script/embed.ts'
         },
 
         output: {
