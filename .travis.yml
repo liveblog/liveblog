@@ -32,7 +32,7 @@ addons:
   chrome: stable
   apt:
     sources:
-    - sourceline: 'ppa:mongodb-3.0-precise'
+    - sourceline: 'ppa:mongodb-3.0-bionic'
     - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
     - mongodb-org-server
