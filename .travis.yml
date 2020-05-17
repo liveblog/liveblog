@@ -32,8 +32,8 @@ addons:
   chrome: stable
   apt:
     sources:
-    - ppa:mongodb-3.0-precise
-    - ppa:ubuntu-toolchain-r/test
+    - sourceline: ppa:mongodb-3.0-precise
+    - sourceline: ppa:ubuntu-toolchain-r/test
     packages:
     - mongodb-org-server
     - xvfb
