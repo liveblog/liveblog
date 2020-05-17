@@ -1,7 +1,7 @@
 language: python
 
+os: linux
 python: 3.5
-sudo: required
 dist: bionic
 
 env:
@@ -25,15 +25,15 @@ env:
 
 services:
     - mongodb
-    - redis-server
+    - redis
     - docker
 
 addons:
   chrome: stable
   apt:
     sources:
-    - sourceline: ppa:mongodb-3.0-precise
-    - sourceline: ppa:ubuntu-toolchain-r/test
+    - sourceline: 'ppa:mongodb-3.0-precise'
+    - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
     - mongodb-org-server
     - xvfb
