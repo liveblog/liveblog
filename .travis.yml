@@ -26,21 +26,10 @@ env:
 services:
     - redis
     - docker
+    - xvfb
 
 addons:
   chrome: stable
-  apt:
-    sources:
-    - sourceline: 'ppa:ubuntu-toolchain-r/test'
-    packages:
-    - xvfb
-    - build-essential
-    - libudev-dev
-    - clang-3.9
-    - fakeroot
-    - git
-    - libgnome-keyring-dev
-    - g++-4.8
 
 cache:
   directories:
