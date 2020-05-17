@@ -2,7 +2,7 @@ language: python
 
 python: 3.5
 sudo: required
-dist: trusty
+dist: bionic
 
 env:
     global:
@@ -26,17 +26,16 @@ env:
 services:
     - mongodb
     - redis-server
+    - docker
 
 addons:
   chrome: stable
   apt:
     sources:
-    - mongodb-3.0-precise
-    - elasticsearch-1.7
-    - ubuntu-toolchain-r-test
+    - ppa:mongodb-3.0-precise
+    - ppa:ubuntu-toolchain-r/test
     packages:
     - mongodb-org-server
-    - elasticsearch
     - xvfb
     - build-essential
     - libudev-dev
@@ -52,6 +51,9 @@ cache:
     - $HOME/.npm
 
 before_install:
+    - docker pull barnybug/elasticsearch:1.7.2
+    - docker run -d -p 127.0.0.1:9200:9200 barnybug/elasticsearch:1.7.2
+    - docker ps -a
     - nvm install 8.12.0
     - nvm use 8.12.0
     - sudo apt-get -qq update --allow-unauthenticated
