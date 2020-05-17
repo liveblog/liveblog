@@ -1,8 +1,8 @@
 language: python
 
+os: linux
 python: 3.5
-sudo: required
-dist: trusty
+dist: bionic
 
 env:
     global:
@@ -24,27 +24,12 @@ env:
         - EMBEDLY_KEY=fd92ebbc52fc43fb98f69e50e7893c13
 
 services:
-    - mongodb
-    - redis-server
+    - redis
+    - docker
+    - xvfb
 
 addons:
   chrome: stable
-  apt:
-    sources:
-    - mongodb-3.0-precise
-    - elasticsearch-1.7
-    - ubuntu-toolchain-r-test
-    packages:
-    - mongodb-org-server
-    - elasticsearch
-    - xvfb
-    - build-essential
-    - libudev-dev
-    - clang-3.3
-    - fakeroot
-    - git
-    - libgnome-keyring-dev
-    - g++-4.8
 
 cache:
   directories:
@@ -52,11 +37,13 @@ cache:
     - $HOME/.npm
 
 before_install:
+    - docker pull barnybug/elasticsearch:1.7.2
+    - docker run -d -p 127.0.0.1:9200:9200 barnybug/elasticsearch:1.7.2
+    - docker pull mongo:3.4.23
+    - docker run -d -p 127.0.0.1:27017:27017 mongo:3.4.23
+    - docker ps -a
     - nvm install 8.12.0
     - nvm use 8.12.0
-    - sudo apt-get -qq update --allow-unauthenticated
-    - sudo apt-get purge -f elasticsearch
-    - sudo apt-get install -t stable elasticsearch
     - node --version
     - npm config set loglevel warn
     - npm install -g grunt-cli
@@ -73,8 +60,6 @@ install:
     - cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
 
 before_script:
-    - ./scripts/elastic.sh
-    - sudo service elasticsearch restart && sleep 10
     - cd $TRAVIS_BUILD_DIR/server
     - (nohup env LOG_CONFIG_FILE=../logging_travis_config.yml SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
     - cd $TRAVIS_BUILD_DIR/client
