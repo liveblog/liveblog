@@ -24,7 +24,6 @@ env:
         - EMBEDLY_KEY=fd92ebbc52fc43fb98f69e50e7893c13
 
 services:
-    - mongodb
     - redis
     - docker
 
