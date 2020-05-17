@@ -32,10 +32,8 @@ addons:
   chrome: stable
   apt:
     sources:
-    - sourceline: 'ppa:mongodb-3.0-bionic'
     - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
-    - mongodb-org-server
     - xvfb
     - build-essential
     - libudev-dev
@@ -53,6 +51,8 @@ cache:
 before_install:
     - docker pull barnybug/elasticsearch:1.7.2
     - docker run -d -p 127.0.0.1:9200:9200 barnybug/elasticsearch:1.7.2
+    - docker pull mongo:3.4.23
+    - docker run -d -p 127.0.0.1:27017:27017 mongo:3.4.23
     - docker ps -a
     - nvm install 8.12.0
     - nvm use 8.12.0
