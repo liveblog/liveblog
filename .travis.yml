@@ -37,7 +37,7 @@ addons:
     - xvfb
     - build-essential
     - libudev-dev
-    - clang-3.3
+    - clang-3.9
     - fakeroot
     - git
     - libgnome-keyring-dev
