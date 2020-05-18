@@ -40,6 +40,7 @@ module.exports = function(grunt) {
         'copy:index',
         'copy:config',
         'copy:sirTrevor',
+        'build:embedScript',
         'webpack-dev-server:start'
     ]);
 
