@@ -202,21 +202,19 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
         ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
 
-        # let's get the output channel tags if any
-        tags = []
         dropdown_tags = []
+        # let's get the output channel tags if any
         if output:
-            tags = output.get('tags', [])
-            if len(tags) > 1:
-                dropdown_tags = tags
+            dropdown_tags = output.get('tags', [])
 
-        if (len(dropdown_tags) == 0) and (len(tags) != 1):
-            # fetch global_tags to display in tags filter dropdown
+        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp, tags=dropdown_tags)
+        sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
+                                           ordering='newest_first', deleted=is_amp, tags=dropdown_tags)
+
+        # get global_tags if this is not an output channel or if the output channel is not restricted to a set of tags
+        if len(dropdown_tags) == 0:
             dropdown_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
-        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp, tags=tags)
-        sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
-                                           ordering='newest_first', deleted=is_amp, tags=tags)
 
         api_response = {
             'posts': posts,

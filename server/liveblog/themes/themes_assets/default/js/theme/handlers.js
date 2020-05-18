@@ -62,9 +62,12 @@ var buttons = {
       view.toggleTagsFilterDropdown();
     },
 
-    "[data-tags-filter-option]": (elems) => {
+    "[data-tags-filter-option]": (clickedElement, elemList) => {
       return () => {
-        const tags = Object.values(elems).filter(el => el.checked).map(el => el.value);
+        clickedElement.children[0].checked = !clickedElement.children[0].checked;
+        const tags = Object.values(elemList)
+          .filter(clickedElement => clickedElement.children[0].checked)
+          .map(clickedElement => clickedElement.children[1].innerHTML);
         return viewmodel.loadPosts({
           notDeleted: true,
           tags: tags
@@ -122,7 +125,7 @@ var buttons = {
 
       if (handler === "[data-tags-filter-option]") {
         elems.forEach((el) => {
-          el.addEventListener('click', buttons.handlers[handler](elems), false);
+          el.addEventListener('click', buttons.handlers[handler](el, elems), false);
         })
         return;
       }
