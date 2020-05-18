@@ -68,7 +68,6 @@ lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar {
   width: 5px;
 }
 lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar-thumb {
-  background-color: #56c491;
   color: #56c491;
   width: 5px;
 }
