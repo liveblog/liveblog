@@ -228,7 +228,10 @@ vm.init = function() {
     vm.loadPosts({fromDate: latestUpdate})
       .then(view.renderPosts)
       .then((resp) => {
-        if (resp && resp._items.length > 0) view.adsManager.refreshAds();
+        if (resp && resp._items.length > 0) {
+          view.adsManager.refreshAds();
+          view.consent.init();
+        }
       });
   }, 10*1000);
 

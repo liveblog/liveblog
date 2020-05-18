@@ -144,7 +144,6 @@ You can now access your local setup at http://localhost:9000 (user: admin, passw
     ```sh
     $ . env/bin/activate
     $ pip install -r docker/requirements.txt
-    $ ./scripts/docker-local-demo.sh
     ```
 
 - #### Running Prebuilt Setup
