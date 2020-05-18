@@ -339,7 +339,7 @@ class ClientOutputPostsService(ClientBlogPostsService):
         if len(tags) > 0:
             if len(query_tags) == 0:
                 query_source['post_filter'] = {'terms': {'tags': tags}}
-            elif len(query_tags) > 0 and not (set(query_tags) <= set(tags)):
+            elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
                 return 'some tags in the query are restricted', 400
 
         new_args['source'] = json.dumps(query_source)
