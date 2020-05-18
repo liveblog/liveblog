@@ -63,14 +63,14 @@ module.exports = {
             src: ['index.html']
         }]
     },
-    embedScript: {
+    versionEmbedScript: {
         files: [
             {
                 expand: true,
                 dot: true,
                 cwd: '<%= distDir %>',
-                dest: '<%= distDir %>/embed.js',
-                src: ['embedScript.bundle.js']
+                dest: '<%= distDir %>/<%= pkg.version %>',
+                src: ['embed.js'],
             }
         ]
     },

@@ -280,9 +280,12 @@ const configApp = (grunt) => ({
         content: false,
         tasks: false,
         analytics: false
+    },
+
+    client: {
+        url: process.env.SUPERDESK_CLIENT_URL || 'http://localhost:9000'
     }
-}
-);
+});
 
 const configLiveblog = (grunt) => ({
     // route to be redirected to from '/'

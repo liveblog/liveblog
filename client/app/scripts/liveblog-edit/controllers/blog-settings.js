@@ -500,7 +500,7 @@ function BlogSettingsController(
         vm.embedMultiHight = true;
         // devel link
         let parentIframe = 'http://localhost:5000/themes_assets/angular/';
-        const embedScript = 'http://localhost:9000/embedScript.bundle.js';
+        const embedScript = `${config.client.url}/embed.js`;
 
         if (vm.angularTheme.public_url) {
             // production link
