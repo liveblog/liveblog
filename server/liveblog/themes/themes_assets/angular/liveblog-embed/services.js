@@ -1,3 +1,6 @@
+var CONSENT_KEY = '__lb_consent_key__';
+var CONSENT_LIFE_DAYS = 365;
+
 (function(angular) {
     'use strict';
 
@@ -5,7 +8,6 @@
         .factory('fixProtocol', ['config', function(config){
             return function(text) {
                 var absoluteProtocol = RegExp(/http(s)?:\/\//ig);
-                var serverpath = config.api_host.split('//').pop();
                 config.api_host.replace(absoluteProtocol, '//');
                 text.replace(absoluteProtocol, '//')
                 return text.replace(absoluteProtocol, '//')
@@ -41,6 +43,38 @@
             this.$get = function() {
                 return this;
             };
+        }])
+        .service('ConsentManager', ['$rootScope', 'Storage', function ($rootScope, Storage) {
+
+            this.start = function() {
+                window.addEventListener('message', this.handleEnhancerMessage, false);
+                window.parent.postMessage({type: 'init_consent'}, '*');
+            }
+
+            this.handleEnhancerMessage = function(event) {
+                var type = event.data.type;
+
+                if (type)
+                    console.log('Received msg in iframe', event.data); // eslint-disable-line
+
+                switch (type) {
+                    case 'sync-consent-given':
+                        Storage.write(CONSENT_KEY, event.data.data, CONSENT_LIFE_DAYS);
+                        $rootScope.$apply();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            this.isConsentGiven = function() {
+                return Storage.read(CONSENT_KEY) === 'Y';
+            }
+
+            this.acceptConsent = function() {
+                Storage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
+                window.parent.postMessage({type: 'accept_consent'}, '*');
+            }
         }])
         .service('Storage', function() {
             this.read = function(name) {
