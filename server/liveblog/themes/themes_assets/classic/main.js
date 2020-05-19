@@ -147,11 +147,13 @@
             // let's get the output channel tags if any
             if (window.LB.output) {
                 tags = window.LB.output.tags;
+                // only show dropdown if we have more than one tags in output channel restricted by tags
                 if (tags.length > 1) {
                     dropdown_tags = tags;
                 }
             }
 
+            // if this is not an output channel or the output channel is not restricted by tags
             if (dropdown_tags.length === 0 && tags.length !== 1) {
                 // fetch global_tags to display in tags filter dropdown
                 dropdown_tags = window.LB.blog.blog_preferences.global_tags;

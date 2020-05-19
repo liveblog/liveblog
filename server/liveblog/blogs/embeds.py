@@ -215,7 +215,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         if len(dropdown_tags) == 0:
             dropdown_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
 
-
         api_response = {
             'posts': posts,
             'stickyPosts': sticky_posts
