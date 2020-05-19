@@ -14,8 +14,8 @@
 	</div>
 	<div class="dropdown-list" ng-if="type == 'multiple_select'">
 		<div>
-			<div ng-repeat="item in list">
-				<input type="checkbox" ng-click="check(item)">{{item.name | translate}}</input>
+			<div ng-repeat="item in list" ng-click="check(item)" ng-class="{ 'selected': isChecked(item) }">
+				<span>{{item.name | translate}}</span>
 				<i class="icon-checkmark icon--white"></i>
 			</div>
 		</div>

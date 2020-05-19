@@ -193,6 +193,10 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                             return item.order === scope.selected();
                         };
 
+                        scope.isChecked = function(item) {
+                            return scope.selectedTags.indexOf(item.name) !== -1;
+                        };
+
                         scope.show = function() {
                             scope.listVisible = true;
                         };
