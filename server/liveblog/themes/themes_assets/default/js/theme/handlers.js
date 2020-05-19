@@ -42,6 +42,8 @@ var showPendings = (e) => {
   view.attachSlideshow();
 };
 
+var selectedTags = [];
+
 var buttons = {
   handlers: {
     "[data-load-more]": () => {
@@ -62,15 +64,19 @@ var buttons = {
       view.toggleTagsFilterDropdown();
     },
 
-    "[data-tags-filter-option]": (clickedElement, elemList) => {
+    "[data-tags-filter-option]": (clickedElement) => {
       return () => {
-        clickedElement.children[0].checked = !clickedElement.children[0].checked;
-        const tags = Object.values(elemList)
-          .filter(clickedElement => clickedElement.children[0].checked)
-          .map(clickedElement => clickedElement.children[1].innerHTML);
+        const tag = clickedElement.value;
+        const tagIndex = selectedTags.indexOf(tag);
+        if (tagIndex === -1) {
+            selectedTags.push(tag);
+        } else {
+            selectedTags.splice(tagIndex, 1);
+        }
+
         return viewmodel.loadPosts({
           notDeleted: true,
-          tags: tags
+          tags: selectedTags
         }).then(view.renderTimeline)
           .then(view.displayNewPosts)
           .catch(catchError);
@@ -125,7 +131,7 @@ var buttons = {
 
       if (handler === "[data-tags-filter-option]") {
         elems.forEach((el) => {
-          el.addEventListener('click', buttons.handlers[handler](el, elems), false);
+          el.addEventListener('click', buttons.handlers[handler](el), false);
         })
         return;
       }
