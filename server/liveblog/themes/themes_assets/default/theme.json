@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-9dfe3a67e9.css"],
-    "devScripts": ["dist/default-568039d155.js"],
+    "devScripts": ["dist/default-cface1a09b.js"],
     "styles": ["dist/default-9dfe3a67e9.css"],
-    "scripts": ["dist/default-568039d155.js"],
+    "scripts": ["dist/default-cface1a09b.js"],
     "options": [
         {
             "name": "language",
