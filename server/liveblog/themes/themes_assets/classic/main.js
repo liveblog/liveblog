@@ -156,7 +156,7 @@
             // if this is not an output channel or the output channel is not restricted by tags
             if (dropdown_tags.length === 0 && tags.length !== 1) {
                 // fetch global_tags to display in tags filter dropdown
-                dropdown_tags = window.LB.blog.blog_preferences.global_tags;
+                dropdown_tags = window.LB.global_tags;
             }
         }
         

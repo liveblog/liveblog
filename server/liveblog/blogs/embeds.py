@@ -195,6 +195,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     is_amp = theme.get('ampTheme', False)
     is_seo = theme.get('seoTheme', False)
 
+    global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
+
     if is_seo:
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
@@ -213,7 +215,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
 
         # get global_tags if this is not an output channel or if the output channel is not restricted to a set of tags
         if len(dropdown_tags) == 0:
-            dropdown_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
+            dropdown_tags = global_tags
 
         api_response = {
             'posts': posts,
@@ -250,7 +252,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'assets_root': assets_root,
         'async': asyncTheme,
         'i18n': i18n,
-        'hook_urls': bool(TRIGGER_HOOK_URLS)
+        'hook_urls': bool(TRIGGER_HOOK_URLS),
+        'global_tags': global_tags
     }
     if is_amp:
         # Add AMP compatible css to template context
