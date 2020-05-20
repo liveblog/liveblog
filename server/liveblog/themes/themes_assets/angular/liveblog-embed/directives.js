@@ -187,6 +187,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                                 scope.selectedTags.splice(tagIndex, 1);
                             }
                             scope.tags({tags: scope.selectedTags});
+                            scope.listVisible = true;
                         }
                             
                         scope.isSelected = function(item) {
@@ -202,7 +203,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                         };
 
                         $rootScope.$on("documentClicked", function(inner, target) {
-                            if ($(target[0]).parents(".dropdown-display").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
+                            if($(target[0]).parents(".dropdown-container").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
                                 scope.$apply(function() {
                                     scope.listVisible = false;
                                 });
