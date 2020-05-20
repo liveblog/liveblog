@@ -10,7 +10,7 @@
     "eslint": "grunt eslint",
     "tslint": "tsc --noEmit && tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
-    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 80.0.3987.106 --versions.standalone 3.9.1",
+    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 83.0.4103.39 --versions.standalone 3.9.1",
     "e2e": "./node_modules/.bin/protractor protractor-conf.js"
   },
   "licenses": [
