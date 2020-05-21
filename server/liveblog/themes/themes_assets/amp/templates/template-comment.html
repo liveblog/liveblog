@@ -1,10 +1,17 @@
-<amp-accordion class="comment__accordion">
+<amp-lightbox id="lightbox-comment-success" layout="nodisplay">
+    <div class="lightbox-success" on="tap:lightbox-comment-success.close" role="button" tabindex="0">
+        <p>{{ translate("Your comment is being reviewed and will be published as soon as it's approved") }}.</p>
+    </div>
+</amp-lightbox>
+
+<amp-accordion id="commentAccordion" class="comment__accordion" disable-session-states animate>
     <section>
         <h4><span>{{ translate('Post a comment') }}</span></h4>
         <form method="post"
+            id="commentForm"
             action-xhr="{{ api_host }}api/client_item_comments"
             target="_top"
-            on="submit-success:lightbox-comment-success"
+            on="submit-success:lightbox-comment-success.open,commentForm.clear,commentAccordion.collapse"
             class="comment">
             <div class="comment__wrap">
                 <div>
@@ -15,13 +22,6 @@
                 </div>
                 <div>
                     <textarea placeholder="{{ translate('Comment *') }}" name="text" required></textarea>
-                </div>
-                <div submit-success>
-                    <amp-lightbox id="lightbox-comment-success" layout="nodisplay">
-                        <div class="lightbox-success" on="tap:lightbox-comment-success.close" role="button" tabindex="0">
-                            <p>{{ translate("Your comment is being reviewed and will be published as soon as it's approved") }}.</p>
-                        </div>
-                    </amp-lightbox>
                 </div>
                 <div submit-error>
                     <template type="amp-mustache">

@@ -275,7 +275,7 @@
                     <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" flow="down" sd-tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
                 <div class="header--live" ng-if="isBlogOpened()">
-                    <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
+                    <a href="{{ publicUrl }}" target="_blank" ng-show="publicUrl" translate>Live</a>
                 </div>
                 <div class="header--filters">
                     <button class="btn btn-xs active" ng-click="filterHighlight(false);" ng-class="{'active': !filter.isHighlight}" flow="down" sd-tooltip="Show all" translate>All</button>

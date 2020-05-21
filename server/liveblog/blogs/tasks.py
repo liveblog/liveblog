@@ -124,11 +124,11 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
 
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
             # TODO: Add reverse url function.
-            public_url = '{}://{}/embed/{}/{}{}'.format(app.config['URL_PROTOCOL'],
-                                                        app.config['SERVER_NAME'],
-                                                        blog_id,
-                                                        '{}'.format(output_id) if output_id else '',
-                                                        '/theme/{}'.format(theme) if theme else '')
+            public_url = '{}{}/embed/{}/{}{}'.format(app.config['EMBED_PROTOCOL'],
+                                                     app.config['SERVER_NAME'],
+                                                     blog_id,
+                                                     '{}'.format(output_id) if output_id else '',
+                                                     '/theme/{}'.format(theme) if theme else '')
 
         public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
         updates = {'public_urls': public_urls}
