@@ -164,6 +164,7 @@
   },
   "settings": {
     "showLiveblogLogo": true,
+    "showTagsDropdown": true,
     "canComment": true,
     "showAuthorAvatar":true,
     "authorNameFormat":"display_name",

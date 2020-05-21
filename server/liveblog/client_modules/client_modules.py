@@ -333,9 +333,14 @@ class ClientOutputPostsService(ClientBlogPostsService):
         new_args = req.args.copy()
         query_source = json.loads(new_args.get('source', '{}'))
 
+        query_tags = query_source.get('post_filter', {}).get('terms', {}).get('tags', [])
         tags = output.get('tags', [])
+
         if len(tags) > 0:
-            query_source['post_filter'] = {'terms': {'tags': tags}}
+            if len(query_tags) == 0:
+                query_source['post_filter'] = {'terms': {'tags': tags}}
+            elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
+                return 'some tags in the query are restricted', 400
 
         new_args['source'] = json.dumps(query_source)
         req.args = new_args

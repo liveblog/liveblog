@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.1",
+    "version": "3.6.7",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-9dfe3a67e9.css"],
-    "devScripts": ["dist/default-12e7456170.js"],
-    "styles": ["dist/default-9dfe3a67e9.css"],
-    "scripts": ["dist/default-12e7456170.js"],
+    "devStyles": ["dist/default-27e3af1450.css"],
+    "devScripts": ["dist/default-55a131c0a2.js"],
+    "styles": ["dist/default-27e3af1450.css"],
+    "scripts": ["dist/default-55a131c0a2.js"],
     "options": [
         {
             "name": "language",
@@ -132,6 +132,13 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to hide the “powered by Live Blog” logo"
+        },
+        {
+            "name": "showTagsDropdown",
+            "label": "Show Tags Dropdown",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to hide the Tags Dropdown"
         },
         {
             "name": "date-group",

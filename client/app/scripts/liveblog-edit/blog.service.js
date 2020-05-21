@@ -49,7 +49,9 @@ export default function blogService(api, $q, $rootScope, config) {
                     notifListener();
                     // return the url
                     // fix https issue
-                    publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://');
+                    publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://',
+                        config.embed_protocol);
+                    $rootScope.publicUrl = publicUrl;
                 }
             });
         }

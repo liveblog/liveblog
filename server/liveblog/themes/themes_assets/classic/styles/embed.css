@@ -296,6 +296,9 @@ button.active {
 .sorting-bar__orders-mobile {
     display: none;
 }
+.tags-bar {
+    margin-top: -11px;
+}
 .header-bar__logo {
     position: absolute;
     right: 10px;

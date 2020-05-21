@@ -159,11 +159,14 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                         placeholder: "@",
                         list: "=",
                         selected: "&",
-                        order: "&"
+                        order: "&",
+                        tags: "&",
+                        type: "@"
                     },
                     link: function(scope) {
                         scope.listVisible = false;
                         scope.isPlaceholder = true;
+                        scope.selectedTags = [];
 
                         scope.select = function(item) {
                             scope.isPlaceholder = false;
@@ -171,8 +174,23 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                             scope.listVisible = false;
                         };
 
+                        scope.check = function(item) {
+                            const tagIndex = scope.selectedTags.indexOf(item.name);
+                            if (tagIndex === -1) {
+                                scope.selectedTags.push(item.name);
+                            } else {
+                                scope.selectedTags.splice(tagIndex, 1);
+                            }
+                            scope.tags({tags: scope.selectedTags});
+                            scope.listVisible = true;
+                        }
+                            
                         scope.isSelected = function(item) {
                             return item.order === scope.selected();
+                        };
+
+                        scope.isChecked = function(item) {
+                            return scope.selectedTags.indexOf(item.name) !== -1;
                         };
 
                         scope.show = function() {
@@ -180,7 +198,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                         };
 
                         $rootScope.$on("documentClicked", function(inner, target) {
-                            if ($(target[0]).parents(".dropdown-display").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
+                            if($(target[0]).parents(".dropdown-container").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
                                 scope.$apply(function() {
                                     scope.listVisible = false;
                                 });

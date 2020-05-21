@@ -42,6 +42,8 @@ var showPendings = (e) => {
   view.attachSlideshow();
 };
 
+var selectedTags = [];
+
 var buttons = {
   handlers: {
     "[data-load-more]": () => {
@@ -56,6 +58,29 @@ var buttons = {
 
     "[data-js-sort_dropdown_button]": () => {
       view.toggleSortDropdown();
+    },
+
+    "[data-js-tags_filter_dropdown_button]": () => {
+      view.toggleTagsFilterDropdown();
+    },
+
+    "[data-tags-filter-option]": (clickedElement) => {
+      return () => {
+        const tag = clickedElement.value;
+        const tagIndex = selectedTags.indexOf(tag);
+        if (tagIndex === -1) {
+          selectedTags.push(tag);
+        } else {
+          selectedTags.splice(tagIndex, 1);
+        }
+
+        return viewmodel.loadPosts({
+          notDeleted: true,
+          tags: selectedTags
+        }).then(view.renderTimeline)
+          .then(view.displayNewPosts)
+          .catch(catchError);
+      };
     },
 
     "[data-js-orderby_ascending]": () => {
@@ -102,8 +127,16 @@ var buttons = {
 
   attach: function() {
     Object.keys(buttons.handlers).forEach((handler) => {
-      let el = helpers.getElems(handler)[0];
+      const elems = helpers.getElems(handler);
 
+      if (handler === "[data-tags-filter-option]") {
+        elems.forEach((el) => {
+          el.addEventListener('click', buttons.handlers[handler](el), false);
+        })
+        return;
+      }
+
+      const el = elems[0]
       if (!el) {
         return false;
       }
@@ -114,6 +147,7 @@ var buttons = {
     view.attachSlideshow();
     view.attachPermalink();
     view.attachShareBox();
+    view.attachDropdownCloseEvent();
     if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);

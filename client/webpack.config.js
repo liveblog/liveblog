@@ -233,6 +233,7 @@ const configApp = (grunt) => ({
     isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
 
     debug: grunt.option('debug-mode') || false,
+    embed_protocol: process.env.EMBED_PROTOCOL || "https://",
     embedly: {
         key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
     },

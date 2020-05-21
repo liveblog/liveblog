@@ -50,9 +50,9 @@ function renderAds() {
     if (order === DESC)
         adsList = adsList.reverse();
 
-    let looper = helpers.range(0, postCount, frequency);
+    let looper = helpers.range(frequency, postCount, frequency);
     looper.forEach(i => {
-        let index = Math.ceil(i / frequency) % adsCount;
+        let index = Math.ceil((i - frequency) / frequency) % adsCount;
         let refNode = articles[i];
         let parentNode = refNode.parentNode;
 
