@@ -400,6 +400,20 @@ function permalinkScroll() {
   return false;
 }
 
+function attachDropdownCloseEvent() {
+  document.addEventListener("click", function (evt) {
+    const target = evt.target;
+    const dropDownBtnClicked = target.className === 'sorting-bar__dropdownBtn' || target.className === 'tags-filter-bar__dropdownBtn',
+      clickedOutside = (target.closest('div') === null ||
+        !['tags-filter-bar', 'sorting-bar'].includes(target.closest('div').className.split('__')[0]))
+    if (!dropDownBtnClicked && clickedOutside) {
+      // close tags-filter dropdown
+      toggleTagsFilterDropdown(false);
+      toggleSortDropdown(false);
+    }
+  });
+}
+
 module.exports = {
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
@@ -422,5 +436,6 @@ module.exports = {
   checkPending: checkPending,
   adsManager: adsManager,
   consent: gdpr,
-  toggleTagsFilterDropdown: toggleTagsFilterDropdown
+  toggleTagsFilterDropdown: toggleTagsFilterDropdown,
+  attachDropdownCloseEvent: attachDropdownCloseEvent
 };

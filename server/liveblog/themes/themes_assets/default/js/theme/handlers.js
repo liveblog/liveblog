@@ -69,9 +69,9 @@ var buttons = {
         const tag = clickedElement.value;
         const tagIndex = selectedTags.indexOf(tag);
         if (tagIndex === -1) {
-            selectedTags.push(tag);
+          selectedTags.push(tag);
         } else {
-            selectedTags.splice(tagIndex, 1);
+          selectedTags.splice(tagIndex, 1);
         }
 
         return viewmodel.loadPosts({
@@ -147,6 +147,7 @@ var buttons = {
     view.attachSlideshow();
     view.attachPermalink();
     view.attachShareBox();
+    view.attachDropdownCloseEvent();
     if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);
