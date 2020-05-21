@@ -323,7 +323,7 @@ export default function BlogEditController(
 
     // retieve the blog's public url
     blogService.getPublicUrl(blog).then((url) => {
-        $scope.publicUrl = url;
+        $rootScope.publicUrl = url;
     });
 
     $scope.freetypes = [];

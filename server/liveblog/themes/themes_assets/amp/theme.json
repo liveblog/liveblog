@@ -20,10 +20,10 @@
     },
     "license": "AGPL-3.0",
     "devStyles": [
-        "dist/amp-62f384ea69.css"
+        "dist/amp-82f85935fe.css"
     ],
     "styles": [
-        "dist/amp-62f384ea69.css"
+        "dist/amp-82f85935fe.css"
     ],
     "supportAdsInjection": true,
     "options": [

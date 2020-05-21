@@ -185,6 +185,5 @@ class AdvertisementInjectionTestCase(supertests.TestCase):
 
         # base on default frequency (2) we're going to assert "advertisment"
         # on article 1, 3 and 5
-        self.assertTrue("advertisment" in str(articles[0]))
         self.assertTrue("advertisment" in str(articles[2]))
         self.assertTrue("advertisment" in str(articles[4]))
