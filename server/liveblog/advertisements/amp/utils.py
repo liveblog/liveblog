@@ -131,9 +131,9 @@ def inject_advertisements(content, settings, ads_list, theme):
     theme_service = get_resource_service('themes')
     theme_settings = theme_service.get_default_settings(theme)
 
-    for i in range(0, pcount, frequency):
+    for i in range(frequency, pcount, frequency):
         if acount != 0:
-            index = math.ceil(i / frequency) % acount
+            index = math.ceil((i - frequency) / frequency) % acount
 
             ref_article = articles[i]
             item = ads_list[index]
