@@ -40,6 +40,7 @@ module.exports = function(grunt) {
         'copy:index',
         'copy:config',
         'copy:sirTrevor',
+        'build:embedScript',
         'webpack-dev-server:start'
     ]);
 
@@ -53,12 +54,18 @@ module.exports = function(grunt) {
     ]);
     grunt.registerTask('server:travis', ['clean', 'template:travis', 'connect:travis']);
 
+    grunt.registerTask('build:embedScript', [
+        'webpack:embedScript',
+        'copy:versionEmbedScript',
+    ]);
+
     grunt.registerTask('build', [
         'clean',
         'copy:assets',
         'copy:locales',
         'copy:index',
         'copy:sirTrevor',
+        'build:embedScript',
         'webpack:build'
     ]);
 

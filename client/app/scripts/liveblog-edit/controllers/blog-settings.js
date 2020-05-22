@@ -500,6 +500,7 @@ function BlogSettingsController(
         vm.embedMultiHight = true;
         // devel link
         let parentIframe = 'http://localhost:5000/themes_assets/angular/';
+        const embedScript = `${config.client.url}/embed.js`;
 
         if (vm.angularTheme.public_url) {
             // production link
@@ -518,8 +519,8 @@ liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/9
 liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
 
         vm.embeds = {
-            normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' +
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
+            normal: `<script src="${embedScript}" async defer></script>
+<iframe id="liveblog-iframe" width="100%" height="715" src="${vm.publicUrl}" frameborder="0" allowfullscreen></iframe>`,
             resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' +
                 vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript,
         };

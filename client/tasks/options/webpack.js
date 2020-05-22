@@ -1,20 +1,32 @@
+const path = require('path');
 const webpack = require('webpack');
 
 module.exports = function(grunt) {
     const config = require('../../webpack.config.js')(grunt);
 
+    const prodPlugins = config.plugins.concat(
+        new webpack.DefinePlugin({
+            'process.env': {NODE_ENV: JSON.stringify('production')},
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+        })
+    );
+
     return {
-        entry: 'webpack-dev-server/client?http://0.0.0.0:9000/',
         options: config,
         build: {
-            plugins: config.plugins.concat(
-                new webpack.DefinePlugin({
-                    'process.env': {NODE_ENV: JSON.stringify('production')},
-                }),
-                new webpack.optimize.UglifyJsPlugin({
-                    sourceMap: true,
-                })
-            ),
+            entry: config.entry,
+            plugins: prodPlugins,
+        },
+        embedScript: {
+            entry: config.entry.embedScript,
+            output: {
+                path: path.join(process.cwd(), 'dist'),
+                filename: 'embed.js',
+                chunkFilename: '[id].bundle.js',
+            },
+            plugins: prodPlugins,
         },
     };
 };

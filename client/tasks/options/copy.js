@@ -63,6 +63,17 @@ module.exports = {
             src: ['index.html']
         }]
     },
+    versionEmbedScript: {
+        files: [
+            {
+                expand: true,
+                dot: true,
+                cwd: '<%= distDir %>',
+                dest: '<%= distDir %>/<%= pkg.version %>',
+                src: ['embed.js'],
+            }
+        ]
+    },
     sirTrevor: {
         files: [{
             expand: true,

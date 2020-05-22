@@ -1,5 +1,3 @@
-var CONSENT_KEY = '__lb_consent_key__';
-var CONSENT_LIFE_DAYS = 365;
 var CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
 
 var domainRequiresConsent = function(providerUrl, embedContent) {
@@ -81,8 +79,8 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
             };
         }])
         .directive('lbGdprEmbedConsent', [
-            'config', 'asset', 'Storage', '$timeout',
-            function(config, asset, Storage, $timeout) {
+            'config', 'asset', '$timeout', 'ConsentManager',
+            function(config, asset, $timeout, ConsentManager) {
                 return {
                     template: '<ng-include src="getTemplateUrl()" />',
                     scope: {
@@ -97,14 +95,11 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                             acceptButton.on('click', function(ev) {
                                 ev.preventDefault();
 
-                                Storage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
+                                ConsentManager.acceptConsent();
                             });
                         }, 50);
                     },
                     controller: ['$scope', function($scope) {
-                        var consentIsGiven = function() {
-                            return Storage.read(CONSENT_KEY) === 'Y';
-                        };
 
                         // used on the ng-include to resolve the template
                         $scope.getTemplateUrl = function() {
@@ -118,7 +113,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                                 if (item.meta.provider_name === "YoutubeUpload")
                                     providerUrl = "https://www.youtube.com";
 
-                                if (!consentIsGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
+                                if (!ConsentManager.isConsentGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
                                     return asset.templateUrl("views/embeds/consent-placeholder.html");
                                 }
                             }
