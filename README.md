@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.8.0*
+*Version 3.8.1-rc1*
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
@@ -178,7 +178,7 @@ You can now access your local setup at http://localhost:9000 (user: admin, passw
     ```sh
     $ docker-compose -p lbdemo -f ./docker-compose-dev.yml run superdesk ./scripts/fig_wrapper.sh bash -c "\
     curl -X POST elastic:9200/liveblog
-    python3 manage.py app:rebuild_elastic_index --index=liveblog" 
+    python3 manage.py app:rebuild_elastic_index --index=liveblog"
     ```
 
 ### Testing
