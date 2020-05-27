@@ -167,10 +167,10 @@
         },
         {
             "name": "showTagsDropdown",
-            "label": "Show Tags Dropdown",
+            "label": "Allow users filter content in embed",
             "type": "checkbox",
             "default": true,
-            "help": "Turn off to hide the Tags Dropdown"
+            "help": "This will show or hide a dropdown to filter content by tags"
         },
         {
             "name": "authorNameFormat",
