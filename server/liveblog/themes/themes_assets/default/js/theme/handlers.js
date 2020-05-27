@@ -83,15 +83,15 @@ var buttons = {
     },
 
     "[data-js-orderby_ascending]": () => {
-      if(isOrderChanged('ascending')) loadSort('ascending');
+      loadSort('ascending');
     },
 
     "[data-js-orderby_descending]": () => {
-      if(isOrderChanged('descending')) loadSort('descending');
+      loadSort('descending');
     },
 
     "[data-js-orderby_editorial]": () => {
-      if(isOrderChanged('editorial')) loadSort('editorial');
+      loadSort('editorial');
     },
 
     "[data-js-show-comment-dialog]": () => {
@@ -157,6 +157,9 @@ var buttons = {
 };
 
 function loadSort(sortBy) {
+  // fetch the data only if the sort order has changed
+  if(!isOrderChanged(sortBy)) return;
+
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
   switch (sortBy) {
