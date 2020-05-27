@@ -42,13 +42,17 @@ var showPendings = (e) => {
   view.attachSlideshow();
 };
 
-var selectedTags = [];
+var isOrderChanged = (order) => {
+  const currentOrder = window.LB.settings.postOrder;
+  return order !== currentOrder;
+}
 
 var buttons = {
   handlers: {
     "[data-load-more]": () => {
-      viewmodel.loadPostsPage()
-        .then(view.renderPosts)
+      viewmodel.loadPostsPage({
+        'tags': viewmodel.getSelectedTags()
+      }).then(view.renderPosts)
         .then(view.displayNewPosts)
         .then(view.consent.init)
         .then(view.adsManager.refreshAds)
@@ -66,13 +70,8 @@ var buttons = {
 
     "[data-tags-filter-option]": (clickedElement) => {
       return () => {
-        const tag = clickedElement.value;
-        const tagIndex = selectedTags.indexOf(tag);
-        if (tagIndex === -1) {
-          selectedTags.push(tag);
-        } else {
-          selectedTags.splice(tagIndex, 1);
-        }
+        const tag = clickedElement.value,
+          selectedTags = viewmodel.updateSelectedTags(tag);
 
         return viewmodel.loadPosts({
           notDeleted: true,
@@ -158,6 +157,9 @@ var buttons = {
 };
 
 function loadSort(sortBy) {
+  // fetch the data only if the sort order has changed
+  if(!isOrderChanged(sortBy)) return;
+
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
   switch (sortBy) {
@@ -175,8 +177,11 @@ function loadSort(sortBy) {
     window.playersState = {};
   }
 
-  return viewmodel.loadPosts({sort: sortBy, notDeleted: true})
-    .then(view.renderTimeline)
+  return viewmodel.loadPosts({
+    sort: sortBy,
+    notDeleted: true,
+    tags: viewmodel.getSelectedTags()
+  }).then(view.renderTimeline)
     .then(view.displayNewPosts)
     .then(view.toggleSortBtn(sortBy))
     .then(view.consent.init)

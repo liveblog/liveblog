@@ -16,7 +16,7 @@ var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
 var latestUpdate;
-
+var selectedTags = [];
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -36,7 +36,7 @@ if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
  */
 function getEmptyVm(items) {
   return {
-    _items: new Array(items) || 0,
+    _items: new Array(items || 0),
     currentPage: 1,
     totalPosts: 0
   };
@@ -160,29 +160,52 @@ vm.loadPosts = function(opts) {
 };
 
 /**
+ * Add/Remove tags from drodown
+ * @param {object} tag - The tag to add/remove
+ * @returns {array} The tags checked in the dropdown
+ */
+vm.updateSelectedTags = function(tag) {
+  const tagIndex = selectedTags.indexOf(tag);
+  if (tagIndex === -1) {
+    selectedTags.push(tag);
+  } else {
+    selectedTags.splice(tagIndex, 1);
+  }
+  return selectedTags;
+}
+
+/**
  * Add items in api response & latest update timestamp to viewmodel.
  * @param {object} api_response - liveblog API response JSON.
  */
 vm.updateViewModel = function(api_response) {
   var self = this;
 
-  if (!api_response.requestOpts.fromDate) { // Means we're not polling
-    view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
-  } else { // Means we're polling for new posts
+  if (api_response.requestOpts.fromDate) { // Means we're polling for new posts
     if (!api_response._items.length) {
       return;
     }
-
     latestUpdate = self.getLatestUpdate(api_response);
   }
 
-  if (api_response.requestOpts.sort && api_response.requestOpts.sort !== settings.postOrder) {
+  if (api_response.requestOpts.tags
+    && api_response.requestOpts.tags.length
+    && !api_response.requestOpts.sort
+  ) { // tag selected/removed
     self.vm = getEmptyVm();
-    view.hideLoadMore(self.isTimelineEnd(api_response));
-    Object.assign(self.vm, api_response);
-  } else {
     self.vm._items.push.apply(self.vm._items, api_response._items);
+    view.hideLoadMore(self.isTimelineEnd(api_response));
+    return api_response;
+  }  
+
+  if (api_response.requestOpts.sort
+    && api_response.requestOpts.sort !== settings.postOrder
+  ) { // empty the vm if order is changed
+    self.vm = getEmptyVm();
   }
+
+  self.vm._items.push.apply(self.vm._items, api_response._items);
+  view.hideLoadMore(self.isTimelineEnd(api_response));
 
   if (api_response.requestOpts.sort) {
     settings.postOrder = api_response.requestOpts.sort;
@@ -204,16 +227,21 @@ vm.getLatestUpdate = function(api_response) {
 };
 
 /**
+ * Getter for selectedTags
+ * @returns {array} - Tags checked in tags-filter dropdown
+ */
+vm.getSelectedTags = function() {
+  return selectedTags;
+}
+
+/**
  * Check if we reached the end of the timeline.
  * @param {object} api_response - liveblog API response JSON.
  * @returns {bool}
  */
 vm.isTimelineEnd = function(api_response) {
-  var itemsInView = this.vm._items.length + settings.postsPerPage;
-  // number of post loaded on top as updates
-  var extraPosts = itemsInView % settings.postsPerPage;
-
-  return api_response._meta.total <= itemsInView - extraPosts;
+  var itemsInView = this.vm._items.length;
+  return api_response._meta.total <= itemsInView;
 };
 
 /**
@@ -225,8 +253,10 @@ vm.init = function() {
   this.vm.timeInitialized = new Date().toISOString();
 
   setInterval(() => {
-    vm.loadPosts({fromDate: latestUpdate})
-      .then(view.renderPosts)
+    vm.loadPosts({
+      fromDate: latestUpdate,
+      tags: selectedTags
+    }).then(view.renderPosts)
       .then((resp) => {
         if (resp && resp._items.length > 0) {
           view.adsManager.refreshAds();
