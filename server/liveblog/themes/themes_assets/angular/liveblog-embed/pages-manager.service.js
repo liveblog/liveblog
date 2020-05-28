@@ -1,10 +1,10 @@
 (function(angular) {
     'use strict';
 
-    PagesManagerFactory.$inject = ['posts', '$q', 'config', '$timeout'];
-    function PagesManagerFactory(postsService, $q, config, $timeout) {
+    PagesManagerFactory.$inject = ['posts', '$q', 'config', '$timeout', '$rootScope'];
+    function PagesManagerFactory(postsService, $q, config, $timeout, $rootScope) {
 
-        function PagesManager (max_results, sort, sticky) {
+        function PagesManager(max_results, sort, sticky) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -49,6 +49,7 @@
              */
             function retrievePage(page, opts) {
                 opts = opts || {};
+                opts.tags = opts.tags || $rootScope.tags;
                 var query = self.highlight?
                 {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {lb_highlight: true}}, {not: {term: {deleted: true}}}]}}}:
                 {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
@@ -70,8 +71,7 @@
                             "tags": tags
                         }
                     }
-                }
-                else if (opts.tags && opts.tags.length !== 0) {
+                } else if (opts.tags && opts.tags.length !== 0) {
                     posts_criteria.source.post_filter.terms = {
                         "tags": opts.tags
                     }
@@ -96,10 +96,10 @@
             }
 
             function filterPosts(tags) {
-                    self.pages = [];
-                    resetPageCounter();
-                    return fetchNewPage({tags: tags});
-                }
+                self.pages = [];
+                resetPageCounter();
+                return fetchNewPage({tags: tags});
+            }
 
             /**
              * Change the order in the future posts request, remove exising post and load a new page
