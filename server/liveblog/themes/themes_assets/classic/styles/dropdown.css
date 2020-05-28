@@ -65,7 +65,7 @@ lb-dropdown > div > div.dropdown-list > div {
   overflow-y: scroll;
 }
 lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar {
-  width: 5px;
+  width: 0px;
 }
 lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar-thumb {
   color: #56c491;

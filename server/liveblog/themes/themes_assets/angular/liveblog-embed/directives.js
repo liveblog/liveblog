@@ -182,6 +182,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                                 scope.selectedTags.splice(tagIndex, 1);
                             }
                             scope.tags({tags: scope.selectedTags});
+                            $rootScope.tags = scope.selectedTags;
                             scope.listVisible = true;
                         }
                             
