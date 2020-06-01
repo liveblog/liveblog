@@ -146,7 +146,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                                 scope.removePost(post);
                             } else {
                                 notify.pop();
-                                notify.error(gettext('Post cannot be deleted: The users are editing this post.'));
+                                notify.error(gettext('Post cannot be deleted: Someone is editing this post'));
                             }
                         });
                 },
