@@ -133,22 +133,22 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     return post.items.some((x) => x.item.item_type === 'video');
                 },
                 askRemovePost: function(post) {
-                    if (!post.edit_flag) {
-                        let msg = gettext('Are you sure you want to delete the post?');
+                    let msg = gettext('Are you sure you want to delete the post?');
 
-                        if (scope.isYoutubeAttached(post)) {
-                            msg += '<br/>This will NOT remove the video from YouTube\'s account.';
-                        }
-
-                        scope.clearReorder();
-                        modal.confirm(msg)
-                            .then(() => {
-                                scope.removePost(post);
-                            });
-                    } else {
-                        notify.pop();
-                        notify.info(gettext('Post cannot be deleted: The users are editing this post.'));
+                    if (scope.isYoutubeAttached(post)) {
+                        msg += '<br/>This will NOT remove the video from YouTube\'s account.';
                     }
+
+                    scope.clearReorder();
+                    modal.confirm(msg)
+                        .then(() => {
+                            if (!post.edit_flag) {
+                                scope.removePost(post);
+                            } else {
+                                notify.pop();
+                                notify.info(gettext('Post cannot be deleted: The users are editing this post.'));
+                            }
+                        });
                 },
                 unpublishPost: function(post) {
                     scope.clearReorder();
