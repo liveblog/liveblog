@@ -1,0 +1,342 @@
+<form ng-if="!loading" name="userForm" data-test-id="user-details-form">
+    <div>
+        <div class="action-bar clearfix" ng-class="{show:dirty}">
+            <button id="save-edit-btn" type="submit" class="btn btn--primary pull-right" ng-click="userForm.$valid && save()" ng-disabled="userForm.$invalid || !dirty" translate data-test-id="save">Save</button>
+            <button id="cancel-edit-btn" type="button" class="btn pull-right" ng-click="cancel()" ng-disabled="!dirty" translate data-test-id="cancel">Cancel</button>
+        </div>
+
+        <div class="profile-info editmode">
+            <div class="header-info">
+                <div class="profile-pic">
+                    <sd-user-avatar data-user="userImmutable" data-size="'large'"></sd-user-avatar>
+                    <span class="disabled-label" ng-if="user._id && !user.is_enabled" translate>disabled</span>
+                    <span class="disabled-label" ng-if="user._id && user.is_enabled && !user.is_active" translate>inactive</span>
+                </div>
+                <div style="text-align: center; margin-top: 5px;">
+                    <button
+                        ng-if="canChangeAvatar"
+                        class="btn btn--small btn--default"
+                        ng-click="editPicture()"
+                        translate
+                    >
+                        change avatar
+                    </button>
+                </div>
+                <h2>{{ user.display_name}}</h2>
+                <h5>{{ user.username}}</h5>
+                <div class="active"
+                    ng-show="user.is_enabled"
+                    ng-if="!profile && user._id && !dirty"
+                    sd-tooltip="{{ _active ? 'Deactivate user' : 'Activate user' | translate }}"
+                    flow="left">
+                    <span sd-switch ng-model="user.is_active" ng-click="toggleStatus(user.is_active)"></span>
+                </div>
+
+                <ul class="nav-tabs">
+                    <li ng-class="{'nav-tabs__tab--active': !tab || tab === 'general'}" class="nav-tabs__tab">
+                        <button ng-click="tab = 'general'" class="nav-tabs__link">{{ 'General info' | translate}}</button>
+                    </li>
+                    <li ng-class="{'nav-tabs__tab--active': tab === 'author'}" class="nav-tabs__tab" ng-show="user.is_author">
+                        <button ng-click="tab = 'author'" class="nav-tabs__link">{{ 'Author info' | translate }}</button>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- General Tab content -->
+            <div class="details-info" ng-show="!tab || tab === 'general'">
+                <div sd-info-item class="user_type form__row" ng-if="privileges.users && isNetworkSubscription()" style="margin-bottom: 20px;">
+                    <sd-check ng-true-value="administrator" ng-false-value="user" ng-model="user.user_type" name="user_type" id="user_type">{{ :: 'Administrator'|translate }}</sd-check>
+                    <sd-check ng-model="user.is_author" name="user_author" id="user_author">{{ :: 'Author'|translate }}</sd-check>
+                </div>
+
+                <div class="form__row field__full_name" sd-info-item ng-show="user._id">
+                    <div class="sd-line-input sd-line-input--disabled">
+                        <label class="sd-line-input__label" for="display-name" translate>full name</label>
+                        <input class="sd-line-input__input" type="text" name="fullName" id="display-name" ng-model="user.display_name" disabled>
+                    </div>
+                </div>
+
+                <div class="form__row field__member_since" sd-info-item ng-show="user._id">
+                    <label class="form-label" for="created" translate>member since</label>
+                    <span id="created" class="info-value date-time" sd-reldate datetime="user._created"></span>
+                </div>
+
+                <div class="form__row field__first_name" sd-info-item>
+                    <div class="sd-line-input sd-line-input--required">
+                        <label class="sd-line-input__label" for="first-name" translate>first name</label>
+                        <input class="sd-line-input__input" type="text" name="first_name" id="first-name" ng-model="user.first_name" required ng-readonly="user._readonly && user._readonly.first_name" data-test-id="field--first_name">
+                        <div ng-show="userForm.first_name.$error.required" class="sd-line-input__message" translate>This field is required.</div>
+                    </div>
+                </div>
+
+                <div class="form__row field__last_name" sd-info-item>
+                    <div class="sd-line-input sd-line-input--required">
+                        <label class="sd-line-input__label" for="last-name" translate>last name</label>
+                        <input class="sd-line-input__input" type="text" name="last_name" id="last-name" ng-model="user.last_name" required ng-readonly="user._readonly && user._readonly.last_name" data-test-id="field--last_name">
+                        <div class="sd-line-input__message" ng-show="userForm.last_name.$error.required" translate>This field is required.</div>
+                    </div>
+                </div>
+
+                <div class="form__row field__username" sd-info-item>
+                    <div class="sd-line-input sd-line-input--required">
+                        <label class="sd-line-input__label" for="username" translate>username</label>
+                        <input class="sd-line-input__input" type="text" name="username" id="username"
+                            ng-model="user.username"
+                            ng-model-options="{
+                                updateOn: 'default blur',
+                                        debounce: {'default': 500, 'blur': 0} }"
+                            ng-readonly="user._id"
+                            ng-pattern="usernamePattern"
+                            sd-user-unique data-unique-field="username" data-exclude="user"
+                            required
+                            data-test-id="field--username">
+                        <div class="sd-line-input__message" ng-show="userForm.username.$error.required" translate>This field is required.</div>
+                        <div class="sd-line-input__message" ng-show="userForm.username.$error.unique || error.username.conflict" sd-valid-error translate>sorry, this username is already taken.</div>
+                        <div class="sd-line-input__message" ng-show="userForm.username.$error.pattern" sd-valid-info>
+                            <i class="icon-info-sign-warning"></i>
+                            <span translate>please use only letters (a-z), numbers (0-9), dashes (&mdash;), underscores (_), apostrophes (') and periods (.)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="password form__row form__row--flex" ng-if="features.reset_user_password && user._id && !profile && user.is_enabled && _active" id="password-reset-trigger" style="margin-bottom:2rem;">
+                    <div class="form__row-item">
+                        <label class="form-label" translate>password</label>
+                    </div>
+                    <div class="form__row-item" style="text-align:right;">
+                        <span class="change-btn btn btn--hollow btn--primary btn--small" ng-click="show.reset_password = !show.reset_password" ng-show="!show.reset_password">reset password</span>
+                    </div>
+                </div>
+
+                <div sd-info-item class="password form__row form__row--flex" ng-if="features.reset_user_password && user._id && profile" id="password-change-trigger" style="margin-bottom:2rem;">
+                    <div class="form__row-item">
+                        <label class="form-label" translate>password</label>
+                    </div>
+                    <div class="form__row-item" style="text-align:right;">
+                        <span class="change-btn btn btn--hollow btn--primary btn--small" ng-click="show.change_password = !show.change_password" ng-show="!show.change_password">change password</span>
+                    </div>
+                </div>
+
+                <div class="form__row field__email" sd-info-item>
+                    <div class="sd-line-input sd-line-input--required">
+                        <label class="sd-line-input__label" for="email" translate>email</label>
+                        <input class="sd-line-input__input" type="email" name="email" id="email"
+                            ng-model="user.email"
+                            sd-user-unique data-unique-field="email" data-exclude="user"
+                            ng-readonly="user._readonly && user._readonly.email"
+                            required
+                            data-test-id="field--email">
+                        <div class="sd-line-input__message" ng-show="userForm.email.$error.required" translate>This field is required.</div>
+                        <div class="sd-line-input__message" ng-show="userForm.email.$error.email" sd-valid-info>
+                            <i class="icon-info-sign-warning"></i>
+                            <span translate>please provide a valid email address</span>
+                        </div>
+                        <div class="sd-line-input__message" ng-show="error.email" sd-valid-info>
+                            <i class="icon-info-sign-warning"></i>
+                            <span translate>{{error.email}}</span>
+                        </div>
+                        <div class="sd-line-input__message" ng-show="userForm.email.$error.unique || error.email.unique" sd-valid-error translate>sorry, a user with this email already exists</div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="user_role field__language liveblog_hidden form__row">
+                    <div class="sd-line-input sd-line-input--is-select">
+                        <label class="sd-line-input__label" for="user_language" translate>Language</label>
+                        <select class="sd-line-input__select" ng-focus="focused()" ng-model="user.language" name="user_language" id="user_language" ng-options="lang.code as lang.nativeName for lang in languages"></select>
+                        <div class="sd-line-input__hint">
+                            <a href="https://www.transifex.com/projects/p/superdesk/" target="_blank" class="sd-blue">{{ :: "Help us translate Superdesk" | translate }}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="user_role field__role form__row" ng-if="user.user_type != 'administrator'">
+                    <div class="sd-line-input sd-line-input--is-select sd-line-input--required">
+                        <label class="sd-line-input__label" for="user_role" translate>Role</label>
+                        <select class="sd-line-input__select"
+                                ng-focus="focused()"
+                                ng-disabled="!privileges.users"
+                                ng-model="user.role"
+                                name="user_role"
+                                id="user_role"
+                                required
+                                ng-options="role._id as role.name for role in roles">
+                        </select>
+                        <div class="sd-line-input__message" ng-show="userForm.user_role.$error.required" translate>This field is required.</div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="user_role field__default_desk form__row" ng-if="userDesks && userDesks.length > 0">
+                    <div class="sd-line-input sd-line-input--is-select">
+                        <label class="sd-line-input__label" for="user_default_desk" translate>Default Desk</label>
+                        <select class="sd-line-input__select" ng-model="user.desk" name="user_default_desk" id="user_default_desk" ng-options="desk._id as desk.name for desk in userDesks">
+                            <option value="" ng-click="user.desk = null" translate>No desk selected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form__row field__phone_number" sd-info-item ng-hide="profileConfig.phone === false">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="phone" translate>phone number</label>
+                        <input class="sd-line-input__input" type="text" name="phone" id="phone" ng-model="user.phone">
+                    </div>
+                </div>
+
+                <div class="form__row" sd-info-item ng-hide="profileConfig.jid === false || !xmppEnabled">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="jid" translate>Jabber Identifier (JID)</label>
+                        <input class="sd-line-input__input" type="text" name="jid" id="jid" ng-model="user.jid">
+                    </div>
+                </div>
+
+                <div class="form__row" sd-info-item ng-hide="!$root.config.features.slackNotifications">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="slack_username">Slack Username</label>
+                        <input class="sd-line-input__input" type="text" name="slack_username" id="slack_username" ng-model="user.slack_username">
+                        <span class="sd-line-input__hint" translate>Your Slack user name without the leading @</span>
+                    </div>
+                </div>
+
+            </div><!-- END General Tab content -->
+
+
+            <!-- Author Tab content -->
+            <div class="details-info" ng-show="tab === 'author'">
+
+                <div class="form__row" sd-info-item ng-if="!hideSignOff">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="sign_off" translate>Sign-Off</label>
+                        <input class="sd-line-input__input" type="text" name="sign_off" id="sign_off" ng-model="user.sign_off" ng-pattern="signOffPattern">
+                        <div class="sd-line-input__message" ng-show="userForm.sign_off.$error.pattern || error.sign_off" sd-valid-info>
+                            <i class="icon-info-sign-warning"></i>
+                            <span translate>Invalid format. Only Alphanumerics are allowed.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form__row" sd-info-item>
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="byline" translate>Byline</label>
+                        <input class="sd-line-input__input" type="text" name="byline" id="byline" ng-model="user.byline">
+                    </div>
+                </div>
+
+                <div sd-info-item class="form__row" ng-if="privileges.users">
+                    <div class="sd-line-input" ng-disabled="!user.is_author">
+                        <label class="sd-line-input__label" for="job_title" translate>Job Title</label>
+                        <select class="sd-line-input__select" ng-focus="focused()" ng-model="user.job_title" name="job_title" id="job_title" ng-options="job.qcode as job.name for job in metadata.job_titles" ng-disabled="!user.is_author"></select>
+                    </div>
+                </div>
+
+                <div sd-info-item class="form__row" ng-if="privileges.users">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="biography">{{ :: 'Biography'|translate }}</label>
+                        <textarea class="sd-line-input__input" id="biography" sd-auto-height ng-model="user.biography" ng-disabled="!user.is_author"></textarea>
+                    </div>
+                </div>
+
+                <div sd-info-item class="form__row" ng-if="privileges.users">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="facebook">{{ :: 'Facebook'|translate }}</label>
+                        <input id="facebook"
+                            type="text"
+                            name="facebook"
+                            class="sd-line-input__input"
+                            ng-model="user.facebook"
+                            ng-disabled="!user.is_author">
+                        <div class="sd-line-input__hint">{{ :: 'e.g. superdeskman from https://www.facebook.com/superdeskman'|translate }}</div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="form__row" ng-if="privileges.users">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="instagram">{{ :: 'Instagram'|translate }}</label>
+                        <input id="instagram"
+                            type="text"
+                            name="instagram"
+                            class="sd-line-input__input"
+                            ng-model="user.instagram"
+                            ng-disabled="!user.is_author">
+                        <div class="sd-line-input__hint">{{ :: 'e.g. superdeskman from https://www.instagram.com/superdeskman'|translate }}</div>
+                    </div>
+                </div>
+
+                <div sd-info-item class="form__row" ng-if="privileges.users">
+                    <div class="sd-line-input">
+                        <label class="sd-line-input__label" for="twitter">{{ :: 'Twitter'|translate }}</label>
+                        <input id="twitter"
+                            type="text"
+                            name="twitter"
+                            class="sd-line-input__input"
+                            ng-model="user.twitter"
+                            ng-disabled="!user.is_author"
+                            ng-pattern="twitterPattern">
+                        <div class="sd-line-input__hint">{{ :: 'e.g. @superdeskman'|translate }}</div>
+                        <div class="sd-line-input__message--add-padding" ng-show="userForm.twitter.$error.pattern" sd-valid-info>
+                            <i class="icon-info-sign-warning"></i>
+                            <span translate>Please provide a valid twitter account</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- END Author Tab content -->
+        </div>
+    </div>
+</form>
+
+<div sd-modal data-model="features.reset_user_password && show.reset_password && user._id" class="modal--tabs">
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="show.reset_password = false"><i class="icon-close-small"></i></button>
+        <h3 class="modal__heading">Reset password</h3>
+    </div>
+    <div class="modal__body" sd-reset-password>
+        <div class="modal__body-content">
+            <p translate>Do you want to reset the password for user {{user.full_name}} ?</p>
+        </div>
+        <div class="modal__body-footer">
+            <button class="btn" ng-click="show.reset_password = false">Cancel</button>
+            <button class="btn btn--primary" ng-click="resetPassword()">Reset password</button>
+        </div>
+    </div>
+</div>
+
+<div sd-modal data-model="features.reset_user_password && show.change_password && user._id" class="modal--tabs">
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="show.change_password = false"><i class="icon-close-small"></i></button>
+        <h3 class="modal__heading">Change password</h3>
+    </div>
+    <div class="modal__body" sd-change-password>
+        <div class="modal__body-content">
+            <form name="changePasswordForm">
+                <div class="content">
+                    <div class="field">
+                        <label translate>current</label>
+                        <input name="old" type="password" ng-model="oldPwd" required>
+                        <p sd-valid-error ng-show="oldPasswordInvalid">sorry, but this is not the original password.</p>
+                    </div>
+
+                    <div class="field">
+                        <label translate>new</label>
+                        <input sd-password-strength name="new" type="password" ng-model="newPwd" required>
+                    </div>
+
+                    <div class="field">
+                        <label translate>confirm</label>
+                        <input name="confirm" type="password" ng-model="_confirm" required
+                                sd-password-confirm ng-model="_confirm" data-password="newPwd">
+                        <p sd-valid-error ng-show="changePasswordForm.confirm.$error.confirm">confirm doesn't match new password yet.</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal__body-footer">
+            <button class="btn" ng-click="show.change_password = false" translate>Cancel</button>
+            <button class="btn btn--primary"
+                    ng-click="changePasswordForm.$valid && changePassword(oldPwd, newPwd)"
+                    ng-disabled="changePasswordForm.$invalid"
+                    translate>
+                Save password
+            </button>
+        </div>
+    </div>
+</div>
