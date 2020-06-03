@@ -160,7 +160,7 @@ export default function videoBlock(SirTrevor, config) {
                     privacyStatus: lbSettings.youtube_privacy_status || 'unlisted',
                 },
             };
-
+            let addContentBtns = new AddContentBtns();
             let uploader = new MediaUploader({
                 baseUrl: 'https://www.googleapis.com/upload/youtube/v3/videos',
                 file: file,
@@ -176,6 +176,7 @@ export default function videoBlock(SirTrevor, config) {
                     } finally {
                         alert(message // eslint-disable-line
                             + '\nThe direct video upload requires a connection to Youtube');
+                        addContentBtns.show();
                     }
                 },
                 onProgress: function(data) {
@@ -206,6 +207,8 @@ export default function videoBlock(SirTrevor, config) {
                     $('.upload-status').text('Video uploaded successfully');
                     $('.during-upload').hide();
                     $('[data-icon="close"]').show();
+
+                    addContentBtns.show();
 
                     let ytParams = $.param({enablejsapi: 1, modestbranding: 1, rel: 0});
                     let uploadResponse = JSON.parse(data);
