@@ -176,6 +176,8 @@ export default function videoBlock(SirTrevor, config) {
                     } finally {
                         alert(message // eslint-disable-line
                             + '\nThe direct video upload requires a connection to Youtube');
+                        self.ready();
+                        $('[data-icon="close"]').show();
                     }
                 },
                 onProgress: function(data) {
@@ -330,6 +332,11 @@ export default function videoBlock(SirTrevor, config) {
 
         retrieveData: function() {
             const data = this.getData();
+
+            if (data.html === undefined) {
+                return {};
+            }
+
             const originalID = getYoutubeID(data.html);
 
             return {
