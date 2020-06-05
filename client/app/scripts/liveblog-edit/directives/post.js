@@ -142,7 +142,12 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     scope.clearReorder();
                     modal.confirm(msg)
                         .then(() => {
-                            scope.removePost(post);
+                            if (!post.edit_flag) {
+                                scope.removePost(post);
+                            } else {
+                                notify.pop();
+                                notify.error(gettext('Post cannot be deleted: Someone is editing this post'));
+                            }
                         });
                 },
                 unpublishPost: function(post) {
