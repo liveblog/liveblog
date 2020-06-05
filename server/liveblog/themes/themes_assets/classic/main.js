@@ -139,7 +139,27 @@
         }
 
         applyOutputStyle();
+        
 
+        var dropdown_tags = [];
+        if (window.LB.settings.showTagsDropdown) {
+            var tags = [];
+            // let's get the output channel tags if any
+            if (window.LB.output) {
+                tags = window.LB.output.tags;
+                // only show dropdown if we have more than one tags in output channel restricted by tags
+                if (tags.length > 1) {
+                    dropdown_tags = tags;
+                }
+            }
+
+            // if this is not an output channel or the output channel is not restricted by tags
+            if (dropdown_tags.length === 0 && tags.length !== 1) {
+                // fetch global_tags to display in tags filter dropdown
+                dropdown_tags = window.LB.global_tags;
+            }
+        }
+        
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
@@ -161,6 +181,9 @@
                 name: gettext('Oldest first'),
                 order: 'oldest_first'
             }],
+            tagsFilterOptions: dropdown_tags ? dropdown_tags.map(function(tag) {
+                return { name: tag };
+            }) : [],
             orderBy: function(order_by) {
                 //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
                 if(window.location.hash) {
@@ -169,6 +192,18 @@
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
+                    vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
+                });
+            },
+            filterBy: function(filter_by) {
+                //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
+                if(window.location.hash) {
+                    window.location.hash = window.location.hash.replace(/&gid=[^&]+/g,'').replace(/&pid=[^&]+/g, '');
+                }
+                vm.loading = true;
+                vm.finished = false;
+                vm.pagesManager.filterPosts(filter_by).then(function(data) {
                     vm.loading = false;
                     vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });

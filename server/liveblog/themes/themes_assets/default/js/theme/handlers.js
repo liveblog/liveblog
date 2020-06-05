@@ -42,11 +42,17 @@ var showPendings = (e) => {
   view.attachSlideshow();
 };
 
+var isOrderChanged = (order) => {
+  const currentOrder = window.LB.settings.postOrder;
+  return order !== currentOrder;
+}
+
 var buttons = {
   handlers: {
     "[data-load-more]": () => {
-      viewmodel.loadPostsPage()
-        .then(view.renderPosts)
+      viewmodel.loadPostsPage({
+        'tags': viewmodel.getSelectedTags()
+      }).then(view.renderPosts)
         .then(view.displayNewPosts)
         .then(view.consent.init)
         .then(view.adsManager.refreshAds)
@@ -56,6 +62,24 @@ var buttons = {
 
     "[data-js-sort_dropdown_button]": () => {
       view.toggleSortDropdown();
+    },
+
+    "[data-js-tags_filter_dropdown_button]": () => {
+      view.toggleTagsFilterDropdown();
+    },
+
+    "[data-tags-filter-option]": (clickedElement) => {
+      return () => {
+        const tag = clickedElement.value,
+          selectedTags = viewmodel.updateSelectedTags(tag);
+
+        return viewmodel.loadPosts({
+          notDeleted: true,
+          tags: selectedTags
+        }).then(view.renderTimeline)
+          .then(view.displayNewPosts)
+          .catch(catchError);
+      };
     },
 
     "[data-js-orderby_ascending]": () => {
@@ -102,8 +126,16 @@ var buttons = {
 
   attach: function() {
     Object.keys(buttons.handlers).forEach((handler) => {
-      let el = helpers.getElems(handler)[0];
+      const elems = helpers.getElems(handler);
 
+      if (handler === "[data-tags-filter-option]") {
+        elems.forEach((el) => {
+          el.addEventListener('click', buttons.handlers[handler](el), false);
+        })
+        return;
+      }
+
+      const el = elems[0]
       if (!el) {
         return false;
       }
@@ -114,6 +146,7 @@ var buttons = {
     view.attachSlideshow();
     view.attachPermalink();
     view.attachShareBox();
+    view.attachDropdownCloseEvent();
     if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);
@@ -124,6 +157,9 @@ var buttons = {
 };
 
 function loadSort(sortBy) {
+  // fetch the data only if the sort order has changed
+  if(!isOrderChanged(sortBy)) return;
+
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
   switch (sortBy) {
@@ -141,8 +177,11 @@ function loadSort(sortBy) {
     window.playersState = {};
   }
 
-  return viewmodel.loadPosts({sort: sortBy, notDeleted: true})
-    .then(view.renderTimeline)
+  return viewmodel.loadPosts({
+    sort: sortBy,
+    notDeleted: true,
+    tags: viewmodel.getSelectedTags()
+  }).then(view.renderTimeline)
     .then(view.displayNewPosts)
     .then(view.toggleSortBtn(sortBy))
     .then(view.consent.init)

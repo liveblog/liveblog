@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.4.0",
+    "version": "3.4.7",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -164,6 +164,13 @@
                 "showAuthor": true
             },
             "help": "Show the author avatar on posts"
+        },
+        {
+            "name": "showTagsDropdown",
+            "label": "Allow users filter content in embed",
+            "type": "checkbox",
+            "default": true,
+            "help": "This will show or hide a dropdown to filter content by tags"
         },
         {
             "name": "authorNameFormat",

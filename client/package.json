@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.8.0",
+  "version": "3.8.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -10,7 +10,7 @@
     "eslint": "grunt eslint",
     "tslint": "tsc --noEmit && tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
-    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 80.0.3987.106 --versions.standalone 3.9.1",
+    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION --versions.standalone 3.9.1",
     "e2e": "./node_modules/.bin/protractor protractor-conf.js"
   },
   "licenses": [
@@ -102,7 +102,7 @@
     "eslint-loader": "^2.1.2",
     "eventable": "madebymany/eventable",
     "gridster": "0.5.6",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "jquery-jcrop": "0.9.13",
     "jquery-ui": "components/jqueryui#1.11.4",
     "jquery.gridster": "dustmoo/gridster.js#c306335397816beceb74e4a176067baef34a0359",

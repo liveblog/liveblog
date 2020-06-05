@@ -35,7 +35,8 @@ module.exports = function makeConfig(grunt) {
 
     return {
         entry: {
-            app: 'app/scripts/index.js'
+            app: 'app/scripts/index.js',
+            embedScript: 'app/scripts/liveblog-embed-script/embed.ts'
         },
 
         output: {
@@ -232,6 +233,7 @@ const configApp = (grunt) => ({
     isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
 
     debug: grunt.option('debug-mode') || false,
+    embed_protocol: process.env.EMBED_PROTOCOL || "https://",
     embedly: {
         key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
     },
@@ -279,9 +281,12 @@ const configApp = (grunt) => ({
         content: false,
         tasks: false,
         analytics: false
+    },
+
+    client: {
+        url: process.env.SUPERDESK_CLIENT_URL || 'http://localhost:9000'
     }
-}
-);
+});
 
 const configLiveblog = (grunt) => ({
     // route to be redirected to from '/'

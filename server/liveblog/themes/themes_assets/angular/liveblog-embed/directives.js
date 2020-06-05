@@ -1,5 +1,3 @@
-var CONSENT_KEY = '__lb_consent_key__';
-var CONSENT_LIFE_DAYS = 365;
 var CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
 
 var domainRequiresConsent = function(providerUrl, embedContent) {
@@ -81,8 +79,8 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
             };
         }])
         .directive('lbGdprEmbedConsent', [
-            'config', 'asset', 'Storage', '$timeout',
-            function(config, asset, Storage, $timeout) {
+            'config', 'asset', '$timeout', 'ConsentManager',
+            function(config, asset, $timeout, ConsentManager) {
                 return {
                     template: '<ng-include src="getTemplateUrl()" />',
                     scope: {
@@ -97,14 +95,11 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                             acceptButton.on('click', function(ev) {
                                 ev.preventDefault();
 
-                                Storage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
+                                ConsentManager.acceptConsent();
                             });
                         }, 50);
                     },
                     controller: ['$scope', function($scope) {
-                        var consentIsGiven = function() {
-                            return Storage.read(CONSENT_KEY) === 'Y';
-                        };
 
                         // used on the ng-include to resolve the template
                         $scope.getTemplateUrl = function() {
@@ -118,7 +113,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                                 if (item.meta.provider_name === "YoutubeUpload")
                                     providerUrl = "https://www.youtube.com";
 
-                                if (!consentIsGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
+                                if (!ConsentManager.isConsentGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
                                     return asset.templateUrl("views/embeds/consent-placeholder.html");
                                 }
                             }
@@ -164,11 +159,14 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                         placeholder: "@",
                         list: "=",
                         selected: "&",
-                        order: "&"
+                        order: "&",
+                        tags: "&",
+                        type: "@"
                     },
                     link: function(scope) {
                         scope.listVisible = false;
                         scope.isPlaceholder = true;
+                        scope.selectedTags = [];
 
                         scope.select = function(item) {
                             scope.isPlaceholder = false;
@@ -176,8 +174,24 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                             scope.listVisible = false;
                         };
 
+                        scope.check = function(item) {
+                            const tagIndex = scope.selectedTags.indexOf(item.name);
+                            if (tagIndex === -1) {
+                                scope.selectedTags.push(item.name);
+                            } else {
+                                scope.selectedTags.splice(tagIndex, 1);
+                            }
+                            scope.tags({tags: scope.selectedTags});
+                            $rootScope.tags = scope.selectedTags;
+                            scope.listVisible = true;
+                        }
+                            
                         scope.isSelected = function(item) {
                             return item.order === scope.selected();
+                        };
+
+                        scope.isChecked = function(item) {
+                            return scope.selectedTags.indexOf(item.name) !== -1;
                         };
 
                         scope.show = function() {
@@ -185,7 +199,7 @@ var domainRequiresConsent = function(providerUrl, embedContent) {
                         };
 
                         $rootScope.$on("documentClicked", function(inner, target) {
-                            if ($(target[0]).parents(".dropdown-display").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
+                            if($(target[0]).parents(".dropdown-container").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
                                 scope.$apply(function() {
                                     scope.listVisible = false;
                                 });

@@ -68,6 +68,7 @@ interface IThemeSettings extends IDict {
     showRelativeDate: boolean;
     showSharingButtons: boolean;
     showSyndicatedAuthor: boolean;
+    showTagsDropdown: boolean;
     showTitle: boolean;
     showUpdateDatetime: boolean;
     stickyPosition: string;

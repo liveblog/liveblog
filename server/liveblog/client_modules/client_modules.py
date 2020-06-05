@@ -333,9 +333,14 @@ class ClientOutputPostsService(ClientBlogPostsService):
         new_args = req.args.copy()
         query_source = json.loads(new_args.get('source', '{}'))
 
+        query_tags = query_source.get('post_filter', {}).get('terms', {}).get('tags', [])
         tags = output.get('tags', [])
+
         if len(tags) > 0:
-            query_source['post_filter'] = {'terms': {'tags': tags}}
+            if len(query_tags) == 0:
+                query_source['post_filter'] = {'terms': {'tags': tags}}
+            elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
+                return 'some tags in the query are restricted', 400
 
         new_args['source'] = json.dumps(query_source)
         req.args = new_args
@@ -392,22 +397,22 @@ def create_amp_comment():
     item_data = dict()
     item_data['text'] = data['text']
     item_data['commenter'] = data['commenter']
-    item_data['client_blog'] = data['client_blog']
-    item_data['item_type'] = "comment"
+    item_data['blog'] = item_data['client_blog'] = data['client_blog']
+    item_data['item_type'] = 'comment'
     items = get_resource_service('client_items')
     item_id = items.post([item_data])[0]
 
     comment_data = dict()
-    comment_data["post_status"] = "comment"
-    comment_data["client_blog"] = item_data['client_blog']
-    comment_data["groups"] = [{
-        "id": "root",
-        "refs": [{"idRef": "main"}],
-        "role": "grpRole:NEP"
+    comment_data['post_status'] = 'comment'
+    comment_data['blog'] = comment_data['client_blog'] = item_data['blog']
+    comment_data['groups'] = [{
+        'id': 'root',
+        'refs': [{'idRef': 'main'}],
+        'role': 'grpRole:NEP'
     }, {
-        "id": "main",
-        "refs": [{"residRef": item_id}],
-        "role": "grpRole:Main"}
+        'id': 'main',
+        'refs': [{'residRef': item_id}],
+        'role': 'grpRole:Main'}
     ]
 
     post_comments = get_resource_service('client_posts')

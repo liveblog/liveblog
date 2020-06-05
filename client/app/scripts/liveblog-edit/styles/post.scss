@@ -162,15 +162,20 @@
         position: relative;
         padding: 10px 0px 10px 0px;
         margin-right: 0px;
+        
         &--even {
             border-top: 1px solid #ebebeb;
         }
         img {max-width: 100%;}
         iframe {max-width: 100%;}
-        ul {list-style-type: disc;}
+        ul {
+            list-style-type: disc;
+            list-style-position: inside;
+        }
         ol {
             list-style-type: decimal;
-            padding: 0
+            padding: 0;
+            list-style-position: inside;
         }
         blockquote {
             margin-left: 35px;

@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.0",
+    "version": "3.6.2",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-9dfe3a67e9.css"],
-    "devScripts": ["dist/default-96ee44392a.js"],
-    "styles": ["dist/default-9dfe3a67e9.css"],
-    "scripts": ["dist/default-96ee44392a.js"],
+    "devStyles": ["dist/default-5dbed6fac7.css"],
+    "devScripts": ["dist/default-a7e6386d98.js"],
+    "styles": ["dist/default-5dbed6fac7.css"],
+    "scripts": ["dist/default-a7e6386d98.js"],
     "options": [
         {
             "name": "language",
@@ -132,6 +132,13 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to hide the “powered by Live Blog” logo"
+        },
+        {
+            "name": "showTagsDropdown",
+            "label": "Allow users filter content in embed",
+            "type": "checkbox",
+            "default": true,
+            "help": "This will show or hide a dropdown to filter content by tags"
         },
         {
             "name": "date-group",

@@ -59,7 +59,18 @@ superdesk:
    - SUPERDESK_WS_URL=ws://127.0.0.1/ws
    - SUPERDESK_CLIENT_URL=http://127.0.0.1
    - SUPERDESK_TESTING=True
+   - EMBED_PROTOCOL=http://
+   - LIVEBLOG_DEBUG=True
+   - SYNDICATION=True
+   - MONGO_DBNAME=liveblog
+   - SUBSCRIPTION_LEVEL=network
+   - LIVEBLOG_CACHE_TYPE=simple
+   - BOTO_CONFIG=/doesnotexist
+   - SYNDICATION_VALIDATE_AUTH=0
+   - MAIL_SUPPRESS_SEND=False
+   - EMBEDLY_KEY
+   - OAUTHLIB_INSECURE_TRANSPORT=1
   volumes:
-   - ../results/server/unit:/opt/superdesk/results-unit/
-   - ../results/server/behave:/opt/superdesk/results-behave/
-   - ../results/client/unit:/opt/superdesk/client/unit-test-results
+   - ../results/server/unit:/opt/server/results-unit/
+   - ../results/server/behave:/opt/server/results-behave/
+   - ../results/client/unit:/opt/server/client/unit-test-results

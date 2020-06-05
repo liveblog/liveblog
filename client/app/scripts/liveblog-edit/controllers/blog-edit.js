@@ -117,6 +117,9 @@ export default function BlogEditController(
             $scope.showTagsSelector = true;
         });
 
+    // stop listening to previous blog
+    unreadPostsService.stopListening();
+
     // start listening for unread posts.
     unreadPostsService.startListening(blog);
 
@@ -320,7 +323,7 @@ export default function BlogEditController(
 
     // retieve the blog's public url
     blogService.getPublicUrl(blog).then((url) => {
-        $scope.publicUrl = url;
+        $rootScope.publicUrl = url;
     });
 
     $scope.freetypes = [];

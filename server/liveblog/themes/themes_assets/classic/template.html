@@ -36,10 +36,16 @@
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
+                <lb-dropdown ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__order tags-bar" placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
+                    tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
             <div class="sorting-bar__orders-mobile">
                 <lb-dropdown placeholder="{{ 'Sort by:' | translate }}" list="timeline.sortOptions"
-                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)"></lb-dropdown>
+                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)" type="single_select"></lb-dropdown>
+            </div>
+            <div ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__orders-mobile">
+                <lb-dropdown placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
+                tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
         </div>
         <div class="header-bar__actions">
