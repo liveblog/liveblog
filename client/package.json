@@ -28,7 +28,7 @@
     "@types/react-select": "3.0.9",
     "@typescript-eslint/eslint-plugin-tslint": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
-    "bootstrap": "3.3.7",
+    "bootstrap": "^4.5.0",
     "btoa": "1.1.2",
     "classnames": "2.2.5",
     "css-loader": "0.28.7",
