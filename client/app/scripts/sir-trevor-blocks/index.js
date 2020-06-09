@@ -16,6 +16,7 @@ import imageBlock from './image-block';
 import videoBlock, {getYoutubeID} from './video-block';
 import handlePlaceholder from './handle-placeholder';
 import sanitizeConfig from './sanitizer-config';
+import {guessProvider} from '../liveblog-edit/embed/helpers';
 
 function createCaretPlacer(atStart) {
     return function(el) {
@@ -242,6 +243,15 @@ angular
                         embedService.get(input, coverMaxWidth).then(
                             function successCallback(data) {
                                 data.original_url = input;
+
+                                if (!data.provider_name || !data.provider_url) {
+                                    const providerData = guessProvider(data.url);
+
+                                    if (!data.provider_name) data.provider_name = providerData.name;
+
+                                    if (!data.provider_url) data.provider_url = providerData.url;
+                                }
+
                                 self.loadData(data);
                             },
                             function errorCallback(error) {

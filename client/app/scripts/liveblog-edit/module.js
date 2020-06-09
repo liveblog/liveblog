@@ -19,9 +19,9 @@ import analiticsTpl from 'scripts/liveblog-analytics/views/view-analytics.ng1';
 import BlogEditController from './controllers/blog-edit.js';
 import BlogSettingsController from './controllers/blog-settings.js';
 import './components/inactivity.modal';
-import './embed-handlers/instagram';
-import './embed-handlers/facebook';
-import './embed-handlers/pictures';
+import './embed/handlers/instagram';
+import './embed/handlers/facebook';
+import './embed/handlers/pictures';
 
 /**
  * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
