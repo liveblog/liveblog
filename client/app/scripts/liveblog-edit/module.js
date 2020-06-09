@@ -19,6 +19,9 @@ import analiticsTpl from 'scripts/liveblog-analytics/views/view-analytics.ng1';
 import BlogEditController from './controllers/blog-edit.js';
 import BlogSettingsController from './controllers/blog-settings.js';
 import './components/inactivity.modal';
+import './embed-handlers/instagram';
+import './embed-handlers/facebook';
+import './embed-handlers/pictures';
 
 /**
  * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
@@ -232,24 +235,37 @@ const app = angular.module('liveblog.edit',
         };
         return insta;
     }])
-    .config(['embedlyServiceProvider', 'embedServiceProvider', 'config',
-        function(embedlyServiceProvider, embedServiceProvider, config) {
-            embedlyServiceProvider.setKey(config.embedly.key);
-            embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
-        }])
-    .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
-        'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
-        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
-            ngEmbedYoutubeHandler, ngEmbedInstagramHandler, ngEmbedPictureHandler) {
-            // register all the special handlers we want to use for angular-embed
-            // use embed.ly and update the embed code with a max_width
-            embedService.registerHandler(ngEmbedFacebookHandler);
-            embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
-            embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
-            embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
-            // use embed.ly, and provide a `thumbnail_url` field from the `url`
-            embedService.registerHandler(ngEmbedPictureHandler);
+    .config(['embedServiceProvider', 'iframelyServiceProvider', 'config',
+        function(embedServiceProvider, iframelyServiceProvider, config) {
+            iframelyServiceProvider.setKey(config.embedly.key);
+            iframelyServiceProvider.useOembed();
+
+            // don't use noembed as first choice
+            embedServiceProvider.setConfig('useOnlyFallback', true);
+            // and let's use iframely as fallback service (if not handler found)
+            embedServiceProvider.setConfig('fallbackService', 'iframely');
+        },
+    ])
+    .run(['embedService', 'embedInstagramHandler', 'embedFacebookHandler', 'embedPictureHandler',
+        function(embedService, embedInstagramHandler, embedFacebookHandler, embedPictureHandler) {
+            embedService.registerHandler(embedInstagramHandler);
+            embedService.registerHandler(embedFacebookHandler);
+            embedService.registerHandler(embedPictureHandler);
         },
     ]);
+    // .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
+    //     'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
+    //     function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
+    //         ngEmbedYoutubeHandler, ngEmbedInstagramHandler, ngEmbedPictureHandler) {
+    //         // register all the special handlers we want to use for angular-embed
+    //         // use embed.ly and update the embed code with a max_width
+    //         embedService.registerHandler(ngEmbedFacebookHandler);
+    //         embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
+    //         embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
+    //         embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
+    //         // use embed.ly, and provide a `thumbnail_url` field from the `url`
+    //         embedService.registerHandler(ngEmbedPictureHandler);
+    //     },
+    // ]);
 
 export default app;

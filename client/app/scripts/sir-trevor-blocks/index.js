@@ -237,7 +237,9 @@ angular
                     if (isURI(input)) {
                         input = cleanupURL(input);
                         // request the embedService with the provided url
-                        self.getOptions().embedService.get(input, self.getOptions().coverMaxWidth).then(
+                        const {embedService, coverMaxWidth} = self.getOptions();
+
+                        embedService.get(input, coverMaxWidth).then(
                             function successCallback(data) {
                                 data.original_url = input;
                                 self.loadData(data);
