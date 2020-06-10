@@ -22,6 +22,7 @@ import './components/inactivity.modal';
 import './embed/handlers/instagram';
 import './embed/handlers/facebook';
 import './embed/handlers/pictures';
+import './embed/handlers/twitter';
 
 /**
  * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
@@ -246,26 +247,13 @@ const app = angular.module('liveblog.edit',
             embedServiceProvider.setConfig('fallbackService', 'iframely');
         },
     ])
-    .run(['embedService', 'embedInstagramHandler', 'embedFacebookHandler', 'embedPictureHandler',
-        function(embedService, embedInstagramHandler, embedFacebookHandler, embedPictureHandler) {
+    .run(['embedService', 'embedInstagramHandler', 'embedFacebookHandler', 'embedPictureHandler', 'embedTwitterHandler',
+        function(embedService, embedInstagramHandler, embedFacebookHandler, embedPictureHandler, embedTwitterHandler) {
             embedService.registerHandler(embedInstagramHandler);
             embedService.registerHandler(embedFacebookHandler);
             embedService.registerHandler(embedPictureHandler);
+            embedService.registerHandler(embedTwitterHandler);
         },
     ]);
-    // .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
-    //     'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
-    //     function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
-    //         ngEmbedYoutubeHandler, ngEmbedInstagramHandler, ngEmbedPictureHandler) {
-    //         // register all the special handlers we want to use for angular-embed
-    //         // use embed.ly and update the embed code with a max_width
-    //         embedService.registerHandler(ngEmbedFacebookHandler);
-    //         embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
-    //         embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
-    //         embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
-    //         // use embed.ly, and provide a `thumbnail_url` field from the `url`
-    //         embedService.registerHandler(ngEmbedPictureHandler);
-    //     },
-    // ]);
 
 export default app;
