@@ -238,7 +238,7 @@ const app = angular.module('liveblog.edit',
     }])
     .config(['embedServiceProvider', 'iframelyServiceProvider', 'config',
         function(embedServiceProvider, iframelyServiceProvider, config) {
-            iframelyServiceProvider.setKey(config.embedly.key);
+            iframelyServiceProvider.setKey(config.iframely.key);
             iframelyServiceProvider.useOembed();
 
             // don't use noembed as first choice

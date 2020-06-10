@@ -14,8 +14,8 @@ module.exports = function(grunt) {
             raven: {dsn: process.env.SUPERDESK_RAVEN_DSN || ''},
             server: {url: server, ws: ws},
             debug: grunt.option('debug-mode') || false,
-            embedly: {
-                key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+            iframely: {
+                key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
             },
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
             syndication: process.env.SYNDICATION || false,
