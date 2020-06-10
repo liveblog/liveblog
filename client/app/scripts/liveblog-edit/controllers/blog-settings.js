@@ -35,6 +35,7 @@ BlogSettingsController.$inject = [
     'moment',
     'superdesk',
     '$rootScope',
+    '$routeParams',
     'postsService',
 ];
 
@@ -54,6 +55,7 @@ function BlogSettingsController(
     moment,
     superdesk,
     $rootScope,
+    $routeParams,
     postsService
 ) {
     // set view's model
@@ -598,8 +600,7 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
 
     vm.start_date = splitDate.date;
     vm.start_time = splitDate.time;
-
-    vm.changeTab('general');
+    vm.changeTab(angular.isDefined($routeParams.tab) ? $routeParams.tab : 'general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';
     vm.syndication_enabled = vm.newBlog.syndication_enabled;
     vm.market_enabled = vm.newBlog.market_enabled;

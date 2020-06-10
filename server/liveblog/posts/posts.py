@@ -269,12 +269,17 @@ class PostsService(ArchiveService):
             blog = get_resource_service('blogs').find_one(req=None, _id=original['blog'])
             if blog['posts_order_sequence'] == updates['order']:
                 blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))
+
         # in the case we have a comment
         if original['post_status'] == 'comment':
-            original['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
-            updates['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
+            item = original['groups'][1]['refs'][0]['item']
+            blog_id_try = item.get('blog')
+            blog_id_object = ObjectId(item.get('client_blog', blog_id_try))
+            original['blog'] = updates['blog'] = blog_id_object
+
             # if the length of the comment is not between 1 and 300 then we get an error
-            check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
+            check_comment_length(item['text'])
+
         # check if updates `content` is diffrent then the original.
         content_diff = False
         if not updates.get('groups', False):
