@@ -97,5 +97,5 @@ jobs:
         /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
         export CHROME_BIN=`which google-chrome`
         $CHROME_BIN --version
-        CHROMEDRIVER_VERSION=80.0.3987.106 npm run webdriver-update
+        CHROMEDRIVER_VERSION=83.0.4103.39 npm run webdriver-update
         npm run e2e
