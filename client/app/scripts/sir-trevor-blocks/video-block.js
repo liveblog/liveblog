@@ -180,7 +180,6 @@ export default function videoBlock(SirTrevor, config) {
                         self.ready();
                         $('[data-icon="close"]').show();
                         addContentBtns.show();
-
                     }
                 },
                 onProgress: function(data) {
