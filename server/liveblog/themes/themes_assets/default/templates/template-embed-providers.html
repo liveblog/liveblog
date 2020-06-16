@@ -15,7 +15,7 @@
 
     window.fbAsyncInit = function() {
         try {
-            FB.init({ xfbml: true, version: 'v6.0' });
+            FB.init({ xfbml: true, version: 'v7.0' });
             console.log('init facebook script');
         } catch(err) {console.log('facebook script not loaded')}
     }
@@ -30,7 +30,7 @@
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
-<script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
@@ -84,11 +84,11 @@
         });
     }
 
-    // Handles embedly players
+    // Handles embedly players (legacy)
     function onPlayerJSReady () {
-        var embedlyIframes = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
+        var playerJsIFrames = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
 
-        embedlyIframes.forEach(function (iframe) {
+        playerJsIFrames.forEach(function (iframe) {
             if (iframe.getAttribute(SET_FLAG)) return;
 
             // set id to be used later

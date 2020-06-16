@@ -78,7 +78,6 @@ module.exports = function makeConfig(grunt) {
             alias: {
                 // 'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
-                'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
                 'jquery-gridster': 'gridster/dist/jquery.gridster.min',
                 'external-apps': path.join(process.cwd(), 'dist', 'app-importer.generated.js'),
                 i18n: path.join(process.cwd(), 'dist', 'locale.generated.js'),

@@ -13,6 +13,8 @@ describe('editor embed:', function() {
             .then(done);
     });
 
+    // given we cannot expose the key on travis-ci (because it won't in cross-forks PRs)
+    // we only run this test if the key does exists. This is the case for Github Workflows
     if (process.env.IFRAMELY_KEY) {
         it('add a youtube iframe in the editor', function() {
             var editor = blogs.openBlog(0).editor

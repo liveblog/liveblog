@@ -11,7 +11,6 @@ import 'angular-route';
 import 'angular-gettext';
 import 'angular-mocks';
 import 'angular-animate';
-import 'angular-embedly';
 import 'angular-contenteditable';
 import 'angular-vs-repeat';
 import 'ng-file-upload';
