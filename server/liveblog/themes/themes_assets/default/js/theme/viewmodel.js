@@ -196,7 +196,7 @@ vm.updateViewModel = function(api_response) {
     self.vm._items.push.apply(self.vm._items, api_response._items);
     view.hideLoadMore(self.isTimelineEnd(api_response));
     return api_response;
-  }  
+  }
 
   if (api_response.requestOpts.sort
     && api_response.requestOpts.sort !== settings.postOrder
@@ -256,13 +256,14 @@ vm.init = function() {
     vm.loadPosts({
       fromDate: latestUpdate,
       tags: selectedTags
-    }).then(view.renderPosts)
-      .then((resp) => {
-        if (resp && resp._items.length > 0) {
-          view.adsManager.refreshAds();
-          view.consent.init();
-        }
-      });
+    })
+    .then(view.renderPosts)
+    .then((resp) => {
+      if (resp && resp._items.length > 0) {
+        view.consent.init();
+        view.adsManager.refreshAds();
+      }
+    });
   }, 10*1000);
 
   //return this.vm.latestUpdate;
