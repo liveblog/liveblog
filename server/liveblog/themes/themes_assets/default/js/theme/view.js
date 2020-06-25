@@ -95,7 +95,7 @@ function renderPosts(api_response) {
   }
 
   if (!renderedPosts.length) {
-    return; // early
+    return api_response;
   }
 
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
