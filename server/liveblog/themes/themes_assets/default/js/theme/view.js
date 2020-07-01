@@ -281,13 +281,17 @@ function toggleSortDropdown(open) {
  * @param {Boolean} open
  */
 function toggleTagsFilterDropdown(open) {
-  if (open !== undefined) {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active', open);
-  } else {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active');
+  var tagsDropdown = document.querySelector('.tags-filter-bar__dropdownContent');
+  var activeClass = 'tags-filter-bar__dropdownContent--active';
+
+  if (tagsDropdown) {
+    if (open !== undefined) {
+      tagsDropdown.classList.toggle(activeClass, open);
+    } else {
+      tagsDropdown.classList.toggle(activeClass);
+    }
   }
+
   window.playersState = {};
 }
 
