@@ -180,35 +180,37 @@ vm.updateSelectedTags = function(tag) {
  */
 vm.updateViewModel = function(api_response) {
   var self = this;
+  var reqOpts = api_response.requestOpts;
+  var isPolling = typeof reqOpts.fromDate !== 'undefined';
 
-  if (api_response.requestOpts.fromDate) { // Means we're polling for new posts
-    if (!api_response._items.length) {
-      return;
-    }
+  if (isPolling) {
+    // no items? then nothing to do here
+    if (!api_response._items.length) return;
+
     latestUpdate = self.getLatestUpdate(api_response);
+  } else {
+    view.hideLoadMore(self.isTimelineEnd(api_response));
   }
 
-  if (api_response.requestOpts.tags
-    && api_response.requestOpts.tags.length
-    && !api_response.requestOpts.sort
-  ) { // tag selected/removed
+  // tag selected/removed
+  if (reqOpts.tags && reqOpts.tags.length && !reqOpts.sort) {
     self.vm = getEmptyVm();
     self.vm._items.push.apply(self.vm._items, api_response._items);
     view.hideLoadMore(self.isTimelineEnd(api_response));
     return api_response;
-  }  
-
-  if (api_response.requestOpts.sort
-    && api_response.requestOpts.sort !== settings.postOrder
-  ) { // empty the vm if order is changed
-    self.vm = getEmptyVm();
   }
 
-  self.vm._items.push.apply(self.vm._items, api_response._items);
-  view.hideLoadMore(self.isTimelineEnd(api_response));
+  // order has changed
+  if (reqOpts.sort && reqOpts.sort !== settings.postOrder) {
+    self.vm = getEmptyVm();
+    view.hideLoadMore(self.isTimelineEnd(api_response));
+    Object.assign(self.vm, api_response);
+  } else {
+    self.vm._items.push.apply(self.vm._items, api_response._items);
+  }
 
-  if (api_response.requestOpts.sort) {
-    settings.postOrder = api_response.requestOpts.sort;
+  if (reqOpts.sort) {
+    settings.postOrder = reqOpts.sort;
   }
 
   return api_response;
@@ -240,8 +242,11 @@ vm.getSelectedTags = function() {
  * @returns {bool}
  */
 vm.isTimelineEnd = function(api_response) {
-  var itemsInView = this.vm._items.length;
-  return api_response._meta.total <= itemsInView;
+  var itemsInView = this.vm._items.length + settings.postsPerPage;
+  // number of post loaded on top as updates
+  var extraPosts = itemsInView % settings.postsPerPage;
+
+  return api_response._meta.total <= itemsInView - extraPosts;
 };
 
 /**
@@ -256,13 +261,14 @@ vm.init = function() {
     vm.loadPosts({
       fromDate: latestUpdate,
       tags: selectedTags
-    }).then(view.renderPosts)
-      .then((resp) => {
-        if (resp && resp._items.length > 0) {
-          view.adsManager.refreshAds();
-          view.consent.init();
-        }
-      });
+    })
+    .then(view.renderPosts)
+    .then((resp) => {
+      if (resp && resp._items.length > 0) {
+        view.consent.init();
+        view.adsManager.refreshAds();
+      }
+    });
   }, 10*1000);
 
   //return this.vm.latestUpdate;
