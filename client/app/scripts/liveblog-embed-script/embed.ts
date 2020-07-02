@@ -47,8 +47,10 @@ const beginHandshake = (e) => {
 
     console.log('sending msg to', liveblogEmbed); // eslint-disable-line
 
-    liveblogEmbed.contentWindow.postMessage({
-        type: 'sync-consent-given', data: consentGiven }, '*');
+    if (liveblogEmbed) {
+        liveblogEmbed.contentWindow.postMessage({
+            type: 'sync-consent-given', data: consentGiven }, '*');
+    }
 };
 
 const handleMessages = (event: MessageEvent) => {
