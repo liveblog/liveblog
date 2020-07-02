@@ -209,17 +209,14 @@ function reloadScripts(elem) {
  * Trigger embed provider unpacking
  */
 function loadEmbeds() {
-  if (window.instgrm) {
+  if (window.instgrm)
     instgrm.Embeds.process();
-  }
 
-  if (window.twttr) {
+  if (window.twttr)
     twttr.widgets.load();
-  }
 
-  if (window.FB) {
+  if (window.FB)
     window.FB.XFBML.parse();
-  }
 
   attachSlideshow();
 }
@@ -441,5 +438,6 @@ module.exports = {
   adsManager: adsManager,
   consent: gdpr,
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
-  attachDropdownCloseEvent: attachDropdownCloseEvent
+  attachDropdownCloseEvent: attachDropdownCloseEvent,
+  loadEmbeds: loadEmbeds
 };

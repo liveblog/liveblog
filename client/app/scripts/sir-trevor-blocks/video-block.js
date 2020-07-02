@@ -67,7 +67,7 @@ export default function videoBlock(SirTrevor, config) {
                 '<div class="col-md-6">',
                 '<label onclick="$(this).next().trigger(\'click\');"' +
                     'class="btn btn-default">Select from folder</label>',
-                '<input type="file" id="embedlyUploadFile">',
+                '<input type="file" id="embedUploadFile">',
                 '<span class="btn btn--primary pull-right" id="updateButton">Update Credentials</span>',
                 '</div>',
                 '</div>',
@@ -96,7 +96,7 @@ export default function videoBlock(SirTrevor, config) {
                 self.getOptions().displayModalBox(message);
             });
 
-            self.$('#embedlyUploadFile').on('change', function() {
+            self.$('#embedUploadFile').on('change', function() {
                 let file = $(this).prop('files')[0];
 
                 if (!file) {

@@ -323,6 +323,17 @@
                 });
             }
 
+            function loadEmbeds() {
+                if (window.instgrm)
+                    instgrm.Embeds.process();
+
+                if (window.twttr)
+                    twttr.widgets.load();
+
+                if (window.FB)
+                    window.FB.XFBML.parse();
+            }
+
             /**
              * Recreate the pages from the given posts
              * @param {array} [posts=self.allPosts()] - List of posts
@@ -338,7 +349,7 @@
                 var order_by = SORTS[self.sort][sort_by].order;
                 posts = _.orderBy(posts, sort_by, order_by);
                 var page;
-                var processInstagram = false;
+
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
                         page = new Page();
@@ -348,22 +359,12 @@
                         addPage(page);
                         page = undefined;
                     }
-                    angular.forEach(post.groups[1].refs, function(item) {
-                        if (item.item && item.item.item_type === 'embed') {
-                            if (item.item.text && item.item.text.indexOf('platform.instagram.com') !== -1) {
-                                processInstagram = true;
-                            }
-                        }
-                    });
                 });
                 if (angular.isDefined(page)) {
                     addPage(page);
                 }
-                if (processInstagram) {
-                    $timeout(function() {
-                        window.instgrm.Embeds.process();
-                    }, 1000);
-                };
+
+                $timeout(loadEmbeds, 1000);
             }
 
             /**

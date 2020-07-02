@@ -78,7 +78,6 @@ module.exports = function makeConfig(grunt) {
             alias: {
                 // 'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
-                'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
                 'jquery-gridster': 'gridster/dist/jquery.gridster.min',
                 'external-apps': path.join(process.cwd(), 'dist', 'app-importer.generated.js'),
                 i18n: path.join(process.cwd(), 'dist', 'locale.generated.js'),
@@ -234,8 +233,8 @@ const configApp = (grunt) => ({
 
     debug: grunt.option('debug-mode') || false,
     embed_protocol: process.env.EMBED_PROTOCOL || "https://",
-    embedly: {
-        key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+    iframely: {
+        key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
     },
     facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
     syndication: process.env.SYNDICATION || false,
@@ -294,8 +293,8 @@ const configLiveblog = (grunt) => ({
     system: {
         dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
     },
-    embedly: {
-        key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+    iframely: {
+        key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
     },
     facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
     syndication: process.env.SYNDICATION || false,
