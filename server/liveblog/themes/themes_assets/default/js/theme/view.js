@@ -101,7 +101,9 @@ function renderPosts(api_response) {
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
-  loadEmbeds();
+  setTimeout(function() {
+    loadEmbeds();
+  }, 500);
 
   return api_response;
 }
@@ -217,6 +219,9 @@ function loadEmbeds() {
 
   if (window.FB)
     window.FB.XFBML.parse();
+
+  if (window.iframely)
+    iframely.load();
 
   attachSlideshow();
 }
