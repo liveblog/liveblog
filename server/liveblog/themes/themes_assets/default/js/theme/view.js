@@ -178,6 +178,17 @@ function updatePost(post, rendered) {
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+
+  // FB embeds has a weird glitch after update. So we need to force the re-render
+  // in case the post contains any fb embed
+  if (post.post_items_type === 'embed-facebook') {
+    setTimeout(function() {
+      // we query again as the DOM has been replaced
+      var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
+      FB.XFBML.parse(embedContainer);
+    }, 500);
+  }
+
   return true;
 }
 
