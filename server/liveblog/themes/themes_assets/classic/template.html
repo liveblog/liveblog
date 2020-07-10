@@ -125,6 +125,17 @@
         <div class="loading" ng-show="timeline.loading" translate>Loading</div>
     </div>
 </div>
+
+<script>
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v7.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+</script>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+
 <script src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 <style class="embedly-css">
     .card .hdr{
