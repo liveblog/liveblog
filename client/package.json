@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.8.2-rc2",
+  "version": "3.8.2-rc3",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -90,7 +90,7 @@
     "angular": "1.6.9",
     "angular-animate": "1.6.1",
     "angular-contenteditable": "0.3.9",
-    "angular-embed": "eos87/angular-embed#LBSD-785-embedly-alternative",
+    "angular-embed": "eos87/angular-embed#13e145a8ce6f7cb9d877e32504a4c2af61a1b490",
     "angular-gettext": "2.3.10",
     "angular-messages": "1.6.6",
     "angular-mocks": "1.6.9",
