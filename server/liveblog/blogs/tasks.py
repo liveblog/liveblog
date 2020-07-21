@@ -38,11 +38,11 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     output_id = output['_id'] if output else None
     file_path = get_blog_path(blog_id, theme, output_id)
     # Remove existing file.
-    app.media.delete(app.media.media_id(file_path, version=False))
+    # app.media.delete(app.media.media_id(file_path, version=False))
     logger.warning('Embed file "{}" for blog "{}" removed from s3'.format(file_path, blog_id))
     # Upload new file.
     file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')), filename=file_path, content_type='text/html',
-                            version=False)
+                            version=False, check_exists=False)
     logger.warning('Embed file "{}" for blog "{}" uploaded to s3'.format(file_path, blog_id))
     return superdesk.upload.url_for_media(file_id)
 
