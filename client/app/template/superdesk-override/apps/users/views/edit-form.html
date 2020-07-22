@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-            <div sd-info-item class="user_role field__role form__row">
+            <div sd-info-item class="user_role field__role form__row" ng-if="user.user_type != 'administrator'">
                 <div class="sd-line-input sd-line-input--is-select">
                     <label class="sd-line-input__label" for="user_role" translate>Role</label>
                     <select class="sd-line-input__select"
@@ -149,8 +149,10 @@
                             ng-model="user.role"
                             name="user_role"
                             id="user_role"
+                            required
                             ng-options="role._id as role.name for role in roles">
                     </select>
+                    <div class="sd-line-input__message" ng-show="userForm.user_role.$error.required" translate>This field is required.</div>
                 </div>
             </div>
 
