@@ -37,10 +37,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     check_media_storage()
     output_id = output['_id'] if output else None
     file_path = get_blog_path(blog_id, theme, output_id)
-    # Remove existing file.
-    # app.media.delete(app.media.media_id(file_path, version=False))
-    logger.warning('Embed file "{}" for blog "{}" removed from s3'.format(file_path, blog_id))
-    # Upload new file.
+    # update the embed file
     file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')), filename=file_path, content_type='text/html',
                             version=False, check_exists=False)
     logger.warning('Embed file "{}" for blog "{}" uploaded to s3'.format(file_path, blog_id))
@@ -87,6 +84,8 @@ def delete_embed(blog, theme=None, output=None):
 
 
 def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
+    # TODO: replace blog_or_id with just blog to reduce hitting the db server with extra queries
+
     blogs = get_resource_service('client_blogs')
     if isinstance(blog_or_id, (str, ObjectId)):
         blog_id = blog_or_id
@@ -100,35 +99,31 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
     blog_preferences = blog.get('blog_preferences', {})
     blog_theme = blog_preferences.get('theme')
 
-    # get the `output` data if the `output_id` is set.
-    # if output and isinstance(output, str):
-    #     output = get_resource_service('outputs').find_one(req=None, _id=output)
     output_id = None
     if output:
-        # get the output `_id`
         output_id = str(output.get('_id'))
 
         # compile a theme if there is an `output`.
         if output.get('theme'):
             theme = output.get('theme', blog_theme)
 
+    server_url = app.config['LIVEBLOG_SERVER_URL']
+    protocol = app.config['EMBED_PROTOCOL']
+
     if blog_theme:
         try:
-            public_url = publish_embed(blog_id,
-                                       theme,
-                                       output,
-                                       api_host='//{}/'.format(app.config['SERVER_NAME']))
+            api_host = '//{}/'.format(server_url)
+            public_url = publish_embed(blog_id, theme, output, api_host=api_host)
+
         except MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
 
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
-            # TODO: Add reverse url function.
-            public_url = '{}{}/embed/{}/{}{}'.format(app.config['EMBED_PROTOCOL'],
-                                                     app.config['SERVER_NAME'],
-                                                     blog_id,
-                                                     '{}'.format(output_id) if output_id else '',
-                                                     '/theme/{}'.format(theme) if theme else '')
+
+            output_str = output_id if output_id else ''
+            theme_str = '/theme/{}'.format(theme) if theme else ''
+            public_url = '{}{}/embed/{}/{}{}'.format(protocol, server_url, blog_id, output_str, theme_str)
 
         public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
         updates = {'public_urls': public_urls}
@@ -162,8 +157,8 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
         return
 
     logger.warning('publish_blog_on_s3 for blog "{}"{} started.'
-                   .format(blog_id,
-                           ' with output="{}"'.format(output.get('name')) if output else ''))
+                   .format(blog_id, ' with output="{}"'.format(output.get('name')) if output else ''))
+
     try:
         return _publish_blog_embed_on_s3(blog_or_id, theme, output, safe, save)
     except (Exception, SoftTimeLimitExceeded):
@@ -236,8 +231,7 @@ def publish_bloglist_embed_on_s3():
         logger.warning('Blog list embed publishing is disabled.')
         return
 
-    # TODO: check how it should be if there is no AWS S3
-    if type(app.media).__name__ == 'AmazonMediaStorage':
+    if is_s3_storage_enabled():
         assets = copy.deepcopy(BLOGLIST_ASSETS)
 
         # Publish version file to get the asset_root.
