@@ -87,7 +87,7 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
 
 
 def render_bloglist_embed(api_host=None, assets_root=None):
-    compiled_api_host = "{}://{}/".format(app.config['URL_PROTOCOL'], app.config['LIVEBLOG_SERVER_URL'])
+    compiled_api_host = "{}://{}/".format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'])
     api_host = api_host or compiled_api_host
     assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
     assets = copy.deepcopy(BLOGLIST_ASSETS)

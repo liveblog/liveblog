@@ -95,7 +95,7 @@ if not CLIENT_URL.startswith('http'):
 URL_PROTOCOL = server_url.scheme or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
 
-LIVEBLOG_SERVER_URL = server_url.netloc or None
+SERVER_NAME = server_url.netloc or None
 
 VALIDATION_ERROR_STATUS = 400
 JSON_SORT_KEYS = True

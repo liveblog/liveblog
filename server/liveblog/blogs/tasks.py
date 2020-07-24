@@ -107,7 +107,7 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
         if output.get('theme'):
             theme = output.get('theme', blog_theme)
 
-    server_url = app.config['LIVEBLOG_SERVER_URL']
+    server_url = app.config['SERVER_NAME']
     protocol = app.config['EMBED_PROTOCOL']
 
     if blog_theme:
