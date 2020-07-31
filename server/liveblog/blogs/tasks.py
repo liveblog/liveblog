@@ -20,7 +20,8 @@ from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
 from .embeds import embed, render_bloglist_embed
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 from .utils import (check_media_storage, get_blog_path,
-                    get_bloglist_path, is_s3_storage_enabled, get_blog)
+                    get_bloglist_path, is_s3_storage_enabled,
+                    get_blog, can_delete_blog)
 
 logger = logging.getLogger('superdesk')
 
@@ -298,16 +299,22 @@ def remove_deleted_blogs():
 
     for blog in blog_service.find({'blog_status': 'deleted'}):
         if blog['delete_not_before'] <= utcnow():
-            logger.info('Blog "{}" with id "{}" removed as was marked for deletion'.format(blog['title'], blog['_id']))
-
             blog_id = blog['_id']
-            try:
-                blog_service.on_delete(blog)
-                blog_service.delete(lookup={'_id': blog_id})
-                archive_service.delete(lookup={'blog': ObjectId(blog_id)})
-            except SuperdeskApiError as err:
-                # NOTE: for now we are only skipping the error when the blog
-                # is syndicated. We don't catch other issues because we need to
-                # know what is happening for those cases. For this specific one it's
-                # ok as it doesn't compromise any functionality
-                logger.info('There was a problem removing the blog. {}'.format(err))
+            if can_delete_blog(blog):
+                try:
+                    blog_service.on_delete(blog)
+                    blog_service.delete(lookup={'_id': blog_id})
+                    archive_service.delete(lookup={'blog': ObjectId(blog_id)})
+
+                    logger.info('Blog "{}" with id "{}" removed as was marked for deletion'.format(
+                        blog['title'], blog['_id']))
+                except Exception as err:
+                    logger.error('There was a problem removing the blog. {}'.format(err))
+            else:
+                # given it's not possible to remove the blog, then we archive it
+                updates = blog.copy()
+                updates['blog_status'] = 'closed'
+                blog_service.update(blog_id, updates, blog)
+
+                logger.info('Blog "{}" with id "{}" archived as it had syndication and active consumers'.format(
+                    blog['title'], blog['_id']))
