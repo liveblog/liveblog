@@ -840,17 +840,9 @@ export default function BlogEditController(
                         return true;
                     }
 
-                    var notEqual = !_.isEqual(item[key], $scope.currentPost.items[itemIndex].item[key]);
-
-                    if (notEqual) {
-                        console.log('not equal', item[key], $scope.currentPost.items[itemIndex].item[key]); // eslint-disable-line
-                    }
-
-                    return notEqual;
+                    return !_.isEqual(item[key], $scope.currentPost.items[itemIndex].item[key]);
                 }));
             }
-
-            console.log('pasa directo aca'); // eslint-disable-line
 
             return true;
         },

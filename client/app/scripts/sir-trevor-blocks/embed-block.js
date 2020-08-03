@@ -113,13 +113,15 @@ export default function embedBlockFactory(SirTrevor, config) {
         onBlockRender: function() {
             var self = this;
 
-            this.$editor.filter('[contenteditable]').on('focus focusin', (ev) => {
+            let editableFields = self.$editor.next().find('[contenteditable]');
+
+            editableFields.on('focus', function(ev) {
                 const $this = $(this);
 
                 $this.data('before', $this.html());
             });
 
-            this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+            editableFields.on('blur keyup paste input', function(ev) {
                 const $this = $(this);
 
                 if ($this.data('before') !== $this.html()) {
@@ -128,7 +130,7 @@ export default function embedBlockFactory(SirTrevor, config) {
                 }
             });
 
-            handlePlaceholder(this.$editor.filter('[contenteditable]'), self.embedPlaceholder);
+            handlePlaceholder(editableFields, self.embedPlaceholder);
 
             // when the link field changes
             const callServiceAndLoadData = function() {
