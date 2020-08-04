@@ -262,10 +262,6 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             for post in blog_posts.docs:
                 self.calculate_post_type(post)
                 self.attach_syndication(post)
-                self.extract_author_ids(post)
-
-            self.generate_authors_map()
-            self.attach_authors(blog_posts.docs)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
@@ -323,6 +319,37 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         pass
 
 
+class ClientOutputPostsResource(ClientBlogPostsResource):
+    url = 'client_blogs/<regex("[a-f0-9]{24}"):blog_id>/<regex("[a-f0-9]{24}"):output_id>/posts'
+
+
+class ClientOutputPostsService(ClientBlogPostsService):
+
+    def get(self, req, lookup):
+        output = get_resource_service('outputs').find_one(req=None, _id=lookup.get('output_id'))
+        if not output:
+            raise SuperdeskApiError.notFoundError(message='output not found')
+
+        new_args = req.args.copy()
+        query_source = json.loads(new_args.get('source', '{}'))
+
+        query_tags = query_source.get('post_filter', {}).get('terms', {}).get('tags', [])
+        tags = output.get('tags', [])
+
+        if len(tags) > 0:
+            if len(query_tags) == 0:
+                query_source['post_filter'] = {'terms': {'tags': tags}}
+            elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
+                raise SuperdeskApiError.badRequestError(message='some tags in the query are restricted')
+
+        new_args['source'] = json.dumps(query_source)
+        req.args = new_args
+
+        del lookup['output_id']
+
+        return super().get(req, lookup)
+
+
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):
     """Check if the request contains only allowed parameters.
 
@@ -370,22 +397,22 @@ def create_amp_comment():
     item_data = dict()
     item_data['text'] = data['text']
     item_data['commenter'] = data['commenter']
-    item_data['client_blog'] = data['client_blog']
-    item_data['item_type'] = "comment"
+    item_data['blog'] = item_data['client_blog'] = data['client_blog']
+    item_data['item_type'] = 'comment'
     items = get_resource_service('client_items')
     item_id = items.post([item_data])[0]
 
     comment_data = dict()
-    comment_data["post_status"] = "comment"
-    comment_data["client_blog"] = item_data['client_blog']
-    comment_data["groups"] = [{
-        "id": "root",
-        "refs": [{"idRef": "main"}],
-        "role": "grpRole:NEP"
+    comment_data['post_status'] = 'comment'
+    comment_data['blog'] = comment_data['client_blog'] = item_data['blog']
+    comment_data['groups'] = [{
+        'id': 'root',
+        'refs': [{'idRef': 'main'}],
+        'role': 'grpRole:NEP'
     }, {
-        "id": "main",
-        "refs": [{"residRef": item_id}],
-        "role": "grpRole:Main"}
+        'id': 'main',
+        'refs': [{'residRef': item_id}],
+        'role': 'grpRole:Main'}
     ]
 
     post_comments = get_resource_service('client_posts')

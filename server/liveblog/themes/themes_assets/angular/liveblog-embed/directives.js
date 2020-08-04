@@ -1,3 +1,38 @@
+var CONSENT_ACCEPT_SELECTOR = '.lb_consent--accept';
+
+var domainRequiresConsent = function(providerUrl, embedContent) {
+    var domains = LB.settings.gdprConsentDomains;
+    var requiresConsent = false;
+
+    if (domains.length > 0) {
+        // get domains and remove possible blank spaces
+        domains = domains.split(',');
+        domains = domains.map(function(x) {return x.trim().toLowerCase()});
+
+        if (providerUrl) {
+            var embedDomain = new URL(providerUrl).hostname;
+
+            embedDomain = embedDomain.replace('www.', '');
+            requiresConsent = domains.indexOf(embedDomain) !== -1;
+        } else {
+            // NOTE: there are cases of embeds made from the mobile app
+            // that there are no providerUrl attribute in meta data
+            // let's try to handle them here
+            if (embedContent.indexOf('iframe') > -1 || embedContent.indexOf('script') > -1) {
+                domains.forEach(function(d) {
+                    var domain = d.replace('www.', '');
+
+                    if (embedContent.indexOf(domain) > -1) {
+                        requiresConsent = true;
+                    }
+                });
+            }
+        }
+    }
+
+    return requiresConsent;
+};
+
 (function(angular) {
     'use strict';
     angular.module('liveblog-embed')
@@ -37,12 +72,69 @@
                                 .width(newWidth)
                                 .height(newWidth * iframe.data('aspectRatio'));
                         }
-                        
+
                     }
                     angular.element($window).bind('resize', _.debounce(resize, 1000));
                 }
             };
         }])
+        .directive('lbGdprEmbedConsent', [
+            'config', 'asset', '$timeout', 'ConsentManager',
+            function(config, asset, $timeout, ConsentManager) {
+                return {
+                    template: '<ng-include src="getTemplateUrl()" />',
+                    scope: {
+                        item: '=',
+                        timeline: '='
+                    },
+                    restrict: 'E',
+                    link: function(scope, elem, attrs) {
+                        $timeout(function () {
+                            var acceptButton = angular.element(elem).find(CONSENT_ACCEPT_SELECTOR);
+
+                            acceptButton.on('click', function(ev) {
+                                ev.preventDefault();
+
+                                ConsentManager.acceptConsent();
+                            });
+                        }, 50);
+                    },
+                    controller: ['$scope', function($scope) {
+
+                        // used on the ng-include to resolve the template
+                        $scope.getTemplateUrl = function() {
+                            var item = $scope.item;
+                            var templateName;
+
+                            if (config.settings.enableGdprConsent) {
+                                var providerUrl = item.meta.provider_url;
+
+                                // we need a workaround for old youtube videos directly uploaded
+                                if (item.meta.provider_name === "YoutubeUpload")
+                                    providerUrl = "https://www.youtube.com";
+
+                                if (!ConsentManager.isConsentGiven() && domainRequiresConsent(providerUrl, item.meta.html)) {
+                                    return asset.templateUrl("views/embeds/consent-placeholder.html");
+                                }
+                            }
+
+                            switch (item.meta.provider_name) {
+                                case "Twitter":
+                                case "Facebook":
+                                case "Instagram":
+                                    templateName = "views/embeds/" + item.meta.provider_name.toLowerCase() + ".html";
+                                    break;
+                                default:
+                                    templateName = "views/embeds/generic.html";
+                                    break;
+                            }
+
+                            return asset.templateUrl(templateName);
+                        }
+                    }]
+                }
+            }
+        ])
         .directive('lbTwitterCard', [function() {
             return {
                 restrict: 'E',
@@ -67,11 +159,14 @@
                         placeholder: "@",
                         list: "=",
                         selected: "&",
-                        order: "&"
+                        order: "&",
+                        tags: "&",
+                        type: "@"
                     },
                     link: function(scope) {
                         scope.listVisible = false;
                         scope.isPlaceholder = true;
+                        scope.selectedTags = [];
 
                         scope.select = function(item) {
                             scope.isPlaceholder = false;
@@ -79,20 +174,36 @@
                             scope.listVisible = false;
                         };
 
+                        scope.check = function(item) {
+                            const tagIndex = scope.selectedTags.indexOf(item.name);
+                            if (tagIndex === -1) {
+                                scope.selectedTags.push(item.name);
+                            } else {
+                                scope.selectedTags.splice(tagIndex, 1);
+                            }
+                            scope.tags({tags: scope.selectedTags});
+                            $rootScope.tags = scope.selectedTags;
+                            scope.listVisible = true;
+                        }
+                            
                         scope.isSelected = function(item) {
                             return item.order === scope.selected();
                         };
-                        
+
+                        scope.isChecked = function(item) {
+                            return scope.selectedTags.indexOf(item.name) !== -1;
+                        };
+
                         scope.show = function() {
                             scope.listVisible = true;
                         };
 
                         $rootScope.$on("documentClicked", function(inner, target) {
-                            if ($(target[0]).parents(".dropdown-display").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
+                            if($(target[0]).parents(".dropdown-container").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
                                 scope.$apply(function() {
                                     scope.listVisible = false;
                                 });
-                            } 
+                            }
                         });
 
                         scope.$watch("selected()", function(value) {

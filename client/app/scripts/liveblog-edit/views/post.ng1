@@ -60,7 +60,7 @@
                                     <i class="icon-pin" ng-class="{'blue': post.sticky, 'opaque': post.sticky}"></i>
                                 </a>
                             </li>
-                            <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
+                            <li ng-if="functionize(postsListCtrl.allowDeleting)(post) && !post.edit_flag">
                                 <a ng-click="askRemovePost(post)"flow="down" sd-tooltip="{{ 'Remove' | translate }}">
                                     <i class="icon-close-thick"></i>
                                 </a>

@@ -35,7 +35,8 @@ module.exports = function makeConfig(grunt) {
 
     return {
         entry: {
-            app: 'app/scripts/index.js'
+            app: 'app/scripts/index.js',
+            embedScript: 'app/scripts/liveblog-embed-script/embed.ts'
         },
 
         output: {
@@ -77,12 +78,12 @@ module.exports = function makeConfig(grunt) {
             alias: {
                 // 'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
-                'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
                 'jquery-gridster': 'gridster/dist/jquery.gridster.min',
                 'external-apps': path.join(process.cwd(), 'dist', 'app-importer.generated.js'),
                 i18n: path.join(process.cwd(), 'dist', 'locale.generated.js'),
                 // ensure that react is loaded only once (3rd party apps can load more...)
-                react: path.resolve('./node_modules/react')
+                react: path.resolve('./node_modules/react'),
+                jquery: path.resolve('./node_modules/jquery')
 
             },
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -232,8 +233,9 @@ const configApp = (grunt) => ({
     isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
 
     debug: grunt.option('debug-mode') || false,
-    embedly: {
-        key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+    embed_protocol: process.env.EMBED_PROTOCOL || "https://",
+    iframely: {
+        key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
     },
     facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
     syndication: process.env.SYNDICATION || false,
@@ -279,9 +281,12 @@ const configApp = (grunt) => ({
         content: false,
         tasks: false,
         analytics: false
+    },
+
+    client: {
+        url: process.env.SUPERDESK_CLIENT_URL || 'http://localhost:9000'
     }
-}
-);
+});
 
 const configLiveblog = (grunt) => ({
     // route to be redirected to from '/'
@@ -289,8 +294,8 @@ const configLiveblog = (grunt) => ({
     system: {
         dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
     },
-    embedly: {
-        key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+    iframely: {
+        key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
     },
     facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
     syndication: process.env.SYNDICATION || false,

@@ -1,6 +1,8 @@
 lb-dropdown {
   float: left;
   display: block;
+  height: 30px;
+  margin-top: -11px;
 }
 lb-dropdown > div {
   float: left;
@@ -33,7 +35,7 @@ lb-dropdown > div > div.dropdown-display > span {
   line-height: 38px;
 }
 lb-dropdown > div > div.dropdown-display > span.placeholder {
-  color: #aaaaaa;
+  color:black;
 }
 lb-dropdown > div > div.dropdown-display > i {
   position: relative;
@@ -59,6 +61,15 @@ lb-dropdown > div > div.dropdown-list > div {
   z-index: 2;
   cursor: pointer;
   background: white;
+  height: 85px;
+  overflow-y: scroll;
+}
+lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar {
+  width: 0px;
+}
+lb-dropdown > div > div.dropdown-list > div::-webkit-scrollbar-thumb {
+  color: #56c491;
+  width: 5px;
 }
 lb-dropdown > div > div.dropdown-list > div > div {
   float: left;
@@ -68,13 +79,17 @@ lb-dropdown > div > div.dropdown-list > div > div {
   box-sizing: border-box;
   border: solid 1px #dddddd;
   border-top: none;
+  overflow: hidden;
+  color: #999999;
 }
 lb-dropdown > div > div.dropdown-list > div > div:hover {
   background: #F0F0F0;
+  color: black;
 }
 lb-dropdown > div > div.dropdown-list > div > div.selected {
   background: #5ea9c8;
   color: white;
+  margin-top: -11px;
 }
 lb-dropdown > div > div.dropdown-list > div > div > * {
   line-height: 38px;
@@ -147,5 +162,18 @@ lb-dropdown > div.show > div.dropdown-list {
   }
   .de lb-dropdown {
     width: 130px;
+  }
+}
+@media (max-width: 400px){
+  .en lb-dropdown {
+    width: 100px;
+    margin-top: 11px;
+  }
+}
+
+@media (max-width: 600px){
+  .en lb-dropdown {
+    width: 100px;
+    margin-top: 0px;
   }
 }

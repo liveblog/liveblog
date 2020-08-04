@@ -57,6 +57,42 @@ export default function postsService(api, $q, userList, session) {
     }
 
     /**
+     * Using recursiveDeepCopy approach since it's performant than JSON.stringify
+     * and it allows having functions within the cloned object
+     * https://jsperf.com/deep-copy-vs-json-stringify-json-parse/5
+     * TODO: move this outside as can be used somewhere else.
+     */
+    const recursiveDeepCopy = (o) => {
+        let newObj;
+        let i;
+
+        if (moment.isMoment(o)) {
+            return o.clone();
+        }
+
+        if (typeof o !== 'object' || !o)
+            return o;
+
+        // eslint-disable-next-line yoda
+        if ('[object Array]' === Object.prototype.toString.apply(o)) {
+            newObj = [];
+            for (i = 0; i < o.length; i += 1) {
+                newObj[i] = recursiveDeepCopy(o[i]);
+            }
+            return newObj;
+        }
+
+        newObj = {};
+        for (i in o) {
+            if (o.hasOwnProperty(i)) {
+                newObj[i] = recursiveDeepCopy(o[i]);
+            }
+        }
+
+        return newObj;
+    };
+
+    /**
      * Fetch a page of posts
      * @param {string} blog_id - The id of the blog
      * @param {object} filters - (available: {boolean} 'status', {string} 'updatedAfter')
@@ -120,6 +156,8 @@ export default function postsService(api, $q, userList, session) {
      * information later (profile_url, name, etc)
      *
      * @param       {Object} obj         Post or item belonging to post
+     *
+     * @TODO: remove this in next release as it's all coming from backend
      */
     function _completeUser(obj) {
         if (obj.commenter) {
@@ -165,6 +203,12 @@ export default function postsService(api, $q, userList, session) {
 
             // let's now complete user for main post
             post.mainItem.item.user = post.original_creator;
+
+            if (!post.mainItem.item.user) {
+                let mainItem = recursiveDeepCopy(post.mainItem.item);
+
+                post.mainItem.item.user = _completeUser(mainItem).user;
+            }
 
             resolve(post);
         });

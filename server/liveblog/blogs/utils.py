@@ -133,3 +133,13 @@ def get_blog_stats(blog_or_id):
     ]}).count()
 
     return {'total_posts': total_posts, 'posts_limit': blog['posts_limit']}
+
+
+def can_delete_blog(blog):
+    """Returns False if the given blog has syndication enabled and registered consumers"""
+
+    out = get_resource_service('syndication_out').find({'blog_id': blog['_id']})
+    if blog.get('syndication_enabled', False) and out.count():
+        return False
+
+    return True

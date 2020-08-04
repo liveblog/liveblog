@@ -55,7 +55,7 @@ superdesk:
    - "9000:9000"
    - "35729:35729"
   volumes:
-   - ../server:/opt/superdesk/
-   - ../client:/opt/superdesk/client/
-   - ./Procfile-dev:/opt/superdesk/Procfile
-   - ./start-dev.sh:/opt/superdesk/start.sh
+   - ../server:/opt/server/
+   - ../client:/opt/server/client/
+   - ./Procfile-dev:/opt/server/Procfile
+   - ./start-dev.sh:/opt/server/start.sh

@@ -1,5 +1,11 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
+{% include "template-embed-providers.html" %}
+
+{% include "template-watermark.html" %}
+
+{% include "template-gdpr-consent-placeholder.html" %}
+
 <div data-timeline class="lb-timeline {{ settings.language }}">
   {% block timeline_top %}
 
@@ -16,8 +22,6 @@
   {% if settings.showImage and blog.picture_url %}
     <img src="{{ blog.picture_url }}" />
   {% endif %}
-
-  {% include "template-watermark.html" %}
 
   {% if settings.stickyPosition == 'top'%}
     <div class="timeline-top timeline-top--loaded">
@@ -68,6 +72,25 @@
           </div>
         </div>
       </div>
+    {% endif %}
+    {% if settings.showTagsDropdown and ((output and global_tags|length > 1) or (not output and global_tags and global_tags|length > 0)) %}
+    <div class="tags-filter-bar">
+      <div class="tags-filter-bar__orders">
+        <div class="tags-filter-bar__dropdownBtn" data-js-tags_filter_dropdown_button>
+          Filter Content
+        </div>
+        <div class="tags-filter-bar__dropdownContent">
+          {% for tag in global_tags -%}
+          <div class="tags-filter-bar__order">
+            <label>
+              <input type="checkbox" value="{{ tag }}" data-tags-filter-option/>
+              {{ tag }}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
     {% endif %}
     <div class="header-bar__actions"></div>
       {% if settings.hasHighlights %}
@@ -143,8 +166,6 @@
 
 
 </div>
-
-{% include "template-embed-providers.html" %}
 
 {% if include_js_options %}
   <script type="text/javascript">

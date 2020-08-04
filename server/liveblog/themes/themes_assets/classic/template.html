@@ -36,10 +36,16 @@
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
+                <lb-dropdown ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__order tags-bar" placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
+                    tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
             <div class="sorting-bar__orders-mobile">
                 <lb-dropdown placeholder="{{ 'Sort by:' | translate }}" list="timeline.sortOptions"
-                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)"></lb-dropdown>
+                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)" type="single_select"></lb-dropdown>
+            </div>
+            <div ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__orders-mobile">
+                <lb-dropdown placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
+                tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
         </div>
         <div class="header-bar__actions">
@@ -119,7 +125,18 @@
         <div class="loading" ng-show="timeline.loading" translate>Loading</div>
     </div>
 </div>
-<script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
+
+<script>
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v7.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+</script>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+<script src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 <style class="embedly-css">
     .card .hdr{
       display: none;

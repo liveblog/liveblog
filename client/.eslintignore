@@ -2,3 +2,4 @@
 *.generated.js
 missing-translations-strings.js
 language-mapping-list.js
+spec/**/*.js

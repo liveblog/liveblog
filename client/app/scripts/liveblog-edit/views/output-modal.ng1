@@ -9,7 +9,7 @@
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Output Name<span class="ft-alert" ng-if="self.notValidName(self.output, self.outputs)">{{ self.notValidName(self.output, self.outputs) }}</span></label>
                     <input class="sd-line-input__input" type="text" ng-model="self.output.name" maxlength="24" required>
-                    <div sd-character-count data-item="self.output.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
+                    <p class="sd-line-input__message">Minimum frequency of 4.</p>
                 </div>
 
                 <div class="sd-line-input sd-line-input--is-select">
@@ -20,6 +20,7 @@
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Adverts frequency</label>
                     <input class="sd-line-input__input" type="number" min="4" max="20" ng-model="self.output.settings.frequency">
+                    <div class="sd-line-input__char-count">00/24</div>
                 </div>
 
                 <div class="sd-line-input sd-line-input--is-select">

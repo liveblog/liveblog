@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.7.1",
+  "version": "3.8.2",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -10,7 +10,7 @@
     "eslint": "grunt eslint",
     "tslint": "tsc --noEmit && tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
-    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 77.0.3865.40 --versions.standalone 3.9.1",
+    "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION --versions.standalone 3.9.1",
     "e2e": "./node_modules/.bin/protractor protractor-conf.js"
   },
   "licenses": [
@@ -25,10 +25,10 @@
     "@types/jquery": "^3.3.29",
     "@types/lodash": "^4.14.137",
     "@types/react": "^16.8.18",
-    "@types/react-select": "^3.0.2",
+    "@types/react-select": "3.0.9",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
-    "bootstrap": "3.3.7",
+    "bootstrap": "^4.5.0",
     "btoa": "1.1.2",
     "classnames": "2.2.5",
     "css-loader": "0.28.7",
@@ -80,7 +80,8 @@
     "superdesk-code-style": "^1.2.0",
     "superdesk-ui-framework": "^1.8.14",
     "ts-loader": "^3.5.0",
-    "typescript": "^3.4.5",
+    "tslint": "^5.16.0",
+    "typescript": "3.4.5",
     "webpack": "3.6.0",
     "webpack-dev-server": "2.8.2"
   },
@@ -89,8 +90,7 @@
     "angular": "1.6.9",
     "angular-animate": "1.6.1",
     "angular-contenteditable": "0.3.9",
-    "angular-embed": "superdesk/angular-embed#9894333",
-    "angular-embedly": "Urigo/angular-embedly#0.0.8",
+    "angular-embed": "eos87/angular-embed#13e145a8ce6f7cb9d877e32504a4c2af61a1b490",
     "angular-gettext": "2.3.10",
     "angular-messages": "1.6.6",
     "angular-mocks": "1.6.9",
@@ -101,7 +101,7 @@
     "eslint-loader": "^2.1.2",
     "eventable": "madebymany/eventable",
     "gridster": "0.5.6",
-    "jquery": "3.4.1",
+    "jquery": "^3.5.1",
     "jquery-jcrop": "0.9.13",
     "jquery-ui": "components/jqueryui#1.11.4",
     "jquery.gridster": "dustmoo/gridster.js#c306335397816beceb74e4a176067baef34a0359",

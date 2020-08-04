@@ -233,17 +233,20 @@ export default function imageBlock(SirTrevor, config) {
             }
         },
         retrieveData: function() {
+            const data = this.getData();
+
+            if (data.media === undefined) return {};
             return {
-                media: this.getData().media,
+                media: data.media,
                 caption: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
-                syndicated_creator: this.getData().syndicated_creator,
+                syndicated_creator: data.syndicated_creator,
             };
         },
         toHTML: function() {
             const data = this.retrieveData();
 
-            if (data.media.hasOwnProperty('renditions')) {
+            if (_.has(data, 'media') && data.media.hasOwnProperty('renditions')) {
                 let srcset = '';
 
                 _.forEach(data.media.renditions, (value) => {
@@ -262,7 +265,7 @@ export default function imageBlock(SirTrevor, config) {
                 ].join('');
             }
             // When drag & dropping from an external web page
-            return '<figure><img src="' + data.media._url + '" /></figure>';
+            return '<figure><img src="' + (data.media ? data.media._url : '') + '" /></figure>';
         },
         toMeta: function() {
             return this.retrieveData();

@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * @author ps / @___paul
  */
@@ -11,10 +12,11 @@ const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const commentItemEndpoint = `${apiHost}api/client_items`;
 const commentPostEndpoint = `${apiHost}api/client_comments`;
 
-var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
-  , settings = LB.settings
-  , vm = {}
-  , latestUpdate;
+var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
+var settings = LB.settings;
+var vm = {};
+var latestUpdate;
+var selectedTags = [];
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -34,7 +36,7 @@ if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
  */
 function getEmptyVm(items) {
   return {
-    _items: new Array(items) || 0,
+    _items: new Array(items || 0),
     currentPage: 1,
     totalPosts: 0
   };
@@ -95,10 +97,15 @@ vm.getPosts = function(opts) {
     highlightsOnly: settings.onlyHighlighted || false,
     notDeleted: opts.notDeleted,
     fromDate: opts.fromDate ? opts.fromDate : false,
-    sticky: opts.sticky
+    sticky: opts.sticky,
+    tags: opts.tags
   });
 
-  var page = opts.fromDate? '' : `&page=${opts.page?opts.page:'1'}`;
+  if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
+    endpoint = `${apiHost}api/client_blogs/${LB.blog._id}/${LB.output._id}/posts`;
+  }
+
+  var page = opts.fromDate ? '' : `&page=${opts.page?opts.page:'1'}`;
   var qs = '?max_results=' + settings.postsPerPage + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
@@ -153,23 +160,48 @@ vm.loadPosts = function(opts) {
 };
 
 /**
+ * Add/Remove tags from drodown
+ * @param {object} tag - The tag to add/remove
+ * @returns {array} The tags checked in the dropdown
+ */
+vm.updateSelectedTags = function(tag) {
+  const tagIndex = selectedTags.indexOf(tag);
+  if (tagIndex === -1) {
+    selectedTags.push(tag);
+  } else {
+    selectedTags.splice(tagIndex, 1);
+  }
+  return selectedTags;
+}
+
+/**
  * Add items in api response & latest update timestamp to viewmodel.
  * @param {object} api_response - liveblog API response JSON.
  */
 vm.updateViewModel = function(api_response) {
   var self = this;
+  var reqOpts = api_response.requestOpts;
+  var isPolling = typeof reqOpts.fromDate !== 'undefined';
 
-  if (!api_response.requestOpts.fromDate) { // Means we're not polling
-    view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
-  } else { // Means we're polling for new posts
-    if (!api_response._items.length) {
-      return;
-    }
+  if (isPolling) {
+    // no items? then nothing to do here
+    if (!api_response._items.length) return;
 
     latestUpdate = self.getLatestUpdate(api_response);
+  } else {
+    view.hideLoadMore(self.isTimelineEnd(api_response));
   }
 
-  if (api_response.requestOpts.sort && api_response.requestOpts.sort !== settings.postOrder) {
+  // tag selected/removed
+  if (reqOpts.tags && reqOpts.tags.length && !reqOpts.sort) {
+    self.vm = getEmptyVm();
+    self.vm._items.push.apply(self.vm._items, api_response._items);
+    view.hideLoadMore(self.isTimelineEnd(api_response));
+    return api_response;
+  }
+
+  // order has changed
+  if (reqOpts.sort && reqOpts.sort !== settings.postOrder) {
     self.vm = getEmptyVm();
     view.hideLoadMore(self.isTimelineEnd(api_response));
     Object.assign(self.vm, api_response);
@@ -177,8 +209,8 @@ vm.updateViewModel = function(api_response) {
     self.vm._items.push.apply(self.vm._items, api_response._items);
   }
 
-  if (api_response.requestOpts.sort) {
-    settings.postOrder = api_response.requestOpts.sort;
+  if (reqOpts.sort) {
+    settings.postOrder = reqOpts.sort;
   }
 
   return api_response;
@@ -195,6 +227,14 @@ vm.getLatestUpdate = function(api_response) {
   var latest = new Date(Math.max.apply(null, timestamps));
   return latest.toISOString(); // convert timestamp to ISO
 };
+
+/**
+ * Getter for selectedTags
+ * @returns {array} - Tags checked in tags-filter dropdown
+ */
+vm.getSelectedTags = function() {
+  return selectedTags;
+}
 
 /**
  * Check if we reached the end of the timeline.
@@ -218,11 +258,17 @@ vm.init = function() {
   this.vm.timeInitialized = new Date().toISOString();
 
   setInterval(() => {
-    vm.loadPosts({fromDate: latestUpdate})
-      .then(view.renderPosts)
-      .then((resp) => {
-        if (resp && resp._items.length > 0) view.adsManager.refreshAds();
-      });
+    vm.loadPosts({
+      fromDate: latestUpdate,
+      tags: selectedTags
+    })
+    .then(view.renderPosts)
+    .then((resp) => {
+      if (resp && resp._items.length > 0) {
+        view.consent.init();
+        view.adsManager.refreshAds();
+      }
+    });
   }, 10*1000);
 
   //return this.vm.latestUpdate;
@@ -254,8 +300,7 @@ vm.getQuery = function(opts) {
       {
         "published_date": {order: 'desc', missing: '_last', unmapped_type: 'long'}
       }
-    ],
-    "post_filter": {}
+    ]
   };
 
   if (opts.fromDate) {
@@ -275,13 +320,12 @@ vm.getQuery = function(opts) {
     });
   }
 
-  // NOTE: tags should only be considered in outputs for now.
-  if (LB.output) {
-    const tags = LB.output.tags || [];
-
-    if (tags.length > 0) {
-      query.post_filter.terms = {"tags": tags}
-    }
+  if (opts.tags && opts.tags.length > 0) {
+    query.post_filter = {
+      "terms": {
+        "tags": opts.tags
+      }
+    };
   }
 
   if (opts.highlightsOnly === true) {

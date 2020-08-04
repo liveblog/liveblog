@@ -3,19 +3,20 @@
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100,-W109 */
   gettextCatalog.setStrings('cs', {
-  "Advertisement": "reklama",
+  "Activate": "Aktivovat",
+  "Advertisement": "Reklama",
   "Cancel": "Zrušit",
   "Comment": "Váš příspěvek",
   "Comment *": "Text *",
   "Comment should be maximum 300 characters in length.": "Maximální délka textu je 300 znaků.",
-  "Editorial": "redakční",
+  "Editorial": "Redakční",
   "Load more posts": "Načíst další",
   "Loading": "Načítám",
   "Name *": "Jméno *",
   "Name should be maximum 30 characters in length.": "Maximální délka jména je 30 znaků.",
-  "Newest first": "nejnovější",
+  "Newest first": "Nejnovější",
   "No posts for now.": "Žádné příspěvky.",
-  "Oldest first": "nejstarší",
+  "Oldest first": "Nejstarší",
   "One pinned post": [
     "Jeden připnutý příspěvek",
     "{{$count}} připnuté příspěvky",
@@ -38,39 +39,47 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} autor: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('de', {
+  "Activate": "Aktivieren",
   "Advertisement": "Werbung",
   "Cancel": "Abbrechen",
   "Comment": "Kommentar",
-  "Comment *": "Kommentar",
+  "Comment *": "Kommentar *",
   "Comment should be maximum 300 characters in length.": "Kommentar darf maximal 300 Zeichen lang sein.",
   "Editorial": "Redaktionell",
   "Load more posts": "Mehr Einträge laden",
   "Loading": "Lade",
   "Name *": "Name",
-  "Name should be maximum 30 characters in length.": "Name darf maximal 30 Zeichen lang sein",
+  "Name should be maximum 30 characters in length.": "Name darf maximal 30 Zeichen lang sein.",
   "Newest first": "Neueste zuerst",
-  "No posts for now.": "Kein Beitrag vorhanden",
+  "No posts for now.": "Kein Beitrag vorhanden.",
   "Oldest first": "Älteste zuerst",
   "One pinned post": [
     "Angehefteter Eintrag",
     "{{$count}} Angeheftete Einträge"
   ],
-  "Please fill in your Comment.": "Bitte Kommentar hier eintragen",
-  "Please fill in your Name.": "Bitte Namen hier eintragen",
+  "Please fill in your Comment.": "Bitte Kommentar hier eintragen.",
+  "Please fill in your Name.": "Bitte Namen hier eintragen.",
   "Post a comment": "Kommentar posten",
   "See one new update": [
     "Neuen Beitrag anzeigen",
     "Neue Beiträge anzeigen"
   ],
   "Send": "Abschicken",
+  "Share this post on Email": "Diesen Beitrag per E-Mail teilen",
+  "Share this post on Facebook": "Teile diesen Beitrag auf Facebook",
+  "Share this post on Google+": "Teile diesen Beitrag auf Google+",
+  "Share this post on Linkedin": "Teile diesen Beitrag auf Linkedin",
+  "Share this post on Twitter": "Teile diesen Beitrag auf Twitter",
   "Show all posts": "Alle Beiträge anzeigen",
   "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
-  "Sort by:": "Ordnen nach",
+  "Social Share": "Soziales Teilen",
+  "Sort by:": "Ordnen nach:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}",
-  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,",
+  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung.",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} Bild: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fi', {
+  "Activate": "Aktivoida",
   "Advertisement": "Mainos",
   "Cancel": "Peruuta",
   "Comment": "Kommentoi",
@@ -104,16 +113,17 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} © {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fr', {
+  "Activate": "Activer",
   "Advertisement": "Publicité",
   "Cancel": "Annuler",
   "Comment": "Commentaire",
   "Comment *": "Commentaire *",
-  "Comment should be maximum 300 characters in length.": "Un commentaire ne peut excéder 300 signes",
+  "Comment should be maximum 300 characters in length.": "Un commentaire ne peut excéder 300 signes.",
   "Editorial": "Éditorial",
   "Load more posts": "Afficher plus de messages",
   "Loading": "Chargement",
   "Name *": "Nom *",
-  "Name should be maximum 30 characters in length.": "Le nom ne peut excéder 30 signes",
+  "Name should be maximum 30 characters in length.": "Le nom ne peut excéder 30 signes.",
   "Newest first": "Le plus récent d'abord",
   "No posts for now.": "Aucun message pour le moment.",
   "Oldest first": "Plus ancien en premier",
@@ -129,14 +139,21 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Voir {{$count}} nouveaux messages"
   ],
   "Send": "Envoyer",
+  "Share this post on Email": "Partagez ce message par e-mail",
+  "Share this post on Facebook": "Partagez ce message par Facebook",
+  "Share this post on Google+": "Partagez ce message par Google+",
+  "Share this post on Linkedin": "Partagez ce message par Linkedin",
+  "Share this post on Twitter": "Partagez ce message par Twitter",
   "Show all posts": "Afficher tous les messages",
   "Show highlighted post only": "Afficher uniquement les messages en surbrillance",
+  "Social Share": "Partage Social",
   "Sort by:": "Trier par:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Mise à jour {{post.content_updated_date | prettifyIsoDate}}",
   "Your comment was sent for approval.": "Votre commentaire a été envoyé et est en attente de validation.",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} crédit: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('nl', {
+  "Activate": "Activeren",
   "Advertisement": "Advertentie",
   "Cancel": "Annuleren",
   "Comment": "Reactie",
@@ -162,29 +179,40 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Bekijk {{$count}} nieuwe berichten"
   ],
   "Send": "Verzenden",
+  "Share this post on Email": "Deel dit bericht op e-mail",
+  "Share this post on Facebook": "Deel dit bericht op Facebook",
+  "Share this post on Google+": "Deel dit bericht op Google+",
+  "Share this post on Linkedin": "Deel dit bericht op LinkedIn",
+  "Share this post on Twitter": "Deel dit bericht op Twitter",
+  "Show all posts": "Toon alle berichten",
+  "Show highlighted post only": "Alleen gemarkeerde post weergeven",
+  "Social Share": "Sociaal aandeel",
   "Sort by:": "Sorteer:",
-  "Your comment was sent for approval.": "Uw reactie is ontvangen ter beoordeling."
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Bijgewerkt {{post.content_updated_date | prettifyIsoDate}}",
+  "Your comment was sent for approval.": "Uw reactie is ontvangen ter beoordeling.",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} credits: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('no', {
+  "Activate": "Aktiver",
   "Advertisement": "Annonse",
   "Cancel": "Avbryt",
   "Comment": "Kommentar",
   "Comment *": "Kommentar*",
-  "Comment should be maximum 300 characters in length.": "Kommentarer kan være inntil 300 tegn",
+  "Comment should be maximum 300 characters in length.": "Kommentarer kan være inntil 300 tegn.",
   "Editorial": "Redaksjonelt",
   "Load more posts": "Henter flere poster",
   "Loading": "Henter",
   "Name *": "Navn*",
-  "Name should be maximum 30 characters in length.": "Navn kan ikke ha mer enn 30 tegn",
+  "Name should be maximum 30 characters in length.": "Navn kan ikke ha mer enn 30 tegn.",
   "Newest first": "Nyeste først",
-  "No posts for now.": "Ingen poster for øyeblikket",
+  "No posts for now.": "Ingen poster for øyeblikket.",
   "Oldest first": "Eldste først",
   "One pinned post": [
     "Én post festet til toppen",
     "{{$count}} poster festet til toppen"
   ],
-  "Please fill in your Comment.": "Skriv inn din kommentar",
-  "Please fill in your Name.": "Skriv inn navn",
+  "Please fill in your Comment.": "Skriv inn din kommentar.",
+  "Please fill in your Name.": "Skriv inn navn.",
   "Post a comment": "Post en kommentar",
   "See one new update": [
     "Se én ny oppdatering",
@@ -195,16 +223,17 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Show highlighted post only": "Vis bare høydepunkter",
   "Sort by:": "Sortér etter:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Oppdatert {{post.content_updated_date | prettifyIsoDate}}",
-  "Your comment was sent for approval.": "Din kommentar er sendt til godkjenning",
+  "Your comment was sent for approval.": "Din kommentar er sendt til godkjenning.",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('ro', {
+  "Activate": "Activati",
   "Advertisement": "Reclamă",
   "Cancel": "Anulează",
   "Comment": "Comentează",
   "Comment *": "Comentariu *",
   "Comment should be maximum 300 characters in length.": "Comentariu nu poate fi mai lung de 300 de caractere.",
-  "Editorial": "editorial",
+  "Editorial": "Editorial",
   "Load more posts": "Încarcă mai multe posturi",
   "Loading": "Se încarcă",
   "Name *": "Numele *",
@@ -229,42 +258,8 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Sort by:": "Ordonează după:",
   "Your comment was sent for approval.": "Comentariul tău a fost trimis spre aprobare."
 });
-  gettextCatalog.setStrings('sr-cy', {
-  "Advertisement": "Реклама",
-  "Cancel": "Откажи",
-  "Comment": "Коментар",
-  "Comment *": "Коментар *",
-  "Comment should be maximum 300 characters in length.": "Коментар је ограничен на 300 карактера.",
-  "Editorial": "Избор уредника",
-  "Load more posts": "Учитај још постова",
-  "Loading": "Учитавање",
-  "Name *": "Име *",
-  "Name should be maximum 30 characters in length.": "Име је ограничено на 30 карактера.",
-  "Newest first": "Од најновијег",
-  "No posts for now.": "За сада нема постова.",
-  "Oldest first": "Од најстаријег",
-  "One pinned post": [
-    "Погледајте истакнут пост",
-    "Погледајте {{$count}} истакнута поста",
-    "Погледајте {{$count}} истакнутих постова"
-  ],
-  "Please fill in your Comment.": "Молимо унесите ваш коментар",
-  "Please fill in your Name.": "Молимо унесите ваше име.",
-  "Post a comment": "Поставите коментар",
-  "See one new update": [
-    "Погледајте нови пост",
-    "Погледајте {{$count}} нова поста",
-    "Погледајте {{$count}} нових постова"
-  ],
-  "Send": "Пошаљи",
-  "Show all posts": "Прикажи све постове",
-  "Show highlighted post only": "Прикажи најважније постове",
-  "Sort by:": "Сортирај:",
-  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ажурирано {{post.content_updated_date | prettifyIsoDate}}",
-  "Your comment was sent for approval.": "Ваш коментар је послат на одобрење.",
-  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} аутор: {{ item.meta.credit }}"
-});
   gettextCatalog.setStrings('sr', {
+  "Activate": "Aktivirati",
   "Advertisement": "Reklama",
   "Cancel": "Otkaži",
   "Comment": "Komentar",
@@ -292,12 +287,54 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Pogledajte {{$count}} novih postova"
   ],
   "Send": "Pošalji",
+  "Share this post on Email": "Podelite ovaj post na Email",
+  "Share this post on Facebook": "Podelite ovaj post na Facebook",
+  "Share this post on Google+": "Podelite ovaj post na Google+",
+  "Share this post on Linkedin": "Podelite ovaj post na Linkedin",
+  "Share this post on Twitter": "Podelite ovaj post na Twitter",
   "Show all posts": "Prikaži sve postove",
   "Show highlighted post only": "Prikaži najvažnije postove",
+  "Social Share": "Društveni udeo",
   "Sort by:": "Sortiraj:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ažurirano {{post.content_updated_date | prettifyIsoDate}}",
   "Your comment was sent for approval.": "Vaš komentar je poslat na odobrenje.",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} autor: {{ item.meta.credit }}"
+});
+  gettextCatalog.setStrings('sr_CY', {
+  "Activate": "Активирати",
+  "Advertisement": "Реклама",
+  "Cancel": "Откажи",
+  "Comment": "Коментар",
+  "Comment *": "Коментар *",
+  "Comment should be maximum 300 characters in length.": "Коментар је ограничен на 300 карактера.",
+  "Editorial": "Избор уредника",
+  "Load more posts": "Учитај још постова",
+  "Loading": "Учитавање",
+  "Name *": "Име *",
+  "Name should be maximum 30 characters in length.": "Име је ограничено на 30 карактера.",
+  "Newest first": "Од најновијег",
+  "No posts for now.": "За сада нема постова.",
+  "Oldest first": "Од најстаријег",
+  "One pinned post": [
+    "Погледајте истакнут пост",
+    "Погледајте {{$count}} истакнута поста",
+    "Погледајте {{$count}} истакнутих постова"
+  ],
+  "Please fill in your Comment.": "Молимо унесите ваш коментар.",
+  "Please fill in your Name.": "Молимо унесите ваше име.",
+  "Post a comment": "Поставите коментар",
+  "See one new update": [
+    "Погледајте нови пост",
+    "Погледајте {{$count}} нова поста",
+    "Погледајте {{$count}} нових постова"
+  ],
+  "Send": "Пошаљи",
+  "Show all posts": "Прикажи све постове",
+  "Show highlighted post only": "Прикажи најважније постове",
+  "Sort by:": "Сортирај:",
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ажурирано {{post.content_updated_date | prettifyIsoDate}}",
+  "Your comment was sent for approval.": "Ваш коментар је послат на одобрење.",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} аутор: {{ item.meta.credit }}"
 });
 /* jshint +W100,+W109 */
 }]);

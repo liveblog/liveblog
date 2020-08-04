@@ -3,90 +3,91 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.7.1*
+*Version 3.8.2*
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
-## Installation
+## Liveblog Setup
 
-### How to install Liveblog locally (recommended)
+### Liveblog local setup (recommended)
 
 Here I'm assuming you are running Ubuntu Linux 16.04
 
-#### Install the dependencies (for mac os users [follow this](https://github.com/liveblog/liveblog/blob/master/README-macos.md))
+#### Install the dependencies (for Mac OS users [follow this](https://github.com/liveblog/liveblog/blob/master/README-macos.md))
 
-First we need to install the necessary dependencies:
+- Install MongoDB and Redis:
 
-```bash
-sudo apt-get install mongodb redis-server
-```
+    ```sh
+    $ sudo apt-get install mongodb redis-server
+    ```
+- Install Elasticsearch
 
-We currently require a specific version of elastic search (not sure why we need that, but it might come in a handy later on):
+    We currently require a specific version of elastic search (not sure why we need that, but it might come in a handy later on):
 
-```bash
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee --append /etc/apt/sources.list.d/elastic.list
-sudo apt-get update
-sudo apt-get install openjdk-8-jre elasticsearch
-```
+    ```sh
+    $ wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+    $ echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee --append /etc/apt/sources.list.d/elastic.list
+    $ sudo apt-get update
+    $ sudo apt-get install openjdk-8-jre elasticsearch
+    ```
 
-Remove the elasticsearch node discovery functionality:
+    Remove the elasticsearch node discovery functionality:
 
-```bash
-echo "discovery.zen.ping.multicast.enabled: false" | sudo tee --append /etc/default/elasticsearch
-```
+    ```sh
+    $ echo "discovery.zen.ping.multicast.enabled: false" | sudo tee --append /etc/default/elasticsearch
+    ```
 
-Install Node.js LTS version:
+- Install NodeJS LTS version:
 
-```bash
-curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-sudo apt-get install nodejs
-```
+    ```sh
+    $ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    $ sudo apt-get install nodejs
+    ```
 
-Install the various Python requirements
+- Install python3 and other required tools
 
-```bash
-sudo apt-get install \
-python3 python3-dev python3-pip python3-lxml \
-build-essential libffi-dev git \
-libtiff5-dev libjpeg8-dev zlib1g-dev \
-libfreetype6-dev liblcms2-dev libwebp-dev \
-curl libfontconfig virtualenv libssl-dev
-```
+    ```sh
+    $ sudo apt-get install \
+    python3 python3-dev python3-pip python3-lxml \
+    build-essential libffi-dev git \
+    libtiff5-dev libjpeg8-dev zlib1g-dev \
+    libfreetype6-dev liblcms2-dev libwebp-dev \
+    curl libfontconfig virtualenv libssl-dev
+    ```
 
-Install the required npm tools:
+- Install grunt-cli:
 
-```bash
-sudo npm install -g grunt-cli
-```
+    ```sh
+    $ sudo npm install -g grunt-cli
+    ```
 
 #### Configure the server
 
-Now we can create the python virtual environment and install the server dependencies:
+- Create virtual environment and install server dependencies
 
-```bash
-cd server
-virtualenv -p python3 env
-source env/bin/activate
-pip install --upgrade setuptools
-pip install -r requirements.txt
-```
+    ```sh
+    $ cd server
+    $ virtualenv -p python3 env
+    $ source env/bin/activate
+    $ pip install --upgrade setuptools
+    $ pip install -r requirements.txt
+    ```
 
-Add the default data:
+- Add the default data:
 
-```bash
-python3 manage.py app:initialize_data;
-python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-python3 manage.py register_local_themes ;
-```
+    ```sh
+    $ python3 manage.py app:initialize_data;
+    $ python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+    $ python3 manage.py register_local_themes ;
+    ```
 
-Still in the virtualenv, you can now start the server
+- Start the server within the virtual environment
 
-```bash
-honcho -f ../docker/Procfile-dev start
-```
+    ```sh
+    $ honcho -f ../docker/Procfile-dev start
+    ```
 
 If you encounter any connection errors from elastic search:
 
@@ -106,51 +107,83 @@ honcho -f ../docker/Procfile-dev start
 
 #### Configure the client
 
-Now we can install the dependencies for the client
+- Install dependencies for the client
 
-```bash
-cd client
-npm install
-```
+    ```sh
+    $ cd client
+    $ npm install
+    ```
 
-We can now run the client server:
+- Run the client server:
 
-```bash
-grunt --force server --server='http://localhost:5000/api' --ws='ws://localhost:5100'
-```
+    ```sh
+    $ grunt --force server --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+    ```
 
-You can now access your local copy at http://localhost:9000 (user: admin, password: admin)
+You can now access your local setup at http://localhost:9000 (user: admin, password: admin)
 
-### Docker Install
+### Liveblog Setup using Docker
 
-Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
+- #### Install Docker
 
-##### install docker
+    ```sh
+    $ sudo apt-get install docker.io
+    ```
 
-```sh
-$ sudo apt-get install docker.io
-```
+    and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
 
-and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
+- #### Create python virtualenv
 
-##### create python virtualenv
+    ```sh
+    $ sudo apt-get install python-virtualenv
+    $ virtualenv env
+    ```
 
-```sh
-$ sudo apt-get install python-virtualenv
-$ virtualenv env
-```
+- #### Install docker-compose
 
-##### install docker compose and run app
+    ```sh
+    $ . env/bin/activate
+    $ pip install -r docker/requirements.txt
+    ```
 
-```sh
-$ . env/bin/activate
-$ pip install -r docker/requirements.txt
-$ ./scripts/docker-local-demo.sh
-```
+- #### Running Prebuilt Setup
+    ```sh
+    $ ./scripts/docker-local-demo.sh
+    ```
+
+- #### Running Development Setup
+    ```sh
+    $ cd docker
+    # start the containers
+    $ docker-compose -f docker-compose-dev.yml -p lbdemo up -d
+
+    # continue below once mongodb, elasticsearch and redis are ready to accept connections
+
+    # To initialise data
+    $ docker-compose -p lbdemo -f ./docker-compose-dev.yml run superdesk ./scripts/fig_wrapper.sh bash -c "\
+    python3 manage.py app:initialize_data ;\
+    echo '+++ sample data was prepopulated' ;\
+    python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;\
+    echo '+++ new user has been created' ;\
+    python3 manage.py register_local_themes ;\
+    echo '+++ liveblog: local themes were registered';"
+    ```
+    You can access your local setup at http://localhost:9000 (user: admin, password: admin) once the server is ready
+
+    If you encounter the following error on logging in to liveblog in the server logs
+    ```
+    elasticsearch.exceptions.NotFoundError: TransportError(404, 'IndexMissingException[[liveblog] missing]')
+    ```
+    Run the below commands:
+    ```sh
+    $ docker-compose -p lbdemo -f ./docker-compose-dev.yml run superdesk ./scripts/fig_wrapper.sh bash -c "\
+    curl -X POST elastic:9200/liveblog
+    python3 manage.py app:rebuild_elastic_index --index=liveblog"
+    ```
 
 ### Testing
 
-How to run the behavior tests for the syndication feature:
+Run the behavior tests for the syndication feature
 
 ```
 cd server
@@ -161,7 +194,7 @@ behave --format progress2 --logging-level ERROR features/syndication.feature
 
 #### Setting things up
 
-This will only work on Linux
+Only works on Linux
 
 ```
 cd /tmp
@@ -171,7 +204,7 @@ rm vagrant_1.8.6_x86_64.deb
 vagrant plugin install vagrant-lxc
 ```
 
-We need to create the configuration file for the frontend:
+Create the configuration file for the frontend
 
 ```
 cd ~/code/liveblog
@@ -194,7 +227,7 @@ Once in the virtual machine:
 /opt/liveblog/scripts/vagrant-provision.sh
 ```
 
-Once the provisioning done will still in the virtual machine:
+Once the provisioning is done while still in the virtual machine:
 
 ```
 /opt/liveblog/scripts/vagrant-start-dev.sh

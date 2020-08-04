@@ -8,6 +8,7 @@ const helpers = require('./helpers');
 const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
+const gdpr = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 
 const nunjucksEnv = new nunjucks.Environment();
@@ -94,13 +95,15 @@ function renderPosts(api_response) {
   }
 
   if (!renderedPosts.length) {
-    return; // early
+    return api_response;
   }
 
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
-  loadEmbeds();
+  setTimeout(function() {
+    loadEmbeds();
+  }, 500);
 
   return api_response;
 }
@@ -175,6 +178,17 @@ function updatePost(post, rendered) {
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+
+  // FB embeds has a weird glitch after update. So we need to force the re-render
+  // in case the post contains any fb embed
+  if (post.post_items_type === 'embed-facebook') {
+    setTimeout(function() {
+      // we query again as the DOM has been replaced
+      var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
+      FB.XFBML.parse(embedContainer);
+    }, 500);
+  }
+
   return true;
 }
 
@@ -208,17 +222,17 @@ function reloadScripts(elem) {
  * Trigger embed provider unpacking
  */
 function loadEmbeds() {
-  if (window.instgrm) {
+  if (window.instgrm)
     instgrm.Embeds.process();
-  }
 
-  if (window.twttr) {
+  if (window.twttr)
     twttr.widgets.load();
-  }
 
-  if (window.FB) {
+  if (window.FB)
     window.FB.XFBML.parse();
-  }
+
+  if (window.iframely)
+    iframely.load();
 
   attachSlideshow();
 }
@@ -270,6 +284,25 @@ function toggleSortDropdown(open) {
   } else {
     document.querySelector('.sorting-bar__dropdownContent')
       .classList.toggle('sorting-bar__dropdownContent--active');
+  }
+
+  window.playersState = {};
+}
+
+/**
+ * Toggles tags filter dropdown visibility
+ * @param {Boolean} open
+ */
+function toggleTagsFilterDropdown(open) {
+  var tagsDropdown = document.querySelector('.tags-filter-bar__dropdownContent');
+  var activeClass = 'tags-filter-bar__dropdownContent--active';
+
+  if (tagsDropdown) {
+    if (open !== undefined) {
+      tagsDropdown.classList.toggle(activeClass, open);
+    } else {
+      tagsDropdown.classList.toggle(activeClass);
+    }
   }
 
   window.playersState = {};
@@ -384,6 +417,20 @@ function permalinkScroll() {
   return false;
 }
 
+function attachDropdownCloseEvent() {
+  document.addEventListener("click", function (evt) {
+    const target = evt.target;
+    const dropDownBtnClicked = target.className === 'sorting-bar__dropdownBtn' || target.className === 'tags-filter-bar__dropdownBtn',
+      clickedOutside = (target.closest('div') === null ||
+        !['tags-filter-bar', 'sorting-bar'].includes(target.closest('div').className.split('__')[0]))
+    if (!dropDownBtnClicked && clickedOutside) {
+      // close tags-filter dropdown
+      toggleTagsFilterDropdown(false);
+      toggleSortDropdown(false);
+    }
+  });
+}
+
 module.exports = {
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
@@ -404,5 +451,9 @@ module.exports = {
   permalink: permalink,
   clearCommentDialog: clearCommentDialog,
   checkPending: checkPending,
-  adsManager: adsManager
+  adsManager: adsManager,
+  consent: gdpr,
+  toggleTagsFilterDropdown: toggleTagsFilterDropdown,
+  attachDropdownCloseEvent: attachDropdownCloseEvent,
+  loadEmbeds: loadEmbeds
 };

@@ -31,6 +31,7 @@ from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS, \
     DAYS_REMOVE_DELETED_BLOGS, TRIGGER_HOOK_URLS
 
 from .schema import blogs_schema
+from .utils import can_delete_blog
 from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, \
     publish_blog_embeds_on_s3, post_auto_output_creation
 
@@ -167,6 +168,7 @@ class BlogService(BaseService):
         updates['version_creator'] = str(get_user().get('_id'))
         syndication_enabled = updates.get('syndication_enabled')
         out = get_resource_service('syndication_out').find({'blog_id': original['_id']})
+
         if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
@@ -179,7 +181,7 @@ class BlogService(BaseService):
             if 'solo' in SUBSCRIPTION_LEVEL:
                 publish_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
 
-        # we mark the time to later remove if with celery beat if status is deleted
+        # we mark the time to later remove it with celery beat if status is deleted
         # use this below for local devel purposes
         # remove_not_before = utcnow() + datetime.timedelta(seconds=DAYS_REMOVE_DELETED_BLOGS)
         remove_not_before = utcnow() + datetime.timedelta(days=DAYS_REMOVE_DELETED_BLOGS)
@@ -224,8 +226,7 @@ class BlogService(BaseService):
 
     def on_delete(self, doc):
         # Prevent delete of blog if blog has consumers
-        out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
-        if doc.get('syndication_enabled', False) and out.count():
+        if not can_delete_blog(doc):
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
         blog = get_resource_service('client_blogs').find_one(req=None, _id=doc['_id'])

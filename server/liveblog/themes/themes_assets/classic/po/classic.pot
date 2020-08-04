@@ -4,7 +4,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: posts.html:23
+#: embeds/consent-placeholder.html:6
+msgid "Activate"
+msgstr ""
+
+#: posts.html:62
 msgid "Advertisement"
 msgstr ""
 
@@ -12,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: template.html:46
+#: template.html:60
 msgid "Comment"
 msgstr ""
 
@@ -24,16 +28,16 @@ msgstr ""
 msgid "Comment should be maximum 300 characters in length."
 msgstr ""
 
-#: main.js:49
-#: template.html:13
+#: main.js:155
+#: template.html:27
 msgid "Editorial"
 msgstr ""
 
-#: template.html:98
+#: template.html:116
 msgid "Load more posts"
 msgstr ""
 
-#: template.html:101
+#: template.html:119
 msgid "Loading"
 msgstr ""
 
@@ -45,21 +49,21 @@ msgstr ""
 msgid "Name should be maximum 30 characters in length."
 msgstr ""
 
-#: main.js:52
-#: template.html:17
+#: main.js:158
+#: template.html:31
 msgid "Newest first"
 msgstr ""
 
-#: template.html:59
+#: template.html:74
 msgid "No posts for now."
 msgstr ""
 
-#: main.js:55
-#: template.html:21
+#: main.js:161
+#: template.html:35
 msgid "Oldest first"
 msgstr ""
 
-#: template.html:83
+#: template.html:99
 msgid "One pinned post"
 msgid_plural "{{$count}} pinned posts"
 msgstr[0] ""
@@ -77,7 +81,7 @@ msgstr ""
 msgid "Post a comment"
 msgstr ""
 
-#: template.html:67
+#: template.html:82
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] ""
@@ -87,20 +91,44 @@ msgstr[1] ""
 msgid "Send"
 msgstr ""
 
-#: template.html:38
+#: posts.html:46
+msgid "Share this post on Email"
+msgstr ""
+
+#: posts.html:22
+msgid "Share this post on Facebook"
+msgstr ""
+
+#: posts.html:40
+msgid "Share this post on Google+"
+msgstr ""
+
+#: posts.html:34
+msgid "Share this post on Linkedin"
+msgstr ""
+
+#: posts.html:28
+msgid "Share this post on Twitter"
+msgstr ""
+
+#: template.html:52
 msgid "Show all posts"
 msgstr ""
 
-#: template.html:37
+#: template.html:51
 msgid "Show highlighted post only"
 msgstr ""
 
-#: template.html:11
-#: template.html:27
+#: posts.html:17
+msgid "Social Share"
+msgstr ""
+
+#: template.html:25
+#: template.html:41
 msgid "Sort by:"
 msgstr ""
 
-#: posts.html:38
+#: posts.html:81
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
@@ -108,6 +136,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr ""
 
-#: item.html:18
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

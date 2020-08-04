@@ -1,26 +1,55 @@
-<!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
-<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script>
-<script async defer src="https://platform.twitter.com/widgets.js"></script>
-<script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
-<script async defer src="https://www.youtube.com/player_api"></script>
-<script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
-<style class="embedly-css">
-    .card .hdr{
-      display: none;
-    }
-    body#cards {
-        padding: 0px;
-    }
-</style>
 <script>
-    embedly("defaults", {
-        cards: {
-            key: '82645d4daa7742cc891c21506d28235e',
-            align: 'left',
-            chrome: 0
-        }
-    });
+    function processInstagram() {
+        try{
+            instgrm.Embeds.process();
+            console.log('processing instagram embeds');
+        } catch(err) {console.log('instgrm script not loaded')}
+    }
+
+    function processTwitter() {
+        try{
+            twttr.widgets.load();
+            console.log('processing twitter embeds');
+        } catch(err) {console.log('twttr script not loaded')}
+    }
+
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v7.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+
+    function processEmbedly() {
+        embedly("defaults", {
+            cards: {
+                key: '82645d4daa7742cc891c21506d28235e',
+                align: 'left',
+                chrome: 0
+            }
+        });
+    }
 </script>
+
+<template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
+<script async defer src="https://platform.instagram.com/en_US/embeds.js" onload="processInstagram()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
+<script async defer src="https://platform.twitter.com/widgets.js" onload="processTwitter()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
+<script async defer src="https://www.youtube.com/player_api"></script>
+</template>
+
+<script async defer src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8" onload="processEmbedly()"></script>
+
+<script async defer src="https://cdn.iframe.ly/embed.js?key=a5ee9a89addd13b7a2e3a48c23e74e8d" onload="iframely.load()"></script>
 
 <script>
     var SET_FLAG = 'player-set';
@@ -50,11 +79,11 @@
         });
     }
 
-    // Handles embedly players
+    // Handles embedly players (legacy)
     function onPlayerJSReady () {
-        var embedlyIframes = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
+        var playerJsIFrames = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
 
-        embedlyIframes.forEach(function (iframe) {
+        playerJsIFrames.forEach(function (iframe) {
             if (iframe.getAttribute(SET_FLAG)) return;
 
             // set id to be used later
@@ -82,4 +111,13 @@
         });
     }
 </script>
-<script async defer src="//cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>
+<script async defer src="https://cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>
+
+<style class="embedly-css">
+    .card .hdr{
+      display: none;
+    }
+    body#cards {
+        padding: 0px;
+    }
+</style>

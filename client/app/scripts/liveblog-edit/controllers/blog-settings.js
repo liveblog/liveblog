@@ -35,6 +35,7 @@ BlogSettingsController.$inject = [
     'moment',
     'superdesk',
     '$rootScope',
+    '$routeParams',
     'postsService',
 ];
 
@@ -54,6 +55,7 @@ function BlogSettingsController(
     moment,
     superdesk,
     $rootScope,
+    $routeParams,
     postsService
 ) {
     // set view's model
@@ -500,6 +502,7 @@ function BlogSettingsController(
         vm.embedMultiHight = true;
         // devel link
         let parentIframe = 'http://localhost:5000/themes_assets/angular/';
+        const embedScript = `${config.client.url}/embed.js`;
 
         if (vm.angularTheme.public_url) {
             // production link
@@ -518,8 +521,8 @@ liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/9
 liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
 
         vm.embeds = {
-            normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' +
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
+            normal: `<script src="${embedScript}" async defer></script>
+<iframe id="liveblog-iframe" width="100%" height="715" src="${vm.publicUrl}" frameborder="0" allowfullscreen></iframe>`,
             resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' +
                 vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript,
         };
@@ -597,8 +600,7 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
 
     vm.start_date = splitDate.date;
     vm.start_time = splitDate.time;
-
-    vm.changeTab('general');
+    vm.changeTab(angular.isDefined($routeParams.tab) ? $routeParams.tab : 'general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';
     vm.syndication_enabled = vm.newBlog.syndication_enabled;
     vm.market_enabled = vm.newBlog.market_enabled;

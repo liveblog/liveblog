@@ -17,9 +17,7 @@ jobs:
       MAIL_USE_SSL: 0
       MAIL_DEBUG: 1
       MAIL_SUPPRESS_SEND: true
-      # Using travis encrypted keys didn't solve the issue with cross-forks Pull Requests
-      # So, we can use the test key taken from http://embed.ly/code site
-      EMBEDLY_KEY: fd92ebbc52fc43fb98f69e50e7893c13
+      IFRAMELY_KEY: ${{ secrets.IFRAMELY_KEY }}
       SUPERDESK_URL: 'http://localhost:5000/api'
       SUPERDESK_CLIENT_URL: 'http://localhost:9000'
       WEB_CONCURRENCY: 3
@@ -99,5 +97,5 @@ jobs:
         /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
         export CHROME_BIN=`which google-chrome`
         $CHROME_BIN --version
-        npm run webdriver-update
+        CHROMEDRIVER_VERSION=83.0.4103.39 npm run webdriver-update
         npm run e2e

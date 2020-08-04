@@ -87,7 +87,7 @@
             <!-- item start -->
             <div class="lb-item {{ref.item.item_type}}">
           {% endif %}
-          {% if ref.item.item_type == "embed" %}
+          {% if ref.item.item_type == "embed" or ref.item.meta.provider_name == "YoutubeUpload" %}
             {% include "template-item-embed.html" %}
           {% elif ref.item.item_type == "image" and galleryItem %}
             {% include "template-item-galleryImage.html" %}
@@ -97,6 +97,8 @@
             {% include "template-item-quote.html" %}
           {% elif ref.item.item_type == "comment" %}
             {% include "template-item-comment.html" %}
+          {% elif ref.item.item_type == "video" and not ref.item.meta.provider_name %}
+            {% include "template-mobile-app-video-workaround.html" %}
           {% else %}
             <article>{{ ref.item.text | safe }}</article>
           {% endif %}

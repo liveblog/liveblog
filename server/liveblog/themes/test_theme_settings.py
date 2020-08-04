@@ -1,5 +1,6 @@
 import liveblog.themes as themeapp
 import liveblog.blogs as blogapp
+import liveblog.core as global_preferences
 from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
@@ -36,6 +37,7 @@ class ThemeSettingsTestCase(TestCase):
             foo.setup_called()
             themeapp.init_app(self.app)
             blogapp.init_app(self.app)
+            global_preferences.init_app(self.app)
             client_modules_app.init_app(self.app)
             self.app.register_blueprint(embed_blueprint)
             self.client = self.app.test_client()
@@ -634,6 +636,23 @@ class ThemeSettingsTestCase(TestCase):
                     'type': 'checkbox',
                     'default': False,
                     'help': 'If the users will see the datetime only on client rendered'
+                },
+                {
+                    "name": "enableGdprConsent",
+                    "label": "Enable GDPR Consent",
+                    "type": "checkbox",
+                    "default": False,
+                    "help": "If users will see a placeholder on embeds until consent is given"
+                },
+                {
+                    "name": "gdprConsentText",
+                    "label": "GDPR Consent Placeholder Text",
+                    "type": "text",
+                    "dependsOn": {
+                        "enableGdprConsent": True
+                    },
+                    "default": "Test placeholder for gdpr message",
+                    "help": "This text will be shown in the GDPR placeholder"
                 }
             ],
             'i18n': {
@@ -1339,7 +1358,8 @@ class ThemeSettingsTestCase(TestCase):
                 "showSyndicatedAuthor": False,
                 "showTitle": False,
                 "showUpdateDatetime": False,
-                "stickyPosition": "bottom"
+                "stickyPosition": "bottom",
+                "enableGdprConsent": False
             },
             "title": "title: end to end Seven",
             "total_posts": 6,

@@ -385,5 +385,7 @@ LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
 # used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
 LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')
 
-# used to set single or multiple tag selection on post creating/editing
-ALLOW_MULTI_TAG_POST = env('ALLOW_MULTI_TAG_POST', False)
+# original_creator in posts and items used to be a string. This has been changed to avoid extra api hits
+# to complete author information. Next setting is to enable a workaround to behave like before to avoid
+# breaking the Liveblog Reporter app
+MOBILE_APP_WORKAROUND = env('MOBILE_APP_WORKAROUND', False)
