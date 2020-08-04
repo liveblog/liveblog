@@ -128,18 +128,20 @@ export default function BlogEditController(
         if (!isPostFreetype()) {
             // go with the 'classic' editor items
             return _.map(self.editor.get(), (block) => {
-                const syndicatedCreator = block.meta && block.meta.syndicated_creator;
+                const meta = block.meta;
+                const syndicatedCreator = meta && meta.syndicated_creator;
 
-                if (syndicatedCreator) {
-                    delete block.meta.syndicated_creator;
+                if (syndicatedCreator || (meta && meta.hasOwnProperty('syndicated_creator'))) {
+                    delete meta.syndicated_creator;
                 }
+
                 return {
                     group_type: 'default',
                     text: block.text
                         .replace(emptyPRegex, '<br/>')
                         .replace(emptyDivRegex, '<br/>')
                         .replace(targetIconRegex, 'target="_blank"'),
-                    meta: block.meta,
+                    meta: meta,
                     syndicated_creator: syndicatedCreator,
                     item_type: block.type,
                 };
@@ -212,8 +214,9 @@ export default function BlogEditController(
         }
 
         var areallBlocksempty = _.every(self.editor.blocks, (block) => block.isEmpty());
+        var isPostSaved = !$scope.isCurrentPostUnsaved();
 
-        return areallBlocksempty || !$scope.isCurrentPostUnsaved();
+        return areallBlocksempty || isPostSaved;
     }
 
     // ask in a modalbox if the user is sure to want to overwrite editor.
@@ -479,6 +482,7 @@ export default function BlogEditController(
 
                 return !$scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
             }
+
             return $scope.actionDisabled || $scope.actionPending;
         },
         askAndResetEditor: function() {

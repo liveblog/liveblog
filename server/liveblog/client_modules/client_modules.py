@@ -328,7 +328,7 @@ class ClientOutputPostsService(ClientBlogPostsService):
     def get(self, req, lookup):
         output = get_resource_service('outputs').find_one(req=None, _id=lookup.get('output_id'))
         if not output:
-            return 'output not found', 404
+            raise SuperdeskApiError.notFoundError(message='output not found')
 
         new_args = req.args.copy()
         query_source = json.loads(new_args.get('source', '{}'))
@@ -340,7 +340,7 @@ class ClientOutputPostsService(ClientBlogPostsService):
             if len(query_tags) == 0:
                 query_source['post_filter'] = {'terms': {'tags': tags}}
             elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
-                return 'some tags in the query are restricted', 400
+                raise SuperdeskApiError.badRequestError(message='some tags in the query are restricted')
 
         new_args['source'] = json.dumps(query_source)
         req.args = new_args

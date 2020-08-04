@@ -36,17 +36,15 @@
   {% endif %}
 {% elif ref.item.meta.provider_name == 'Brightcove' and ref.item.meta.original_url %}
   {{ref.item.meta.original_url | ampify | safe}}
+{% elif 'iframely-embed' in ref.item.meta.html %}
+  <amp-iframe src="https://cdn.iframe.ly/api/iframe?iframe=amp&key=a5ee9a89addd13b7a2e3a48c23e74e8d&url={{ref.item.meta.original_url}}"
+    width="400" height="325" frameborder="0" allowfullscreen
+    layout="responsive" resizable sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+  >
+    <amp-img layout="fill" src="//cdn.iframe.ly/api/thumbnail?url={{ref.item.meta.original_url}}&key=a5ee9a89addd13b7a2e3a48c23e74e8d" placeholder></amp-img>
+    <div overflow tabindex=0 role=button aria-label="">&nbsp;</div>
+  </amp-iframe>
 {% else %}
-  {% if ref.item.meta.thumbnail_url %}
-    <figure>
-      <amp-img src="{{ ref.item.meta.thumbnail_url }}"
-        layout="responsive"
-        width="{{ ref.item.meta.thumbnail_width }}"
-        height="{{ ref.item.meta.thumbnail_height }}"
-        alt="">
-      </amp-img>
-    </figure>
-  {% endif %}
   {% if ref.item.meta.html %}
     {{ ref.item.meta.html | ampify | safe }}
   {% endif %}

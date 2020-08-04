@@ -95,13 +95,15 @@ function renderPosts(api_response) {
   }
 
   if (!renderedPosts.length) {
-    return; // early
+    return api_response;
   }
 
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
-  loadEmbeds();
+  setTimeout(function() {
+    loadEmbeds();
+  }, 500);
 
   return api_response;
 }
@@ -176,6 +178,17 @@ function updatePost(post, rendered) {
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+
+  // FB embeds has a weird glitch after update. So we need to force the re-render
+  // in case the post contains any fb embed
+  if (post.post_items_type === 'embed-facebook') {
+    setTimeout(function() {
+      // we query again as the DOM has been replaced
+      var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
+      FB.XFBML.parse(embedContainer);
+    }, 500);
+  }
+
   return true;
 }
 
@@ -209,17 +222,17 @@ function reloadScripts(elem) {
  * Trigger embed provider unpacking
  */
 function loadEmbeds() {
-  if (window.instgrm) {
+  if (window.instgrm)
     instgrm.Embeds.process();
-  }
 
-  if (window.twttr) {
+  if (window.twttr)
     twttr.widgets.load();
-  }
 
-  if (window.FB) {
+  if (window.FB)
     window.FB.XFBML.parse();
-  }
+
+  if (window.iframely)
+    iframely.load();
 
   attachSlideshow();
 }
@@ -281,13 +294,17 @@ function toggleSortDropdown(open) {
  * @param {Boolean} open
  */
 function toggleTagsFilterDropdown(open) {
-  if (open !== undefined) {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active', open);
-  } else {
-    document.querySelector('.tags-filter-bar__dropdownContent')
-      .classList.toggle('tags-filter-bar__dropdownContent--active');
+  var tagsDropdown = document.querySelector('.tags-filter-bar__dropdownContent');
+  var activeClass = 'tags-filter-bar__dropdownContent--active';
+
+  if (tagsDropdown) {
+    if (open !== undefined) {
+      tagsDropdown.classList.toggle(activeClass, open);
+    } else {
+      tagsDropdown.classList.toggle(activeClass);
+    }
   }
+
   window.playersState = {};
 }
 
@@ -437,5 +454,6 @@ module.exports = {
   adsManager: adsManager,
   consent: gdpr,
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
-  attachDropdownCloseEvent: attachDropdownCloseEvent
+  attachDropdownCloseEvent: attachDropdownCloseEvent,
+  loadEmbeds: loadEmbeds
 };

@@ -45,7 +45,8 @@ echo "export MAIL_PASSWORD=pwd" | sudo tee --append ~/.bashrc
 echo "export SENTRY_DSN" | sudo tee --append ~/.bashrc
 
 echo "export SERVER_NAME=None" | sudo tee --append ~/.bashrc
-echo "export EMBEDLY_KEY=a7690e1033db42b59f4e9ad6d3b773b" | sudo tee --append ~/.bashrc
+# NOTE: we moved to IFRAMELY
+# echo "export EMBEDLY_KEY=a7690e1033db42b59f4e9ad6d3b773b" | sudo tee --append ~/.bashrc
 
 # Redefine variable for the local script, source ~/.bashrc won't work in that case
 export SUPERDESK_RELOAD=True
@@ -77,7 +78,8 @@ export MAIL_USERNAME=user
 export MAIL_PASSWORD=pwd
 export SENTRY_DSN
 export SERVER_NAME=None
-export EMBEDLY_KEY=a7690e1033db42b59f4e9ad6d3b773b
+# we moved to IFRAMELY. TODO: fix this and remove
+# export EMBEDLY_KEY=a7690e1033db42b59f4e9ad6d3b773b
 
 echo -e "${COLOR}Upgrading and installing packages${NC}"
 sudo apt-get update && apt-get dist-upgrade -y

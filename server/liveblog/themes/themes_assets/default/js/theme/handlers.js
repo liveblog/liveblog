@@ -78,6 +78,9 @@ var buttons = {
           tags: selectedTags
         }).then(view.renderTimeline)
           .then(view.displayNewPosts)
+          .then(view.consent.init)
+          .then(view.adsManager.refreshAds)
+          .then(view.loadEmbeds)
           .catch(catchError);
       };
     },
@@ -186,6 +189,7 @@ function loadSort(sortBy) {
     .then(view.toggleSortBtn(sortBy))
     .then(view.consent.init)
     .then(view.adsManager.refreshAds)
+    .then(view.loadEmbeds)
     .catch(catchError);
 }
 
