@@ -35,8 +35,7 @@
             "modules": true,
             "globalReturn": false,
             "impliedStrict": true,
-            "jsx": true,
-            "ecmaVersion": 2018
+            "jsx": true
         }
     },
 

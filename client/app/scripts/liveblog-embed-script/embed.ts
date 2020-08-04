@@ -41,7 +41,7 @@ class LBStorage {
     }
 }
 
-const beginHandshake = (e) => {
+const beginHandshake = (_e) => {
     liveblogEmbed = document.querySelector('#liveblog-iframe');
     const consentGiven = LBStorage.read(CONSENT_KEY);
 

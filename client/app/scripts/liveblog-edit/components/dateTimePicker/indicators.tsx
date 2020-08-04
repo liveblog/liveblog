@@ -1,5 +1,5 @@
 
-const IndicatorsContainer = (props) => {
+const IndicatorsContainer = () => {
     return null;
 };
 

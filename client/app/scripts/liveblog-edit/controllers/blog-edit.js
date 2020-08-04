@@ -288,7 +288,7 @@ export default function BlogEditController(
         const edited = $scope.currentPost && data.posts.find((post) => post._id === $scope.currentPost._id);
 
         if (edited) {
-            $scope.currentPost = {...$scope.currentPost, ...edited};
+            _.merge($scope.currentPost, edited);
         }
     });
 

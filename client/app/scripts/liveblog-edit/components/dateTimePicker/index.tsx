@@ -10,7 +10,7 @@ interface IProps {
     label: string;
 }
 
-export const DateTimePicker: React.FunctionComponent<IProps> = (props) => {
+export const DateTimePicker: React.FunctionComponent<IProps> = () => {
     const initialState: IStore = {
         isDatePickerOpen: false,
         isTimePickerOpen: false,

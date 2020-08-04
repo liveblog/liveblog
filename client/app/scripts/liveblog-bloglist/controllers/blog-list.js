@@ -32,8 +32,7 @@ export default function BlogListController(
     config,
     urls,
     modal,
-    blogService,
-) {
+    blogService) {
     $scope.maxResults = 25;
     $scope.states = [
         ACTIVE_STATE,
