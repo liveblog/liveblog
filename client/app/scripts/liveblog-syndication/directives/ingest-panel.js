@@ -93,9 +93,9 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                if (data.posts && data.hasOwnProperty('created')) {
+                if (data.posts && _.has(data, 'created')) {
                     const syndPosts = data.posts
-                        .filter((post) => post.hasOwnProperty('syndication_in'));
+                        .filter((post) => _.has(post, 'syndication_in'));
 
                     IngestPanelActions.setUnreadQueue(syndPosts);
                 }

@@ -84,7 +84,7 @@ export default function postsService(api, $q, userList, session) {
 
         newObj = {};
         for (i in o) {
-            if (o.hasOwnProperty(i)) {
+            if (_.has(o, i)) {
                 newObj[i] = recursiveDeepCopy(o[i]);
             }
         }

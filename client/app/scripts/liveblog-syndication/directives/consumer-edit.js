@@ -16,7 +16,7 @@ export default function consumerEdit(api, notify, _, superdesk) {
             scope.dirty = false;
 
             scope.$watch('consumer', (consumer) => {
-                scope.isEditing = consumer.hasOwnProperty('_id');
+                scope.isEditing = _.has(consumer, '_id');
                 scope.origConsumer = _.cloneDeep(consumer);
             });
 
@@ -73,7 +73,7 @@ export default function consumerEdit(api, notify, _, superdesk) {
                     .catch((err) => {
                         const errorMsg = gettext('Fatal error!');
 
-                        if (err.data.hasOwnProperty('_issues')) {
+                        if (_.has(err.data, '_issues')) {
                             Object.keys(err.data._issues).forEach((key) => {
                                 let issue = err.data._issues[key];
 

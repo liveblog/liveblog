@@ -82,7 +82,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             };
 
             scope.check = function(blog) {
-                blog.checked = blog.hasOwnProperty('checked') ? !blog.checked : true;
+                blog.checked = _.has(blog, 'checked') ? !blog.checked : true;
 
                 if (blog.checked && scope.blogsToAttach.indexOf(blog._id) === -1) {
                     scope.blogsToAttach.push(blog._id);

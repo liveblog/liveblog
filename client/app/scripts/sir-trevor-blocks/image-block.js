@@ -246,7 +246,7 @@ export default function imageBlock(SirTrevor, config) {
         toHTML: function() {
             const data = this.retrieveData();
 
-            if (_.has(data, 'media') && data.media.hasOwnProperty('renditions')) {
+            if (_.has(data, 'media') && _.has(data.media, 'renditions')) {
                 let srcset = '';
 
                 _.forEach(data.media.renditions, (value) => {

@@ -11,7 +11,7 @@ export default function syndicationController($scope, $route) {
         $route.updateParams({state: state.name});
     };
 
-    if ($route.current.params.hasOwnProperty('state')) {
+    if (_.has($route.current.params, 'state')) {
         $scope.activeState = $route.current.params.state;
     } else {
         $scope.changeState($scope.states[0]);

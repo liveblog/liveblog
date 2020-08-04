@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 copyToClipboard.$inject = ['notify'];
 
 export default function copyToClipboard(notify) {
@@ -27,7 +29,7 @@ export default function copyToClipboard(notify) {
                     selection.addRange(range);
                     document.execCommand('copy');
 
-                    if (selection.hasOwnProperty('removeRange')) {
+                    if (_.has(selection, 'removeRange')) {
                         selection.removeRange(range);
                     } else {
                         selection.removeAllRanges();

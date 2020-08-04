@@ -75,7 +75,7 @@ export default function consumerList(api, notify, modal, $http, config) {
                 if (scope.consumers
                     && scope.consumers.length > 0
                     && data.consumer
-                    && data.consumer.hasOwnProperty('webhook_enabled')) {
+                    && _.has(data.consumer, 'webhook_enabled')) {
                     scope.consumers = scope.consumers.map((consumer) => {
                         if (consumer._id === data.consumer._id) {
                             consumer.webhook_enabled = data.consumer.webhook_enabled;

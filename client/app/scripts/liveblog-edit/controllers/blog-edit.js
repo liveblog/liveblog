@@ -131,7 +131,7 @@ export default function BlogEditController(
                 const meta = block.meta;
                 const syndicatedCreator = meta && meta.syndicated_creator;
 
-                if (syndicatedCreator || (meta && meta.hasOwnProperty('syndicated_creator'))) {
+                if (syndicatedCreator || (meta && _.has(meta, 'syndicated_creator'))) {
                     delete meta.syndicated_creator;
                 }
 
