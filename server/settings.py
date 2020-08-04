@@ -93,8 +93,10 @@ if not CLIENT_URL.startswith('http'):
     CLIENT_URL = 'http:' + CLIENT_URL
 
 URL_PROTOCOL = server_url.scheme or None
-SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
+
+SERVER_NAME = server_url.netloc or None
+
 VALIDATION_ERROR_STATUS = 400
 JSON_SORT_KEYS = True
 
@@ -279,12 +281,11 @@ LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayNa
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')
 else:
-    # INSTALLED_APPS.append('apps.auth.db')
     INSTALLED_APPS.append('liveblog.auth')
 
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
 
-# Debuging state, this is used when generating theme emebed files default `false`.
+# Debugging state, this is used when generating theme embed files default `false`.
 LIVEBLOG_DEBUG = (env('LIVEBLOG_DEBUG', 'false').lower() == 'true')
 
 EMBED_PROTOCOL = env('EMBED_PROTOCOL', 'http://' if LIVEBLOG_DEBUG else 'https://')
