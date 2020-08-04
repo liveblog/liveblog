@@ -3,7 +3,7 @@ import _ from 'lodash';
 baseController.$inject = ['$scope', 'api', 'notify', '$route'];
 
 const getPageValue = ($route) => {
-    if (_.has($route.current.params, page)) {
+    if (_.has($route.current.params, 'page')) {
         return parseInt($route.current.params.page, 10);
     }
 
