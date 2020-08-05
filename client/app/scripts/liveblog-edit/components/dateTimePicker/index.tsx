@@ -14,12 +14,12 @@ export const DateTimePicker: React.FunctionComponent<IProps> = (props) => {
     const [value, setValue] = useState(moment().format());
     const [invalid, setInvalid] = useState(false);
 
-    const onChange = (val: string) => {
-        const selectedDate = moment(val);
+    const onChange = (datetime: string) => {
         const now = moment();
+        const selectedDate = moment(datetime);
 
         setInvalid(!selectedDate.isValid() || selectedDate <= now);
-        setValue(val);
+        setValue(datetime);
     };
 
     const times = generateTimes('01:00', 30, 'minutes');
