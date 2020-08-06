@@ -225,7 +225,7 @@ class PostsService(ArchiveService):
                     raise not_allowed_ex
 
         # check if user is trying to "schedule" a post (meaning published_date in future)
-        if 'published_date' not in post.keys():
+        if 'published_date' in post.keys():
             post_datetime = arrow.get(post['published_date'])
             if post_datetime > utcnow() and not current_user_has_privilege(PUBLISH):
                 raise not_allowed_ex
