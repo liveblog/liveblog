@@ -10,6 +10,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import moment from 'moment';
 
 import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.ng1';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.ng1';
@@ -314,6 +315,7 @@ export default function BlogEditController(
         $scope.highlight = false;
         $scope.scheduled = false;
         $scope.currentPostTags = [];
+        $scope.currentPostPublishedDate = undefined;
 
         $timeout(() => {
             $scope.enableEditor = true;
@@ -382,6 +384,7 @@ export default function BlogEditController(
             sticky: $scope.sticky,
             lb_highlight: $scope.highlight,
             tags: $scope.currentPostTags,
+            published_date: $scope.currentPostPublishedDate,
         };
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
@@ -410,6 +413,7 @@ export default function BlogEditController(
         selectedUsersFilter: [],
         currentPost: undefined,
         currentPostTags: [],
+        currentPostPublishedDate: undefined,
         blogSecurityService: blogSecurityService,
         unreadPostsService: unreadPostsService,
         preview: false,
@@ -515,8 +519,13 @@ export default function BlogEditController(
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
-                $scope.scheduled = $scope.currentPost.post_status === 'scheduled';
                 $scope.currentPostTags = $scope.currentPost.tags || [];
+                $scope.currentPostPublishedDate = $scope.currentPost.published_date;
+
+                const now = moment();
+                const publishedDate = moment($scope.currentPost.published_date);
+
+                $scope.scheduled = publishedDate > now;
 
                 // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
                 if (isPostFreetype()) {
@@ -636,6 +645,10 @@ export default function BlogEditController(
 
         onTagsChange: (tags) => {
             $scope.currentPostTags = tags;
+        },
+
+        onPublishedDateChange: (utcDateTime) => {
+            $scope.currentPostPublishedDate = utcDateTime;
         },
 
         filterHighlight: function(highlight) {

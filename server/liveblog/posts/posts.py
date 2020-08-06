@@ -1,7 +1,9 @@
 import logging
 import flask
+import arrow
 import datetime
 
+from enum import Enum
 from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
@@ -25,6 +27,13 @@ from .mixins import AuthorsMixin
 
 logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
+
+
+class PostStatus(Enum):
+    OPEN = 'open'
+    DRAFT = 'draft'
+    SUBMITTED = 'submitted'
+    COMMENT = 'comment'
 
 
 # monkey patch so we can update superdesk core resources in Elastic
@@ -109,8 +118,8 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment', 'scheduled'],
-            'default': 'open'
+            'allowed': [x.value for x in PostStatus],
+            'default': PostStatus.OPEN
         },
         'lb_highlight': {
             'type': 'boolean',
@@ -132,9 +141,6 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         },
         'unpublished_date': {
-            'type': 'datetime'
-        },
-        'publish_at': {
             'type': 'datetime'
         },
         'publisher': {
@@ -203,15 +209,26 @@ class PostsService(ArchiveService):
         return float(order)
 
     def check_post_permission(self, post):
+        PUBLISH = 'publish_post'
+        CONTRIBUTE = 'submit_post'
+
+        not_allowed_ex = SuperdeskApiError.forbiddenError(message='User does not have sufficient permissions.')
+
         to_be_checked = (
-            dict(status='open', privilege_required='publish_post'),
-            dict(status='submitted', privilege_required='submit_post')
+            dict(status=PostStatus.OPEN, privilege_required=PUBLISH),
+            dict(status=PostStatus.SUBMITTED, privilege_required=CONTRIBUTE)
         )
+
         for rule in to_be_checked:
             if 'post_status' in post and post['post_status'] == rule['status']:
                 if not current_user_has_privilege(rule['privilege_required']):
-                    raise SuperdeskApiError.forbiddenError(
-                        message='User does not have sufficient permissions.')
+                    raise not_allowed_ex
+
+        # check if user is trying to "schedule" a post (meaning published_date in future)
+        if 'published_date' not in post.keys():
+            post_datetime = arrow.get(post['published_date'])
+            if post_datetime > utcnow() and not current_user_has_privilege(PUBLISH):
+                raise not_allowed_ex
 
     def on_create(self, docs):
         for doc in docs:
@@ -219,13 +236,15 @@ class PostsService(ArchiveService):
             self.check_post_permission(doc)
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence(doc.get('blog'))
+
             # if you publish a post directly which is not a draft it will have a published_date assigned
-            if doc['post_status'] == 'open':
-                # published date will be set in a syndicated post
+            if doc['post_status'] == PostStatus.OPEN:
+                # published date will be set in a syndicated post or in scheduled post
                 if 'published_date' not in doc.keys():
                     doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
                 doc['publisher'] = get_publisher()
+
         super().on_create(docs)
 
     def on_created(self, docs):

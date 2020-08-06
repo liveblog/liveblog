@@ -219,7 +219,7 @@
                             </div>
                             <div class="schedule-selector" ng-if="scheduled">
                                 <div class="selector__label">Publish on:</div>
-                                <date-time-picker label="Mundo" />
+                                <date-time-picker datetime="currentPost.published_date" on-change="onPublishedDateChange" />
                             </div>
                         </div>
                         <div class="actions">

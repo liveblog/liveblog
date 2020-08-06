@@ -381,7 +381,7 @@ export default function postsService(api, $q, userList, session) {
 
     function setFlagTimeout(post, callback) {
         // perhaps not the best place to put this but I needed this
-        // to be accessible from diferent directives. If there is another/better way
+        // to be accessible from different directives. If there is another/better way
         // please improve this ;)
         const editFlag = post.edit_flag;
         const current = moment().utc();

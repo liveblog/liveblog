@@ -24,10 +24,25 @@ export const simpleReactDirective = (Component: any, scopeDef: Array<IScopeDefin
         restrict: 'E',
     };
 
+    const extractProps = ($scope: any) => {
+        const props = {};
+
+        scopeDef.forEach((x) => {
+            if (typeof x === 'string') {
+                props[x] = $scope[x];
+            } else if (Array.isArray(x) && x.length === 2) {
+                const key = x[0]; // eslint-disable-line
+                props[key] = $scope[key];
+            }
+        });
+
+        return props;
+    };
+
     // first let's create link attribute
-    directive.link = (scope, element, attrs) => {
+    directive.link = (scope, element) => {
         const mountPoint = $(element).get(0);
-        const compInstance = React.createElement(Component, attrs);
+        const compInstance = React.createElement(Component, extractProps(scope));
 
         ReactDOM.render(compInstance, mountPoint);
 
@@ -36,7 +51,7 @@ export const simpleReactDirective = (Component: any, scopeDef: Array<IScopeDefin
         });
     };
 
-    // the attach the isolated scope
+    // then attach the isolated scope
     directive.scope = {};
     scopeDef.forEach((x) => {
         if (typeof x === 'string') {
