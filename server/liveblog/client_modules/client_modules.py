@@ -2,12 +2,13 @@ import json
 import logging
 from itertools import groupby
 from distutils.util import strtobool
-from eve.utils import config
+from eve.utils import config, date_to_str
 from flask_cors import CORS
 from flask import Blueprint, request
 from flask import current_app as app
 from werkzeug.datastructures import MultiDict
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -254,8 +255,21 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
 
         # ElasticCursor is returned so we can loop and modify docs inside
         blog_posts = app.blog_cache.get(blog_id, cache_key)
+        blog_posts = None
 
         if blog_posts is None:
+            new_args = req.args.copy()
+            query_source = json.loads(new_args.get('source', '{}'))
+            post_filter_range = query_source.setdefault('post_filter', {}).get('range', {})
+
+            post_filter_range['published_date'] = {'lte': date_to_str(utcnow())}
+            query_source['post_filter']['range'] = post_filter_range
+
+            new_args['source'] = json.dumps(query_source)
+            req.args = new_args
+
+            print('BUUGGGGGGG', new_args)
+
             blog_posts = super().get(req, lookup)
 
             # let's complete the post info before cache

@@ -36,7 +36,7 @@ class Blog:
             blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
 
         self._blog = blog
-        self._posts = get_resource_service('client_posts')
+        self._posts = get_resource_service('client_blog_posts')
 
     def _posts_lookup(self, sticky=None, highlight=None, all_posts=False, deleted=False, tags=[]):
         filters = [
