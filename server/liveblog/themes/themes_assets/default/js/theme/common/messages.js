@@ -1,5 +1,5 @@
 export const send = (message, data) => {
-    let msg = {type: message};
+    const msg = {type: message};
 
     if (data)
         msg.data = data;
