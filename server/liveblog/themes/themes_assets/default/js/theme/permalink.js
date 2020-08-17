@@ -4,7 +4,7 @@ class Permalink {
       return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
     };
 
-    this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.  
+    this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
 
     // first of all, we make sure to have an url
@@ -16,7 +16,7 @@ class Permalink {
     }
 
     var matches = this.href.match(this.regexHash);
-        
+
     if (matches) {
       var arr = decodeURIComponent(matches[1]).split('__');
       this._id = arr[0];
@@ -40,7 +40,7 @@ class Permalink {
       permalink = this.href + '&' + newHash;
     }
 
-    return permalink; 
+    return permalink;
   }
 }
 
