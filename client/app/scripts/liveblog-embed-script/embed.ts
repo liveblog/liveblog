@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { MsgHandlerFunc } from './types'; // eslint-disable-line
 import * as consent from './handlers/consent';
+import * as permalink from './handlers/permalink';
 
 const handlers = {};
 
@@ -13,6 +14,7 @@ registerHandler(consent.Message.Init, consent.init);
 registerHandler(consent.Message.Accept, consent.accept);
 
 // permalink handling messages
+registerHandler(permalink.Event.Init, permalink.init);
 
 window.addEventListener('message', (event: MessageEvent) => {
     const { type, data } = event.data;

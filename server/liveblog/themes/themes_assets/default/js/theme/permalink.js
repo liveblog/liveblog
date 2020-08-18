@@ -1,3 +1,5 @@
+import * as messages from './common/messages';
+
 class Permalink {
   constructor() {
     this.escapeRegExp = function (string) {
@@ -7,12 +9,24 @@ class Permalink {
     this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
 
+    this.href = null;
+
+    // listen to embed.ts file when it sends parent window href
+    messages.listen((type, data) => {
+      if (type === 'permalink_url') {
+        this.href = data;
+      }
+    });
+
+    // then let's ask for the window href
+    messages.send('permalink_init');
+
     // first of all, we make sure to have an url
     this.href = document.location.href;
 
-    // then let's check if we're inside of an iframe
-    if (window !== window.parent && "referrer" in document) {
-      this.href = document.referrer;
+    // if we are not in iframe (ESI approach) then let's use own's document href
+    if (window === window.parent) {
+      this.href = document.location.href;
     }
 
     var matches = this.href.match(this.regexHash);

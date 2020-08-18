@@ -4,7 +4,7 @@ import { messageIframe } from '../utils';
 const CONSENT_KEY = '__lb_consent_key__';
 const CONSENT_LIFE_DAYS = 365;
 
-export enum Message {
+export enum Message { /* eslint-disable no-unused-vars */
     Init = 'init_consent',
     Accept = 'accept_consent',
     Sync = 'sync-consent-given',
