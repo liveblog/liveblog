@@ -1,32 +1,26 @@
-import LBStorage from './storage';
-import { messageIframe } from './utils';
+import _ from 'lodash';
+import { MsgHandlerFunc } from './types'; // eslint-disable-line
+import * as consent from './handlers/consent';
 
-const CONSENT_KEY = '__lb_consent_key__';
-const CONSENT_LIFE_DAYS = 365;
+const handlers = {};
 
-const beginHandshake = (e) => {
-    const consentGiven = LBStorage.read(CONSENT_KEY);
-
-    messageIframe('sync-consent-given', consentGiven);
+const registerHandler = (eventName: string, handler: MsgHandlerFunc) => {
+    handlers[eventName] = handler;
 };
 
-const handleMessages = (event: MessageEvent) => {
-    const { type } = event.data;
+// consent handling messages
+registerHandler(consent.Message.Init, consent.init);
+registerHandler(consent.Message.Accept, consent.accept);
 
-    if (type) {
-        console.log('Message received', type); // eslint-disable-line
+// permalink handling messages
+
+window.addEventListener('message', (event: MessageEvent) => {
+    const { type, data } = event.data;
+
+    // tslint:disable-next-line:curly
+    if (!type) return;
+
+    if (_.has(handlers, type)) {
+        handlers[type](data);
     }
-
-    switch (event.data.type) {
-    case 'init_consent':
-        beginHandshake(event);
-        break;
-    case 'accept_consent':
-        LBStorage.write(CONSENT_KEY, 'Y', CONSENT_LIFE_DAYS);
-        break;
-    default:
-        break;
-    }
-};
-
-window.addEventListener('message', handleMessages, false);
+}, false);
