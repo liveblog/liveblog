@@ -7,12 +7,12 @@ export const send = (message, data) => {
     window.parent.postMessage(msg, '*');
 }
 
-export const listen = (listener) => {
+export const listen = (eventName, listener) => {
     window.addEventListener('message', (event) => {
         const {type, data} = event.data;
 
         // only call listener if type is present
-        if (type)
-            listener(type, data);
+        if (type && type === eventName)
+            listener(data);
     }, false);
 }

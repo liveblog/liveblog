@@ -19,22 +19,14 @@ class ConsentManager {
     }
 
     static start(options) {
-        messages.listen(ConsentManager.handleEnhancerMessage);
+        messages.listen('sync-consent-given', (data) => {
+            Storage.write(CONSENT_KEY, data, CONSENT_LIFE_DAYS);
+            ConsentManager.options.onSync();
+        });
 
         messages.send('init_consent');
 
         ConsentManager.options = options;
-    }
-
-    static handleEnhancerMessage = (type, data) => {
-        switch (type) {
-            case 'sync-consent-given':
-                Storage.write(CONSENT_KEY, data, CONSENT_LIFE_DAYS);
-                ConsentManager.options.onSync();
-                break;
-            default:
-                break;
-        }
     }
 
     static isConsentGiven() {

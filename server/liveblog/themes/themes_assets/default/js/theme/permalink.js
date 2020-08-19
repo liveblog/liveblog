@@ -8,27 +8,25 @@ class Permalink {
 
     this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
-
     this.href = null;
-
-    // listen to embed.ts file when it sends parent window href
-    messages.listen((type, data) => {
-      if (type === 'permalink_url') {
-        this.href = data;
-      }
-    });
-
-    // then let's ask for the window href
-    messages.send('permalink_init');
-
-    // first of all, we make sure to have an url
-    this.href = document.location.href;
 
     // if we are not in iframe (ESI approach) then let's use own's document href
     if (window === window.parent) {
       this.href = document.location.href;
-    }
+      this._parseHref();
+    } else {
+      // listen to embed.ts file when it sends parent window href
+      messages.listen('permalink_url', (data) => {
+        this.href = data;
+        this._parseHref();
+      });
 
+      // then let's ask for the window href
+      messages.send('permalink_init');
+    }
+  }
+
+  _parseHref() {
     var matches = this.href.match(this.regexHash);
 
     if (matches) {
