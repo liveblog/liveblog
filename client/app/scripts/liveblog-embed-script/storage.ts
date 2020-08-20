@@ -2,7 +2,6 @@ export default class LBStorage {
     static read(name: string) {
         const itemStr = localStorage.getItem(name);
 
-        // if the item doesn't exist, return null
         // tslint:disable-next-line:curly
         if (!itemStr)
             return null;
@@ -10,7 +9,6 @@ export default class LBStorage {
         const item = JSON.parse(itemStr);
         const now = new Date();
 
-        // compare the expiry time of the item with the current time
         if (now.getTime() > item.expiry) {
             // If the item is expired, delete the item from storage
             // and return null
