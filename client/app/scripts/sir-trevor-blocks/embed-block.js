@@ -156,12 +156,20 @@ export default function embedBlockFactory(SirTrevor, config) {
                 // if the input is an url, use embed services
                 if (isURI(input)) {
                     input = cleanupURL(input);
+
+                    var originalUrl = input;
+
+                    // very simple test to check if it was encoded already
+                    if (decodeURIComponent(input) === input) {
+                        input = encodeURIComponent(input);
+                    }
+
                     // request the embedService with the provided url
                     const {embedService, coverMaxWidth} = self.getOptions();
 
                     embedService.get(input, coverMaxWidth).then(
                         function successCallback(data) {
-                            data.original_url = input;
+                            data.original_url = originalUrl;
 
                             if (!data.provider_name || !data.provider_url) {
                                 const providerData = guessProvider(data.url);
