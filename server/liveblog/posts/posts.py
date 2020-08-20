@@ -29,7 +29,7 @@ logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
-class PostStatus(Enum):
+class PostStatus(str, Enum):
     OPEN = 'open'
     DRAFT = 'draft'
     SUBMITTED = 'submitted'
