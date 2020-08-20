@@ -147,21 +147,25 @@ var buttons = {
     });
 
     view.attachSlideshow();
-    view.attachPermalink();
-    view.attachShareBox();
-    view.attachDropdownCloseEvent();
-    if (view.permalink._changedSort) {
-      loadSort(LB.settings.postOrder)
-        .then(checkForScroll);
-    } else {
-      checkForScroll();
-    }
+
+    // NOTE: it has to be delayed as we need to wait for parent window message
+    setTimeout(() => {
+      view.attachPermalink();
+      view.attachShareBox();
+      view.attachDropdownCloseEvent();
+      if (view.permalink._changedSort) {
+        loadSort(LB.settings.postOrder)
+          .then(checkForScroll);
+      } else {
+        checkForScroll();
+      }
+    }, 500);
   }
 };
 
 function loadSort(sortBy) {
   // fetch the data only if the sort order has changed
-  if(!isOrderChanged(sortBy)) return;
+  if(!isOrderChanged(sortBy)) return Promise.resolve();
 
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
