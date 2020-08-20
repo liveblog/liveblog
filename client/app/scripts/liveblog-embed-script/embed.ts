@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { MsgHandlerFunc } from './types'; // eslint-disable-line
 import * as consent from './handlers/consent';
 import * as permalink from './handlers/permalink';
@@ -22,7 +21,7 @@ window.addEventListener('message', (event: MessageEvent) => {
     // tslint:disable-next-line:curly
     if (!type) return;
 
-    if (_.has(handlers, type)) {
+    if (type in handlers) {
         handlers[type](data);
     }
 }, false);
