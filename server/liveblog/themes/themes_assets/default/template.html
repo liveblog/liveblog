@@ -129,6 +129,12 @@
   {% block timeline_body %}
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
+      <div id="shared-post-container" class="shared-post-container mod--displaynone">
+        <div data-latest-updates class="lb-post new-updates">
+          <div>{{ translate("See latest updates") }}</div>
+        </div>
+        <div class="post-wrap"></div>
+      </div>
       <div data-one-new-update class="lb-post new-updates mod--displaynone">
         <div>{{ translate("See one new update") }}</div>
       </div>

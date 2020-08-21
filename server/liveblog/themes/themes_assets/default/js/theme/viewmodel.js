@@ -10,6 +10,7 @@ var helpers = require('./helpers')
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const commentItemEndpoint = `${apiHost}api/client_items`;
+const clientPostsEndpoint = `${apiHost}api/client_posts`;
 const commentPostEndpoint = `${apiHost}api/client_comments`;
 
 var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
@@ -135,6 +136,11 @@ vm.getAllPosts = function() {
   return helpers.getJSON(fullPath);
 };
 
+vm.getSinglePost = function(id) {
+  var url = `${clientPostsEndpoint}/${id}`;
+  return helpers.getJSON(url);
+};
+
 /**
  * Get next page of posts from API.
  * @param {object} opts - query builder options.
@@ -155,7 +161,6 @@ vm.loadPostsPage = function(opts) {
  */
 vm.loadPosts = function(opts) {
   opts = opts || {};
-  //opts.fromDate = this.vm.latestUpdate || new Date().toISOString();
   return this.getPosts(opts);
 };
 
