@@ -31,8 +31,9 @@ class Permalink {
   }
 
   parseHref() {
-    if (this.href.length === 0 && window !== window.parent) {
-      this.href = window.frameElement.parent_url;
+    if (this.href.length === 0) {
+      messages.send('permalink_init');
+      return;
     }
 
     var matches = this.href.match(this.regexHash);
