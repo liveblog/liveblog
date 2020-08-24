@@ -4,6 +4,8 @@
 
 'use strict';
 
+import * as messages from './common/messages';
+
 var view = require('./view')
   , viewmodel = require('./viewmodel')
   , helpers = require('./helpers');
@@ -148,22 +150,35 @@ var buttons = {
 
     view.attachSlideshow();
 
-    // NOTE: it has to be delayed as we need to wait for parent window message
     setTimeout(() => {
-      view.attachPermalink();
-      view.attachShareBox();
-      view.attachDropdownCloseEvent();
-
-      if (permalink._id) {
-        viewmodel.getSinglePost(permalink._id)
-          .then(view.renderSharedPost)
-          .then(view.consent.init)
-          .then(view.adsManager.refreshAds)
-          .then(view.loadEmbeds);
-      }
+      adjustPermalinkStuff();
     }, 500);
+
+    messages.listen('permalink_url', (data) => {
+      setTimeout(() => {
+        adjustPermalinkStuff();
+      }, 500);
+    });
   }
 };
+
+function adjustPermalinkStuff() {
+  view.attachPermalink();
+  view.attachShareBox();
+  view.attachDropdownCloseEvent();
+
+  if (!permalink._id) {
+    permalink.parseHref();
+  }
+
+  if (permalink._id) {
+    viewmodel.getSinglePost(permalink._id)
+      .then(view.renderSharedPost)
+      .then(view.consent.init)
+      .then(view.adsManager.refreshAds)
+      .then(view.loadEmbeds);
+  }
+}
 
 function loadSort(sortBy) {
   // fetch the data only if the sort order has changed

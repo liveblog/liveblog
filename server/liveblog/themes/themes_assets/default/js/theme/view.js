@@ -199,7 +199,12 @@ function renderSharedPost(post) {
     }, 500);
   }
 
+  setTimeout(function() {
+    container.scrollIntoView();
+  }, 500);
+
   container.scrollIntoView();
+
   window.onload = function() {
     container.scrollIntoView();
   };

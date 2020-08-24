@@ -15,6 +15,8 @@ registerHandler(consent.Message.Accept, consent.accept);
 // permalink handling messages
 registerHandler(permalink.Event.Init, permalink.init);
 
+permalink.setupUrl();
+
 window.addEventListener('message', (event: MessageEvent) => {
     const { type, data } = event.data;
 
