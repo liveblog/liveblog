@@ -6,8 +6,8 @@
 
 var view = require('./view')
   , viewmodel = require('./viewmodel')
-  , adsManager = require('./ads-manager')
   , helpers = require('./helpers');
+const { permalink } = require('./view');
 
 /**
  * Contains a mapping of element data-selectors and click handlers
@@ -55,7 +55,6 @@ var buttons = {
       }).then(view.renderPosts)
         .then(view.displayNewPosts)
         .then(view.consent.init)
-        .then(view.adsManager.refreshAds)
         .then(view.updateTimestamps)
         .catch(catchError);
     },
@@ -124,7 +123,8 @@ var buttons = {
         .catch(catchError);
     },
     '[data-one-new-update]': showPendings,
-    '[data-new-updates]': showPendings
+    '[data-new-updates]': showPendings,
+    '[data-latest-updates]': view.dismissSharedPost
   },
 
   attach: function() {
@@ -153,11 +153,13 @@ var buttons = {
       view.attachPermalink();
       view.attachShareBox();
       view.attachDropdownCloseEvent();
-      if (view.permalink._changedSort) {
-        loadSort(LB.settings.postOrder)
-          .then(checkForScroll);
-      } else {
-        checkForScroll();
+
+      if (permalink._id) {
+        viewmodel.getSinglePost(permalink._id)
+          .then(view.renderSharedPost)
+          .then(view.consent.init)
+          .then(view.adsManager.refreshAds)
+          .then(view.loadEmbeds);
       }
     }, 500);
   }
@@ -195,25 +197,6 @@ function loadSort(sortBy) {
     .then(view.adsManager.refreshAds)
     .then(view.loadEmbeds)
     .catch(catchError);
-}
-
-function checkForScroll() {
-  viewmodel.getAllPosts()
-    .then((posts) => {
-      if (view.checkPermalink(posts)) {
-        loadForScroll();
-      }
-    });
-}
-
-function loadForScroll() {
-  if (!view.permalinkScroll()) {
-    viewmodel.loadPostsPage()
-      .then(view.renderPosts)
-      .then(view.displayNewPosts)
-      .then(loadForScroll)
-      .catch(catchError);
-  }
 }
 
 function catchError(err) {

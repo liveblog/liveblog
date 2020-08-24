@@ -56,6 +56,23 @@ function renderTimeline(api_response) {
 }
 
 /**
+ * Render the post content into the proper html template
+ * @param {Object} post
+ * @param {boolean} displayNone
+ */
+function renderSinglePost(post, displayNone) {
+  return nunjucks.env.render(
+    'template-post.html', {
+      item: post,
+      settings: window.LB.settings,
+      options: {i18n: window.LB.i18n},
+      assets_root: window.LB.assets_root,
+      displaynone: displayNone
+    }
+  );
+}
+
+/**
  * Render posts currently in pipeline to template.
  * To reduce DOM calls/paints we hand off rendered HTML in bulk.
  * @typedef {Object} api_response – contains request opts.
@@ -75,20 +92,15 @@ function renderPosts(api_response) {
     const elem = document.querySelector(`[data-post-id="${post._id}"]`);
     const isVideoPlaying = Object.values(window.playersState).some(x => x === true);
     const displaynone = api_response.requestOpts.fromDate &&
-                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying) &&
-                        !elem;
-    // for translation macro purposes
-    var optionsObj = {i18n: window.LB.i18n};
+                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying) && !elem;
 
-    const rendered = nunjucks.env.render('template-post.html', {
-      item: post,
-      settings: window.LB.settings,
-      options: optionsObj,
-      assets_root: window.LB.assets_root,
-      displaynone: displaynone
-    });
+    const rendered = renderSinglePost(post, displaynone);
 
     if ( updatePost(post, rendered) ) {
+      setTimeout(function() {
+        loadEmbeds();
+      }, 500);
+
       continue;
     }
     renderedPosts.push({ html: rendered, data: post }); // create operation
@@ -154,6 +166,45 @@ function deletePost(id) {
   if (elem) {
     elem.remove();
   }
+}
+
+var dismissSharedPost = (e) => {
+  var container = document.querySelector('#shared-post-container');
+  container.classList.add('mod--displaynone');
+}
+
+function renderSharedPost(post) {
+  // make sure to avoid pin or highlighted style
+  post.lb_highlight = false;
+  post.sticky = false;
+
+  const rendered = renderSinglePost(post, false);
+  var container = document.querySelector('#shared-post-container');
+  var postWrap = container.querySelector('.post-wrap');
+
+  postWrap.innerHTML = rendered;
+  container.classList.remove('mod--displaynone');
+
+  attachSlideshow();
+  attachPermalink();
+  attachShareBox();
+
+  // FB embeds has a weird glitch after update. So we need to force the re-render
+  // in case the post contains any fb embed
+  if (post.post_items_type === 'embed-facebook') {
+    setTimeout(function() {
+      // we query again as the DOM has been replaced
+      var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
+      FB.XFBML.parse(embedContainer);
+    }, 500);
+  }
+
+  container.scrollIntoView();
+  window.onload = function() {
+    container.scrollIntoView();
+  };
+
+  postWrap.classList.add('lb-post-permalink-selected');
 }
 
 /**
@@ -455,5 +506,7 @@ module.exports = {
   consent: gdpr,
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
   attachDropdownCloseEvent: attachDropdownCloseEvent,
-  loadEmbeds: loadEmbeds
+  loadEmbeds: loadEmbeds,
+  renderSharedPost: renderSharedPost,
+  dismissSharedPost: dismissSharedPost
 };

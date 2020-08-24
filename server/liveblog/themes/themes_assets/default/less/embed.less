@@ -422,7 +422,7 @@
   }
 
   .header-bar__highlight.header-bar__highlight--active {
-    background-color: #f2f5f8;
+    background-color: @highlight;
     border: 1px solid #cccccc;
   }
 
@@ -560,11 +560,51 @@
     background: #e9e9e9;
     z-index: 1;
   }
+
+  .shared-post-container {
+    .post-wrap {
+      margin-top: 10px;
+      border: 1px solid @highlight;
+    }
+
+    .lb-author__avatar {
+      width: 30px;
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    .lb-type {
+      display: none;
+    }
+
+    .lb-post-date-icons {
+      margin-left: 0px !important;
+    }
+
+    .lb-post {
+      margin-left: 0px;
+      padding-left: 30px;
+
+      &:before {
+        display: none;
+      }
+
+      &:after {
+        margin-left: 0px;
+      }
+    }
+
+    .lb-item {
+      margin-left: 0px;
+    }
+  }
+
   .normal .lb-post:last-child:before {
     bottom: 0px;
   }
+
   .new-updates {
-    background: #f2f5f8;
+    background: @highlight;
     color: #56c491;
     text-align: center;
     padding: 15px 20px;
@@ -595,7 +635,7 @@
           background-color: @white;
       }
       50% {
-          background-color: #f2f5f8;
+          background-color: @highlight;
       }
       100% {
           background-color: @white;
@@ -977,10 +1017,6 @@ lb-producer__author:before {
     cursor: pointer;
   }
 
-  .lb-post-share {
-
-  }
-
   .lb-post:hover .lb-post-share:hover .lb-post-shareBox {
     width: 180px;
     padding-right: 10px;
@@ -1074,7 +1110,7 @@ lb-producer__author:before {
   }
 
   .lb-post.lb-post--highlighted {
-    background-color: #f2f5f8;
+    background-color: @highlight;
     margin-top: -2px;
   }
 
@@ -1085,7 +1121,7 @@ lb-producer__author:before {
 /* Scorecard */
 
 body .scorecard-top {
-  background-color: #f2f5f8;
+  background-color: @highlight;
   padding: 30px;
 }
 
@@ -1169,7 +1205,7 @@ body .scorecard-top__info {
         }
 
         .header-bar__comment.header-bar__comment--active {
-            background-color: #f2f5f8;
+            background-color: @highlight;
             border: 1px solid #cccccc;
         }
     }
@@ -1359,7 +1395,7 @@ body .scorecard-top__info {
       }
 
       .lb-post--highlighted {
-        background: #f2f5f8;
+        background: @highlight;
       }
 
       article.lb-post:after, .normal article.lb-post--highlighted:before {
