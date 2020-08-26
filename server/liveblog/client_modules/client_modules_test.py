@@ -10,6 +10,7 @@ from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import blog_posts_blueprint, convert_posts, _get_converted_item
+from liveblog.posts import utils as post_utils
 
 
 class Foo():
@@ -476,7 +477,7 @@ class ClientModuleTestCase(TestCase):
 
     def test_post_type_and_author(self):
         doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
-        self.blog_post_service.calculate_post_type(self.blog_posts[0])
+        post_utils.calculate_post_type(self.blog_posts[0])
 
         # TODO: split this test in two
         self.blog_post_service.generate_authors_map()
