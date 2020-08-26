@@ -23,6 +23,7 @@ from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed
 from .mixins import AuthorsMixin
+from .utils import get_associations, get_associations_ids
 
 
 logger = logging.getLogger('superdesk')
@@ -549,14 +550,15 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
+
         docs = super().get(req, lookup)
         related_items = self._related_items_map(docs)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
-            for assoc in self.packageService._get_associations(doc):
+            for assoc in get_associations(doc):
                 ref_id = assoc.get('residRef', None)
-                if ref_id is not None:
+                if ref_id:
                     assoc['item'] = related_items[ref_id]
 
             self.extract_author_ids(doc)
@@ -568,17 +570,14 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         return docs
 
     def _related_items_map(self, docs):
-        """It receives an array of blogs and we extract the associations' ID
-        then we hit the database just 1 time and return them as dictionary"""
+        """It receives an array of posts and extracts the associations' ID
+        then it hits the database just 1 time and return them as dictionary"""
 
         items_map = {}
         ids = []
 
         for doc in docs:
-            for assoc in self.packageService._get_associations(doc):
-                ref_id = assoc.get('residRef', None)
-                if ref_id:
-                    ids.append(ref_id)
+            ids += get_associations_ids(doc)
 
         # now let's get this into a form of dictionary
         for item in get_resource_service('archive').find({'_id': {'$in': ids}}):

@@ -5,6 +5,8 @@ from bson.objectid import ObjectId
 from superdesk import get_resource_service
 from settings import MOBILE_APP_WORKAROUND
 
+from . import utils as post_utils
+
 
 logger = logging.getLogger('superdesk')
 
@@ -13,7 +15,7 @@ AGENT_MOBILE_IOS = "org.sourcefabric.LiveBlogReporter"
 AGENT_MOBILE_GENERIC = "cz.adminit.liveblog"
 
 
-class AuthorsMixin(object):
+class AuthorsMixin:
     """
     Class mixin to provide helpers function to extract authors, hit database once
     and attach information to given posts and inner items
@@ -22,17 +24,21 @@ class AuthorsMixin(object):
     authors_list = []
     authors_map = {}
 
-    def _get_related_items(self, doc):
-        items = []
-        items_refs = [assoc for group in doc.get('groups', []) for assoc in group.get('refs', [])]
+    def complete_posts_info(self, posts):
+        """
+        Calculates the post types for each given post. Attaches the syndicated post information if needed.
+        Retrieves authors information from database in a performant way and set it to posts.
+        """
 
-        if not items:
-            for ref in items_refs:
-                item = ref.get('item')
-                if item:
-                    items.append(item)
+        for doc in posts:
+            post_utils.calculate_post_type(doc)
+            post_utils.attach_syndication(doc)
 
-        return items
+            self.extract_author_ids(doc)
+
+        # now let's add authors' information
+        self.generate_authors_map()
+        self.attach_authors(posts)
 
     def extract_author_ids(self, doc, items=None):
         """
@@ -54,7 +60,7 @@ class AuthorsMixin(object):
             except Exception as err:
                 logger.info('Unable to add author id to map. {}'.format(err))
 
-        items = items or self._get_related_items(doc)
+        items = items or post_utils.get_related_items(doc)
         for item in items:
             _append_author(item)
 

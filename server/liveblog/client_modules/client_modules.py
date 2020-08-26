@@ -25,6 +25,7 @@ from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
+from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
 
@@ -110,22 +111,14 @@ class ClientPostsResource(PostsResource):
     schema.update(PostsResource.schema)
 
 
-class ClientPostsService(PostsService):
+class ClientPostsService(PostsService, AuthorsMixin):
 
     def find_one(self, req, **lookup):
-        doc = super().find_one(req, **lookup)
-
-        client_blog_posts = get_resource_service('client_blog_posts')
-        client_blog_posts.calculate_post_type(doc)
-
-        client_blog_posts.attach_syndication(doc)
-        client_blog_posts.extract_author_ids(doc)
-
-        # now let's add authors' information
-        client_blog_posts.generate_authors_map()
-        client_blog_posts.attach_authors([doc])
-
-        return doc
+        post = super().find_one(req, **lookup)
+        post_utils.calculate_post_type(post)
+        post_utils.attach_syndication(post)
+        self.complete_posts_info([post])
+        return post
 
 
 class ClientCollectionsResource(CollectionsResource):
@@ -269,7 +262,6 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
 
         # ElasticCursor is returned so we can loop and modify docs inside
         blog_posts = app.blog_cache.get(blog_id, cache_key)
-        blog_posts = None
 
         if blog_posts is None:
             new_args = req.args.copy()
@@ -282,64 +274,16 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             new_args['source'] = json.dumps(query_source)
             req.args = new_args
 
-            print('BUUGGGGGGG', new_args)
-
             blog_posts = super().get(req, lookup)
 
             # let's complete the post info before cache
             for post in blog_posts.docs:
-                self.calculate_post_type(post)
-                self.attach_syndication(post)
+                post_utils.calculate_post_type(post)
+                post_utils.attach_syndication(post)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
         return blog_posts
-
-    def calculate_post_type(self, doc, items=None):
-        items = items or self._get_related_items(doc)
-        items_length = len(items)
-        post_items_type = None
-
-        if not items_length:
-            return doc
-
-        if items_length == 1:
-            post_items_type = items[0].get('item_type', '')
-            first_item_type = post_items_type.lower()
-
-            if first_item_type.startswith('advertisement'):
-                post_items_type = 'advertisement'
-
-            elif first_item_type == 'embed':
-                post_items_type = 'embed'
-                if 'provider_name' in items[0]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-
-        elif items_length == 2 and not all([item['item_type'] == 'embed' for item in items]):
-            if items[1].get('item_type', '').lower() == 'embed' and items[0].get('item_type', '').lower() == 'text':
-                post_items_type = 'embed'
-                if 'provider_name' in items[1]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
-            elif (items[0].get('item_type', '').lower() == 'embed' and
-                    items[1].get('item_type', '').lower() == 'text'):
-                post_items_type = 'embed'
-                if 'provider_name' in items[0]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-
-        elif items_length > 1:
-            for k, g in groupby(items, key=lambda i: i['item_type']):
-                if k == 'image' and sum(1 for _ in g) > 1:
-                    post_items_type = 'slideshow'
-                    break
-
-        doc['post_items_type'] = post_items_type
-
-        return doc
-
-    def attach_syndication(self, doc):
-        if doc.get('syndication_in'):
-            doc['syndication_in'] = get_resource_service('syndication_in')\
-                .find_one(req=None, _id=doc['syndication_in'])
 
     def on_fetched(self, blog):
         """Parent's class attach editing flag information so, we don't need it
