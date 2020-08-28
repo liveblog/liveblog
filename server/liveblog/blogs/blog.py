@@ -1,8 +1,12 @@
 import pymongo
 from bson.objectid import ObjectId
-from superdesk import get_resource_service
+from eve.utils import date_to_str
+
 from html5lib.html5parser import ParseError
 from lxml.html.html5parser import fragments_fromstring, HTMLParser
+
+from superdesk.utc import utcnow
+from superdesk import get_resource_service
 
 from liveblog.posts.mixins import AuthorsMixin
 from liveblog.posts.utils import get_associations
@@ -47,12 +51,14 @@ class Blog(AuthorsMixin):
             {'blog': self._blog['_id']}
         ]
 
-        # only return all post if parameter is specified. Otherwise
-        # get only open posts and not deleted
+        # only return all post if parameter is specified. Otherwise get only open posts and not deleted
+        # also avoid sending "scheduled posts" by default (published_date in future)
         if not all_posts:
             filters.append({'post_status': 'open'})
             if not deleted:
                 filters.append({'deleted': False})
+
+            filters.append({'published_date': {'$lte': date_to_str(utcnow())}})
 
         if sticky:
             filters.append({'sticky': True})
@@ -87,8 +93,6 @@ class Blog(AuthorsMixin):
         value it's a dictionary ala `python-eve` style data structure
 
         Supported kwargs: sticky, highlight, ordering, page, limit, wrap, all_posts, deleted, tags
-
-        TODO: restrict parameters to only allowed ones
         """
 
         sticky = kwargs.get('sticky', None)
