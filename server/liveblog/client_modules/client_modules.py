@@ -1,6 +1,6 @@
 import json
 import logging
-from itertools import groupby
+
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
 from flask_cors import CORS
