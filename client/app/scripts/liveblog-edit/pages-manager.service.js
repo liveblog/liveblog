@@ -156,29 +156,25 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             // eslint-disable-next-line
             updates.forEach((post) => {
                 const existingPostIndexes = getPostPageIndexes(post);
+                const sameStatus = self.status === post.post_status;
+                const statusIsOpen = self.status === 'open';
+                const postSticky = post.sticky === sticky;
+                const differStatus = !sameStatus;
 
                 if (angular.isDefined(existingPostIndexes)) {
                     // post already in the list
-                    if (post.deleted) {
-                        // post deleted
-                        removePost(post);
-                        // post updated
-                    }
+                    if (post.deleted) removePost(post);
 
-                    if (post.post_status !== self.status
-                            || self.status === 'open'
-                            && post.sticky !== sticky
-                            || self.highlight && !post.lb_highlight
-                    ) {
+                    if (differStatus || (statusIsOpen && !postSticky) || (self.highlight && !post.lb_highlight)) {
                         removePost(post);
                     } else {
                         updatePost(post);
                         createPagesWithPosts(self.allPosts(), true);
                     }
+                } // eslint-disable-line brace-style
+
+                else if (!post.deleted && sameStatus && (statusIsOpen || postSticky)) {
                     // post doesn't exist in the list
-                } else if (!post.deleted
-                && post.post_status === self.status
-                && (self.status !== 'open' || post.sticky === sticky)) {
                     addPost(post);
                 }
             });

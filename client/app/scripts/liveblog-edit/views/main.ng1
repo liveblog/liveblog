@@ -310,15 +310,19 @@
                         >
                     </div>
 
-                    <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()"
-                        class="pin-drawer"
-                        >
+                    <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()" class="pin-drawer">
                         <div ng-if="blogEdit.timelineStickyInstance.hideSticky"
-                        translate translate-n="blogEdit.timelineStickyInstance.numberOfPosts()" translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS"
-                        >1 PINNED POST</div>
-                        <button class="pin-drawer-button" ng-class="{active: blogEdit.timelineStickyInstance.hideSticky}"
-                        ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky">
-                        <i class="icon-chevron-up-thin"></i></button>
+                            translate translate-n="blogEdit.timelineStickyInstance.numberOfPosts()"
+                            translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS"
+                            >1 PINNED POST
+                        </div>
+
+                        <button class="pin-drawer-button"
+                            ng-class="{active: blogEdit.timelineStickyInstance.hideSticky}"
+                            ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky"
+                            >
+                            <i class="icon-chevron-up-thin"></i>
+                        </button>
                     </div>
 
                     <div
