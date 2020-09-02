@@ -9,22 +9,31 @@
  */
 import angular from 'angular';
 import _ from 'lodash';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
+
+interface IFilters {
+    sort?: string;
+    status?: string;
+    sticky?: boolean;
+    authors?: Array<any>;
+    updatedAfter?: string;
+    highlight?: boolean;
+    excludeDeleted?: boolean;
+    syndicationIn?: boolean;
+    noSyndication?: boolean;
+}
 
 const postsService = (api, $q, _userList, session) => {
-    const filterPosts = (filters, postsCriteria) => {
-        // filters.status
+    const filterPosts = (filters: IFilters, postsCriteria) => {
         if (angular.isDefined(filters.status)) {
             postsCriteria.source.query.filtered.filter.and.push({ term: { post_status: filters.status } });
         }
 
-        // filters.sticky
         if (angular.isDefined(filters.sticky)) {
             postsCriteria.source.query.filtered.filter.and.push({ term: { sticky: filters.sticky } });
         }
 
-        // filters.authors
-        if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
+        if (filters?.authors?.length > 0) {
             postsCriteria.source.query.filtered.filter.and.push({
                 or: {
                     filters: filters.authors.map((author) => ({ term: { original_creator: author } })),
@@ -32,8 +41,7 @@ const postsService = (api, $q, _userList, session) => {
             });
         }
 
-        // filters.updatedAfter
-        if (angular.isDefined(filters.updatedAfter)) {
+        if (filters.updatedAfter) {
             postsCriteria.source.query.filtered.filter.and.push({
                 range: {
                     _updated: {
@@ -43,14 +51,8 @@ const postsService = (api, $q, _userList, session) => {
             });
         }
 
-        // filters.highlight
         if (angular.isDefined(filters.highlight)) {
             postsCriteria.source.query.filtered.filter.and.push({ term: { lb_highlight: filters.highlight } });
-        }
-
-        // filters.sticky
-        if (angular.isDefined(filters.sticky)) {
-            postsCriteria.source.query.filtered.filter.and.push({ term: { sticky: filters.sticky } });
         }
     };
 
@@ -97,7 +99,7 @@ const postsService = (api, $q, _userList, session) => {
      * @param {integer} max_results - maximum number of results per page
      * @param {integer} page - page index
      */
-    const getPosts = (blogId, filters: any = {}, maxResults = 15, page = 1) => {
+    const getPosts = (blogId, filters: IFilters = {}, maxResults = 15, page = 1) => {
         // excludeDeleted: default set to true
         filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
 
@@ -265,8 +267,9 @@ const postsService = (api, $q, _userList, session) => {
         if (!angular.isDefined(posts) || posts.length < 1) {
             return;
         }
-        let latestDate;
-        let date;
+
+        let latestDate: Moment;
+        let date: Moment;
 
         posts.forEach((post) => {
             date = moment(post._updated);
@@ -281,12 +284,11 @@ const postsService = (api, $q, _userList, session) => {
         return latestDate.utc().format();
     };
 
-    const savePost = (blogId, postToUpdate, itemsParam, postParam: any = {}) => {
-        const post = postParam;
+    const savePost = (blogId, postToUpdate, itemsParam: Array<any>, post: any = {}) => {
         let items = itemsParam;
+        const dfds = [];
 
         post.post_status = post.post_status || _.result(postToUpdate, 'post_status') || 'open';
-        const dfds = [];
 
         if (items && items.length > 0) {
             // prepare the list of items if needed
