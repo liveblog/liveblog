@@ -296,20 +296,16 @@ const postsService = (api, $q, _userList, session) => {
 
             // save every items
             _.each(items, (itemParam) => {
-                let item = {};
+                const item = {
+                    blog: blogId,
+                    text: itemParam.text,
+                    meta: itemParam.meta,
+                    group_type: itemParam.group_type,
+                    item_type: itemParam.item_type,
+                    commenter: itemParam.meta && itemParam.meta.commenter,
+                    syndicated_creator: itemParam.syndicated_creator,
+                };
 
-                // because it fails when item has a `_id` field without `_links`
-                if ((angular.isDefined as any)(items, '_id')) {
-                    item = {
-                        blog: blogId,
-                        text: itemParam.text,
-                        meta: itemParam.meta,
-                        group_type: itemParam.group_type,
-                        item_type: itemParam.item_type,
-                        commenter: itemParam.meta && itemParam.meta.commenter,
-                        syndicated_creator: itemParam.syndicated_creator,
-                    };
-                }
                 dfds.push(api.items.save(item));
             });
         }
