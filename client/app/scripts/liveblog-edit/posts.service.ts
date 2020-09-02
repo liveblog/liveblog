@@ -10,18 +10,7 @@
 import angular from 'angular';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
-
-interface IFilters {
-    sort?: string;
-    status?: string;
-    sticky?: boolean;
-    authors?: Array<any>;
-    updatedAfter?: string;
-    highlight?: boolean;
-    excludeDeleted?: boolean;
-    syndicationIn?: boolean;
-    noSyndication?: boolean;
-}
+import { IFilters } from './types';
 
 const postsService = (api, $q, _userList, session) => {
     const filterPosts = (filters: IFilters, postsCriteria) => {
