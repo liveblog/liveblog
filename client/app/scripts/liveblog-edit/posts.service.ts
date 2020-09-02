@@ -11,31 +11,27 @@ import angular from 'angular';
 import _ from 'lodash';
 import moment from 'moment';
 
-postsService.$inject = [
-    'api',
-    '$q',
-    'userList',
-    'session',
-];
-
-export default function postsService(api, $q, userList, session) {
-    function filterPosts(filters, postsCriteria) {
+const postsService = (api, $q, _userList, session) => {
+    const filterPosts = (filters, postsCriteria) => {
         // filters.status
         if (angular.isDefined(filters.status)) {
-            postsCriteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
+            postsCriteria.source.query.filtered.filter.and.push({ term: { post_status: filters.status } });
         }
+
         // filters.sticky
         if (angular.isDefined(filters.sticky)) {
-            postsCriteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+            postsCriteria.source.query.filtered.filter.and.push({ term: { sticky: filters.sticky } });
         }
+
         // filters.authors
         if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
             postsCriteria.source.query.filtered.filter.and.push({
                 or: {
-                    filters: filters.authors.map((author) => ({term: {original_creator: author}})),
+                    filters: filters.authors.map((author) => ({ term: { original_creator: author } })),
                 },
             });
         }
+
         // filters.updatedAfter
         if (angular.isDefined(filters.updatedAfter)) {
             postsCriteria.source.query.filtered.filter.and.push({
@@ -46,15 +42,17 @@ export default function postsService(api, $q, userList, session) {
                 },
             });
         }
+
         // filters.highlight
         if (angular.isDefined(filters.highlight)) {
-            postsCriteria.source.query.filtered.filter.and.push({term: {lb_highlight: filters.highlight}});
+            postsCriteria.source.query.filtered.filter.and.push({ term: { lb_highlight: filters.highlight } });
         }
+
         // filters.sticky
         if (angular.isDefined(filters.sticky)) {
-            postsCriteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+            postsCriteria.source.query.filtered.filter.and.push({ term: { sticky: filters.sticky } });
         }
-    }
+    };
 
     /**
      * Using recursiveDeepCopy approach since it's performant than JSON.stringify
@@ -70,8 +68,8 @@ export default function postsService(api, $q, userList, session) {
             return o.clone();
         }
 
-        if (typeof o !== 'object' || !o)
-            return o;
+        // tslint:disable-next-line:curly
+        if (typeof o !== 'object' || !o) return o;
 
         // eslint-disable-next-line yoda
         if ('[object Array]' === Object.prototype.toString.apply(o)) {
@@ -99,14 +97,19 @@ export default function postsService(api, $q, userList, session) {
      * @param {integer} max_results - maximum number of results per page
      * @param {integer} page - page index
      */
-    function getPosts(blogId, filters = {}, maxResults = 15, page = 1) {
+    const getPosts = (blogId, filters: any = {}, maxResults = 15, page = 1) => {
         // excludeDeleted: default set to true
         filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
-        const postsCriteria = {
+
+        const postsCriteria: any = {
             source: {
-                query: {filtered: {filter: {
-                    and: [],
-                }}},
+                query: {
+                    filtered: {
+                        filter: {
+                            and: [],
+                        },
+                    },
+                },
             },
             page: page,
             max_results: maxResults,
@@ -114,7 +117,7 @@ export default function postsService(api, $q, userList, session) {
 
         // filters.excludeDeleted
         if (filters.excludeDeleted) {
-            postsCriteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
+            postsCriteria.source.query.filtered.filter.and.push({ not: { term: { deleted: true } } });
         }
         // filters.sort
         if (angular.isDefined(filters.sort)) {
@@ -127,28 +130,29 @@ export default function postsService(api, $q, userList, session) {
             }
             const sort = {};
 
-            sort[filters.sort] = {order: order, missing: '_last', unmapped_type: 'long'};
+            sort[filters.sort] = { order: order, missing: '_last', unmapped_type: 'long' };
             postsCriteria.source.sort = [sort];
         }
+
         filterPosts(filters, postsCriteria);
-        // filters.status
+
         if (angular.isDefined(filters.syndicationIn)) {
             postsCriteria.source.query.filtered.filter.and.push({
-                term: {syndication_in: filters.syndicationIn},
+                term: { syndication_in: filters.syndicationIn },
             });
         }
 
         if (angular.isDefined(filters.noSyndication)) {
             postsCriteria.source.query.filtered.filter.and.push({
-                missing: {field: 'syndication_in'},
+                missing: { field: 'syndication_in' },
             });
             postsCriteria.source.query.filtered.filter.or = [{
-                exists: {field: 'unpublished_date'},
+                exists: { field: 'unpublished_date' },
             }];
         }
 
         return retrievePosts(blogId, postsCriteria);
-    }
+    };
 
     /**
      * This method will fetch the information of the creator of the post
@@ -159,9 +163,9 @@ export default function postsService(api, $q, userList, session) {
      *
      * @TODO: remove this in next release as it's all coming from backend
      */
-    function _completeUser(obj) {
+    const _completeUser = (obj) => {
         if (obj.commenter) {
-            obj.user = {display_name: obj.commenter};
+            obj.user = { display_name: obj.commenter };
         } else if (obj.syndicated_creator) {
             obj.user = obj.syndicated_creator;
         } else if (typeof obj.original_creator === 'object') {
@@ -169,16 +173,16 @@ export default function postsService(api, $q, userList, session) {
         }
 
         return obj;
-    }
+    };
 
-    function _completePost(post) {
-        let multipleItems = false;
+    const _completePost = (post) => {
+        let multipleItems: any = false;
 
         if (post.groups[1].refs.length > 1) {
             multipleItems = post.groups[1].refs.length - 1;
         }
 
-        return $q((resolve, reject) => {
+        return $q((resolve) => {
             angular.extend(post, {
                 multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
@@ -194,7 +198,7 @@ export default function postsService(api, $q, userList, session) {
             post.fullDetails = post.hasComments;
             // special cases for comments.
             post.showUpdate = post.content_updated_date !== post.published_date &&
-                               !post.hasComments && post.mainItem.item.item_type !== 'comment';
+                !post.hasComments && post.mainItem.item.item_type !== 'comment';
             angular.forEach(post.items, (val) => {
                 if (post.fullDetails) {
                     _completeUser(val.item);
@@ -205,22 +209,22 @@ export default function postsService(api, $q, userList, session) {
             post.mainItem.item.user = post.original_creator;
 
             if (!post.mainItem.item.user) {
-                let mainItem = recursiveDeepCopy(post.mainItem.item);
+                const mainItem = recursiveDeepCopy(post.mainItem.item);
 
                 post.mainItem.item.user = _completeUser(mainItem).user;
             }
 
             resolve(post);
         });
-    }
+    };
 
-    function retrievePost(postId) {
+    const retrievePost = (postId) => {
         return api.posts.getById(postId)
             .then(_completePost)
             .then((post) => post);
-    }
+    };
 
-    function retrieveSyndications(posts) {
+    const retrieveSyndications = (posts) => {
         const syndIds = [];
 
         // This means the syndication module is not enabled
@@ -247,17 +251,17 @@ export default function postsService(api, $q, userList, session) {
                     return post;
                 }),
             }));
-    }
+    };
 
-    function retrievePosts(blogId, postsCriteria) {
-        return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', {_id: blogId})
+    const retrievePosts = (blogId, postsCriteria) => {
+        return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', { _id: blogId })
             .query(postsCriteria)
             .then(retrieveSyndications)
             .then((data) => $q.all(data._items.map(_completePost))
-                .then((result) => angular.extend(data, {_items: result})));
-    }
+                .then((result) => angular.extend(data, { _items: result })));
+    };
 
-    function getLatestUpdateDate(posts) {
+    const getLatestUpdateDate = (posts) => {
         if (!angular.isDefined(posts) || posts.length < 1) {
             return;
         }
@@ -275,9 +279,9 @@ export default function postsService(api, $q, userList, session) {
             }
         });
         return latestDate.utc().format();
-    }
+    };
 
-    function savePost(blogId, postToUpdate, itemsParam, postParam = {}) {
+    const savePost = (blogId, postToUpdate, itemsParam, postParam: any = {}) => {
         const post = postParam;
         let items = itemsParam;
 
@@ -289,12 +293,13 @@ export default function postsService(api, $q, userList, session) {
             if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
                 items = _.map(items, (item) => item.item);
             }
+
             // save every items
             _.each(items, (itemParam) => {
                 let item = {};
-                // because it fails when item has a `_id` field without `_links`
 
-                if (angular.isDefined(items, '_id')) {
+                // because it fails when item has a `_id` field without `_links`
+                if ((angular.isDefined as any)(items, '_id')) {
                     item = {
                         blog: blogId,
                         text: itemParam.text,
@@ -308,15 +313,16 @@ export default function postsService(api, $q, userList, session) {
                 dfds.push(api.items.save(item));
             });
         }
+
         // save the post
-        return $q.all(dfds).then((items) => {
+        return $q.all(dfds).then((itemsList) => {
             if (dfds.length > 0) {
                 angular.extend(post, {
                     blog: blogId,
                     groups: [
                         {
                             id: 'root',
-                            refs: [{idRef: 'main'}],
+                            refs: [{ idRef: 'main' }],
                             role: 'grpRole:NEP',
                         }, {
                             id: 'main',
@@ -325,43 +331,41 @@ export default function postsService(api, $q, userList, session) {
                         },
                     ],
                 });
-                // update the post reference (links with items)
-                _.each(items, (item) => {
-                    post.groups[1].refs.push({residRef: item._id});
+
+                // update the post reference (links with itemsList)
+                _.each(itemsList, (item) => {
+                    post.groups[1].refs.push({ residRef: item._id });
                 });
             }
 
             let operation;
 
             if (angular.isDefined(postToUpdate)) {
-                operation = function updatePost() {
-                    return api.posts.save(postToUpdate, post);
-                };
+                operation = () => api.posts.save(postToUpdate, post);
             } else {
-                operation = function createPost() {
-                    return api.posts.save(post);
-                };
+                operation = () => api.posts.save(post);
             }
+
             // return the post saved
             return operation();
         });
-    }
+    };
 
-    function removePost(post) {
-        const deleted = {deleted: true};
+    const removePost = (post) => {
+        const deleted = { deleted: true };
 
         return savePost(post.blog, post, [], deleted);
-    }
+    };
 
-    function flagPost(postId) {
-        return api('post_flags').save({postId: postId});
-    }
+    const flagPost = (postId) => {
+        return api('post_flags').save({ postId: postId });
+    };
 
-    function removeFlagPost(flag) {
+    const removeFlagPost = (flag) => {
         api('post_flags').remove(flag);
-    }
+    };
 
-    function syncRemoveFlag(url, etag) {
+    const syncRemoveFlag = (url, etag) => {
         // NOTE: avoid using Promise as we are triggering this
         // when unload & onunload window event. So if we use promises
         // browser will kill the thread before the request is triggered
@@ -377,9 +381,9 @@ export default function postsService(api, $q, userList, session) {
                 'If-Match': etag,
             },
         });
-    }
+    };
 
-    function setFlagTimeout(post, callback) {
+    const setFlagTimeout = (post, callback) => {
         // perhaps not the best place to put this but I needed this
         // to be accessible from different directives. If there is another/better way
         // please improve this ;)
@@ -408,7 +412,7 @@ export default function postsService(api, $q, userList, session) {
                 removeFlagPost(editFlag);
             }
         }, seconds * 1000);
-    }
+    };
 
     const saveWithStatus = (status) =>
         (blogId, post, items, sticky, highlight) =>
@@ -416,7 +420,7 @@ export default function postsService(api, $q, userList, session) {
                 blogId,
                 post,
                 items,
-                {post_status: status, sticky: sticky, lb_highlight: highlight}
+                { post_status: status, sticky: sticky, lb_highlight: highlight }
             );
 
     return {
@@ -433,4 +437,13 @@ export default function postsService(api, $q, userList, session) {
         saveScheduledPost: saveWithStatus('scheduled'),
         remove: removePost,
     };
-}
+};
+
+postsService.$inject = [
+    'api',
+    '$q',
+    'userList',
+    'session',
+];
+
+export default postsService;
