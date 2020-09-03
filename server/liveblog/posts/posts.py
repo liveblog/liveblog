@@ -1,12 +1,13 @@
 import logging
 import flask
 import arrow
+import pymongo
 import datetime
 
 from enum import Enum
 from flask import current_app as app
 from bson.objectid import ObjectId
-from eve.utils import ParsedRequest
+from eve.utils import ParsedRequest, date_to_str
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
@@ -209,6 +210,25 @@ class PostsService(ArchiveService):
             order = 0.00
         return float(order)
 
+    def _update_scheduled_sequences(self, blog_id):
+        """
+        This fetches scheduled posts, sort them by published_date and
+        sets proper order values
+        """
+
+        filters = [
+            {'blog': str(blog_id)},
+            {'deleted': False},
+            {'published_date': {'$gt': date_to_str(utcnow())}}
+        ]
+
+        query = {'$and': filters}
+        scheduled_posts = self.find(query).sort('published_date', pymongo.ASCENDING)
+
+        for post in scheduled_posts:
+            next_order = self.get_next_order_sequence(post['blog'])
+            self.system_update(post['_id'], {'order': next_order}, post)
+
     def check_post_permission(self, post):
         PUBLISH = 'publish_post'
         CONTRIBUTE = 'submit_post'
@@ -250,9 +270,9 @@ class PostsService(ArchiveService):
 
     def on_created(self, docs):
         super().on_created(docs)
-        # invalidate cache for updated blog
         posts = []
         out_service = get_resource_service('syndication_out')
+
         for doc in docs:
             blog_id = doc.get('blog')
             post = {}
@@ -273,6 +293,8 @@ class PostsService(ArchiveService):
                     post['auto_publish'] = synd_in.get('auto_publish')
 
             posts.append(post)
+
+            # invalidate cache for updated blog
             app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
@@ -287,6 +309,7 @@ class PostsService(ArchiveService):
             # let's check for posts limits in blog and remove old one if needed
             if blog_id:
                 check_limit_and_delete_oldest(blog_id)
+                self._update_scheduled_sequences(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
