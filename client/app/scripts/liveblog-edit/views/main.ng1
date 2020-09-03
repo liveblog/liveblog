@@ -36,6 +36,13 @@
             </span>
             <i class="lb-big-icon-contributions" alt="contributions"></i>
         </button>
+        <button class="navbtn" ng-click="openPanel('scheduled')"
+            ng-class="{'active': panelState === 'scheduled'}"
+            sd-tooltip="{{ 'Scheduled' | translate }}"
+            flow="right" title="{{ 'Scheduled' | translate }}">
+            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countScheduled() > 0">{{ unreadPostsService.countScheduled() }}</span>
+            <i class="icon-calendar" alt="scheduled posts"></i>
+        </button>
         <button class="navbtn" ng-click="openPanel('drafts')"
             ng-class="{'active': panelState === 'drafts'}"
             sd-tooltip="{{ 'Drafts' | translate }}"
@@ -130,6 +137,29 @@
                         </lb-posts-list>
                     </div>
                 </div>
+
+                <!-- scheduled posts -->
+                <div class="panel panel--scheduled" ng-if="panelState === 'scheduled'">
+                    <header><h4 translate>Scheduled Posts</h4></header>
+                    <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.scheduledPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="open"
+                          lb-scheduled="true"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-allow-unpublishing="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-is-unread-post="false"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="true"
+                          lb-posts-allow-publishing="false"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                            <p translate>There aren't any scheduled posts.</p>
+                        </lb-posts-list>
+                    </div>
+                </div>
                 <!-- ingest -->
                 <div
                     lb-ingest-panel
@@ -183,9 +213,9 @@
                     </div>
                     <div ng-if="preview">
                         <header>
-                            <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" flow="down" sd-tooltip="{{ 'Back to edit' | translate }}">
-                            ⨯
-                            </span>
+                            <h4>{{'Preview' | translate}}</h4>
+                            <span ng-click="togglePreview()" class="close-preview pull-right"
+                                flow="down" sd-tooltip="{{ 'Back to edit' | translate }}">⨯</span>
                         </header>
                     </div>
                     <div class="content">
@@ -294,11 +324,10 @@
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
-                    <div ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
+                    <lb-posts-list ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
                         !blogEdit.timelineStickyInstance.hideSticky"
                         class="timeline-posts-list pinned"
                         lb-posts-instance="blogEdit.timelineStickyInstance"
-                        lb-posts-list
                         lb-posts-blog-id="blog._id"
                         lb-posts-status="open"
                         lb-sticky="true"
@@ -308,7 +337,7 @@
                         lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
                         lb-posts-on-post-selected="openPostInEditor"
                         >
-                    </div>
+                    </lb-posts-list>
 
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()" class="pin-drawer">
                         <div ng-if="blogEdit.timelineStickyInstance.hideSticky"
@@ -325,10 +354,9 @@
                         </button>
                     </div>
 
-                    <div
+                    <lb-posts-list
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
-                      lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"
                       lb-sticky="false"
@@ -340,7 +368,7 @@
                       lb-posts-on-post-selected="openPostInEditor"
                     >
                     There are no posts yet for this blog!
-                    </div>
+                    </lb-posts-list>
                 </div>
             </div>
         </div>

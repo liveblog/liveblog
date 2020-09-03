@@ -14,34 +14,43 @@ import { IFilters } from './types';
 
 const postsService = (api, $q, _userList, session) => {
     const filterPosts = (filters: IFilters, postsCriteria) => {
+        const filter = postsCriteria.source.query.filtered.filter;
+
         if (angular.isDefined(filters.status)) {
-            postsCriteria.source.query.filtered.filter.and.push({ term: { post_status: filters.status } });
+            filter.and.push({ term: { post_status: filters.status } });
         }
 
         if (angular.isDefined(filters.sticky)) {
-            postsCriteria.source.query.filtered.filter.and.push({ term: { sticky: filters.sticky } });
+            filter.and.push({ term: { sticky: filters.sticky } });
         }
 
         if (filters?.authors?.length > 0) {
-            postsCriteria.source.query.filtered.filter.and.push({
+            filter.and.push({
                 or: {
                     filters: filters.authors.map((author) => ({ term: { original_creator: author } })),
                 },
             });
         }
 
+        const range = {};
+
+        if (filters.status === 'open') {
+            const operator = filters.scheduled ? 'gte' : 'lte';
+
+            range['published_date'] = {};
+            range['published_date'][operator] = moment().utc().format(); // eslint-disable-line newline-per-chained-call
+        }
+
         if (filters.updatedAfter) {
-            postsCriteria.source.query.filtered.filter.and.push({
-                range: {
-                    _updated: {
-                        gt: filters.updatedAfter,
-                    },
-                },
-            });
+            range['_updated'] = { gt: filters.updatedAfter };
+        }
+
+        if (Object.keys(range).length > 0) {
+            filter.and.push({ range: range });
         }
 
         if (angular.isDefined(filters.highlight)) {
-            postsCriteria.source.query.filtered.filter.and.push({ term: { lb_highlight: filters.highlight } });
+            filter.and.push({ term: { lb_highlight: filters.highlight } });
         }
     };
 

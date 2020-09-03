@@ -2,9 +2,14 @@ import { IFilters } from './types';
 
 const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
     function PagesManager(
-        blogId: string, status: string,
-        maxResults: number, sort: string,
-        sticky: boolean, highlight: boolean, noSynd: boolean) { // eslint-disable-line padded-blocks
+        blogId: string,
+        status: string,
+        maxResults: number,
+        sort: string,
+        sticky: boolean,
+        highlight: boolean,
+        noSynd: boolean,
+        scheduled: boolean = false) { // eslint-disable-line padded-blocks
 
         const SORTS = {
             editorial: { order: { order: 'desc', missing: '_last', unmapped_type: 'long' } },
@@ -48,6 +53,8 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
             if (noSynd) {
                 options.noSyndication = true;
             }
+
+            options.scheduled = scheduled;
 
             // only care about the highlight status if it is set to true
             if (self.highlight) {

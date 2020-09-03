@@ -34,7 +34,8 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.lbPostsOrderBy || 'editorial',
                 $scope.lbSticky,
                 null,
-                $scope.lbPostsNoSyndication === true
+                $scope.lbPostsNoSyndication === true,
+                $scope.lbScheduled === true
             ),
             fetchNewPage: function() {
                 self.isLoading = true;
@@ -201,6 +202,11 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             lbPostsOnPostSelected: '=',
             lbPostsIsUnreadPost: '=',
             lbPostsInstance: '=',
+
+            /**
+             * Provide `true` in order to get scheduled posts (published_date) in future
+             */
+            lbScheduled: '=',
         },
         restrict: 'EA',
         transclude: true,

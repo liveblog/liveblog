@@ -8,4 +8,5 @@ export interface IFilters {
     excludeDeleted?: boolean;
     syndicationIn?: boolean;
     noSyndication?: boolean;
+    scheduled?: boolean;
 }

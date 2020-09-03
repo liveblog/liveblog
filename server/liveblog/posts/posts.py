@@ -261,12 +261,17 @@ class PostsService(ArchiveService):
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
+
+            published_date = doc.get('published_date')
+            post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
+
             synd_in_id = doc.get('syndication_in')
             if synd_in_id:
                 # Set post auto_publish to syndication_in auto_publish value.
                 synd_in = get_resource_service('syndication_in').find_one(_id=synd_in_id, req=None)
                 if synd_in:
                     post['auto_publish'] = synd_in.get('auto_publish')
+
             posts.append(post)
             app.blog_cache.invalidate(blog_id)
 
@@ -547,6 +552,7 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                 if lookup.get('blog_id'):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']
+
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']

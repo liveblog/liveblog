@@ -914,6 +914,7 @@ export default function BlogEditController(
             self.commentPostsInstance,
             self.contributionsPostsInstance,
             self.draftPostsInstance,
+            self.scheduledPostsInstance,
         ];
 
         // let's loop over the possible places to find the post and update it
