@@ -147,7 +147,7 @@
                           lb-posts-blog-id="blog._id"
                           lb-posts-status="open"
                           lb-scheduled="true"
-                          lb-posts-order-by="updated_first"
+                          lb-posts-order-by="editorial_asc"
                           lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
                           lb-posts-is-unread-post="false"

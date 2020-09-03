@@ -16,6 +16,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
             updated_first: { _updated: { order: 'desc', missing: '_last', unmapped_type: 'long' } },
             newest_first: { _created: { order: 'desc', missing: '_last', unmapped_type: 'long' } },
             oldest_first: { _created: { order: 'asc', missing: '_last', unmapped_type: 'long' } },
+            editorial_asc: { order: { order: 'asc', missing: '_last', unmapped_type: 'long' } },
         };
         const self = this;
 
