@@ -19,10 +19,10 @@ loggers:
   # superdesk.ws - used for debug message can be removed later on.
   superdesk.ws:
     handlers: [console]
-    level: DEBUG
+    level: WARN
   superdesk.websockets_comms:
     handlers: [console]
-    level: DEBUG
+    level: WARN
   liveblog.ws:
     handlers: [console]
     level: DEBUG
