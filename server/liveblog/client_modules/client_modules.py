@@ -434,6 +434,14 @@ def get_blog_posts(blog_id):
     if kwargs['limit'] > Blog.max_page_limit:
         return api_error('"limit" value is not valid.', 403)
 
+    try:
+        all_posts = strtobool(request.args.get('all_posts', '0'))
+    except ValueError as e:
+        return api_error(str(e), 403)
+
+    if app.config.get('SUPERDESK_TESTING', False) and all_posts:
+        kwargs['all_posts'] = True
+
     response_data = blog.posts(wrap=True, **kwargs)
     result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
