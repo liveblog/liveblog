@@ -4,10 +4,12 @@
 
 'use strict';
 
+import * as messages from './common/messages';
+
 var view = require('./view')
   , viewmodel = require('./viewmodel')
-  , adsManager = require('./ads-manager')
   , helpers = require('./helpers');
+const { permalink } = require('./view');
 
 /**
  * Contains a mapping of element data-selectors and click handlers
@@ -55,7 +57,6 @@ var buttons = {
       }).then(view.renderPosts)
         .then(view.displayNewPosts)
         .then(view.consent.init)
-        .then(view.adsManager.refreshAds)
         .then(view.updateTimestamps)
         .catch(catchError);
     },
@@ -124,7 +125,8 @@ var buttons = {
         .catch(catchError);
     },
     '[data-one-new-update]': showPendings,
-    '[data-new-updates]': showPendings
+    '[data-new-updates]': showPendings,
+    '[data-latest-updates]': view.dismissSharedPost
   },
 
   attach: function() {
@@ -147,21 +149,40 @@ var buttons = {
     });
 
     view.attachSlideshow();
-    view.attachPermalink();
-    view.attachShareBox();
-    view.attachDropdownCloseEvent();
-    if (view.permalink._changedSort) {
-      loadSort(LB.settings.postOrder)
-        .then(checkForScroll);
-    } else {
-      checkForScroll();
-    }
+
+    setTimeout(() => {
+      adjustPermalinkStuff();
+    }, 500);
+
+    messages.listen('permalink_url', (data) => {
+      setTimeout(() => {
+        adjustPermalinkStuff();
+      }, 500);
+    });
   }
 };
 
+function adjustPermalinkStuff() {
+  view.attachPermalink();
+  view.attachShareBox();
+  view.attachDropdownCloseEvent();
+
+  if (!permalink._id) {
+    permalink.parseHref();
+  }
+
+  if (permalink._id) {
+    viewmodel.getSinglePost(permalink._id)
+      .then(view.renderSharedPost)
+      .then(view.consent.init)
+      .then(view.adsManager.refreshAds)
+      .then(view.loadEmbeds);
+  }
+}
+
 function loadSort(sortBy) {
   // fetch the data only if the sort order has changed
-  if(!isOrderChanged(sortBy)) return;
+  if(!isOrderChanged(sortBy)) return Promise.resolve();
 
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
@@ -191,25 +212,6 @@ function loadSort(sortBy) {
     .then(view.adsManager.refreshAds)
     .then(view.loadEmbeds)
     .catch(catchError);
-}
-
-function checkForScroll() {
-  viewmodel.getAllPosts()
-    .then((posts) => {
-      if (view.checkPermalink(posts)) {
-        loadForScroll();
-      }
-    });
-}
-
-function loadForScroll() {
-  if (!view.permalinkScroll()) {
-    viewmodel.loadPostsPage()
-      .then(view.renderPosts)
-      .then(view.displayNewPosts)
-      .then(loadForScroll)
-      .catch(catchError);
-  }
 }
 
 function catchError(err) {

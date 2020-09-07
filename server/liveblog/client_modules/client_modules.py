@@ -110,7 +110,21 @@ class ClientPostsResource(PostsResource):
 
 
 class ClientPostsService(PostsService):
-    pass
+
+    def find_one(self, req, **lookup):
+        doc = super().find_one(req, **lookup)
+
+        client_blog_posts = get_resource_service('client_blog_posts')
+        client_blog_posts.calculate_post_type(doc)
+
+        client_blog_posts.attach_syndication(doc)
+        client_blog_posts.extract_author_ids(doc)
+
+        # now let's add authors' information
+        client_blog_posts.generate_authors_map()
+        client_blog_posts.attach_authors([doc])
+
+        return doc
 
 
 class ClientCollectionsResource(CollectionsResource):

@@ -1,4 +1,5 @@
 import {Storage} from '../common/storage';
+import * as messages from '../common/messages';
 
 const CONSENT_KEY = '__lb_consent_key__';
 const CONSENT_LIFE_DAYS = 365;
@@ -18,26 +19,14 @@ class ConsentManager {
     }
 
     static start(options) {
-        window.addEventListener('message', ConsentManager.handleEnhancerMessage, false);
-        window.parent.postMessage({type: 'init_consent'}, '*');
+        messages.listen('sync-consent-given', (data) => {
+            Storage.write(CONSENT_KEY, data, CONSENT_LIFE_DAYS);
+            ConsentManager.options.onSync();
+        });
+
+        messages.send('init_consent');
 
         ConsentManager.options = options;
-    }
-
-    static handleEnhancerMessage = (event) => {
-        const {type} = event.data;
-
-        if (type)
-            console.log('Received msg in iframe', event.data); // eslint-disable-line
-
-        switch (type) {
-            case 'sync-consent-given':
-                Storage.write(CONSENT_KEY, event.data.data, CONSENT_LIFE_DAYS);
-                ConsentManager.options.onSync();
-                break;
-            default:
-                break;
-        }
     }
 
     static isConsentGiven() {

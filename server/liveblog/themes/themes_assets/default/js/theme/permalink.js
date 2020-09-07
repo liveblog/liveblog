@@ -1,22 +1,43 @@
+import * as messages from './common/messages';
+
 class Permalink {
   constructor() {
     this.escapeRegExp = function (string) {
       return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
     };
 
-    this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.  
+    this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
+    this.href = '';
 
-    // first of all, we make sure to have an url
-    this.href = document.location.href;
+    // listen to embed.ts file when it sends parent window href
+    messages.listen('permalink_url', (data) => {
+      this.href = data;
+      this.parseHref();
+    });
 
-    // then let's check if we're inside of an iframe
-    if (window !== window.parent && "referrer" in document) {
-      this.href = document.referrer;
+    this.initHref();
+  }
+
+  initHref() {
+    // if we are not in iframe (ESI approach) then let's use own's document href
+    if (window === window.parent) {
+      this.href = document.location.href;
+      this.parseHref();
+    } else {
+      // then let's ask for the window href
+      messages.send('permalink_init');
+    }
+  }
+
+  parseHref() {
+    if (this.href.length === 0) {
+      messages.send('permalink_init');
+      return;
     }
 
     var matches = this.href.match(this.regexHash);
-        
+
     if (matches) {
       var arr = decodeURIComponent(matches[1]).split('__');
       this._id = arr[0];
@@ -40,7 +61,7 @@ class Permalink {
       permalink = this.href + '&' + newHash;
     }
 
-    return permalink; 
+    return permalink;
   }
 }
 
