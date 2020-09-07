@@ -128,7 +128,13 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
             const date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
             let page = 1;
 
-            return postsService.getPosts(self.blogId, { updatedAfter: date, excludeDeleted: false }, undefined, page)
+            const filters = {
+                updatedAfter: date,
+                excludeDeleted: false,
+                scheduled: false,
+            };
+
+            return postsService.getPosts(self.blogId, filters, undefined, page)
                 .then((updates) => {
                     const meta = updates._meta;
                     // if

@@ -626,7 +626,7 @@ export default function BlogEditController(
                     localStorage.setItem('preventDialog', true);
                 }
                 $scope.actionPending = true;
-                // save the keep scoreres setting( if needed)
+                // save the keep scores setting (if needed)
                 if (isPostScorecard()) {
                     saveScorers().then(() => {
                         // no need to show anything on success

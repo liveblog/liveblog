@@ -34,13 +34,6 @@ const postsService = (api, $q, _userList, session) => {
 
         const range = {};
 
-        if (filters.status === 'open') {
-            const operator = filters.scheduled ? 'gte' : 'lte';
-
-            range['published_date'] = {};
-            range['published_date'][operator] = moment().utc().format(); // eslint-disable-line newline-per-chained-call
-        }
-
         if (filters.updatedAfter) {
             range['_updated'] = { gt: filters.updatedAfter };
         }
@@ -51,6 +44,19 @@ const postsService = (api, $q, _userList, session) => {
 
         if (angular.isDefined(filters.highlight)) {
             filter.and.push({ term: { lb_highlight: filters.highlight } });
+        }
+
+        const excludeScheduled = typeof filters.status === 'undefined' || filters.status === 'open';
+
+        if (excludeScheduled) {
+            const operator = filters.scheduled ? 'gte' : 'lte';
+            const postFilterRange = {};
+
+            postFilterRange['published_date'] = {};
+
+            // eslint-disable-next-line newline-per-chained-call
+            postFilterRange['published_date'][operator] = moment().utc().format();
+            postsCriteria.source.post_filter = { range: postFilterRange };
         }
     };
 
