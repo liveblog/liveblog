@@ -10,7 +10,7 @@ var posts = [
         [{
             username: 'Victor the Editor',
             item_type: 'text',
-            text: 'text post two: end to end item one'
+            text: 'text post two: end to end item onE'
         },
         {
             username: 'Victor the Editor',
@@ -20,7 +20,7 @@ var posts = [
         [{
             username: 'Victor the Editor',
             item_type: 'text',
-            text: 'text post one: end to end item one'
+            text: 'text post one: end to end item One'
         },
         {
             username: 'Victor the Editor',
