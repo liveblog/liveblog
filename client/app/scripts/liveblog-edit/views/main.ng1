@@ -326,6 +326,7 @@
                 <div>
                     <lb-posts-list ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
                         !blogEdit.timelineStickyInstance.hideSticky"
+                        data-test-id="timeline-posts-pinned"
                         class="timeline-posts-list pinned"
                         lb-posts-instance="blogEdit.timelineStickyInstance"
                         lb-posts-blog-id="blog._id"
