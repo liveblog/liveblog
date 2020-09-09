@@ -41,7 +41,7 @@
             sd-tooltip="{{ 'Scheduled' | translate }}"
             flow="right" title="{{ 'Scheduled' | translate }}">
             <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countScheduled() > 0">{{ unreadPostsService.countScheduled() }}</span>
-            <i class="icon-calendar" alt="scheduled posts"></i>
+            <i class="lb-big-icon-scheduled-posts" alt="scheduled posts"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')"
             ng-class="{'active': panelState === 'drafts'}"
