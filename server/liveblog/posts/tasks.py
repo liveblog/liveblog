@@ -2,6 +2,7 @@ import logging
 
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from superdesk.notification import push_notification
 from celery.exceptions import SoftTimeLimitExceeded
 from liveblog.blogs.tasks import publish_blog_embeds_on_s3
 from liveblog.blogs.utils import is_seo_enabled
@@ -82,3 +83,15 @@ def update_post_blog_embed(post):
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('update_post_blog_embed for blog "{}" finished.'.format(blog_id))
+
+
+@celery.task
+def notify_scheduled_post(post):
+    """
+    It will send a push notification via websocket connection to let the client know
+    that the post.published_date has reached its time and it's not available in timeline.
+    """
+
+    from .posts import PostStatus  # to avoid circular references ;)
+
+    push_notification('posts', scheduled_done=True, post_status=PostStatus.OPEN, posts=[post])

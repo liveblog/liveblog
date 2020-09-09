@@ -22,7 +22,7 @@ from liveblog.common import check_comment_length, get_user
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
-from .tasks import update_post_blog_data, update_post_blog_embed
+from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
 from .utils import get_associations, get_associations_ids
 
@@ -284,6 +284,10 @@ class PostsService(ArchiveService):
 
             published_date = doc.get('published_date')
             post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
+
+            # now let's schedule the notification so posts get fetched at proper datetime
+            if post['scheduled']:
+                notify_scheduled_post.apply_async(args=[post], eta=arrow.get(published_date))
 
             synd_in_id = doc.get('syndication_in')
             if synd_in_id:
