@@ -43,7 +43,7 @@
                     <div class="inline" ng-if="post.post_status == 'open'">
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
                         <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
-                        | <time datetime="{{ post.published_date}}">{{ post.published_date | reldateAutoUpdate }}</time>
+                        | <time datetime="{{ post.published_date }}" ng-bind-html="post.published_date | reldateAutoUpdate"></time>
                     </div>
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time" datetime="{{ post.content_updated_date}}">{{ post.content_updated_date | reldateAutoUpdate }}</time>
