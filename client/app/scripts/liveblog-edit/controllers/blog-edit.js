@@ -867,6 +867,12 @@ export default function BlogEditController(
         togglePreview: function() {
             $scope.preview = !$scope.preview;
         },
+        shouldRenderScheduled: function(post) {
+            const publishedDate = moment(post.published_date);
+            const now = moment();
+
+            return (publishedDate > now);
+        },
     });
 
     // initalize the view with the editor panel

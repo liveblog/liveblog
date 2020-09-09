@@ -155,6 +155,7 @@
                           lb-posts-allow-deleting="true"
                           lb-posts-allow-publishing="false"
                           lb-posts-on-post-selected="openPostInEditor"
+                          lb-should-render-post="shouldRenderScheduled"
                         >
                             <p translate>There aren't any scheduled posts.</p>
                         </lb-posts-list>
