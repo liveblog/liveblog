@@ -10,14 +10,18 @@ export const Input: React.SFC<IProps> = (props) => {
 
     return (
         <div className="sd-line-input">
-            <label className="sd-line-input__label text-uppercase"
-                htmlFor={propertyName}>{props.label}</label>
+            <label
+                className="sd-line-input__label text-uppercase"
+                htmlFor={propertyName}
+            >{props.label}</label>
 
-            <input id={propertyName}
+            <input
+                id={propertyName}
                 type="text"
                 name={propertyName}
                 value={props.value}
-                placeholder={props.placeholder} />
+                placeholder={props.placeholder}
+            />
 
             {props.help && <small>{props.help}</small>}
         </div>
