@@ -19,6 +19,10 @@ const selectStyles: Styles = {
             borderRadius: '3px',
             minHeight: '32px',
             borderColor: '#d9d9d9',
+            cursor: 'pointer',
+            '&:hover': {
+                borderColor: '#5ea9c8',
+            },
         };
 
         if (state.menuIsOpen || state.isFocused) {
