@@ -170,6 +170,11 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                         return false;
                     }
 
+                    if (eventParams.scheduled_done) {
+                        notify.pop();
+                        notify.info(gettext('Scheduled post has been published'));
+                    }
+
                     // only update if posts belong to same blog
                     const posts = eventParams.posts || [];
 
@@ -185,6 +190,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                                 notify.pop();
                                 notify.info(gettext('Post removed'));
                             }
+
                             self.isLoading = false;
                         });
                     }

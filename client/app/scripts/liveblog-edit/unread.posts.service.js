@@ -63,23 +63,36 @@ export default function unreadPostsService($rootScope) {
         }
     }
 
+    function _handleScheduledUpdate(eventParams) {
+        if (eventParams.posts && !eventParams.scheduled_done) {
+            const post = eventParams.posts[0];
+
+            if (post.scheduled && blog._id === post.blog) {
+                scheduled = scheduled.concat(eventParams.posts);
+                return true;
+            }
+        }
+
+        if (eventParams.scheduled_done) {
+            scheduled.pop();
+            return true;
+        }
+
+        return false;
+    }
+
     // add the post in the contributions vector.
     function onPostReceive(e, eventParams) {
         if (eventParams.posts && eventParams.posts[0].syndication_in) {
             return;
         }
 
-        if (eventParams.posts) {
-            const post = eventParams.posts[0];
-
-            if (post.scheduled && blog._id === post.blog) {
-                scheduled = scheduled.concat(eventParams.posts);
-                return;
-            }
-        }
+        // update scheduled array and return if true
+        if (_handleScheduledUpdate(eventParams)) return;
 
         if (eventParams.post_status === 'comment') {
             comments = comments.concat(eventParams.posts);
+            return;
         }
 
         if (eventParams.post_status === 'submitted') {

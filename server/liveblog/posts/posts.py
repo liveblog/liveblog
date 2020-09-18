@@ -286,8 +286,10 @@ class PostsService(ArchiveService):
             post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
 
             # now let's schedule the notification so posts get fetched at proper datetime
+            # but also let's append 10 more seconds to make sure it happens after
             if post['scheduled']:
-                notify_scheduled_post.apply_async(args=[post], eta=arrow.get(published_date))
+                eta_time = arrow.get(published_date).replace(seconds=+10)
+                notify_scheduled_post.apply_async(args=[post], eta=eta_time)
 
             synd_in_id = doc.get('syndication_in')
             if synd_in_id:

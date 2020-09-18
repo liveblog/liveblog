@@ -24,9 +24,17 @@
     }
     .notification-counter {
         position: absolute;
-        margin-top: 5px;
         right: 5px;
+        top: 5px;
         z-index: 2;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        padding: 0;
+        text-align: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
     }
     .columns-holder {
         position: absolute;
@@ -933,7 +941,7 @@
 }
 
 .schedule-selector {
-    top: 30px;
+    top: 40px;
 }
 
 .preview-layout.consumers-settings {
