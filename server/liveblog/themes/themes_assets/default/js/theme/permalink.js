@@ -31,6 +31,7 @@ class Permalink {
   }
 
   parseHref() {
+    // if href is still empty, let's ask again to embed.ts
     if (this.href.length === 0) {
       messages.send('permalink_init');
       return;

@@ -8,7 +8,7 @@ export const messageIframe = (message: string, data: any) => {
     const liveblogEmbed: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
     if (liveblogEmbed) {
-        console.log('sending msg to', liveblogEmbed); // eslint-disable-line
+        // console.log('sending msg to', liveblogEmbed); // eslint-disable-line
         liveblogEmbed.contentWindow.postMessage(msg, '*');
     }
 };

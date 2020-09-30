@@ -320,7 +320,10 @@ def embed_iframe(blog_id):
 
 @embed_blueprint.route('/embed/<blog_id>/overview')
 def embed_overview(blog_id, api_host=None):
-    ''' Show a theme with all the available themes in different iframes '''
+    """
+    Show a theme with all the available themes in different iframes
+    """
+
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     themes = get_resource_service('themes').get_local_themes_packages()
     blog['_id'] = str(blog['_id'])

@@ -1,6 +1,7 @@
 import { MsgHandlerFunc } from './types'; // eslint-disable-line
 import * as consent from './handlers/consent';
 import * as permalink from './handlers/permalink';
+import * as sharing from './sharing';
 
 const handlers = {};
 
@@ -27,3 +28,9 @@ window.addEventListener('message', (event: MessageEvent) => {
         handlers[type](data);
     }
 }, false);
+
+const postId = permalink.getSharedPost();
+
+if (postId) {
+    sharing.handleSharedPost(postId);
+}
