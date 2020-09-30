@@ -6,6 +6,16 @@ declare module '*.ng1' {
     export default value;
 }
 
+declare module '*.html' {
+    const value: string;
+    export default value;
+}
+
+declare module '*.css' {
+    const value: string;
+    export default value;
+}
+
 declare const gettext: (text: string) => string;
 
 type Action<T = any> = {

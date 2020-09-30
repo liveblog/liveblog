@@ -1,13 +1,17 @@
+import modalHtml from './ui/shared-post-modal.html';
+
 const modalUrl = 'https://unpkg.com/micromodal@0.4.6/dist/micromodal.min.js';
 
 const modalScriptReady = () => {
     const MicroModal = (window as any).MicroModal;
 
-    console.log(MicroModal); // eslint-disable-line
+    MicroModal.show('lb--shared-post-modal');
 };
 
 export const handleSharedPost = (postId: string) => {
     // step 1: include modal library (js, modal html and css)
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
     const mScript = document.createElement('script');
 
     mScript.type = 'text/javascript';

@@ -112,9 +112,10 @@ module.exports = function makeConfig(grunt) {
                 },
                 {
                     test: /\.html$/,
-                    use: [
-                        'html-loader'
-                    ]
+                    loader: 'html-loader',
+                    options: {
+                        minimize: true
+                    }
                 },
                 {
                     test: /\.less$/,
