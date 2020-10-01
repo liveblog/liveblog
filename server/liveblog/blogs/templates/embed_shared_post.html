@@ -1,0 +1,34 @@
+<!doctype html>
+<html class="lb-wrapHtml">
+    <head>
+        <title>{{ blog.title }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        {% for style in assets.styles %}
+            <link rel="stylesheet" href="{{ style }}">
+        {% endfor %}
+    </head>
+    <body class="lb-wrapBody" style="{{ (output and output.get('style')) | tostyle | safe }}">
+
+    <div class="lb-timeline lb-timeline-shared-post">
+    {{ template | safe }}
+    <div>
+
+    <script type="text/javascript">
+    window.LB = {
+        blog: {{ blog | tojson | safe }},
+        output: {{ output | tojson | safe }},
+        settings: {{ settings | tojson | safe }},
+        api_host: '{{ api_host }}',
+        assets_root: '{{ assets_root }}',
+        i18n: {{ i18n | tojson | safe }}
+    };
+    </script>
+
+    {% for script in assets.scripts %}
+        <script {% if async %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
+    {% endfor %}
+    </body>
+</html>

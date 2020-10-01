@@ -25,6 +25,7 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
+from liveblog.utils.api import api_response
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
@@ -302,6 +303,59 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         response_content = parsed_content.prettify()
 
     return response_content
+
+
+@embed_blueprint.route('/embed/shared-post/<blog_id>/<post_id>')
+def embed_shared_post(blog_id, post_id):
+    post = get_resource_service('client_posts').find_one(req=None, _id=post_id)
+    if post and str(post.get('blog')) != blog_id:
+        return 'Post not found', 404
+
+    theme_service = get_resource_service('themes')
+    theme = theme_service.find_one(req=None, name='default')
+    settings = theme_service.get_default_settings(theme)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+
+    if theme.get('public_url', False):
+        assets_root = theme.get('public_url')
+    else:
+        assets_root = theme_service.get_theme_assets_url(theme.get('name'))
+
+    assets, template_content = collect_theme_assets(theme, template='template-shared-post.html', parents=[])
+
+    embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
+    embed_template = embed_env.get_template(template_content)
+
+    api_host = request.url_root
+    api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
+    api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
+    i18n = theme.get('i18n', {})
+
+    base_ctx = dict(
+        blog=blog,
+        output=None,
+        settings=settings,
+        i18n=i18n,
+        assets_root=assets_root,
+        api_host=api_host
+    )
+
+    post_ctx = dict(
+        options=theme,
+        item=post,
+        json_options=bson_dumps(theme),
+        **base_ctx
+    )
+    template_content = embed_template.render(post_ctx)
+
+    context = dict(
+        theme=theme,
+        assets=assets,
+        template=template_content,
+        **base_ctx
+    )
+
+    return render_template('embed_shared_post.html', **context)
 
 
 @embed_blueprint.route('/embed/iframe/<blog_id>')

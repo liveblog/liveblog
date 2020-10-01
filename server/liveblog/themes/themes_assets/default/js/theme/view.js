@@ -334,12 +334,14 @@ function toggleSortBtn(name) {
  * @param {Boolean} open
  */
 function toggleSortDropdown(open) {
+  var dropdown = document.querySelector('.sorting-bar__dropdownContent');
+
+  if (!dropdown) return;
+
   if (open !== undefined) {
-    document.querySelector('.sorting-bar__dropdownContent')
-      .classList.toggle('sorting-bar__dropdownContent--active', open);
+    dropdown.classList.toggle('sorting-bar__dropdownContent--active', open);
   } else {
-    document.querySelector('.sorting-bar__dropdownContent')
-      .classList.toggle('sorting-bar__dropdownContent--active');
+    dropdown.classList.toggle('sorting-bar__dropdownContent--active');
   }
 
   window.playersState = {};

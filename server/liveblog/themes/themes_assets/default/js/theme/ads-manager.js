@@ -27,7 +27,7 @@ nunjucks.env = nunjucksEnv;
 const adsSettings = {
     postSelector: "section.lb-posts.normal > article.lb-post",
     adsSelector: "article.lb-post.advertisement",
-    frequency: output.settings.frequency,
+    frequency: output && output.settings.frequency,
 };
 
 function resetAds() {
