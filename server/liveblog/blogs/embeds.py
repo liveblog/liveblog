@@ -18,11 +18,13 @@ import superdesk
 from bs4 import BeautifulSoup
 from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
+from flask_cors import cross_origin
 from flask import current_app as app
 from flask import json, render_template, request, url_for
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
+from liveblog.utils.api import api_response
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
@@ -305,9 +307,10 @@ def embed(blog_id, theme=None, output=None, api_host=None):
 
 
 @embed_blueprint.route('/embed/shared-post/<blog_id>/<post_id>')
+@cross_origin()
 def embed_shared_post(blog_id, post_id):
     post = get_resource_service('client_posts').find_one(req=None, _id=post_id)
-    if post and str(post.get('blog')) != blog_id:
+    if not post or (post and str(post.get('blog')) != blog_id):
         return 'Post not found', 404
 
     theme_service = get_resource_service('themes')

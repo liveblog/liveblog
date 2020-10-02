@@ -1,6 +1,17 @@
 
 @import "globals.less";
 
+.hide-scrollbar {
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+
 .lb-timeline.lb-timeline-shared-post {
     .lb-post {
         padding-right: 10px;
