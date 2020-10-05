@@ -19,6 +19,19 @@ const getBlogID = (url: string) => {
     return match[0];
 };
 
+const renderModalPost = (postUrl: string) => {
+    document.body.insertAdjacentHTML('beforeend', modalHtml.replace('__INSERT_IFRAME_URL__', postUrl));
+
+    const mScript = document.createElement('script');
+
+    mScript.type = 'text/javascript';
+    mScript.src = modalUrl;
+    mScript.async = true;
+    mScript.defer = true;
+    mScript.onload = modalScriptReady;
+    document.body.appendChild(mScript);
+};
+
 export const handleSharedPost = (postId: string) => {
     const parser = document.createElement('a');
     const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
@@ -30,30 +43,14 @@ export const handleSharedPost = (postId: string) => {
     parser.href = liveblog.src;
     const blogID = getBlogID(liveblog.src);
     const url = `${parser.origin}/embed/shared-post/${blogID}/${postId}`;
+    const checkUrl = `${parser.origin}/api/client_posts/${postId}`;
 
-    // fetch(url)
-    //     .then((res) => {
-    //         if (res.status !== 200) {
-    //             return;
-    //         }
-    //         const data: any = res.json();
-
-    //         modalHtml.replace('__INSERT_IFRAME__', data.embed);
-    //         document.body.insertAdjacentHTML('beforeend', modalHtml);
-    //     });
-
-    document.body.insertAdjacentHTML('beforeend', modalHtml.replace('__INSERT_IFRAME_URL__', url));
-
-    const mScript = document.createElement('script');
-
-    mScript.type = 'text/javascript';
-    mScript.src = modalUrl;
-    mScript.async = true;
-    mScript.defer = true;
-    mScript.onload = modalScriptReady;
-    document.body.appendChild(mScript);
-
-    // step 2: fetch post from backend
-    // step 3: render things
-    console.log(postId); // eslint-disable-line
+    fetch(checkUrl)
+        .then((res) => {
+            if (res.status !== 200) {
+                return;
+            }
+            renderModalPost(url);
+        })
+        .catch((err) => console.log(err)); // eslint-disable-line
 };

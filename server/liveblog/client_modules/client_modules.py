@@ -115,6 +115,9 @@ class ClientPostsService(PostsService, AuthorsMixin):
 
     def find_one(self, req, **lookup):
         post = super().find_one(req, **lookup)
+        if not post:
+            return None
+
         post_utils.calculate_post_type(post)
         post_utils.attach_syndication(post)
         self.complete_posts_info([post])
