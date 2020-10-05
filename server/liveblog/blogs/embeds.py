@@ -24,7 +24,6 @@ from flask import json, render_template, request, url_for
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
-from liveblog.utils.api import api_response
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
