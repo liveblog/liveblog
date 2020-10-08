@@ -3,6 +3,9 @@ import * as consent from './handlers/consent';
 import * as permalink from './handlers/permalink';
 import * as sharing from './sharing';
 
+// @ts-ignore
+// NOTE: this placeholder will be replace by webpack's DefinePlugin
+const LB__API_HOST = __LIVEBLOG_API_HOST__; // eslint-disable-line
 const handlers = {};
 
 const registerHandler = (eventName: string, handler: MsgHandlerFunc) => {
@@ -32,5 +35,5 @@ window.addEventListener('message', (event: MessageEvent) => {
 const postId = permalink.getSharedPost();
 
 if (postId) {
-    sharing.handleSharedPost(postId);
+    sharing.handleSharedPost(postId, LB__API_HOST);
 }

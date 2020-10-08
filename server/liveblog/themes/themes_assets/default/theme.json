@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-2a1f83bc38.css"],
-    "devScripts": ["dist/default-bfa69ba8a0.js"],
-    "styles": ["dist/default-2a1f83bc38.css"],
-    "scripts": ["dist/default-bfa69ba8a0.js"],
+    "devStyles": ["dist/default-de4b653416.css"],
+    "devScripts": ["dist/default-05c0b31dc0.js"],
+    "styles": ["dist/default-de4b653416.css"],
+    "scripts": ["dist/default-05c0b31dc0.js"],
     "options": [
         {
             "name": "language",

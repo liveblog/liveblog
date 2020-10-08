@@ -32,7 +32,7 @@ const renderModalPost = (postUrl: string) => {
     document.body.appendChild(mScript);
 };
 
-export const handleSharedPost = (postId: string) => {
+export const handleSharedPost = (postId: string, apiHost: string) => {
     const parser = document.createElement('a');
     const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
@@ -43,7 +43,7 @@ export const handleSharedPost = (postId: string) => {
     parser.href = liveblog.src;
     const blogID = getBlogID(liveblog.src);
     const url = `${parser.origin}/embed/shared-post/${blogID}/${postId}`;
-    const checkUrl = `${parser.origin}/api/client_posts/${postId}`;
+    const checkUrl = `${apiHost}/client_posts/${postId}`;
 
     fetch(checkUrl)
         .then((res) => {

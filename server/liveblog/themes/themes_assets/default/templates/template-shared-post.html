@@ -19,11 +19,13 @@
 
 {% block post_header %}
   <div class="lb-post-header">
-    <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
-
     {% if settings.authorPosition == "top"  %}
       {% include "template-author.html" %}
     {% endif %}
+
+    <div class="lb-post-updated">
+      <span>|&nbsp;&nbsp;</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{postDate | date('')}}</span>
+    </div>
   </div>
 {% endblock %}
 
