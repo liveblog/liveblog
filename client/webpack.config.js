@@ -54,8 +54,7 @@ module.exports = function makeConfig(grunt) {
                 moment: 'moment',
             }),
             new webpack.DefinePlugin({
-                __SUPERDESK_CONFIG__: JSON.stringify(sdConfig),
-                __LIVEBLOG_API_HOST__: JSON.stringify(sdConfig.server.url)
+                __SUPERDESK_CONFIG__: JSON.stringify(sdConfig)
             }),
 
             // Using TS transpileOnly mode to speed up things and using this plugin

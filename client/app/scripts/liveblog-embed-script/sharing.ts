@@ -1,6 +1,16 @@
 import modalHtml from './ui/shared-post-modal.html';
 
+let apiHost;
 const modalUrl = 'https://unpkg.com/micromodal@0.4.6/dist/micromodal.min.js';
+
+export enum Message {
+    ApiHost = 'api_host',
+}
+
+export const ReceiveApiHost = (url: string) => {
+    console.log(url); // eslint-disable-line
+    apiHost = url;
+};
 
 const modalScriptReady = () => {
     const MicroModal = (window as any).MicroModal;
@@ -32,7 +42,7 @@ const renderModalPost = (postUrl: string) => {
     document.body.appendChild(mScript);
 };
 
-export const handleSharedPost = (postId: string, apiHost: string) => {
+export const handleSharedPost = (postId: string) => {
     const parser = document.createElement('a');
     const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
@@ -43,7 +53,7 @@ export const handleSharedPost = (postId: string, apiHost: string) => {
     parser.href = liveblog.src;
     const blogID = getBlogID(liveblog.src);
     const url = `${parser.origin}/embed/shared-post/${blogID}/${postId}`;
-    const checkUrl = `${apiHost}/client_posts/${postId}`;
+    const checkUrl = `${apiHost}/api/client_posts/${postId}`;
 
     fetch(checkUrl)
         .then((res) => {
