@@ -305,7 +305,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     return response_content
 
 
-@embed_blueprint.route('/embed/shared-post/<blog_id>/<post_id>')
+@embed_blueprint.route('/api/embed/shared_post/<blog_id>/<post_id>')
 @cross_origin()
 def embed_shared_post(blog_id, post_id):
     post = get_resource_service('client_posts').find_one(req=None, _id=post_id)

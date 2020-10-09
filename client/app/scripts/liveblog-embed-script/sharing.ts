@@ -43,16 +43,14 @@ const renderModalPost = (postUrl: string) => {
 };
 
 export const handleSharedPost = (postId: string) => {
-    const parser = document.createElement('a');
     const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
     if (!liveblog) {
         return;
     }
 
-    parser.href = liveblog.src;
     const blogID = getBlogID(liveblog.src);
-    const url = `${parser.origin}/embed/shared-post/${blogID}/${postId}`;
+    const url = `${apiHost}/api/embed/shared_post/${blogID}/${postId}`;
     const checkUrl = `${apiHost}/api/client_posts/${postId}`;
 
     fetch(checkUrl)
