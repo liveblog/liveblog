@@ -2,6 +2,7 @@ import { MsgHandlerFunc } from './types'; // eslint-disable-line
 import * as consent from './handlers/consent';
 import * as permalink from './handlers/permalink';
 import * as sharing from './sharing';
+import * as responsive from './responsive';
 
 const handlers = {};
 
@@ -26,6 +27,7 @@ registerHandler(consent.Message.Accept, consent.accept);
 registerHandler(permalink.Event.Init, permalink.init);
 
 permalink.init();
+responsive.init();
 
 window.addEventListener('message', (event: MessageEvent) => {
     const { type, data } = event.data;

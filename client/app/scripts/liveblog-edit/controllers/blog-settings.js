@@ -500,31 +500,15 @@ function BlogSettingsController(
     // after publicUrl and theme is on `vm` object we can compute embeds code.
     $q.all([qPublicUrl, qTheme]).then(() => {
         vm.embedMultiHight = true;
-        // devel link
-        let parentIframe = 'http://localhost:5000/themes_assets/angular/';
         const embedScript = `${config.client.url}/embed.js`;
 
-        if (vm.angularTheme.public_url) {
-            // production link
-            parentIframe = vm.angularTheme.public_url
-                .replace(/\/[0-9.]+\/themes_assets\//, '/themes_assets/')
-                .replace('http://', 'https://');
-        }
-        // loading mechanism, and load parent-iframe.js with callback.
-        var loadingScript = `
-<script type="text/javascript">
-var liveblog={load:function(e,t){
-    var a=document,l=a.createElement("script"),
-        o=a.getElementsByTagName("script")[0];
-    return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};
-liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof
-liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
-
+        // loading mechanism, and responsive will be handled by embed.ts
+        /* eslint-disable max-len */
         vm.embeds = {
-            normal: `<script src="${embedScript}" async defer></script>
+            normal: `<script src="${embedScript}" defer></script>
 <iframe id="liveblog-iframe" width="100%" height="715" src="${vm.publicUrl}" frameborder="0" allowfullscreen></iframe>`,
-            resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' +
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript,
+            resizeing: `<script src="${embedScript}" defer></script>
+<iframe id="liveblog-iframe" width="100%" scrolling="no" src="${vm.publicUrl}" data-responsive="yes" frameborder="0" allowfullscreen></iframe>`,
         };
     });
 
