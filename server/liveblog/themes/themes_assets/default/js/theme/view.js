@@ -10,9 +10,11 @@ const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
 const gdpr = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
+const filters = require('../../misc/filters');
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
+nunjucksEnv.addFilter('decode_uri', filters.decodeUri);
 nunjucks.env = nunjucksEnv;
 
 const permalink = new Permalink();

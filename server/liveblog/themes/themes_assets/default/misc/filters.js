@@ -91,4 +91,13 @@ var addtenFilter = function(date) {
   return newYear + rest;
 };
 
-module.exports = { ampifyFilter, addtenFilter };
+/**
+ * Simple filter to decode encoded URLs
+ * @param  {string} url String url
+ * @return {string}
+ */
+const decodeUri = (url) => {
+  return decodeURIComponent(url);
+}
+
+module.exports = { ampifyFilter, addtenFilter, decodeUri };
