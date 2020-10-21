@@ -18,6 +18,7 @@ export default function unreadPostsService($rootScope) {
     let prevContributions = [];
     let comments = [];
     let prevComments = [];
+    let scheduled = [];
     // check if the post is an unread comment.
 
     function isComment(post) {
@@ -47,6 +48,9 @@ export default function unreadPostsService($rootScope) {
         return comments.filter((comment) => comment.blog === blog._id).length;
     }
 
+    // get the count of current comments.
+    const countScheduled = () => scheduled.length;
+
     // reset the current state and keep the previous vector.
     function reset(panel) {
         if (panel === 'contributions') {
@@ -59,14 +63,36 @@ export default function unreadPostsService($rootScope) {
         }
     }
 
+    function _handleScheduledUpdate(eventParams) {
+        if (eventParams.posts && !eventParams.scheduled_done) {
+            const post = eventParams.posts[0];
+
+            if (post.scheduled && blog._id === post.blog) {
+                scheduled = scheduled.concat(eventParams.posts);
+                return true;
+            }
+        }
+
+        if (eventParams.scheduled_done) {
+            scheduled.pop();
+            return true;
+        }
+
+        return false;
+    }
+
     // add the post in the contributions vector.
     function onPostReceive(e, eventParams) {
         if (eventParams.posts && eventParams.posts[0].syndication_in) {
             return;
         }
 
+        // update scheduled array and return if true
+        if (_handleScheduledUpdate(eventParams)) return;
+
         if (eventParams.post_status === 'comment') {
             comments = comments.concat(eventParams.posts);
+            return;
         }
 
         if (eventParams.post_status === 'submitted') {
@@ -82,11 +108,13 @@ export default function unreadPostsService($rootScope) {
             });
         }
     }
+
     return {
         isContribution: isContribution,
         countContributions: countContributions,
         isComment: isComment,
         countComments: countComments,
+        countScheduled: countScheduled,
         reset: reset,
         startListening: function(currentBlog) {
             if (!listener) {

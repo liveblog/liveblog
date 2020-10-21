@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.8.21",
+  "version": "3.81.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -26,13 +26,13 @@
     "@types/lodash": "^4.14.137",
     "@types/react": "^16.8.18",
     "@types/react-select": "3.0.9",
-    "@typescript-eslint/eslint-plugin-tslint": "^1.7.0",
-    "@typescript-eslint/parser": "^1.7.0",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
     "bootstrap": "^4.5.0",
     "btoa": "1.1.2",
     "classnames": "2.2.5",
     "css-loader": "0.28.7",
-    "eslint": "^5.16.0",
+    "eslint": "^6.7.2",
     "eslint-plugin-angular": "3.1.1",
     "eslint-plugin-react": "^7.5.1",
     "fork-ts-checker-webpack-plugin": "^0.5.2",
@@ -81,11 +81,12 @@
     "superdesk-ui-framework": "^1.8.14",
     "ts-loader": "^3.5.0",
     "tslint": "^5.16.0",
-    "typescript": "3.4.5",
+    "typescript": "^3.9.6",
     "webpack": "3.6.0",
     "webpack-dev-server": "2.8.2"
   },
   "dependencies": {
+    "@atlaskit/datetime-picker": "^10.0.1",
     "adblock-detect": "1.0.5",
     "angular": "1.6.9",
     "angular-animate": "1.6.1",
@@ -120,6 +121,7 @@
     "react-select": "^3.0.4",
     "sanitize-html": "^1.18.2",
     "sir-trevor": "liveblog/sir-trevor-js",
+    "styled-components": "^5.1.1",
     "superdesk-core": "eos87/superdesk-client-core#v1.17.0-liveblog",
     "superdesk-ui-framework": "^1.8.13"
   },

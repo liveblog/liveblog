@@ -5,10 +5,21 @@ export const messageIframe = (message: string, data: any) => {
         msg['data'] = data;
     }
 
+    messageIframePlain(msg);
+};
+
+export const messageIframePlain = (msg: any) => {
     const liveblogEmbed: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
     if (liveblogEmbed) {
-        console.log('sending msg to', liveblogEmbed); // eslint-disable-line
         liveblogEmbed.contentWindow.postMessage(msg, '*');
     }
+};
+
+export const loadScript = (src: string, cb: () => void) => {
+    const a = document,
+        l = a.createElement('script'),
+        o = a.getElementsByTagName('script')[0];
+
+    return l.type = 'text/javascript', l.onload = cb, l.async = !0, l.src = src, o.parentNode.insertBefore(l, o), l;
 };

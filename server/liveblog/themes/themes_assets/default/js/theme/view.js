@@ -10,9 +10,11 @@ const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
 const gdpr = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
+const filters = require('../../misc/filters');
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
+nunjucksEnv.addFilter('decode_uri', filters.decodeUri);
 nunjucks.env = nunjucksEnv;
 
 const permalink = new Permalink();
@@ -157,6 +159,7 @@ function checkPending() {
     updates.toggle('mod--displaynone', true);
   }
 }
+
 /**
  * Delete post <article> DOM node by data attribute.
  * @param {string} - a post URN
@@ -166,50 +169,6 @@ function deletePost(id) {
   if (elem) {
     elem.remove();
   }
-}
-
-var dismissSharedPost = (e) => {
-  var container = document.querySelector('#shared-post-container');
-  container.classList.add('mod--displaynone');
-}
-
-function renderSharedPost(post) {
-  // make sure to avoid pin or highlighted style
-  post.lb_highlight = false;
-  post.sticky = false;
-
-  const rendered = renderSinglePost(post, false);
-  var container = document.querySelector('#shared-post-container');
-  var postWrap = container.querySelector('.post-wrap');
-
-  postWrap.innerHTML = rendered;
-  container.classList.remove('mod--displaynone');
-
-  attachSlideshow();
-  attachPermalink();
-  attachShareBox();
-
-  // FB embeds has a weird glitch after update. So we need to force the re-render
-  // in case the post contains any fb embed
-  if (post.post_items_type === 'embed-facebook') {
-    setTimeout(function() {
-      // we query again as the DOM has been replaced
-      var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
-      FB.XFBML.parse(embedContainer);
-    }, 500);
-  }
-
-  setTimeout(function() {
-    container.scrollIntoView();
-  }, 500);
-
-  container.scrollIntoView();
-
-  window.onload = function() {
-    container.scrollIntoView();
-  };
-
-  postWrap.classList.add('lb-post-permalink-selected');
 }
 
 /**
@@ -334,12 +293,14 @@ function toggleSortBtn(name) {
  * @param {Boolean} open
  */
 function toggleSortDropdown(open) {
+  var dropdown = document.querySelector('.sorting-bar__dropdownContent');
+
+  if (!dropdown) return;
+
   if (open !== undefined) {
-    document.querySelector('.sorting-bar__dropdownContent')
-      .classList.toggle('sorting-bar__dropdownContent--active', open);
+    dropdown.classList.toggle('sorting-bar__dropdownContent--active', open);
   } else {
-    document.querySelector('.sorting-bar__dropdownContent')
-      .classList.toggle('sorting-bar__dropdownContent--active');
+    dropdown.classList.toggle('sorting-bar__dropdownContent--active');
   }
 
   window.playersState = {};
@@ -511,7 +472,5 @@ module.exports = {
   consent: gdpr,
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
   attachDropdownCloseEvent: attachDropdownCloseEvent,
-  loadEmbeds: loadEmbeds,
-  renderSharedPost: renderSharedPost,
-  dismissSharedPost: dismissSharedPost
+  loadEmbeds: loadEmbeds
 };

@@ -191,12 +191,21 @@ const app = angular.module('liveblog.edit',
      * @param {Datetime} date iso format datetime
      * @return {String} relative time
      */
-    .filter('reldateAutoUpdate', ['$interval', function reldateAutorUpdateFactory($interval) {
+    .filter('reldateAutoUpdate', ['$interval', '$sce', function reldateAutorUpdateFactory($interval, $sce) {
         // trigger digest every 60 seconds
         $interval(() => true, 60000);
 
         function reldateAutoUpdate(date) {
-            return moment(date).fromNow();
+            const pubDate = moment(date);
+            const now = moment();
+            var relDate = pubDate.fromNow();
+
+            if (pubDate > now) {
+                relDate = `<span class="updated-label">SCHEDULED FOR</span>
+                    <span class="updated-time">${pubDate.format('MMM DD, YYYY LT')}</span>`;
+            }
+
+            return $sce.trustAsHtml(relDate);
         }
 
         reldateAutoUpdate.$stateful = true;

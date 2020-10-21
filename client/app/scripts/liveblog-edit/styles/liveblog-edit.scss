@@ -24,9 +24,17 @@
     }
     .notification-counter {
         position: absolute;
-        margin-top: 5px;
         right: 5px;
+        top: 5px;
         z-index: 2;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        padding: 0;
+        text-align: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
     }
     .columns-holder {
         position: absolute;
@@ -277,6 +285,19 @@
                     text-transform: uppercase;
                     height: 18px;
                 }
+
+                input {
+                    min-height: 32px;
+                    height: unset;
+                    border-radius: 3px;
+                    padding-top: 2px;
+                    padding-bottom: 2px;
+                }
+
+                .react__tags__selector input {
+                    min-height: unset;
+                }
+
                 .editor {
                     textarea {
                         border: 1px solid #dfdfdf !important;
@@ -690,6 +711,15 @@
     .active .lb-big-icon-contributions {
         background-image: url('~images/contributions_active.svg');
     }
+
+    .lb-big-icon-scheduled-posts {
+        background-image: url('~images/scheduled-posts.svg');
+    }
+
+    .active .lb-big-icon-scheduled-posts {
+        background-image: url('~images/scheduled-posts_active.svg');
+    }
+
     .lb-big-icon-editor {
         background-image: url('~images/editor.svg');
     }
@@ -900,13 +930,18 @@
     }
 }
 
-.tags-selector {
+.tags-selector,
+.schedule-selector {
     position: relative;
     top: 20px;
 
     .selector__label {
         margin-bottom: 5px;
     }
+}
+
+.schedule-selector {
+    top: 40px;
 }
 
 .preview-layout.consumers-settings {
@@ -919,5 +954,19 @@
 
     .preview-pane {
         top: 0px;
+    }
+}
+
+.schedule-datetime-picker {
+    background-color: #ffffff !important;
+    border: 1px solid #d9d9d9 !important;
+
+    &:hover,
+    &__hover {
+        background-color: #ffffff !important;
+        border: 1px solid #5ea9c8 !important;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 100000;
     }
 }

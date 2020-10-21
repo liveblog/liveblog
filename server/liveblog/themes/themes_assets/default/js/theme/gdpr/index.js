@@ -1,6 +1,7 @@
 /* eslint-disable curly */
 import {ConsentManager} from './consent-manager';
 import {domainRequiresConsent} from './helpers';
+import {loadEmbeds} from '../view';
 
 const CONSENT_SUBJECTS_SELECTOR = 'template.lb_consent--awaiting';
 const CONSENT_PLACEHOLDER_TMPL = 'template#lb_consent--placeholder-tmpl';
@@ -63,20 +64,7 @@ const checkAndHandlePlaceholders = () => {
         wireCookiesEnabler();
     } else {
         embedNodes.forEach(exposeContent);
-
-        setTimeout(() => {
-            try {
-                instgrm.Embeds.process();
-            } catch (err) {
-                console.log('instgrm script not ready'); // eslint-disable-line
-            }
-
-            try {
-                twttr.widgets.load();
-            } catch (err) {
-                console.log('twttr script not ready'); // eslint-disable-line
-            }
-        }, 500);
+        setTimeout(loadEmbeds, 500);
     }
 };
 

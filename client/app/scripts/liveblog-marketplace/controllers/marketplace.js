@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 marketplaceController.$inject = [
     '$scope',
     'Store',
@@ -10,7 +12,7 @@ marketplaceController.$inject = [
 export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
     let filters = {};
 
-    if ($route.current.params.hasOwnProperty('filters')) {
+    if (_.has($route.current.params, 'filters')) {
         filters = JSON.parse($route.current.params.filters);
     }
 
@@ -30,7 +32,7 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
     };
 
     $scope.emptyMarketer = function() {
-        return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
+        return !$scope.filters || !_.has($scope.filters, 'marketer._id');
     };
 
     $scope.emptyBlogs = function() {

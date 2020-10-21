@@ -185,6 +185,7 @@
                                 var item = value.item;
                                 // add `picture_url` and `picture_srcset` property on item.
                                 if( (item.item_type == 'image') && item.meta && item.meta.media) {
+                                    // TODO: ADD A VALIDATION HERE
                                     item.picture_url = fixProtocol(item.meta.media.renditions.thumbnail.href);
                                     item.picture_srcset = srcSet(item.meta.media.renditions);
                                 }

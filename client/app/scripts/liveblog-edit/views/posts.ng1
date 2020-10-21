@@ -7,6 +7,7 @@
       ng-repeat="post in postsList.pagesManager.allPosts() track by post._id"
       post="post"
       index=$index
+      ng-if="postsList.shouldRender(post)"
       posts-list-ctrl="postsList"
       start-reorder="postsList.startReorder(post)"
       clear-reorder-action="postsList.clearReorder"

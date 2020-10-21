@@ -1,0 +1,154 @@
+<div class="lb--modal lb--modal__slide" id="lb--shared-post-modal" aria-hidden="true">
+  <div class="lb--modal__overlay" tabindex="-1" data-micromodal-close>
+    <div
+      class="lb--modal__container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lb--shared-post-modal__title"
+    >
+      <header class="lb--modal__header">
+        <button
+          class="lb--modal__close"
+          aria-label="Close modal"
+          data-micromodal-close
+        ></button>
+      </header>
+      <main class="lb--modal__content">
+        <iframe class="lb--shared-post-iframe" width="100%" height="500" src="__INSERT_IFRAME_URL__" frameborder="0" allowfullscreen></iframe>
+      </main>
+    </div>
+  </div>
+</div>
+
+<style>
+.lb--modal {
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir,
+    helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
+}
+
+.lb--modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.lb--modal__container {
+  background-color: #fff;
+  padding: 20px;
+  min-width: 650px;
+  min-height: 500px;
+  max-height: 100vh;
+  border-radius: 4px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.lb--modal__header {
+  position: relative;
+}
+
+.lb--modal__title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.25;
+  color: #00449e;
+  box-sizing: border-box;
+}
+
+.lb--modal__close {
+  all: revert;
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  padding: 0px;
+  margin: 0px;
+  cursor: pointer;
+}
+
+.lb--modal__header .lb--modal__close:before {
+  content: "\2715";
+}
+
+.lb--modal__content {
+  margin-top: -1.2rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+@keyframes mmfadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mmfadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mmslideIn {
+  from {
+    transform: translateY(15%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes mmslideOut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-10%);
+  }
+}
+
+.lb--modal__slide {
+  display: none;
+}
+
+.lb--modal__slide.is-open {
+  display: block;
+}
+
+.lb--modal__slide[aria-hidden="false"] .lb--modal__overlay {
+  animation: mmfadeIn 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.lb--modal__slide[aria-hidden="false"] .lb--modal__container {
+  animation: mmslideIn 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.lb--modal__slide[aria-hidden="true"] .lb--modal__overlay {
+  animation: mmfadeOut 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.lb--modal__slide[aria-hidden="true"] .lb--modal__container {
+  animation: mmslideOut 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.lb--modal__slide .lb--modal__container,
+.lb--modal__slide .lb--modal__overlay {
+  will-change: transform;
+}
+</style>

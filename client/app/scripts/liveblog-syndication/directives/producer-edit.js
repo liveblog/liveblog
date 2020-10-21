@@ -17,7 +17,7 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
             scope.dirty = false;
 
             scope.$watch('producer', (producer) => {
-                scope.isEditing = producer.hasOwnProperty('_id');
+                scope.isEditing = _.has(producer, '_id');
                 scope.origProducer = _.cloneDeep(producer);
             });
 
@@ -79,11 +79,11 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
                     .catch((err) => {
                         var errorMsg = gettext('An error has occurred. Please try again later.');
 
-                        if (err.data.hasOwnProperty('_error')) {
+                        if (_.has(err.data, '_error')) {
                             errorMsg = err.data._error.message;
                         }
 
-                        if (err.data.hasOwnProperty('_issues')) {
+                        if (_.has(err.data, '_issues')) {
                             Object.keys(err.data._issues).forEach((key) => {
                                 var issue = err.data._issues[key];
 

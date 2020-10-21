@@ -1,10 +1,13 @@
 import logging
 import flask
+import arrow
+import pymongo
 import datetime
 
+from enum import Enum
 from flask import current_app as app
 from bson.objectid import ObjectId
-from eve.utils import ParsedRequest
+from eve.utils import ParsedRequest, date_to_str
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
@@ -19,12 +22,20 @@ from liveblog.common import check_comment_length, get_user
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
-from .tasks import update_post_blog_data, update_post_blog_embed
+from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
+from .utils import get_associations, get_associations_ids
 
 
 logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
+
+
+class PostStatus(str, Enum):
+    OPEN = 'open'
+    DRAFT = 'draft'
+    SUBMITTED = 'submitted'
+    COMMENT = 'comment'
 
 
 # monkey patch so we can update superdesk core resources in Elastic
@@ -109,8 +120,8 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment'],
-            'default': 'open'
+            'allowed': [x.value for x in PostStatus],
+            'default': PostStatus.OPEN
         },
         'lb_highlight': {
             'type': 'boolean',
@@ -199,16 +210,46 @@ class PostsService(ArchiveService):
             order = 0.00
         return float(order)
 
+    def _update_scheduled_sequences(self, blog_id):
+        """
+        This fetches scheduled posts, sort them by published_date and
+        sets proper order values
+        """
+
+        filters = [
+            {'blog': str(blog_id)},
+            {'deleted': False},
+            {'published_date': {'$gt': date_to_str(utcnow())}}
+        ]
+
+        query = {'$and': filters}
+        scheduled_posts = self.find(query).sort('published_date', pymongo.ASCENDING)
+
+        for post in scheduled_posts:
+            next_order = self.get_next_order_sequence(post['blog'])
+            self.system_update(post['_id'], {'order': next_order}, post)
+
     def check_post_permission(self, post):
+        PUBLISH = 'publish_post'
+        CONTRIBUTE = 'submit_post'
+
+        not_allowed_ex = SuperdeskApiError.forbiddenError(message='User does not have sufficient permissions.')
+
         to_be_checked = (
-            dict(status='open', privilege_required='publish_post'),
-            dict(status='submitted', privilege_required='submit_post')
+            dict(status=PostStatus.OPEN, privilege_required=PUBLISH),
+            dict(status=PostStatus.SUBMITTED, privilege_required=CONTRIBUTE)
         )
+
         for rule in to_be_checked:
             if 'post_status' in post and post['post_status'] == rule['status']:
                 if not current_user_has_privilege(rule['privilege_required']):
-                    raise SuperdeskApiError.forbiddenError(
-                        message='User does not have sufficient permissions.')
+                    raise not_allowed_ex
+
+        # check if user is trying to "schedule" a post (meaning published_date in future)
+        if 'published_date' in post.keys():
+            post_datetime = arrow.get(post['published_date'])
+            if post_datetime > utcnow() and not current_user_has_privilege(PUBLISH):
+                raise not_allowed_ex
 
     def on_create(self, docs):
         for doc in docs:
@@ -216,20 +257,22 @@ class PostsService(ArchiveService):
             self.check_post_permission(doc)
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence(doc.get('blog'))
+
             # if you publish a post directly which is not a draft it will have a published_date assigned
-            if doc['post_status'] == 'open':
-                # published date will be set in a syndicated post
+            if doc['post_status'] == PostStatus.OPEN:
+                # published date will be set in a syndicated post or in scheduled post
                 if 'published_date' not in doc.keys():
                     doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
                 doc['publisher'] = get_publisher()
+
         super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)
-        # invalidate cache for updated blog
         posts = []
         out_service = get_resource_service('syndication_out')
+
         for doc in docs:
             blog_id = doc.get('blog')
             post = {}
@@ -238,13 +281,26 @@ class PostsService(ArchiveService):
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
+
+            published_date = doc.get('published_date')
+            post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
+
+            # now let's schedule the notification so posts get fetched at proper datetime
+            # but also let's append 10 more seconds to make sure it happens after
+            if post['scheduled']:
+                eta_time = arrow.get(published_date).replace(seconds=+10)
+                notify_scheduled_post.apply_async(args=[post], eta=eta_time)
+
             synd_in_id = doc.get('syndication_in')
             if synd_in_id:
                 # Set post auto_publish to syndication_in auto_publish value.
                 synd_in = get_resource_service('syndication_in').find_one(_id=synd_in_id, req=None)
                 if synd_in:
                     post['auto_publish'] = synd_in.get('auto_publish')
+
             posts.append(post)
+
+            # invalidate cache for updated blog
             app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
@@ -259,6 +315,7 @@ class PostsService(ArchiveService):
             # let's check for posts limits in blog and remove old one if needed
             if blog_id:
                 check_limit_and_delete_oldest(blog_id)
+                self._update_scheduled_sequences(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
@@ -280,7 +337,7 @@ class PostsService(ArchiveService):
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(item['text'])
 
-        # check if updates `content` is diffrent then the original.
+        # check if updates `content` is different than the original.
         content_diff = False
         if not updates.get('groups', False):
             content_diff = False
@@ -524,17 +581,19 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                 if lookup.get('blog_id'):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']
+
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
+
         docs = super().get(req, lookup)
         related_items = self._related_items_map(docs)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
-            for assoc in self.packageService._get_associations(doc):
+            for assoc in get_associations(doc):
                 ref_id = assoc.get('residRef', None)
-                if ref_id is not None:
+                if ref_id:
                     assoc['item'] = related_items[ref_id]
 
             self.extract_author_ids(doc)
@@ -546,17 +605,14 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         return docs
 
     def _related_items_map(self, docs):
-        """It receives an array of blogs and we extract the associations' ID
-        then we hit the database just 1 time and return them as dictionary"""
+        """It receives an array of posts and extracts the associations' ID
+        then it hits the database just 1 time and return them as dictionary"""
 
         items_map = {}
         ids = []
 
         for doc in docs:
-            for assoc in self.packageService._get_associations(doc):
-                ref_id = assoc.get('residRef', None)
-                if ref_id:
-                    ids.append(ref_id)
+            ids += get_associations_ids(doc)
 
         # now let's get this into a form of dictionary
         for item in get_resource_service('archive').find({'_id': {'$in': ids}}):

@@ -5,10 +5,7 @@ describe('timeline add to top and edit', function() {
     'use strict';
 
     beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login()
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+        login().then(done);
     });
 
     it('can\'t add blank item in timeline', function() {

@@ -1,13 +1,14 @@
 import json
 import logging
-from itertools import groupby
+
 from distutils.util import strtobool
-from eve.utils import config
+from eve.utils import config, date_to_str
 from flask_cors import CORS
 from flask import Blueprint, request
 from flask import current_app as app
 from werkzeug.datastructures import MultiDict
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -24,6 +25,7 @@ from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
+from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
 
@@ -109,22 +111,17 @@ class ClientPostsResource(PostsResource):
     schema.update(PostsResource.schema)
 
 
-class ClientPostsService(PostsService):
+class ClientPostsService(PostsService, AuthorsMixin):
 
     def find_one(self, req, **lookup):
-        doc = super().find_one(req, **lookup)
+        post = super().find_one(req, **lookup)
+        if not post:
+            return None
 
-        client_blog_posts = get_resource_service('client_blog_posts')
-        client_blog_posts.calculate_post_type(doc)
-
-        client_blog_posts.attach_syndication(doc)
-        client_blog_posts.extract_author_ids(doc)
-
-        # now let's add authors' information
-        client_blog_posts.generate_authors_map()
-        client_blog_posts.attach_authors([doc])
-
-        return doc
+        post_utils.calculate_post_type(post)
+        post_utils.attach_syndication(post)
+        self.complete_posts_info([post])
+        return post
 
 
 class ClientCollectionsResource(CollectionsResource):
@@ -270,62 +267,26 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         blog_posts = app.blog_cache.get(blog_id, cache_key)
 
         if blog_posts is None:
+            new_args = req.args.copy()
+            query_source = json.loads(new_args.get('source', '{}'))
+            post_filter_range = query_source.setdefault('post_filter', {}).get('range', {})
+
+            post_filter_range['published_date'] = {'lte': date_to_str(utcnow())}
+            query_source['post_filter']['range'] = post_filter_range
+
+            new_args['source'] = json.dumps(query_source)
+            req.args = new_args
+
             blog_posts = super().get(req, lookup)
 
             # let's complete the post info before cache
             for post in blog_posts.docs:
-                self.calculate_post_type(post)
-                self.attach_syndication(post)
+                post_utils.calculate_post_type(post)
+                post_utils.attach_syndication(post)
 
             app.blog_cache.set(blog_id, cache_key, blog_posts)
 
         return blog_posts
-
-    def calculate_post_type(self, doc, items=None):
-        items = items or self._get_related_items(doc)
-        items_length = len(items)
-        post_items_type = None
-
-        if not items_length:
-            return doc
-
-        if items_length == 1:
-            post_items_type = items[0].get('item_type', '')
-            first_item_type = post_items_type.lower()
-
-            if first_item_type.startswith('advertisement'):
-                post_items_type = 'advertisement'
-
-            elif first_item_type == 'embed':
-                post_items_type = 'embed'
-                if 'provider_name' in items[0]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-
-        elif items_length == 2 and not all([item['item_type'] == 'embed' for item in items]):
-            if items[1].get('item_type', '').lower() == 'embed' and items[0].get('item_type', '').lower() == 'text':
-                post_items_type = 'embed'
-                if 'provider_name' in items[1]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
-            elif (items[0].get('item_type', '').lower() == 'embed' and
-                    items[1].get('item_type', '').lower() == 'text'):
-                post_items_type = 'embed'
-                if 'provider_name' in items[0]['meta']:
-                    post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
-
-        elif items_length > 1:
-            for k, g in groupby(items, key=lambda i: i['item_type']):
-                if k == 'image' and sum(1 for _ in g) > 1:
-                    post_items_type = 'slideshow'
-                    break
-
-        doc['post_items_type'] = post_items_type
-
-        return doc
-
-    def attach_syndication(self, doc):
-        if doc.get('syndication_in'):
-            doc['syndication_in'] = get_resource_service('syndication_in')\
-                .find_one(req=None, _id=doc['syndication_in'])
 
     def on_fetched(self, blog):
         """Parent's class attach editing flag information so, we don't need it
@@ -475,6 +436,14 @@ def get_blog_posts(blog_id):
     # Check max page limit.
     if kwargs['limit'] > Blog.max_page_limit:
         return api_error('"limit" value is not valid.', 403)
+
+    try:
+        all_posts = strtobool(request.args.get('all_posts', '0'))
+    except ValueError as e:
+        return api_error(str(e), 403)
+
+    if app.config.get('SUPERDESK_TESTING', False) and all_posts:
+        kwargs['all_posts'] = True
 
     response_data = blog.posts(wrap=True, **kwargs)
     result_data = convert_posts(response_data, blog)

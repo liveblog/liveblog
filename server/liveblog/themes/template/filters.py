@@ -1,9 +1,11 @@
-import arrow
-import datetime
 import re
+import arrow
+import logging
+import datetime
+
+from urllib.parse import unquote
 from settings import (DEFAULT_THEME_DATE_FORMAT, DEFAULT_THEME_TIMEZONE)
 from superdesk import get_resource_service
-import logging
 
 logger = logging.getLogger('superdesk')
 
@@ -164,3 +166,12 @@ def ampsupport(item):
             return False
 
     return True
+
+
+def decode_uri(url):
+    """
+    Simple filter to decode encoded url. There is a counterpart of this
+    filter in default SEO theme.
+    """
+
+    return unquote(url)

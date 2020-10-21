@@ -1,8 +1,15 @@
 import pymongo
 from bson.objectid import ObjectId
-from superdesk import get_resource_service
+from eve.utils import date_to_str
+
 from html5lib.html5parser import ParseError
 from lxml.html.html5parser import fragments_fromstring, HTMLParser
+
+from superdesk.utc import utcnow
+from superdesk import get_resource_service
+
+from liveblog.posts.mixins import AuthorsMixin
+from liveblog.posts.utils import get_associations
 
 
 def is_valid_html(html):
@@ -13,10 +20,11 @@ def is_valid_html(html):
     return True
 
 
-class Blog:
+class Blog(AuthorsMixin):
     """
     Utility class to fetch blog data directly from mongo collections.
     """
+
     order_by = ('_updated', '_created', 'order')
     sort = ('asc', 'desc')
     ordering = {
@@ -36,19 +44,21 @@ class Blog:
             blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
 
         self._blog = blog
-        self._posts = get_resource_service('client_posts')
+        self._posts_service = get_resource_service('client_blog_posts')
 
     def _posts_lookup(self, sticky=None, highlight=None, all_posts=False, deleted=False, tags=[]):
         filters = [
             {'blog': self._blog['_id']}
         ]
 
-        # only return all post if parameter is specified. Otherwise
-        # get only open posts and not deleted
+        # only return all post if parameter is specified. Otherwise get only open posts and not deleted
+        # also avoid sending "scheduled posts" by default (published_date in future)
         if not all_posts:
             filters.append({'post_status': 'open'})
             if not deleted:
                 filters.append({'deleted': False})
+
+            filters.append({'published_date': {'$lte': date_to_str(utcnow())}})
 
         if sticky:
             filters.append({'sticky': True})
@@ -83,8 +93,6 @@ class Blog:
         value it's a dictionary ala `python-eve` style data structure
 
         Supported kwargs: sticky, highlight, ordering, page, limit, wrap, all_posts, deleted, tags
-
-        TODO: restrict parameters to only allowed ones
         """
 
         sticky = kwargs.get('sticky', None)
@@ -99,7 +107,7 @@ class Blog:
 
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
         lookup = self._posts_lookup(sticky, highlight, all_posts, deleted, tags)
-        results = self._posts.find(lookup)
+        results = self._posts_service.find(lookup)
         total = results.count()
 
         # Get sorting direction.
@@ -110,33 +118,20 @@ class Blog:
         # Fetch posts, do pagination and sorting.
         skip = limit * (page - 1)
         results = results.skip(skip).limit(limit).sort(order_by, sort)
-        posts = []
-        for doc in results:
-            if 'groups' not in doc:
-                continue
 
-            # TODO: optimize this chunk to get items in one call
-            # and perhaps use `packageService._get_associations`
-            for group in doc['groups']:
-                if group['id'] == 'main':
-                    for ref in group['refs']:
-                        ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
-                        # Check the original text html markup.
-                        original_text = ref['item'].get('text')
-                        ref['item']['text'] = self.check_html_markup(original_text)
+        posts = [x for x in results if 'groups' in x]
+        related_items = self._posts_service._related_items_map(posts)
 
-            posts.append(doc)
+        for post in posts:
+            for assoc in get_associations(post):
+                ref_id = assoc.get('residRef', None)
+                if ref_id:
+                    assoc['item'] = related_items[ref_id]
+                    original_text = assoc['item'].get('text')
+                    assoc['item']['text'] = self.check_html_markup(original_text)
 
         # Enrich documents
-        client_blog_posts = get_resource_service('client_blog_posts')
-        for doc in posts:
-            client_blog_posts.calculate_post_type(doc)
-            client_blog_posts.attach_syndication(doc)
-            client_blog_posts.extract_author_ids(doc)
-
-        # now let's add authors' information
-        client_blog_posts.generate_authors_map()
-        client_blog_posts.attach_authors(posts)
+        self.complete_posts_info(posts)
 
         if wrap:
             # Wrap in python-eve style data structure

@@ -10,6 +10,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import moment from 'moment';
 
 import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.ng1';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.ng1';
@@ -131,7 +132,7 @@ export default function BlogEditController(
                 const meta = block.meta;
                 const syndicatedCreator = meta && meta.syndicated_creator;
 
-                if (syndicatedCreator || (meta && meta.hasOwnProperty('syndicated_creator'))) {
+                if (syndicatedCreator || (meta && _.has(meta, 'syndicated_creator'))) {
                     delete meta.syndicated_creator;
                 }
 
@@ -288,7 +289,7 @@ export default function BlogEditController(
         const edited = $scope.currentPost && data.posts.find((post) => post._id === $scope.currentPost._id);
 
         if (edited) {
-            $scope.currentPost = {...$scope.currentPost, ...edited};
+            _.merge($scope.currentPost, edited);
         }
     });
 
@@ -312,7 +313,9 @@ export default function BlogEditController(
         $scope.currentPost = undefined;
         $scope.sticky = false;
         $scope.highlight = false;
+        $scope.scheduled = false;
         $scope.currentPostTags = [];
+        $scope.currentPostPublishedDate = undefined;
 
         $timeout(() => {
             $scope.enableEditor = true;
@@ -381,6 +384,7 @@ export default function BlogEditController(
             sticky: $scope.sticky,
             lb_highlight: $scope.highlight,
             tags: $scope.currentPostTags,
+            published_date: $scope.currentPostPublishedDate,
         };
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
@@ -409,6 +413,7 @@ export default function BlogEditController(
         selectedUsersFilter: [],
         currentPost: undefined,
         currentPostTags: [],
+        currentPostPublishedDate: undefined,
         blogSecurityService: blogSecurityService,
         unreadPostsService: unreadPostsService,
         preview: false,
@@ -416,6 +421,7 @@ export default function BlogEditController(
         actionDisabled: true,
         sticky: false,
         highlight: false,
+        scheduled: false,
         filter: {isHighlight: false},
         selectPostTypeDialog: false,
         selectedPostType: 'Default',
@@ -494,6 +500,9 @@ export default function BlogEditController(
         toggleHighlight: function() {
             $scope.highlight = !$scope.highlight;
         },
+        toggleScheduler: function() {
+            $scope.scheduled = !$scope.scheduled;
+        },
         showSaveAsDraft: function() {
             if (angular.isDefined($scope.currentPost)) {
                 return $scope.currentPost.original_creator._id === session.identity._id;
@@ -511,6 +520,12 @@ export default function BlogEditController(
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
                 $scope.currentPostTags = $scope.currentPost.tags || [];
+                $scope.currentPostPublishedDate = $scope.currentPost.published_date;
+
+                const now = moment();
+                const publishedDate = moment($scope.currentPost.published_date);
+
+                $scope.scheduled = publishedDate > now;
 
                 // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
                 if (isPostFreetype()) {
@@ -528,7 +543,6 @@ export default function BlogEditController(
 
                         if (angular.isDefined(itm)) {
                             if (isItemFreetype(itm.item_type)) {
-                                // post it freetype so we need to reder it
                                 loadFreetypeItem(itm);
                             } else {
                                 const data = _.extend({}, itm, itm.meta);
@@ -612,7 +626,7 @@ export default function BlogEditController(
                     localStorage.setItem('preventDialog', true);
                 }
                 $scope.actionPending = true;
-                // save the keep scoreres setting( if needed)
+                // save the keep scores setting (if needed)
                 if (isPostScorecard()) {
                     saveScorers().then(() => {
                         // no need to show anything on success
@@ -631,6 +645,10 @@ export default function BlogEditController(
 
         onTagsChange: (tags) => {
             $scope.currentPostTags = tags;
+        },
+
+        onPublishedDateChange: (utcDateTime) => {
+            $scope.currentPostPublishedDate = utcDateTime;
         },
 
         filterHighlight: function(highlight) {
@@ -849,6 +867,12 @@ export default function BlogEditController(
         togglePreview: function() {
             $scope.preview = !$scope.preview;
         },
+        shouldRenderScheduled: function(post) {
+            const publishedDate = moment(post.published_date);
+            const now = moment();
+
+            return (publishedDate > now);
+        },
     });
 
     // initalize the view with the editor panel
@@ -866,10 +890,10 @@ export default function BlogEditController(
     // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
         if ($scope.panelState !== 'ingest'
-            && data.hasOwnProperty('posts')
-            && data.hasOwnProperty('created')) {
+            && _.has(data, 'posts')
+            && _.has(data, 'created')) {
             const syndPosts = data.posts
-                .filter((post) => post.hasOwnProperty('syndication_in'));
+                .filter((post) => _.has(post, 'syndication_in'));
 
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
@@ -896,6 +920,7 @@ export default function BlogEditController(
             self.commentPostsInstance,
             self.contributionsPostsInstance,
             self.draftPostsInstance,
+            self.scheduledPostsInstance,
         ];
 
         // let's loop over the possible places to find the post and update it

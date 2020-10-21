@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 freetypeCollectionAdd.$inject = ['$compile'];
 
 export default function freetypeCollectionAdd($compile) {
@@ -11,7 +13,7 @@ export default function freetypeCollectionAdd($compile) {
 
                 for (const key in last) {
                     // if the key starts with $$ it is angular internal so skip it.
-                    if (last.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+                    if (_.has(last, key) && key.substr(0, 2) !== '$$') {
                         el[key] = '';
                     }
                 }

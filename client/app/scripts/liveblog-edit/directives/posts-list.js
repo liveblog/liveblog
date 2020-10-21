@@ -1,4 +1,5 @@
 /* eslint complexity: ["error", 12] */
+import _ from 'lodash';
 import postsTpl from 'scripts/liveblog-edit/views/posts.ng1';
 
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
@@ -33,7 +34,8 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.lbPostsOrderBy || 'editorial',
                 $scope.lbSticky,
                 null,
-                $scope.lbPostsNoSyndication === true
+                $scope.lbPostsNoSyndication === true,
+                $scope.lbScheduled === true
             ),
             fetchNewPage: function() {
                 self.isLoading = true;
@@ -138,26 +140,39 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             },
             isBlogClosed: $scope.$parent.blog.blog_status === 'closed',
 
+            shouldRender: function(post) {
+                if (typeof $scope.lbShouldRenderPost === 'undefined') {
+                    return true;
+                }
+
+                return $scope.lbShouldRenderPost(post);
+            },
         });
         $scope.lbPostsInstance = self;
         // retrieve first page
         self.fetchNewPage()
-            // retrieve updates when event is recieved
+            // retrieve updates when event is received
             .then(() => {
                 // This function is responsible for updating the timeline,
                 // the contribution, the draft and the comment panel on incoming
                 // new post as well unpublished posts
                 const onNotification = _.throttle((e, eventParams) => {
-                    if (!$element.hasClass('timeline-posts-list')
+                    const mainTimeline = $element.hasClass('timeline-posts-list');
+
+                    if (!mainTimeline
                         && $scope.lbPostsStatus !== 'comment'
                         && eventParams.posts
-                        && eventParams.posts[0].hasOwnProperty('syndication_in')) {
+                        && _.has(eventParams.posts[0], 'syndication_in')) {
                         return false;
                     }
 
-                    if (!$element.hasClass('timeline-posts-list')
-                        && angular.isDefined(eventParams.stages)) {
+                    if (!mainTimeline && angular.isDefined(eventParams.stages)) {
                         return false;
+                    }
+
+                    if (eventParams.scheduled_done) {
+                        notify.pop();
+                        notify.info(gettext('Scheduled post has been published'));
                     }
 
                     // only update if posts belong to same blog
@@ -167,7 +182,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                         self.isLoading = true;
                         self.pagesManager.retrieveUpdate(true).then(() => {
                             // Regenerate the embed otherwise the image doesn't appear
-                            if (window.hasOwnProperty('instgrm')) {
+                            if (_.has(window, 'instgrm')) {
                                 window.instgrm.Embeds.process();
                             }
 
@@ -175,6 +190,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                                 notify.pop();
                                 notify.info(gettext('Post removed'));
                             }
+
                             self.isLoading = false;
                         });
                     }
@@ -184,6 +200,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.$on('content:update', onNotification);
             });
     }
+
     return {
         scope: {
             lbPostsBlogId: '=',
@@ -200,6 +217,16 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             lbPostsOnPostSelected: '=',
             lbPostsIsUnreadPost: '=',
             lbPostsInstance: '=',
+
+            /**
+             * Provide `true` in order to get scheduled posts (published_date) in future
+             */
+            lbScheduled: '=',
+
+            /**
+             * Function that will decide if the post is rendered or not. True by default
+             */
+            lbShouldRenderPost: '=',
         },
         restrict: 'EA',
         transclude: true,

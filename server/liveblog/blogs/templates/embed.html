@@ -52,6 +52,8 @@
         i18n: {{ i18n | tojson | safe }},
         global_tags: {{ global_tags | tojson | safe }}
     };
+
+    window.parent.postMessage({ type: 'api_host', data: '{{ api_host }}' }, '*');
 </script>
     {% if debug %}
         {% for script in assets.devScripts %}

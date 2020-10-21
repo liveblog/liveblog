@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import searchFilterTpl from 'scripts/liveblog-marketplace/views/search-filter.ng1';
 
 lbSearchFilter.$inject = ['MarketplaceActions'];
@@ -18,7 +19,7 @@ export default function lbSearchFilter(MarketplaceActions) {
             };
 
             scope.hasFilter = (type, value) => scope.filters
-                && scope.filters.hasOwnProperty(type)
+                && _.has(scope.filters, type)
                 && scope.filters[type] === value;
         },
     };

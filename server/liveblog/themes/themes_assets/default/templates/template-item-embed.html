@@ -18,15 +18,20 @@
             </div>
         </template>
     {% endif %}
-{% elif provider_name == 'twitter' and ref.item.meta.html  %}
+{% elif provider_name == 'twitter' and meta.original_url  %}
     <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-        <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
+        <div class="item--embed__element">
+            <blockquote class="twitter-tweet">
+                <p>{{ meta.description }}</p> &mdash; {{ meta.title }}
+                <a href="{{ meta.original_url|decode_uri }}">{{ meta.original_url }}</a>
+            </blockquote>
+        </div>
     </template>
 {% elif provider_name == 'facebook' and meta.original_url %}
     <template class="lb_consent--awaiting" data-provider-url="{{ meta.provider_url }}">
         <div class="fb-post" data-href="{{ meta.original_url }}" data-show-text="true">
             <blockquote cite="{{ meta.original_url }}" class="fb-xfbml-parse-ignore">
-                <h4><a href="{{ meta.original_url }}">{{ meta.credit }}</a></h4>
+                <h4><a href="{{ meta.original_url|decode_uri }}">{{ meta.credit }}</a></h4>
                 <p>{{ meta.title }}</p>
                 <div class="item--embed__description">{{ meta.description }}</div>
             </blockquote>

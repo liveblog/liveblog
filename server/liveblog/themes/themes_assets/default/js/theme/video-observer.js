@@ -2,6 +2,8 @@ module.exports = {
     init: function () {
         var timelineNode = document.querySelector('[data-timeline-normal]');
 
+        if (!timelineNode) return;
+
         // Options for the observer (which mutations to observe)
         var config = { childList: true };
 

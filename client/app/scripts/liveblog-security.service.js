@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 angular.module('liveblog.security', [])
     .service('blogSecurityService',
         ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',
@@ -19,7 +21,7 @@ angular.module('liveblog.security', [])
                     return ids.indexOf($rootScope.currentUser._id) > -1;
                 }
                 function showUpgradeModal() {
-                    if (!config.blogCreationRestrictions.hasOwnProperty(config.subscriptionLevel)) {
+                    if (!_.has(config.blogCreationRestrictions, config.subscriptionLevel)) {
                         return $q.when(false);
                     }
 

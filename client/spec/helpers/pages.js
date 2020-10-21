@@ -504,7 +504,7 @@ function TimelinePage(blog) {
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
     self.byTogglePin = by.css('[ng-click="togglePinStatus(post)"]');
-    self.byPinnedDrawer = by.css('div.timeline-posts-list.pinned');
+    self.byPinnedDrawer = by.css('[data-test-id="timeline-posts-pinned"]');
     self.byStartMoving = by.css('[ng-click="preMovePost(post);"]');
     self.byMoveTo = by.css('[ng-click="movePost(index, \'above\');"]');
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');

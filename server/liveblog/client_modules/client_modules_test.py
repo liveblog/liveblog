@@ -10,6 +10,7 @@ from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import blog_posts_blueprint, convert_posts, _get_converted_item
+from liveblog.posts import utils as post_utils
 
 
 class Foo():
@@ -476,7 +477,7 @@ class ClientModuleTestCase(TestCase):
 
     def test_post_type_and_author(self):
         doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
-        self.blog_post_service.calculate_post_type(self.blog_posts[0])
+        post_utils.calculate_post_type(self.blog_posts[0])
 
         # TODO: split this test in two
         self.blog_post_service.generate_authors_map()
@@ -495,7 +496,7 @@ class ClientModuleTestCase(TestCase):
 
     def test_b_get_blog_posts(self):
         blog_id = str(self.blogs_ids[0])
-        result = self.client.get('/api/v2/client_blogs/' + blog_id + '/posts')
+        result = self.client.get('/api/v2/client_blogs/' + blog_id + '/posts?all_posts=1')
         data = json.loads(result.data.decode())
         # returns status 200
         self.assertEqual(result.status_code, 200)
@@ -515,7 +516,7 @@ class ClientModuleTestCase(TestCase):
     def test_convert_posts(self):
         blog_id = str(self.blogs_ids[0])
         blog = Blog(blog_id)
-        kwargs = {'ordering': 'newest_first', 'page': 1, 'highlight': 0, 'sticky': 0, 'limit': 25}
+        kwargs = {'ordering': 'newest_first', 'page': 1, 'highlight': 0, 'sticky': 0, 'limit': 25, 'all_posts': True}
         response_data = blog.posts(wrap=True, **kwargs)
         results_data = convert_posts(response_data, blog)
         self.assertIsNotNone(results_data, True)

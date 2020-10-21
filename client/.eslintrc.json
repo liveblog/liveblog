@@ -35,15 +35,14 @@
             "modules": true,
             "globalReturn": false,
             "impliedStrict": true,
-            "jsx": true,
-            "ecmaVersion": 2018
+            "jsx": true
         }
     },
 
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:jasmine/recommended"
+        "plugin:jasmine/recommended",
     ],
 
     "rules": {

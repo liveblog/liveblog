@@ -33,14 +33,20 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
                 <ModalContext.Consumer>
                     {({ closeModal }) => (
                         <React.Fragment>
-                            <button onClick={() => this.handleKeepWorking(closeModal)}
-                                className="btn btn--primary">Keep working on it</button>
+                            <button
+                                onClick={() => this.handleKeepWorking(closeModal)}
+                                className="btn btn--primary"
+                            >Keep working on it</button>
 
-                            <button onClick={() => this.handleSaveAndClose(closeModal)}
-                                className="btn btn--primary">Save and Close</button>
+                            <button
+                                onClick={() => this.handleSaveAndClose(closeModal)}
+                                className="btn btn--primary"
+                            >Save and Close</button>
 
-                            <button onClick={() => this.handleClose(closeModal)}
-                                className="btn">Close Without Saving</button>
+                            <button
+                                onClick={() => this.handleClose(closeModal)}
+                                className="btn"
+                            >Close Without Saving</button>
                         </React.Fragment>
                     )}
                 </ModalContext.Consumer>
@@ -57,7 +63,8 @@ class InactivityModal extends React.Component<IInactivityModalProps> {
         const footerBtns = this.modalActions();
 
         return (
-            <Modal title="Inactivity Alert"
+            <Modal
+                title="Inactivity Alert"
                 modalClass="inactivity-modal"
                 body={bodyText}
                 footer={footerBtns}
@@ -84,7 +91,7 @@ export default angular.module('liveblog.edit.components.inactivityModal', [])
                 document.body.appendChild(mountPoint);
                 this.mountPoint = mountPoint;
 
-                this.instance = ReactDOM.render(<WrappedModal { ...props } />, mountPoint) as any;
+                this.instance = ReactDOM.render(<WrappedModal {...props} />, mountPoint) as any;
             }
 
             open = () => {

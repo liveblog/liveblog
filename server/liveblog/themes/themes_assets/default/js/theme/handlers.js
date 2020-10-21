@@ -125,8 +125,7 @@ var buttons = {
         .catch(catchError);
     },
     '[data-one-new-update]': showPendings,
-    '[data-new-updates]': showPendings,
-    '[data-latest-updates]': view.dismissSharedPost
+    '[data-new-updates]': showPendings
   },
 
   attach: function() {
@@ -169,14 +168,6 @@ function adjustPermalinkStuff() {
 
   if (!permalink._id) {
     permalink.parseHref();
-  }
-
-  if (permalink._id) {
-    viewmodel.getSinglePost(permalink._id)
-      .then(view.renderSharedPost)
-      .then(view.consent.init)
-      .then(view.adsManager.refreshAds)
-      .then(view.loadEmbeds);
   }
 }
 
