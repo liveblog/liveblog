@@ -13,8 +13,6 @@ export const messageIframePlain = (msg: any) => {
 
     if (liveblogEmbed) {
         liveblogEmbed.contentWindow.postMessage(msg, '*');
-    } else {
-        console.log('liveblog iframe not found', msg); // eslint-disable-line
     }
 };
 

@@ -8,7 +8,6 @@ export enum Message {
 }
 
 export const ReceiveApiHost = (url: string) => {
-    console.log(url); // eslint-disable-line
     apiHost = url;
 };
 
@@ -43,13 +42,21 @@ const renderModalPost = (postUrl: string) => {
 };
 
 export const handleSharedPost = (postId: string) => {
+    let blogID: string;
     const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
-    if (!liveblog) {
-        return;
+    if (liveblog) {
+        blogID = getBlogID(liveblog.src);
+    } else {
+        // check if LB exist means we're on ESI approach
+        const LB = (window as any).LB;
+
+        // tslint:disable-next-line:curly
+        if (!LB) return;
+
+        blogID = LB.blog._id;
     }
 
-    const blogID = getBlogID(liveblog.src);
     const url = `${apiHost}/api/embed/shared_post/${blogID}/${postId}`;
     const checkUrl = `${apiHost}/api/client_posts/${postId}`;
 
