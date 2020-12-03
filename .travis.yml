@@ -78,7 +78,7 @@ script:
     - python3 manage.py register_local_themes ;
     - python3 manage.py register_bloglist ;
     - cd $TRAVIS_BUILD_DIR/client
-    - CHROMEDRIVER_VERSION=85.0.4183.87 npm run webdriver-update
+    - CHROMEDRIVER_VERSION=87.0.4280.88 npm run webdriver-update
     - npm run e2e
 
 after_script:
