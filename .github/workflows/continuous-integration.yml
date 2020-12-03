@@ -85,7 +85,7 @@ jobs:
         (nohup honcho start &)
         (nohup sudo python -m smtpd -n -c DebuggingServer localhost:2225 &)
 
-    - name: Build client app
+    - name: Build client and run e2e tests
       working-directory: ./client
       run: |
         grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
@@ -98,8 +98,4 @@ jobs:
         export CHROME_BIN=`which google-chrome`
         $CHROME_BIN --version
         CHROMEDRIVER_VERSION=87.0.4280.88 npm run webdriver-update
-
-    - name: Run end to end tests
-      working-directory: ./client
-      run: |
         npm run e2e
