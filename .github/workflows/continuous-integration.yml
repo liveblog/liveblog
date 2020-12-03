@@ -98,7 +98,6 @@ jobs:
         export CHROME_BIN=`which google-chrome`
         $CHROME_BIN --version
         CHROMEDRIVER_VERSION=87.0.4280.88 npm run webdriver-update
-        npm run e2e
 
     - name: Run end to end tests
       working-directory: ./client
