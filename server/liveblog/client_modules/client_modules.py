@@ -313,24 +313,41 @@ class ClientOutputPostsService(ClientBlogPostsService):
         if not output:
             raise SuperdeskApiError.notFoundError(message='output not found')
 
-        new_args = req.args.copy()
-        query_source = json.loads(new_args.get('source', '{}'))
+        output_tags = output.get('tags', [])
 
-        query_tags = query_source.get('post_filter', {}).get('terms', {}).get('tags', [])
-        tags = output.get('tags', [])
+        if len(output_tags) > 0:
+            new_args = req.args.copy()
+            query_source = json.loads(new_args.get('source', '{}'))
 
-        if len(tags) > 0:
-            if len(query_tags) == 0:
-                query_source['post_filter'] = {'terms': {'tags': tags}}
-            elif len(query_tags) > 0 and not set(query_tags) <= set(tags):
-                raise SuperdeskApiError.badRequestError(message='some tags in the query are restricted')
+            post_filter = query_source.setdefault('post_filter', {})
+            filter_must = post_filter.setdefault('bool', {}).setdefault('must', [])
 
-        new_args['source'] = json.dumps(query_source)
-        req.args = new_args
+            for must_el in filter_must:
+                if 'terms' in must_el:
+                    query_tags = must_el['terms'].get('tags', [])
+
+                    if len(query_tags) == 0:
+                        must_el['terms'] = {'tags': output_tags}
+                    else:
+                        must_el['terms'] = {
+                            'tags': _filter_allowed_tags(query_tags, output_tags)}
+                    break
+
+            new_args['source'] = json.dumps(query_source)
+            req.args = new_args
 
         del lookup['output_id']
 
         return super().get(req, lookup)
+
+
+def _filter_allowed_tags(query_tags, output_tags):
+    """
+    Checks the tags coming from query against the ones set in
+    the output channel's setting to display only the allowed content
+    """
+
+    return [x for x in query_tags if x in output_tags]
 
 
 def _check_for_unknown_params(request, whitelist, allow_filtering=True):
