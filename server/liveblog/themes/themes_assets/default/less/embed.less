@@ -466,21 +466,21 @@
     float: left
   }
   .tags-filter-bar__order {
-    float: left;
-    display: block;
-    margin-right: 10px;
-    padding-bottom: 8px;
+    margin-bottom: 8px;
     color: #999999;
-    font-size: 1em;
+    font-size: 0.96em;
     transition: color .1s ease-out;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
   .tags-filter-bar__order--active,
   .tags-filter-bar__order:hover {
     color: @black;
-    margin-bottom: -2px;
-    border-bottom: 2px solid @black;
-    border: none;
-    margin-bottom: 0px;
+    // margin-bottom: -2px;
+    // border-bottom: 2px solid @black;
+    // border: none;
+    // margin-bottom: 0px;
   }
   .tags-filter-bar__dropdownBtn {
     display: block;
@@ -497,16 +497,16 @@
     &--active {
       display: inline-grid;
       position: absolute;
-      z-index: 5;
+      z-index: 30;
       background-color: @white;
       padding: .8em .8rem .8rem .8rem;
-      margin-top: 10px;
+      margin-top: 5px;
       margin-left: 5px;
       box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.5);
-      max-height: 80px;
+      max-height: 250px;
       overflow-y: scroll;
-      min-width:100px;
-      max-width: 120px;
+      min-width: 140px;
+      max-width: 230px;
       white-space: nowrap;
     }
   }
@@ -516,19 +516,25 @@
   }
 
   .tags-filter-bar__dropdownContent--active::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 8px;
+    height: 8px;
+    margin: -1px 0;
+    position: fixed;
+    right: 10px;
+  }
+
+  .tags-filter-bar__dropdownContent--active::-webkit-scrollbar:hover {
+    background-color: rgba(140,140,140,.2);
+    cursor: pointer;
   }
 
   .tags-filter-bar__dropdownContent--active::-webkit-scrollbar-thumb {
-    color: #56c491;
-    width: 5px;
+    background: rgba(0,0,0,.2);
   }
 
-  .tags-filter-bar__dropdownContent--active::-webkit-scrollbar- {
-    background-color: #56c491;
-    color: #56c491;
-    width: 5px;
+  .tags-filter-bar__dropdownContent--active::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,.4);
+    cursor: pointer;
   }
 
   .tags-filter-no_filter{
