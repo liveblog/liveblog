@@ -269,10 +269,18 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         if blog_posts is None:
             new_args = req.args.copy()
             query_source = json.loads(new_args.get('source', '{}'))
-            post_filter_range = query_source.setdefault('post_filter', {}).get('range', {})
 
-            post_filter_range['published_date'] = {'lte': date_to_str(utcnow())}
-            query_source['post_filter']['range'] = post_filter_range
+            post_filter = query_source.setdefault('post_filter', {})
+            filter_must = post_filter.setdefault('bool', {}).setdefault('must', [])
+
+            for must_el in filter_must:
+                if 'range' in must_el:
+                    must_el['range']['published_date'] = {'lte': date_to_str(utcnow())}
+                    break
+            else:
+                filter_must.append({'range': {
+                    'published_date': {'lte': date_to_str(utcnow())}
+                }})
 
             new_args['source'] = json.dumps(query_source)
             req.args = new_args
