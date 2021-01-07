@@ -71,7 +71,8 @@ Here I'm assuming you are running Ubuntu Linux 16.04
     $ cd server
     $ virtualenv -p python3 env
     $ source env/bin/activate
-    $ pip install --upgrade setuptools
+    $ pip install 'pip<=20.2.3'
+    $ pip install 'setuptools<50'
     $ pip install -r requirements.txt
     ```
 
