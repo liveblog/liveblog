@@ -242,11 +242,3 @@ cd client
 grunt build --force
 grunt connect:build
 ```
-
-**Update classic and angular theme**
-
-```
-git subtree pull --prefix server/liveblog/themes/themes_assets/classic https://github.com/liveblog/lb-theme-classic.git master --squash
-git subtree pull --prefix server/liveblog/themes/themes_assets/angular https://github.com/liveblog/lb-theme-angular.git master --squash
-git subtree pull --prefix server/liveblog/themes/themes_assets/default https://github.com/liveblog/liveblog-default-theme master --squash
-```
