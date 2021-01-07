@@ -42,7 +42,7 @@ Here I'm assuming you are running Ubuntu Linux 16.04
 - Install NodeJS LTS version:
 
     ```sh
-    $ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    $ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     $ sudo apt-get install nodejs
     ```
 
@@ -71,7 +71,8 @@ Here I'm assuming you are running Ubuntu Linux 16.04
     $ cd server
     $ virtualenv -p python3 env
     $ source env/bin/activate
-    $ pip install --upgrade setuptools
+    $ pip install 'pip<=20.2.3'
+    $ pip install 'setuptools<50'
     $ pip install -r requirements.txt
     ```
 
@@ -241,12 +242,4 @@ Once the provisioning is done while still in the virtual machine:
 cd client
 grunt build --force
 grunt connect:build
-```
-
-**Update classic and angular theme**
-
-```
-git subtree pull --prefix server/liveblog/themes/themes_assets/classic https://github.com/liveblog/lb-theme-classic.git master --squash
-git subtree pull --prefix server/liveblog/themes/themes_assets/angular https://github.com/liveblog/lb-theme-angular.git master --squash
-git subtree pull --prefix server/liveblog/themes/themes_assets/default https://github.com/liveblog/liveblog-default-theme master --squash
 ```

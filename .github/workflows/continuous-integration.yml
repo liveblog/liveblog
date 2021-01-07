@@ -43,10 +43,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Setup Nodejs 8.x
+    - name: Setup Nodejs 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 8.x
+        node-version: 10.x
 
     - name: Setup Python 3.5
       uses: actions/setup-python@v1
@@ -57,6 +57,8 @@ jobs:
     - name: Install Python dependencies and run tests
       working-directory: ./server
       run: |
+        pip install 'pip<=20.2.3'
+        pip install 'setuptools<50'
         pip install -r dev-requirements.txt
         nosetests --all-modules --nocapture
         behave --format progress2 --logging-level ERROR
