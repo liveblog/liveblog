@@ -52,7 +52,8 @@ before_install:
 
 install:
     - cd $TRAVIS_BUILD_DIR/server
-    - pip install --upgrade setuptools
+    - pip install 'pip<=20.2.3'
+    - pip install 'setuptools<50'
     - pip install -r dev-requirements.txt
     - cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
 
