@@ -42,7 +42,7 @@ Here I'm assuming you are running Ubuntu Linux 16.04
 - Install NodeJS LTS version:
 
     ```sh
-    $ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    $ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
     $ sudo apt-get install nodejs
     ```
 
