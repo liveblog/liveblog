@@ -1,10 +1,10 @@
 /* eslint-disable */
 import React, { useReducer } from 'react';
 import ReactDOM from 'react-dom';
-import { Input } from './elements/input';
+import { ConnectedInput } from './elements/input';
 import { Provider } from './context';
 import { rootReducer } from './reducer';
-import { connect } from './utils';
+import type { IStyleOptionProps } from './types';
 
 interface IStyleProps {
     styleOptions: Array<IStyleGroup>;
@@ -12,29 +12,25 @@ interface IStyleProps {
 }
 
 const availableElements = {
-    text: Input,
+    text: ConnectedInput,
+};
+
+const StyleOption: React.FunctionComponent<Partial<IStyleOptionProps>> = (props) => {
+    const Element = availableElements[props.type];
+
+    if (!Element) {
+        console.warn(`Style setting option "${props.type}" not found`);
+        return null;
+    }
+
+    return (
+        <div className="flex-item">
+            <Element {...props} />
+        </div>
+    );
 };
 
 const StylesTab: React.SFC<IStyleProps> = (props) => {
-    const renderOptions = (group: IStyleGroup) => {
-        return group.options.map((option: IStyleOption, idx: number) => {
-            const _Element = availableElements[option.type];
-
-            if (!_Element) {
-                console.warn(`Style setting option "${option.type}" not found`);
-                return null;
-            }
-
-            const Element = connect(group, option)(_Element);
-
-            return (
-                <div className="flex-item" key={`option-${idx}`}>
-                    <Element />
-                </div>
-            );
-        });
-    };
-
     const renderGroup = (group: IStyleGroup, idx: number) => {
         return (
             <div className="form-group" key={idx}>
@@ -46,7 +42,8 @@ const StylesTab: React.SFC<IStyleProps> = (props) => {
                     </div>
 
                     <div className={`flex-grid wrap-items padded-grid small-1 medium-${group.columns}`}>
-                        {renderOptions(group)}
+                        {group.options.map(
+                            (option, id) => <StyleOption {...option} group={group} key={`option-${id}`} />)}
                     </div>
                 </div>
             </div>

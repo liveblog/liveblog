@@ -30,3 +30,9 @@ interface IThemeStyles {
 }
 
 type OptionType = "checkbox" | "select" | "text" | "colorpicker";
+
+interface IStyleOptionProps extends IStyleOption {
+    value?: any;
+    group: IStyleGroup;
+    onChange: (value: any) => void;
+}
