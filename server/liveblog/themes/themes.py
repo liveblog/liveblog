@@ -162,6 +162,13 @@ class ThemesResource(Resource):
                 'enabled': False
             }
         },
+        'styleSettings': {
+            'type': 'dict',
+            'mapping': {
+                'type': 'object',
+                'enabled': False
+            }
+        },
         'public_url': {
             'type': 'string'
         },

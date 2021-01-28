@@ -69,7 +69,12 @@ interface IScope {
 
                             submitSettings: (shouldClose: boolean) => {
                                 if (!angular.equals(vm.theme.settings, vm.settings)) {
-                                    api.themes.update(vm.theme, { settings: vm.settings }).then((data) => {
+                                    const updates = {
+                                        settings: vm.settings,
+                                        styleSettings: vm.styleSettings,
+                                    };
+
+                                    api.themes.update(vm.theme, updates).then((data) => {
                                         vm.settings = angular.copy(data.settings);
                                         // reset the dirty state to false
                                         vm.themeSettingsForm.$setPristine();

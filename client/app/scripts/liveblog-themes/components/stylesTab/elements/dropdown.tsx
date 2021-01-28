@@ -13,17 +13,13 @@ export const Dropdown: React.FunctionComponent<IStyleOptionProps> = (props) => {
                 {props.label}
             </label>
 
-            <select className="sd-line-input__select">
+            <select
+                className="sd-line-input__select"
+                value={props.value || props.default}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => props.onChange(e.target.value)}
+            >
                 {props.options?.map(
-                    (opt, idx) => (
-                        <option
-                            selected={props.default === opt}
-                            key={`opt-${idx}`}
-                            value={opt}
-                        >
-                            {opt}
-                        </option>
-                    )
+                    (opt, idx) => <option key={`opt-${idx}`} value={opt}>{opt}</option>
                 )}
             </select>
 
