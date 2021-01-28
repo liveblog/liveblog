@@ -509,7 +509,7 @@
                 {
                     "label": "Font Weight",
                     "property": "font-weight",
-                    "type": "text",
+                    "type": "dropdown",
                     "default": "normal",
                     "options": [
                         "normal",
@@ -519,7 +519,54 @@
                 {
                     "label": "Font Style",
                     "property": "font-style",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        "italic",
+                        "normal",
+                        "oblique"
+                    ]
+                },
+                {
+                    "label": "Font Color",
+                    "property": "color",
+                    "type": "colorpicker",
+                    "default": "#333333"
+                }
+            ]
+        },
+        {
+            "label": "Title",
+            "name": "blog-title",
+            "cssSelector": "div.lb-timeline h1",
+            "columns": 5,
+            "options": [
+                {
+                    "label": "Font Family",
+                    "property": "font-family",
                     "type": "text",
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Font Size",
+                    "property": "font-size",
+                    "type": "text",
+                    "placeholder": "px or rem"
+                },
+                {
+                    "label": "Font Weight",
+                    "property": "font-weight",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        "normal",
+                        "bold"
+                    ]
+                },
+                {
+                    "label": "Font Style",
+                    "property": "font-style",
+                    "type": "dropdown",
                     "default": "normal",
                     "options": [
                         "italic",

@@ -6,6 +6,7 @@ import { rootReducer } from './reducer';
 import type { IStyleOptionProps } from './types';
 import { Input } from './elements/input';
 import { ColorPicker } from './elements/colorpicker';
+import { Dropdown } from './elements/dropdown';
 import { genericConnect } from './elements/helpers';
 
 interface IStyleProps {
@@ -16,6 +17,7 @@ interface IStyleProps {
 const availableElements = {
     text: genericConnect(Input),
     colorpicker: genericConnect(ColorPicker),
+    dropdown: genericConnect(Dropdown),
 };
 
 const StyleOption: React.FunctionComponent<Partial<IStyleOptionProps>> = (props) => {

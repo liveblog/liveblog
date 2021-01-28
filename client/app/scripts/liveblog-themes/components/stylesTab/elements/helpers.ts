@@ -3,6 +3,8 @@ import { IStyleOptionProps } from '../types';
 import { connect } from '../utils';
 import { Actions } from '../actions';
 
+type ComponentType = typeof React.Component | React.FunctionComponent;
+
 const mapStateToProps = (state: IStyleSettings, ownProps: IStyleOptionProps): IStyleOptionProps => {
     return {
         ...ownProps,
@@ -25,4 +27,4 @@ const mapDispatchToProps = (dispatch, ownProps: IStyleOptionProps) => {
 };
 
 export const genericConnect = (
-    Component: typeof React.Component) => connect(mapStateToProps, mapDispatchToProps)(Component);
+    Component: ComponentType) => connect(mapStateToProps, mapDispatchToProps)(Component);
