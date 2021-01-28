@@ -1,3 +1,4 @@
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.ng1';
 import { Moment } from 'moment'; // eslint-disable-line
@@ -52,6 +53,7 @@ interface IScope {
 
                         angular.extend(vm, {
                             optionsAreloading: true,
+                            styleOptionsAreloading: true,
                             settings: angular.copy(vm.theme.settings) || {},
                             styleSettings: angular.copy(vm.theme.styleSettings) || {},
                             options: [],
@@ -177,7 +179,10 @@ interface IScope {
                                 });
                             });
 
-                            angular.extend(vm, { styleOptions: styleOptions });
+                            angular.extend(vm, {
+                                styleOptions: styleOptions,
+                                styleOptionsAreloading: false,
+                            });
                         });
                     },
                 };
@@ -189,7 +194,11 @@ interface IScope {
                     options: '=',
                 },
                 link: (scope, element) => {
-                    renderStylesTab($(element).get(0), scope.options, scope.settings);
+                    const mountPoint = $(element).get(0);
+
+                    renderStylesTab(mountPoint, scope.options, scope.settings);
+
+                    scope.$on('$destroy', () => ReactDOM.unmountComponentAtNode(mountPoint));
                 },
             };
         }])
