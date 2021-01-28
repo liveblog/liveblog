@@ -1,10 +1,12 @@
 /* eslint-disable */
 import React, { useReducer } from 'react';
 import ReactDOM from 'react-dom';
-import { ConnectedInput } from './elements/input';
 import { Provider } from './context';
 import { rootReducer } from './reducer';
 import type { IStyleOptionProps } from './types';
+import { Input } from './elements/input';
+import { ColorPicker } from './elements/colorpicker';
+import { genericConnect } from './elements/helpers';
 
 interface IStyleProps {
     styleOptions: Array<IStyleGroup>;
@@ -12,7 +14,8 @@ interface IStyleProps {
 }
 
 const availableElements = {
-    text: ConnectedInput,
+    text: genericConnect(Input),
+    colorpicker: genericConnect(ColorPicker),
 };
 
 const StyleOption: React.FunctionComponent<Partial<IStyleOptionProps>> = (props) => {

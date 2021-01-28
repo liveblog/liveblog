@@ -477,13 +477,61 @@
                     "label": "Background",
                     "property": "background",
                     "type": "colorpicker",
-                    "default": "#fff"
+                    "default": "#ffffff"
                 },
                 {
                     "label": "Link Color",
-                    "property": "colorpicker",
+                    "property": "color",
+                    "type": "colorpicker",
+                    "tagName": "a",
+                    "default": "#3394bc"
+                }
+            ]
+        },
+        {
+            "label": "Body Text",
+            "name": "body-text",
+            "cssSelector": "div.lb-timeline .lb-item",
+            "columns": 5,
+            "options": [
+                {
+                    "label": "Font Family",
+                    "property": "font-family",
                     "type": "text",
-                    "tagName": "a"
+                    "placeholder": "px or %"
+                },
+                {
+                    "label": "Font Size",
+                    "property": "font-size",
+                    "type": "text",
+                    "placeholder": "px or rem"
+                },
+                {
+                    "label": "Font Weight",
+                    "property": "font-weight",
+                    "type": "text",
+                    "default": "normal",
+                    "options": [
+                        "normal",
+                        "bold"
+                    ]
+                },
+                {
+                    "label": "Font Style",
+                    "property": "font-style",
+                    "type": "text",
+                    "default": "normal",
+                    "options": [
+                        "italic",
+                        "normal",
+                        "oblique"
+                    ]
+                },
+                {
+                    "label": "Font Color",
+                    "property": "color",
+                    "type": "colorpicker",
+                    "default": "#333333"
                 }
             ]
         }
