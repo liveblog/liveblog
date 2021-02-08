@@ -76,6 +76,9 @@
         <div class="pull-left" ng-if="vm.hasAdvancedOptions && vm.activeTab === vm.settingsTab">
             <span sd-switch="" ng-model="vm.showAdvancedSettings"></span><label trans>Advanced settings</label>
         </div>
+        <div ng-class="{show: vm.activeTab === vm.stylesTab, hide: vm.activeTab !== vm.stylesTab}">
+            <div id="reset-styles-portal"></div>
+        </div>
 
         <button ng-click="vm.submitSettings()" type="submit" class="btn btn--primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">
             Save

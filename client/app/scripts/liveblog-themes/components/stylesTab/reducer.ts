@@ -10,6 +10,9 @@ export const rootReducer = (state: IStyleSettings, action: IStyleAction) => {
         newState[group.name][propertyName] = action.value;
         return newState;
     }
+    case Actions.resetStylesSettings: {
+        return {};
+    }
     default:
         return state;
     }

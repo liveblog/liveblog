@@ -1,8 +1,9 @@
 import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.ng1';
-import { Moment } from 'moment'; // eslint-disable-line
+import type { Moment } from 'moment';
 import { renderStylesTab } from './components/stylesTab';
+import { collectOptions } from './theme-utils';
 
 interface IThemeName {
     label: string;
@@ -45,7 +46,7 @@ interface IScope {
                     link: (scope: IScope) => {
                         const vm = scope;
 
-                        // all basic configudation for tabs
+                        // all basic configuration for tabs
                         vm.settingsTab = 'Settings',
                         vm.stylesTab = 'Styles',
                         vm.tabs = [vm.settingsTab, vm.stylesTab];
@@ -116,43 +117,9 @@ interface IScope {
                         });
 
                         scope.vm = vm;
-                        // Initialization
-                        /**
-                         * Collect a list of options for the given theme and its parents
-                         * @param {object} theme
-                         * @param {string} optsAttr The attribute of options to be collected
-                         * @returns {array} Promise with list of options
-                         */
-                        const collectOptions = <T = any>(
-                            theme: ITheme, optionsParam = [], optsAttr = 'options'): Promise<T> => {
-                            // keep the theme's options in `options`
-                            let options = optionsParam;
-
-                            // attribute could be `options` or `styleOptions`
-                            // because they both share more or less the same logic
-                            const themeOptions = theme[optsAttr];
-
-                            if (themeOptions) {
-                                const alreadyPresent = _.map(options, (o: any) => o.name);
-                                // keep only options that are not already saved (children options are prioritary)
-
-                                options = _.filter(themeOptions, (option) =>
-                                    alreadyPresent.indexOf(option.name) === -1
-                                ).concat(options);
-                            }
-                            // retrieve parent options
-                            if (theme.extends) {
-                                return api.themes.getById(theme.extends).then((parentTheme) =>
-                                    collectOptions(parentTheme, options, optsAttr)
-                                );
-                            }
-
-                            // return the options when there is no more parent theme
-                            return $q.when(options);
-                        };
 
                         // collect the options for the theme and its parents
-                        collectOptions(vm.theme).then((options) => {
+                        collectOptions(api, $q, vm.theme).then((options) => {
                             // set default settings value from options default values
                             options.forEach((option) => {
                                 if (!angular.isDefined(vm.settings[option.name])) {
@@ -167,26 +134,27 @@ interface IScope {
                         });
 
                         // time for styleOptions to be collected
-                        collectOptions<Array<IStyleGroup>>(vm.theme, [], 'styleOptions').then((styleOptions) => {
-                            styleOptions.forEach((group) => {
-                                if (!angular.isDefined(vm.styleSettings[group.name])) {
-                                    vm.styleSettings[group.name] = {};
-                                }
-
-                                group.options.forEach((option) => {
-                                    const propertyName = option.property as string;
-
-                                    if (!angular.isDefined(vm.styleSettings[group.name][propertyName])) {
-                                        vm.styleSettings[group.name][propertyName] = option.default || null;
+                        collectOptions<Array<IStyleGroup>>(api, $q, vm.theme, [], 'styleOptions')
+                            .then((styleOptions) => {
+                                styleOptions.forEach((group) => {
+                                    if (!angular.isDefined(vm.styleSettings[group.name])) {
+                                        vm.styleSettings[group.name] = {};
                                     }
+
+                                    group.options.forEach((option) => {
+                                        const propertyName = option.property as string;
+
+                                        if (!angular.isDefined(vm.styleSettings[group.name][propertyName])) {
+                                            vm.styleSettings[group.name][propertyName] = option.default || null;
+                                        }
+                                    });
+                                });
+
+                                angular.extend(vm, {
+                                    styleOptions: styleOptions,
+                                    styleOptionsAreloading: false,
                                 });
                             });
-
-                            angular.extend(vm, {
-                                styleOptions: styleOptions,
-                                styleOptionsAreloading: false,
-                            });
-                        });
                     },
                 };
             }])

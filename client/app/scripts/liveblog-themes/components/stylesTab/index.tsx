@@ -5,6 +5,7 @@ import hash from 'object-hash';
 import { Provider } from './context';
 import { rootReducer } from './reducer';
 import { StylesTabContent } from './styleTabContent';
+import ResetStylesPortal from './resetStylesPortal';
 
 interface IProps {
     styleOptions: Array<IStyleGroup>;
@@ -30,6 +31,7 @@ export const StylesTab: React.FunctionComponent<IProps> = (props) => {
     return (
         <Provider value={{ state, dispatch }}>
             <StylesTabContent {...props} />
+            <ResetStylesPortal />
         </Provider>
     );
 };
