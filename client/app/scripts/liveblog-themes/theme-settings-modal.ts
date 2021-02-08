@@ -70,7 +70,10 @@ interface IScope {
                             ],
 
                             submitSettings: (shouldClose: boolean) => {
-                                if (!angular.equals(vm.theme.settings, vm.settings)) {
+                                const settingsChanged = !angular.equals(vm.theme.settings, vm.settings);
+                                const styleSettingsChanged = !angular.equals(vm.theme.styleSettings, vm.styleSettings);
+
+                                if (settingsChanged || styleSettingsChanged) {
                                     const updates = {
                                         settings: vm.settings,
                                         styleSettings: vm.styleSettings,
@@ -187,16 +190,26 @@ interface IScope {
                     },
                 };
             }])
-        .directive('stylesTabComponent', [() => {
+        .directive('stylesTabComponent', ['$rootScope', ($rootScope) => {
             return {
                 scope: {
                     settings: '=',
                     options: '=',
+                    form: '=',
                 },
                 link: (scope, element) => {
                     const mountPoint = $(element).get(0);
+                    const submitForm = scope.form;
 
-                    renderStylesTab(mountPoint, scope.options, scope.settings);
+                    renderStylesTab(
+                        mountPoint,
+                        scope.options,
+                        scope.settings,
+                        () => {
+                            submitForm.$setDirty();
+                            $rootScope.$apply();
+                        }
+                    );
 
                     scope.$on('$destroy', () => ReactDOM.unmountComponentAtNode(mountPoint));
                 },
