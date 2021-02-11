@@ -33,3 +33,48 @@ export const collectOptions = <T = any>(
     // return the options when there is no more parent theme
     return $q.when(options);
 };
+
+interface IOptionsAndSettings {
+    styleOptions: IStyleGroup[];
+    styleSettings: IStyleSettings;
+}
+
+export const defaultStyleSettings = async(api: any, $q: any, theme: ITheme): Promise<IStyleSettings> => {
+    const styleSettings = {};
+    const styleOptions = await collectOptions<IStyleGroup[]>(api, $q, theme, [], 'styleOptions');
+
+    styleOptions.forEach((group) => {
+        if (!angular.isDefined(styleSettings[group.name])) {
+            styleSettings[group.name] = {};
+        }
+
+        group.options.forEach((option) => {
+            const propertyName = (option.property as string);
+
+            styleSettings[group.name][propertyName] = option.default || null;
+        });
+    });
+
+    return $q.when(styleSettings);
+};
+
+export const themeStylesOptionsAndSettings = async(api: any, $q: any, theme: ITheme): Promise<IOptionsAndSettings> => {
+    const styleSettings = angular.copy(theme.styleSettings);
+    const styleOptions = await collectOptions<IStyleGroup[]>(api, $q, theme, [], 'styleOptions');
+
+    styleOptions.forEach((group) => {
+        if (!angular.isDefined(styleSettings[group.name])) {
+            styleSettings[group.name] = {};
+        }
+
+        group.options.forEach((option) => {
+            const propertyName = (option.property as string);
+
+            if (!angular.isDefined(styleSettings[group.name][propertyName])) {
+                styleSettings[group.name][propertyName] = option.default || null;
+            }
+        });
+    });
+
+    return $q.when({ styleOptions, styleSettings });
+};

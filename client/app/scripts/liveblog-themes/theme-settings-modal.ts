@@ -3,7 +3,7 @@ import _ from 'lodash';
 import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.ng1';
 import type { Moment } from 'moment';
 import { renderStylesTab } from './components/stylesTab';
-import { collectOptions } from './theme-utils';
+import { collectOptions, themeStylesOptionsAndSettings, defaultStyleSettings } from './theme-utils';
 
 interface IThemeName {
     label: string;
@@ -13,13 +13,13 @@ interface IThemeName {
 interface IScope {
     theme?: ITheme;
     modalOpened: any;
-    themeNames: Array<IThemeName>;
+    themeNames: IThemeName[];
 
     settings: any;
     styleSettings: IStyleSettings;
     settingsTab: string;
     stylesTab: string;
-    tabs: Array<string>;
+    tabs: string[];
     activeTab: string;
 
     themeSettingsForm: any;
@@ -57,6 +57,7 @@ interface IScope {
                             styleOptionsAreloading: true,
                             settings: angular.copy(vm.theme.settings) || {},
                             styleSettings: angular.copy(vm.theme.styleSettings) || {},
+                            defaultStyleSettings: {},
                             options: [],
                             styleOptions: [],
                             showAdvancedSettings: false,
@@ -133,34 +134,24 @@ interface IScope {
                             });
                         });
 
-                        // time for styleOptions to be collected
-                        collectOptions<Array<IStyleGroup>>(api, $q, vm.theme, [], 'styleOptions')
-                            .then((styleOptions) => {
-                                styleOptions.forEach((group) => {
-                                    if (!angular.isDefined(vm.styleSettings[group.name])) {
-                                        vm.styleSettings[group.name] = {};
-                                    }
-
-                                    group.options.forEach((option) => {
-                                        const propertyName = option.property as string;
-
-                                        if (!angular.isDefined(vm.styleSettings[group.name][propertyName])) {
-                                            vm.styleSettings[group.name][propertyName] = option.default || null;
-                                        }
+                        themeStylesOptionsAndSettings(api, $q, vm.theme).then(({ styleOptions, styleSettings }) => {
+                            defaultStyleSettings(api, $q, vm.theme)
+                                .then((defaultSettings) => {
+                                    angular.extend(vm, {
+                                        styleOptions: styleOptions,
+                                        styleOptionsAreloading: false,
+                                        styleSettings: styleSettings,
+                                        defaultStyleSettings: defaultSettings,
                                     });
                                 });
-
-                                angular.extend(vm, {
-                                    styleOptions: styleOptions,
-                                    styleOptionsAreloading: false,
-                                });
-                            });
+                        });
                     },
                 };
             }])
         .directive('stylesTabComponent', ['$rootScope', ($rootScope) => {
             return {
                 scope: {
+                    defaultSettings: '=',
                     settings: '=',
                     options: '=',
                     form: '=',
@@ -168,16 +159,17 @@ interface IScope {
                 link: (scope, element) => {
                     const mountPoint = $(element).get(0);
                     const submitForm = scope.form;
-
-                    renderStylesTab(
-                        mountPoint,
-                        scope.options,
-                        scope.settings,
-                        () => {
+                    const stylesTabProps = {
+                        styleOptions: scope.options,
+                        settings: scope.settings,
+                        defaultSettings: scope.defaultSettings,
+                        onStoreChange: () => {
                             submitForm.$setDirty();
                             $rootScope.$apply();
-                        }
-                    );
+                        },
+                    };
+
+                    renderStylesTab(stylesTabProps, mountPoint);
 
                     scope.$on('$destroy', () => ReactDOM.unmountComponentAtNode(mountPoint));
                 },

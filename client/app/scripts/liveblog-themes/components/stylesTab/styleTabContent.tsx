@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleGroup } from './styleGroup';
 
 interface IProps {
-    styleOptions: Array<IStyleGroup>;
+    styleOptions: IStyleGroup[];
     settings: IStyleSettings;
 }
 

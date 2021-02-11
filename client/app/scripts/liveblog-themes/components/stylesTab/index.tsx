@@ -6,17 +6,11 @@ import { Provider } from './context';
 import { rootReducer } from './reducer';
 import { StylesTabContent } from './styleTabContent';
 import ResetStylesPortal from './resetStylesPortal';
+import type { IStylesTabProps } from './types';
 
-interface IProps {
-    styleOptions: Array<IStyleGroup>;
-    settings: IStyleSettings;
-    onStoreChange: () => void;
-}
-
-export const StylesTab: React.FunctionComponent<IProps> = (props) => {
-    const { settings } = props;
-    const [state, dispatch] = useReducer(rootReducer, settings);
-    const settingsChanged = hash(settings);
+export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
+    const [state, dispatch] = useReducer(rootReducer, props);
+    const settingsChanged = hash(props.settings);
     const isFirstRun = useRef(true);
 
     useEffect(() => {
@@ -36,13 +30,6 @@ export const StylesTab: React.FunctionComponent<IProps> = (props) => {
     );
 };
 
-export const renderStylesTab = (
-        element: HTMLDivElement,
-        options: Array<IStyleGroup>,
-        settings: IStyleSettings,
-        onStoreChange: () => void
-    ) => {
-
-    ReactDOM.render(
-        <StylesTab styleOptions={options} settings={settings} onStoreChange={onStoreChange} />, element);
+export const renderStylesTab = (props: IStylesTabProps, mountPoint: HTMLDivElement) => {
+    ReactDOM.render(<StylesTab {...props} />, mountPoint);
 };

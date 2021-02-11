@@ -65,12 +65,15 @@
                 </div>
             </div>
         </form>
-        <div ng-if="!vm.styleOptionsAreloading"
+
+        <styles-tab-component ng-if="!vm.styleOptionsAreloading"
             ng-show="vm.activeTab === vm.stylesTab"
-            styles-tab-component
             settings="vm.styleSettings"
             options="vm.styleOptions"
-            form="vm.themeSettingsForm"></div>
+            form="vm.themeSettingsForm"
+            default-settings="vm.defaultStyleSettings"
+            >
+        </styles-tab-component>
     </div>
     <div class="modal__footer">
         <div class="pull-left" ng-if="vm.hasAdvancedOptions && vm.activeTab === vm.settingsTab">

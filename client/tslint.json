@@ -26,7 +26,7 @@
         "no-var-keyword": false,
         "array-type": [
             true,
-            "generic"
+            "array-simple"
         ],
         "prefer-const": true,
         "one-variable-per-declaration": false,
@@ -46,6 +46,7 @@
         "object-literal-key-quotes": false,
         "no-eval": false,
         "no-conditional-assignment": true,
-        "only-arrow-functions": true
+        "only-arrow-functions": true,
+        "space-before-function-paren": false
     }
 }

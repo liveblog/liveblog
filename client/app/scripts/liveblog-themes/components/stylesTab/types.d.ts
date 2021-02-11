@@ -36,3 +36,11 @@ interface IStyleOptionProps extends IStyleOption {
     group: IStyleGroup;
     onChange: (value: any) => void;
 }
+
+export interface IStylesTabProps {
+    // used to reset styles to initial theme state
+    defaultSettings: IStyleSettings;
+    settings: IStyleSettings;
+    styleOptions: IStyleGroup[];
+    onStoreChange: () => void;
+}
