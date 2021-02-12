@@ -28,6 +28,10 @@
         :root { --watermark: url('{{ assets_root }}images/logo-liveblog-watermark.svg') }
         </style>
         {% endif %}
+
+        <style>
+        {{ styles_settings }}
+        </style>
     </head>
     <body class="lb-wrapBody {% if settings.watermark %}watermark{% endif %}" style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% elif not settings.removeStylesESI %}

@@ -29,6 +29,7 @@ from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
+from .embeds_utils import generate_theme_styles
 from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL, ACTIVATE_WATERMARK
 
 logger = logging.getLogger('superdesk')
@@ -245,6 +246,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     scope = {
         'blog': blog,
         'settings': theme_settings,
+        'styles_settings': generate_theme_styles(theme),
         'assets': assets,
         'api_host': api_host,
         'output': output,
