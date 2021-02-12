@@ -58,9 +58,9 @@ export const defaultStyleSettings = async(api: any, $q: any, theme: ITheme): Pro
     return $q.when(styleSettings);
 };
 
-export const themeStylesOptionsAndSettings = async(api: any, $q: any, theme: ITheme): Promise<IOptionsAndSettings> => {
-    const styleSettings = angular.copy(theme.styleSettings);
-    const styleOptions = await collectOptions<IStyleGroup[]>(api, $q, theme, [], 'styleOptions');
+export const themeStylesOptionsAndSettings = async(api: any, $q: any, vm: any): Promise<IOptionsAndSettings> => {
+    const styleSettings = vm.styleSettings;
+    const styleOptions = await collectOptions<IStyleGroup[]>(api, $q, vm.theme, [], 'styleOptions');
 
     styleOptions.forEach((group) => {
         if (!angular.isDefined(styleSettings[group.name])) {

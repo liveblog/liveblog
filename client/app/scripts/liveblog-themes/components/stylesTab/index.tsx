@@ -10,7 +10,7 @@ import type { IStylesTabProps } from './types';
 
 export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
     const [state, dispatch] = useReducer(rootReducer, props);
-    const settingsChanged = hash(props.settings);
+    const settingsChanged = hash(state.settings);
     const isFirstRun = useRef(true);
 
     useEffect(() => {

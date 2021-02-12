@@ -18,7 +18,7 @@ export const rootReducer = (state: IStylesTabProps, action: IStyleAction) => {
     case Actions.resetStylesSettings: {
         const newState = { ...state };
 
-        newState.settings = state.defaultSettings;
+        $.extend(true, newState.settings, state.defaultSettings);
         return newState;
     }
     default:

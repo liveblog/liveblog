@@ -134,7 +134,7 @@ interface IScope {
                             });
                         });
 
-                        themeStylesOptionsAndSettings(api, $q, vm.theme).then(({ styleOptions, styleSettings }) => {
+                        themeStylesOptionsAndSettings(api, $q, vm).then(({ styleOptions, styleSettings }) => {
                             defaultStyleSettings(api, $q, vm.theme)
                                 .then((defaultSettings) => {
                                     angular.extend(vm, {
@@ -163,6 +163,7 @@ interface IScope {
                         styleOptions: scope.options,
                         settings: scope.settings,
                         defaultSettings: scope.defaultSettings,
+
                         onStoreChange: () => {
                             submitForm.$setDirty();
                             $rootScope.$apply();
