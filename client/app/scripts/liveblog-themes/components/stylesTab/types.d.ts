@@ -37,10 +37,27 @@ interface IStyleOptionProps extends IStyleOption {
     onChange: (value: any) => void;
 }
 
+export interface IFontOption {
+    value: any;
+    label: string;
+}
+
+export interface IGoogleFont {
+    family: string;
+    version: string;
+    variant: any;
+}
+
+export interface IGoogleFontData {
+    kind: string;
+    items: IGoogleFont[];
+}
+
 export interface IStylesTabProps {
     // used to reset styles to initial theme state
     defaultSettings: IStyleSettings;
     settings: IStyleSettings;
     styleOptions: IStyleGroup[];
+    fontsOptions?: IFontOption[];
     onStoreChange: () => void;
 }

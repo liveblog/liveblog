@@ -2,13 +2,15 @@ import React from 'react';
 import type { IStyleOptionProps } from './types';
 import { Input } from './elements/input';
 import { ColorPicker } from './elements/colorpicker';
-import { Dropdown } from './elements/dropdown';
+// import { Dropdown } from './elements/dropdown';
+import { FontPickerConnected } from './elements/fontpicker';
 import { genericConnect } from './elements/helpers';
 
 const availableElements = {
     text: genericConnect(Input),
     colorpicker: genericConnect(ColorPicker),
-    dropdown: genericConnect(Dropdown),
+    // dropdown: genericConnect(Dropdown),
+    dropdown: FontPickerConnected,
 };
 
 export const StyleOption: React.FunctionComponent<Partial<IStyleOptionProps>> = (props) => {

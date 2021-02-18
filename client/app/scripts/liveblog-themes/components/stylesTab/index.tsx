@@ -6,6 +6,7 @@ import { Provider } from './context';
 import { rootReducer } from './reducer';
 import { StylesTabContent } from './styleTabContent';
 import ResetStylesPortal from './resetStylesPortal';
+import { fetchWebFonts, updateFontOptionsAction } from './actions';
 import type { IStylesTabProps } from './types';
 
 export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
@@ -21,6 +22,15 @@ export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
 
         props.onStoreChange();
     }, [settingsChanged]);
+
+    if (isFirstRun.current) {
+        fetchWebFonts()
+            .then((data) => {
+                const actionUpdate = updateFontOptionsAction(data);
+
+                dispatch(actionUpdate);
+            });
+    }
 
     return (
         <Provider value={{ state, dispatch }}>

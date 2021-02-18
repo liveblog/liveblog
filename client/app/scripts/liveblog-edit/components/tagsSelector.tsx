@@ -2,52 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
 import _ from 'lodash';
-import { ActionMeta } from 'react-select/src/types'; // eslint-disable-line
-import { Styles } from 'react-select/src/styles'; // eslint-disable-line
+import type { ActionMeta } from 'react-select/src/types';
+import { selectStyles } from '../../liveblog-common/react-select-styles';
 
 interface IProps {
-    tags: Array<string>;
-    selectedTags: Array<string>;
+    tags: string[];
+    selectedTags: string[];
     isMulti: boolean;
-    onChange: (value: Array<string>) => void;
+    onChange: (value: string[]) => void;
 }
-
-const selectStyles: Styles = {
-    control: (provided, state) => {
-        const styles = {
-            ...provided,
-            borderRadius: '3px',
-            minHeight: '32px',
-            borderColor: '#d9d9d9',
-            cursor: 'pointer',
-            '&:hover': {
-                borderColor: '#5ea9c8',
-            },
-        };
-
-        if (state.menuIsOpen || state.isFocused) {
-            styles.borderColor = '#5ea9c8';
-            styles.boxShadow = '0px 2px 10px rgba(0, 0, 0, 0.15)';
-        }
-
-        return styles;
-    },
-
-    dropdownIndicator: (provided) => ({
-        ...provided,
-        padding: '6px',
-    }),
-
-    clearIndicator: (provided) => ({
-        ...provided,
-        padding: '6px',
-    }),
-
-    valueContainer: (provided) => ({
-        ...provided,
-        padding: '2px 3px',
-    }),
-};
 
 const TagsSelector: React.FunctionComponent<IProps> = (props) => {
     const options = _.map(props.tags, (x) => ({ label: x, value: x }));

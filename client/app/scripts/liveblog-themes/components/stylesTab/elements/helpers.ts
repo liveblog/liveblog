@@ -14,7 +14,7 @@ const mapStateToProps = (state: IStylesTabProps, ownProps: IStyleOptionProps): I
     };
 };
 
-const mapDispatchToProps = (dispatch, ownProps: IStyleOptionProps) => {
+export const genericMapDispatchToProps = (dispatch, ownProps: IStyleOptionProps) => {
     return {
         ...ownProps,
         onChange: (value: any) => {
@@ -29,4 +29,4 @@ const mapDispatchToProps = (dispatch, ownProps: IStyleOptionProps) => {
 };
 
 export const genericConnect = (
-    Component: ComponentType) => connect(mapStateToProps, mapDispatchToProps)(Component);
+    Component: ComponentType) => connect(mapStateToProps, genericMapDispatchToProps)(Component);
