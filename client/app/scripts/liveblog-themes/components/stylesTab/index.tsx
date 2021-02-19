@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import hash from 'object-hash';
 import { Provider } from './context';
 import { rootReducer } from './reducer';
-import { StylesTabContent } from './styleTabContent';
-import ResetStylesPortal from './resetStylesPortal';
+import { StylesTabContent } from './style-tab-content';
+import ResetStylesPortal from './reset-styles-portal';
 import { fetchWebFonts, updateFontOptionsAction } from './actions';
 import type { IStylesTabProps } from './types';
 

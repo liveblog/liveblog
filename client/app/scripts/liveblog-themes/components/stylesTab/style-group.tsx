@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleOption } from './styleOption';
+import { StyleOption } from './style-option';
 
 interface IProps {
     group: IStyleGroup;
