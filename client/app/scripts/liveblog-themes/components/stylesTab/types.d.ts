@@ -59,5 +59,6 @@ export interface IStylesTabProps {
     settings: IStyleSettings;
     styleOptions: IStyleGroup[];
     fontsOptions?: IFontOption[];
+    googleApiKey?: string;
     onStoreChange: () => void;
 }

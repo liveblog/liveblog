@@ -3,40 +3,50 @@ import Select from 'react-select';
 import type { IStyleOptionProps, IStylesTabProps, IFontOption } from '../types';
 import { genericMapDispatchToProps } from './helpers';
 import { connect } from '../utils';
-import { selectStyles } from 'liveblog-common/react-select-styles';
+import { selectStyles as reactSelectStyles } from 'liveblog-common/react-select-styles';
 
 interface IProps extends IStyleOptionProps {
     fontOptions: IFontOption[];
 }
 
+const selectStyles = {
+    ...reactSelectStyles,
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        padding: '1px',
+    }),
+
+    clearIndicator: (provided) => ({
+        ...provided,
+        padding: '1px',
+    }),
+
+    indicatorsContainer: (provided) => ({
+        ...provided,
+        padding: '1px',
+    }),
+
+    input: (provided) => ({
+        ...provided,
+        margin: '0px',
+        paddingBottom: '0px',
+    }),
+
+    menu: (provided) => ({
+        ...provided,
+        minWidth: '200px',
+    }),
+
+    control: (provided, state) => ({
+        ...reactSelectStyles.control(provided, state),
+        minHeight: '16px',
+    }),
+};
+
 class FontPickerInternal extends React.Component<IProps> {
     render() {
         const props = this.props;
         const propertyName = props.property as string;
-        const rSelectStyles = {
-            ...selectStyles,
-            dropdownIndicator: (provided) => ({
-                ...provided,
-                padding: '2px',
-            }),
-
-            clearIndicator: (provided) => ({
-                ...provided,
-                padding: '2px',
-            }),
-
-            indicatorsContainer: (provided) => ({
-                ...provided,
-                padding: '2px',
-            }),
-        };
-
-        rSelectStyles.control = (provided, state) => {
-            const internal = selectStyles.control(provided, state);
-
-            internal.minHeight = '20px';
-            return internal;
-        };
 
         return (
             <div className="sd-line-input">
@@ -49,7 +59,8 @@ class FontPickerInternal extends React.Component<IProps> {
 
                 <div>
                     <Select
-                        styles={rSelectStyles}
+                        className="react-select__selector"
+                        styles={selectStyles}
                         options={props.fontOptions}
                         menuPosition="fixed"
                     />

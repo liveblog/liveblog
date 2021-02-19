@@ -24,12 +24,17 @@ export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
     }, [settingsChanged]);
 
     if (isFirstRun.current) {
-        fetchWebFonts()
-            .then((data) => {
-                const actionUpdate = updateFontOptionsAction(data);
+        if (props.googleApiKey.length > 0) {
+            fetchWebFonts(props.googleApiKey)
+                .then((data) => {
+                    const actionUpdate = updateFontOptionsAction(data);
 
-                dispatch(actionUpdate);
-            });
+                    dispatch(actionUpdate);
+                });
+        } else {
+            console.warn(`Google API Key required for FontPicker. \n
+                https://cloud.google.com/docs/authentication/api-keys`);
+        }
     }
 
     return (

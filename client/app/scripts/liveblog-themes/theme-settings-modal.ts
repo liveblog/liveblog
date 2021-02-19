@@ -148,7 +148,7 @@ interface IScope {
                     },
                 };
             }])
-        .directive('stylesTabComponent', ['$rootScope', ($rootScope) => {
+        .directive('stylesTabComponent', ['$rootScope', 'config', ($rootScope, config) => {
             return {
                 scope: {
                     defaultSettings: '=',
@@ -163,6 +163,7 @@ interface IScope {
                         styleOptions: scope.options,
                         settings: scope.settings,
                         defaultSettings: scope.defaultSettings,
+                        googleApiKey: config.google.key || '',
 
                         onStoreChange: () => {
                             submitForm.$setDirty();

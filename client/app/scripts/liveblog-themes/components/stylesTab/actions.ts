@@ -16,8 +16,8 @@ export interface IUpdateFonts extends Action<Actions> {
     fonts: IFontOption[];
 }
 
-export const fetchWebFonts = async(): Promise<IGoogleFontData> => {
-    const url = 'https://content-webfonts.googleapis.com/v1/webfonts?key=AIzaSyB8AcXkUsVjOtj2GdPkmnatKFwpSIZ0fto';
+export const fetchWebFonts = async(apiKey: string): Promise<IGoogleFontData> => {
+    const url = `https://content-webfonts.googleapis.com/v1/webfonts?key=${apiKey}`;
     const data = await $.getJSON(url);
 
     return data;
