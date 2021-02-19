@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.14",
+    "version": "3.6.16",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -489,6 +489,24 @@
             ]
         },
         {
+            "label": "Typography",
+            "name": "general",
+            "cssSelector": "div.lb-timeline",
+            "columns": 2,
+            "options": [
+                {
+                    "label": "Primary Font Family",
+                    "property": "font-family",
+                    "type": "fontpicker"
+                },
+                {
+                    "label": "Secondary Font Family",
+                    "property": "font-family",
+                    "type": "fontpicker"
+                }
+            ]
+        },
+        {
             "label": "Body Text",
             "name": "body-text",
             "cssSelector": "div.lb-timeline .lb-item",
@@ -497,8 +515,11 @@
                 {
                     "label": "Font Family",
                     "property": "font-family",
-                    "type": "text",
-                    "placeholder": "px or %"
+                    "type": "dropdown",
+                    "options": [
+                        "primary",
+                        "secondary"
+                    ]
                 },
                 {
                     "label": "Font Size",
@@ -544,8 +565,11 @@
                 {
                     "label": "Font Family",
                     "property": "font-family",
-                    "type": "text",
-                    "placeholder": "px or %"
+                    "type": "dropdown",
+                    "options": [
+                        "primary",
+                        "secondary"
+                    ]
                 },
                 {
                     "label": "Font Size",
