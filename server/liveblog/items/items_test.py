@@ -37,7 +37,8 @@ class ItemsTest(TestCase):
             self.items_service = get_resource_service('items')
             self.app.register_blueprint(drag_and_drop_blueprint)
 
-        self.img_regular = 'https://www.sourcefabric.org/get_img?ImageWidth=780&ImageHeight=456&ImageId=3523'
+        self.img_regular = '\
+            https://raw.githubusercontent.com/liveblog/liveblog/master/client/app/images/lb-logo-about.png'
 
         self.img_jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxASEhISEhMWFhUVFRUVFxYVFxUQFRUVF\
             RUXFhUVFhUYHSggGBolGxUVITEhJSk3Li4vFx8zODMsNygtLisBCgoKDg0OFxAPGy0dHyYwLS4uMi02LCstLSstLS0rLS0tLS0rLS0tLS\
@@ -113,6 +114,7 @@ class ItemsTest(TestCase):
                 '/api/archive/draganddrop/',
                 data=json.dumps({'image_url': self.img_regular, 'mimetype': 'image/jpeg'}),
                 headers=headers)
+
             self.assertEqual(response.status_code, 201)
             self.assertIsNotNone(response.data, True)
 
