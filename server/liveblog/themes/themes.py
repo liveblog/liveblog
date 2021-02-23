@@ -29,6 +29,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
+from liveblog.utils.api import api_error
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -779,6 +780,11 @@ def register_a_theme(zip_archive):
 @cross_origin()
 def upload_a_theme():
     result, theme_json = register_a_theme(request.files['media'])
+
+    if 'error' in result:
+        result = json.loads(result)
+        return api_error(result.get('error'), theme_json)
+
     return json.dumps(
         dict(
             _status='OK',

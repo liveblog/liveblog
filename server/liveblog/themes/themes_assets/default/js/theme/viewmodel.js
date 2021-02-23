@@ -327,8 +327,12 @@ vm.getQuery = function(opts) {
 
   if (opts.tags && opts.tags.length > 0) {
     query.post_filter = {
-      "terms": {
-        "tags": opts.tags
+      "bool": {
+        "must": [{
+          "terms": {
+            "tags": opts.tags
+          }
+        }]
       }
     };
   }

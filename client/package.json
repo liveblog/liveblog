@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.81.0",
+  "version": "3.81.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -86,7 +86,8 @@
     "webpack-dev-server": "2.8.2"
   },
   "dependencies": {
-    "@atlaskit/datetime-picker": "^10.0.1",
+    "@atlaskit/datetime-picker": "10.0.1",
+    "@atlaskit/icon": "21.1.2",
     "adblock-detect": "1.0.5",
     "angular": "1.6.9",
     "angular-animate": "1.6.1",

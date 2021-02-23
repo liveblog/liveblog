@@ -1,5 +1,6 @@
 import logging
 
+from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.notification import push_notification
@@ -90,8 +91,10 @@ def notify_scheduled_post(post):
     """
     It will send a push notification via websocket connection to let the client know
     that the post.published_date has reached its time and it's not available in timeline.
+    Also invalidates blog cache to make sure requests will get latest posts from db
     """
 
     from .posts import PostStatus  # to avoid circular references ;)
 
+    app.blog_cache.invalidate(post.get('blog'))
     push_notification('posts', scheduled_done=True, post_status=PostStatus.OPEN, posts=[post])
