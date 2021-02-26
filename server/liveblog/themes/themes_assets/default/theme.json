@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.16",
+    "version": "3.6.18",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -490,18 +490,19 @@
         },
         {
             "label": "Typography",
-            "name": "general",
+            "name": "typography",
             "cssSelector": "div.lb-timeline",
             "columns": 2,
+            "serializerIgnore": true,
             "options": [
                 {
                     "label": "Primary Font Family",
-                    "property": "font-family",
+                    "property": "primary",
                     "type": "fontpicker"
                 },
                 {
                     "label": "Secondary Font Family",
-                    "property": "font-family",
+                    "property": "secundary",
                     "type": "fontpicker"
                 }
             ]
@@ -516,9 +517,10 @@
                     "label": "Font Family",
                     "property": "font-family",
                     "type": "dropdown",
+                    "linkedToGroup": "typography",
                     "options": [
-                        "primary",
-                        "secondary"
+                        {"value": "primary", "label": "Primary"},
+                        {"value": "secundary", "label": "Secundary"}
                     ]
                 },
                 {
@@ -533,8 +535,8 @@
                     "type": "dropdown",
                     "default": "normal",
                     "options": [
-                        "normal",
-                        "bold"
+                        {"value": "bold", "label": "Bold"},
+                        {"value": "normal", "label": "Normal"}
                     ]
                 },
                 {
@@ -566,9 +568,10 @@
                     "label": "Font Family",
                     "property": "font-family",
                     "type": "dropdown",
+                    "linkedToGroup": "typography",
                     "options": [
-                        "primary",
-                        "secondary"
+                        {"value": "primary", "label": "Primary"},
+                        {"value": "secundary", "label": "Secundary"}
                     ]
                 },
                 {

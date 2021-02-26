@@ -63,6 +63,7 @@ class FontPickerInternal extends React.Component<IProps> {
                         styles={selectStyles}
                         options={props.fontOptions}
                         menuPosition="fixed"
+                        onChange={(selected) => props.onChange((selected as any).value)}
                     />
                 </div>
 

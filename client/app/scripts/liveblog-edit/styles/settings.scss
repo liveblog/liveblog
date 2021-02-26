@@ -267,6 +267,10 @@ p.warn-block {
     justify-content: space-between;
 }
 
+.react-select__selector {
+    z-index: 999;
+}
+
 .react-select__selector input {
     min-height: unset;
     height: unset;

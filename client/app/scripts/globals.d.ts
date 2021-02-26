@@ -143,6 +143,11 @@ interface ITheme {
     _updated: string;
 }
 
+interface IStyleDropdownOption {
+    value: string;
+    label: string;
+}
+
 interface IStyleOption {
     // text to indicate the name of the setting
     label: string;
@@ -157,7 +162,7 @@ interface IStyleOption {
     placeholder?: string;
 
     // if the type is select, then options is required to show in dropdown
-    options?: Array<any>;
+    options?: Array<IStyleDropdownOption>;
 
     // basic help text
     help?: string;
@@ -167,6 +172,11 @@ interface IStyleOption {
 
     // Tag to apply the styling under group cssSelector. Eg. div.lb-timeline TagName { }
     tagName?: string;
+
+    // used to connect the current attribute's value with the value of an attribute
+    // from another group. E.g: the selected value of this option is "primary", then will be equivalent
+    // to the value of the group "typography" option "primary".
+    linkedToGroup?: string;
 }
 
 interface IStyleGroup {
@@ -185,4 +195,9 @@ interface IStyleGroup {
 
     // number of layout columns that it will use when rendering in settings tab
     columns: string;
+
+    // if this is present and true, the css serializer will ignore the convertion
+    // of this group. This can be useful to create a group of attribute on which other
+    // fields depend on. E.g. Primary and Secondary Fonts.
+    serializerIgnore?: boolean;
 }

@@ -19,7 +19,7 @@ export const Dropdown: React.FunctionComponent<IStyleOptionProps> = (props) => {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => props.onChange(e.target.value)}
             >
                 {props.options?.map(
-                    (opt, idx) => <option key={`opt-${idx}`} value={opt}>{opt}</option>
+                    (opt, idx) => <option key={`opt-${idx}`} value={opt.value}>{opt.label}</option>
                 )}
             </select>
 
