@@ -29,6 +29,11 @@
         </style>
         {% endif %}
 
+        {% if fonts_url %}
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="{{ fonts_url }}" rel="stylesheet">
+        {% endif %}
+
         <style>
         {{ styles_settings }}
         </style>

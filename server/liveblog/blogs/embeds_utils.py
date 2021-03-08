@@ -45,7 +45,7 @@ def generate_theme_styles(theme):
 
     styles_map = {}
     for group in options_groups:
-        serializer_ignore = group.get('serializer_ignore', False)
+        serializer_ignore = group.get('serializerIgnore', False)
         if serializer_ignore:
             continue
 
@@ -78,3 +78,46 @@ def generate_theme_styles(theme):
             _styles.append((opt.get('property'), option_value))
 
     return convert_dict_to_css(styles_map)
+
+
+def google_fonts_url(theme):
+    """
+    This extracts the fonts from the settings if there are any `fontpicker`
+    type of style attribute defined in the theme.
+
+    Returns None or something like this if fontpicker found:
+        https://fonts.googleapis.com/css2?family={LIST_OF_FONTS}&display=swap
+
+        See for more info: https://developers.google.com/fonts/docs/css2
+    """
+
+    options_groups = theme.get('styleOptions', {})
+    settings = theme.get('styleSettings', {})
+
+    if not options_groups or not settings:
+        return None
+
+    # let's extract the fontpicker ones
+    fonts_list = []
+    for group in options_groups:
+        group_name = group.get('name')
+
+        for opt in group.get('options'):
+            field_type = opt.get('type')
+            property_name = opt.get('property')
+
+            if not property_name:
+                continue
+
+            if field_type == 'fontpicker':
+                value = setting_value(settings, group_name, property_name)
+
+                if not value:
+                    continue
+
+                fonts_list.append('family={}:ital,wght@0,400;0,600;1,400;1,600'.format(value.replace(' ', '+')))
+
+    if not fonts_list:
+        return None
+
+    return 'https://fonts.googleapis.com/css2?{}&display=swap'.format('&'.join(fonts_list))

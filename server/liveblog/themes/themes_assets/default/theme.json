@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.18",
+    "version": "3.6.19",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -545,9 +545,8 @@
                     "type": "dropdown",
                     "default": "normal",
                     "options": [
-                        "italic",
-                        "normal",
-                        "oblique"
+                        {"value": "italic", "label": "Italic"},
+                        {"value": "normal", "label": "Normal"}
                     ]
                 },
                 {
@@ -586,8 +585,8 @@
                     "type": "dropdown",
                     "default": "normal",
                     "options": [
-                        "normal",
-                        "bold"
+                        {"value": "bold", "label": "Bold"},
+                        {"value": "normal", "label": "Normal"}
                     ]
                 },
                 {
@@ -596,9 +595,8 @@
                     "type": "dropdown",
                     "default": "normal",
                     "options": [
-                        "italic",
-                        "normal",
-                        "oblique"
+                        {"value": "italic", "label": "Italic"},
+                        {"value": "normal", "label": "Normal"}
                     ]
                 },
                 {
