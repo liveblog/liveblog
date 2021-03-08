@@ -47,6 +47,11 @@ class FontPickerInternal extends React.Component<IProps> {
     render() {
         const props = this.props;
         const propertyName = props.property as string;
+        let selectedFont;
+
+        if (props.value && props.fontOptions) {
+            selectedFont = props.fontOptions.find((s) => s.value === props.value);
+        }
 
         return (
             <div className="sd-line-input">
@@ -62,6 +67,7 @@ class FontPickerInternal extends React.Component<IProps> {
                         className="react-select__selector"
                         styles={selectStyles}
                         options={props.fontOptions}
+                        value={selectedFont}
                         menuPosition="fixed"
                         onChange={(selected) => props.onChange((selected as any).value)}
                     />

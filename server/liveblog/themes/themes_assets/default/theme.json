@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.19",
+    "version": "3.6.21",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,9 +17,9 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-b13dbffe54.css"],
+    "devStyles": ["dist/default-38f7bb2427.css"],
     "devScripts": ["dist/default-267b7cec59.js"],
-    "styles": ["dist/default-b13dbffe54.css"],
+    "styles": ["dist/default-38f7bb2427.css"],
     "scripts": ["dist/default-267b7cec59.js"],
     "options": [
         {
@@ -450,6 +450,25 @@
     ],
     "styleOptions": [
         {
+            "label": "Typography",
+            "name": "typography",
+            "cssSelector": "div.lb-timeline",
+            "columns": 2,
+            "serializerIgnore": true,
+            "options": [
+                {
+                    "label": "Primary Font Family",
+                    "property": "primary",
+                    "type": "fontpicker"
+                },
+                {
+                    "label": "Secondary Font Family",
+                    "property": "secundary",
+                    "type": "fontpicker"
+                }
+            ]
+        },
+        {
             "label": "General",
             "name": "general",
             "cssSelector": "div.lb-timeline",
@@ -489,28 +508,9 @@
             ]
         },
         {
-            "label": "Typography",
-            "name": "typography",
-            "cssSelector": "div.lb-timeline",
-            "columns": 2,
-            "serializerIgnore": true,
-            "options": [
-                {
-                    "label": "Primary Font Family",
-                    "property": "primary",
-                    "type": "fontpicker"
-                },
-                {
-                    "label": "Secondary Font Family",
-                    "property": "secundary",
-                    "type": "fontpicker"
-                }
-            ]
-        },
-        {
-            "label": "Body Text",
-            "name": "body-text",
-            "cssSelector": "div.lb-timeline .lb-item",
+            "label": "Title",
+            "name": "blog-title",
+            "cssSelector": "div.lb-timeline h1",
             "columns": 5,
             "options": [
                 {
@@ -558,9 +558,9 @@
             ]
         },
         {
-            "label": "Title",
-            "name": "blog-title",
-            "cssSelector": "div.lb-timeline h1",
+            "label": "Body Text",
+            "name": "body-text",
+            "cssSelector": "div.lb-timeline .lb-item",
             "columns": 5,
             "options": [
                 {
