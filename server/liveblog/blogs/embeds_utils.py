@@ -1,5 +1,5 @@
 
-def setting_value(settings, group_name, property_name):
+def get_setting_value(settings, group_name, property_name):
     """
     Extracts the style setting value for the given option
     """
@@ -45,17 +45,14 @@ def generate_theme_styles(theme):
 
     styles_map = {}
     for group in options_groups:
-        serializer_ignore = group.get('serializerIgnore', False)
-        if serializer_ignore:
-            continue
-
         group_name = group.get('name')
+        serializer_ignore = group.get('serializerIgnore', False)
         css_selector = group.get('cssSelector')
 
-        if not css_selector:
+        if serializer_ignore or not css_selector:
             continue
 
-        for opt in group.get('options'):
+        for opt in group.get('options', []):
             tag_name = opt.get('tagName', '')
             property_name = opt.get('property')
             linked_to_group = opt.get('linkedToGroup', False)
@@ -64,12 +61,12 @@ def generate_theme_styles(theme):
                 continue
 
             option_selector = '{} {}'.format(css_selector, tag_name).strip()
-            option_value = setting_value(settings, group_name, property_name)
+            option_value = get_setting_value(settings, group_name, property_name)
 
             # in case the option value is linked to another group's attribute value
             # we need to extract the value of the connected one
             if linked_to_group:
-                option_value = setting_value(settings, linked_to_group, option_value)
+                option_value = get_setting_value(settings, linked_to_group, option_value)
 
             if not option_value:
                 continue
@@ -110,7 +107,7 @@ def google_fonts_url(theme):
                 continue
 
             if field_type == 'fontpicker':
-                value = setting_value(settings, group_name, property_name)
+                value = get_setting_value(settings, group_name, property_name)
 
                 if not value:
                     continue

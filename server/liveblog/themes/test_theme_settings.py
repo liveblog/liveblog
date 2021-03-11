@@ -2581,7 +2581,7 @@ class ThemeSettingsTestCase(TestCase):
         template = embeds.collect_theme_assets(self.amp_theme)[1]
         self.assertIsNotNone(template, True)
 
-    def test_emebed_gathering(self):
+    def test_embed_gathering(self):
         # check blog exists
         client_blog = self.client_blog_service.find_one(req=None, _id='5aba336a4d003d61e663eeeb')
         self.assertIsNotNone(client_blog, True)
