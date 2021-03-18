@@ -561,6 +561,23 @@ class ThemesService(BaseService):
 
         return theme_settings, default_theme_settings
 
+    def _set_style_settings(self, theme, previous_theme):
+        """
+        Extracts the default style settings for the theme and merge them
+        with the existing ones (if any)
+        """
+        style_settings = {}
+        key = 'styleSettings'
+
+        default_theme_settings = self.get_default_style_settings(theme)
+        style_settings.update(default_theme_settings)
+
+        if key in previous_theme:
+            prev_theme_settings = previous_theme.get(key, {})
+            style_settings.update(prev_theme_settings)
+
+        theme[key] = style_settings
+
     def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True, upload_path=None):
         theme_name = theme['name']
         # Save the file in the media storage if needed
@@ -576,7 +593,9 @@ class ThemesService(BaseService):
 
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
+            self._set_style_settings(theme, previous_theme)
             self.replace(previous_theme['_id'], theme, previous_theme)
+
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 response = dict(status='updated', theme=theme, blogs_updated=blogs_updated)

@@ -31,6 +31,18 @@ def convert_dict_to_css(styles_map):
     return "\n".join(styles)
 
 
+def build_css_selector(group_selector, styleOption):
+    """
+    Creates a compound css selector with the provided
+    group selector and the option tag name if any
+    E.g: `div.timeline a`
+    """
+    tag_name = styleOption.get('tagName', '')
+    css_selector = '{} {}'.format(group_selector, tag_name).strip()
+
+    return css_selector
+
+
 def generate_theme_styles(theme):
     """
     It gets `styleSettings` attribute from the theme and generate
@@ -52,27 +64,30 @@ def generate_theme_styles(theme):
         if serializer_ignore or not css_selector:
             continue
 
-        for opt in group.get('options', []):
-            tag_name = opt.get('tagName', '')
-            property_name = opt.get('property')
-            linked_to_group = opt.get('linkedToGroup', False)
+        for style_option in group.get('options', []):
+            property_name = style_option.get('property')
+            linked_to_group = style_option.get('linkedToGroup', False)
+            default_value = style_option.get('default')
 
             if not property_name:
                 continue
 
-            option_selector = '{} {}'.format(css_selector, tag_name).strip()
             option_value = get_setting_value(settings, group_name, property_name)
 
-            # in case the option value is linked to another group's attribute value
-            # we need to extract the value of the connected one
+            # if linked, then we need to extract the value of the connected one
             if linked_to_group:
                 option_value = get_setting_value(settings, linked_to_group, option_value)
 
+            if not option_value and default_value:
+                option_value = default_value
+
+            # we get to this point and no value so far, then skip this option
             if not option_value:
                 continue
 
-            _styles = styles_map.setdefault(option_selector, [])
-            _styles.append((opt.get('property'), option_value))
+            final_css_selector = build_css_selector(css_selector, style_option)
+            styles = styles_map.setdefault(final_css_selector, [])
+            styles.append((property_name, option_value))
 
     return convert_dict_to_css(styles_map)
 

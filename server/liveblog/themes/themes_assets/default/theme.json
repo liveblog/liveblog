@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.21",
+    "version": "3.6.23",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -604,6 +604,56 @@
                     "property": "color",
                     "type": "colorpicker",
                     "default": "#333333"
+                }
+            ]
+        },
+        {
+            "label": "Date & Author",
+            "name": "date-author",
+            "cssSelector": "div.lb-timeline .lb-post-date, div.lb-timeline .lb-author__name",
+            "columns": 5,
+            "options": [
+                {
+                    "label": "Font Family",
+                    "property": "font-family",
+                    "type": "dropdown",
+                    "linkedToGroup": "typography",
+                    "options": [
+                        {"value": "primary", "label": "Primary"},
+                        {"value": "secundary", "label": "Secundary"}
+                    ]
+                },
+                {
+                    "label": "Font Size",
+                    "property": "font-size",
+                    "type": "text",
+                    "placeholder": "px or rem"
+                },
+                {
+                    "label": "Font Weight",
+                    "property": "font-weight",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        {"value": "bold", "label": "Bold"},
+                        {"value": "normal", "label": "Normal"}
+                    ]
+                },
+                {
+                    "label": "Font Style",
+                    "property": "font-style",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        {"value": "italic", "label": "Italic"},
+                        {"value": "normal", "label": "Normal"}
+                    ]
+                },
+                {
+                    "label": "Font Color",
+                    "property": "color",
+                    "type": "colorpicker",
+                    "default": "#ACACAC"
                 }
             ]
         }
