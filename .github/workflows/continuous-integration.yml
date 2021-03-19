@@ -48,10 +48,10 @@ jobs:
       with:
         node-version: 10.x
 
-    - name: Setup Python 3.5
-      uses: actions/setup-python@v1
+    - name: Setup Python 3.6.x
+      uses: actions/setup-python@v2
       with:
-        python-version: 3.5
+        python-version: 3.6.x
         architecture: x64
 
     - name: Install Python dependencies and run tests
