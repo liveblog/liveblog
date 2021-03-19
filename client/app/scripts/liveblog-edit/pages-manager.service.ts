@@ -25,7 +25,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
          * @param {array} [posts=[]] - a list of post to initialize the page
          */
         class Page {
-            posts: Array<any>;
+            posts: any[];
 
             constructor(posts = []) {
                 this.posts = posts;
@@ -97,7 +97,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
          * @param {array} authors - The list of ids to filter with
          * @returns {promise}
          */
-        const setAuthors = (authors: Array<any>) => {
+        const setAuthors = (authors: any[]) => {
             self.authors = authors;
             self.pages = [];
             return fetchNewPage();
@@ -328,7 +328,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
 
         /**
          * Add a post or a list of posts to the local pages
-         * @param {Post|array<Post>} postsParams - posts to be added to the pages
+         * @param {Post | Post[]} postsParams - posts to be added to the pages
          */
         const addPost = (postsParams) => {
             const allPosts = self.allPosts();

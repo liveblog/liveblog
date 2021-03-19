@@ -288,7 +288,7 @@ const postsService = (api, $q, _userList, session) => {
         return latestDate.utc().format();
     };
 
-    const savePost = (blogId, postToUpdate, itemsParam: Array<any>, post: any = {}) => {
+    const savePost = (blogId, postToUpdate, itemsParam: any[], post: any = {}) => {
         let items = itemsParam;
         const dfds = [];
 

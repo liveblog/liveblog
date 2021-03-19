@@ -16,6 +16,8 @@ declare module '*.css' {
     export default value;
 }
 
+declare module '@atlaskit/datetime-picker';
+
 declare const gettext: (text: string) => string;
 
 type Action<T = any> = {
@@ -114,12 +116,12 @@ interface ILinks {
 interface ITheme {
     asyncTheme: boolean;
     author: IAuthor;
-    blogs: Array<any>;
+    blogs: any[];
     blogs_count: number;
-    devScripts: Array<string>;
-    devStyles: Array<string>;
-    scripts: Array<string>;
-    styles: Array<string>;
+    devScripts: string[];
+    devStyles: string[];
+    scripts: string[];
+    styles: string[];
     files: IFiles;
     i18n: {
         [lang: string]: any
@@ -128,8 +130,8 @@ interface ITheme {
     license: string;
     name: string;
     extends?: string;
-    options: Array<any>;
-    styleOptions: Array<IStyleGroup>;
+    options: any[];
+    styleOptions: IStyleGroup[];
     repository: any;
     seoTheme: boolean;
     settings: IThemeSettings;
@@ -162,7 +164,7 @@ interface IStyleOption {
     placeholder?: string;
 
     // if the type is select, then options is required to show in dropdown
-    options?: Array<IStyleDropdownOption>;
+    options?: IStyleDropdownOption[];
 
     // basic help text
     help?: string;
@@ -191,7 +193,7 @@ interface IStyleGroup {
      */
     cssSelector: string;
 
-    options: Array<IStyleOption>;
+    options: IStyleOption[];
 
     // number of layout columns that it will use when rendering in settings tab
     columns: string;

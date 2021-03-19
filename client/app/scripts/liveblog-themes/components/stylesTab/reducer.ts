@@ -1,4 +1,3 @@
-
 import { Actions } from './actions';
 import type { IStyleAction, IUpdateFonts } from './actions';
 import type { IStylesTabProps } from './types';

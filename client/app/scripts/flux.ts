@@ -10,7 +10,7 @@ export default angular.module('liveblog.flux', [])
         class Store<S = any> {
             state: S;
             reducer: Reducer<S>;
-            listeners: Array<Listener>;
+            listeners: Listener[];
 
             constructor(reducer, initialState: S) {
                 this.state = initialState;

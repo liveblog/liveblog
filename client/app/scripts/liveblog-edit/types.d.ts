@@ -2,7 +2,7 @@ export interface IFilters {
     sort?: string;
     status?: string;
     sticky?: boolean;
-    authors?: Array<any>;
+    authors?: any[];
     updatedAfter?: string;
     highlight?: boolean;
     excludeDeleted?: boolean;
