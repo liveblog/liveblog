@@ -86,9 +86,9 @@
     "webpack-dev-server": "2.11.5"
   },
   "dependencies": {
+    "@atlaskit/calendar": "10.1.0",
     "@atlaskit/datetime-picker": "10.0.1",
-    "@atlaskit/calendar": "10.3.1",
-    "@atlaskit/icon": "21.1.0",
+    "@atlaskit/icon": "21.1.2",
     "adblock-detect": "1.0.5",
     "angular": "1.6.9",
     "angular-animate": "1.6.1",
