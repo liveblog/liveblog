@@ -55,6 +55,18 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
+    - name: Cache pip modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-pip-modules
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./server/dev-requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
     - name: Setup Nodejs 10.x
       uses: actions/setup-node@v1
       with:
