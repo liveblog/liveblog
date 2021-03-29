@@ -18,7 +18,7 @@ export const init = () => {
         return;
     }
 
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.min.js', () => {
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.1/iframeResizer.min.js', () => {
         (window as any).iFrameResize({
             minHeight: 1000,
             heightCalculationMethod: 'lowestElement',
