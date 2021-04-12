@@ -94,7 +94,7 @@ def notify_scheduled_post(post):
     Also invalidates blog cache to make sure requests will get latest posts from db
     """
 
-    from .posts import PostStatus  # to avoid circular references ;)
+    from .posts import PostStatus  # avoid circular references
 
     app.blog_cache.invalidate(post.get('blog'))
     push_notification('posts', scheduled_done=True, post_status=PostStatus.OPEN, posts=[post])
