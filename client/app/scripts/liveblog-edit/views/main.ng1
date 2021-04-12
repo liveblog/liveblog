@@ -141,7 +141,7 @@
                 <!-- scheduled posts -->
                 <div class="panel panel--scheduled" ng-if="panelState === 'scheduled'">
                     <header><h4 translate>Scheduled Posts</h4></header>
-                    <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
+                    <div class="content" lr-infinite-scroll="fetchNewScheduledPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.scheduledPostsInstance"
                           lb-posts-blog-id="blog._id"
