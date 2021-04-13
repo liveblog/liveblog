@@ -30,7 +30,7 @@ export default function unreadPostsService($rootScope) {
         let isContrib = false;
 
         prevContributions.forEach((contrib) => {
-            if (contrib.id === post._id) {
+            if (contrib._id === post._id) {
                 isContrib = true;
             }
         });
@@ -104,7 +104,7 @@ export default function unreadPostsService($rootScope) {
             // Update unread comment array
             eventParams.posts.forEach((post) => {
                 comments = comments
-                    .filter((comment) => comment.id !== post._id);
+                    .filter((comment) => comment._id !== post._id);
             });
         }
     }
