@@ -241,7 +241,7 @@ class PostsService(ArchiveService):
         # but also let's append 10 more seconds to make sure it happens after
         if post['scheduled']:
             eta_time = arrow.get(published_date).replace(seconds=+10)
-            notify_scheduled_post.apply_async(args=[post], eta=eta_time)
+            notify_scheduled_post.apply_async(args=[post, published_date], eta=eta_time)
 
     def check_post_permission(self, post):
         PUBLISH = 'publish_post'
@@ -290,7 +290,7 @@ class PostsService(ArchiveService):
         for doc in docs:
             blog_id = doc.get('blog')
             post = {}
-            post['id'] = doc.get('_id')
+            post['_id'] = doc.get('_id')
             post['blog'] = blog_id
 
             # Check if post has syndication_in entry.
