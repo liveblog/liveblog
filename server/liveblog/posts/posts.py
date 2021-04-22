@@ -316,7 +316,7 @@ class PostsService(ArchiveService):
             update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
-            if doc['post_status'] == 'open':
+            if doc['post_status'] == PostStatus.OPEN:
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
                 out_service.send_syndication_post(doc, action='created')
 

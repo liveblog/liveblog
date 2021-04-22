@@ -49,7 +49,7 @@ export default function unreadPostsService($rootScope) {
     }
 
     // get the count of current comments.
-    const countScheduled = () => scheduled.length;
+    const countScheduled = () => scheduled.filter((post) => post.blog === blog._id).length;
 
     // reset the current state and keep the previous vector.
     function reset(panel) {
@@ -57,9 +57,14 @@ export default function unreadPostsService($rootScope) {
             prevContributions = contributions;
             contributions = [];
         }
+
         if (panel === 'comments') {
             prevComments = comments;
             comments = [];
+        }
+
+        if (panel === 'scheduled') {
+            scheduled = [];
         }
     }
 
