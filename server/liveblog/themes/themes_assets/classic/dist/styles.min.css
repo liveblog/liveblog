@@ -426,7 +426,6 @@ lb-producer__author:before {
 .lb-author__name, .lb-author__date {
     float: left;
     font-weight: 500;
-    text-transform: capitalize;
     font-size: 13px;
 }
 .lb-author__comment {
