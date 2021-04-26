@@ -23,6 +23,7 @@ var contact2 = {
 const originalCount = 25;
 
 describe('Consumers', () => {
+    browser.driver.manage().window().maximize();
 
     beforeEach((done) => {
         login()
