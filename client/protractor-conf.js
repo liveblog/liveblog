@@ -43,6 +43,8 @@ var config = {
     },
 
     onPrepare: function() {
+        browser.driver.manage().window().maximize();
+
         require('./node_modules/superdesk-core/spec/helpers/setup')({fixture_profile: 'test'});
         var reporters = require('jasmine-reporters');
 
