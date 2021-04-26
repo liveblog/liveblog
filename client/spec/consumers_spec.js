@@ -125,9 +125,6 @@ describe('Consumers', () => {
                         .sendKeys(contact.email);
                 })
                 .then(() => {
-                    // var el = element(by.css('#save-edit-btn'));
-                    // browser.driver.wait(protractor.until.elementIsVisible(el));
-                    // return el.click();
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(() => {
