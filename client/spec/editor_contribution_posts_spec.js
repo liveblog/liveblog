@@ -94,7 +94,7 @@ describe('Contributions Posts', function() {
                 return element(contributions.byPosts).isPresent();
             }, 5000);
             contributions.expectPost(0, contrib.quote);
-            browser.driver.manage().window().setSize(1280, 1024);
+            browser.driver.manage().window().setSize(1920, 1080);
             browser.get('/');
             logout();
             browser.ignoreSynchronization = true;
