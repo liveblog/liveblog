@@ -24,6 +24,8 @@ const originalCount = 25;
 
 describe('Consumers', () => {
     beforeEach((done) => {
+        browser.driver.manage().window().maximize();
+
         login()
             .then(done);
     });
@@ -60,6 +62,8 @@ describe('Consumers', () => {
                     return element(by.css('#save-edit-btn')).isDisplayed();
                 })
                 .then(() => {
+                    browser.driver.manage().window().maximize();
+                    browser.wait(function() { return element(by.css('#save-edit-btn')).isPresent(); }, 1000);
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(() => {
