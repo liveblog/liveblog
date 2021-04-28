@@ -1,10 +1,10 @@
 /* eslint complexity: ["error", 12] */
 import _ from 'lodash';
-import postsTpl from 'scripts/liveblog-edit/views/posts.ng1';
+import postsTpl from 'scripts/liveblog-edit/views/posts-list.ng1';
 
-lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
+lbPostsList.$inject = ['postsService', 'notify', '$timeout', 'PagesManager'];
 
-export default function lbPostsList(postsService, notify, $q, $timeout, session, PagesManager) {
+export default function lbPostsList(postsService, notify, $timeout, PagesManager) {
     LbPostsListCtrl.$inject = ['$scope', '$element'];
 
     function LbPostsListCtrl($scope, $element) {

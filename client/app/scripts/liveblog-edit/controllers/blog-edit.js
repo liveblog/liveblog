@@ -832,6 +832,9 @@ export default function BlogEditController(
         fetchNewDraftPage: function() {
             self.draftPostsInstance.fetchNewPage();
         },
+        fetchNewScheduledPage: function() {
+            self.scheduledPostsInstance.fetchNewPage();
+        },
         fetchNewCommentsPage: function() {
             self.commentPostsInstance.fetchNewPage();
         },

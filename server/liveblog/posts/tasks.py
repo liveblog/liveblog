@@ -87,14 +87,22 @@ def update_post_blog_embed(post):
 
 
 @celery.task
-def notify_scheduled_post(post):
+def notify_scheduled_post(post, published_date):
     """
     It will send a push notification via websocket connection to let the client know
     that the post.published_date has reached its time and it's not available in timeline.
     Also invalidates blog cache to make sure requests will get latest posts from db
     """
 
-    from .posts import PostStatus  # to avoid circular references ;)
+    from .posts import PostStatus  # avoid circular references
 
-    app.blog_cache.invalidate(post.get('blog'))
-    push_notification('posts', scheduled_done=True, post_status=PostStatus.OPEN, posts=[post])
+    post_id = post['_id']
+    posts = get_resource_service('posts')
+    db_post = posts.find_one(req=None, _id=post_id)
+
+    if not db_post:
+        return
+
+    if db_post.get('published_date') == published_date:
+        app.blog_cache.invalidate(post.get('blog'))
+        push_notification('posts', scheduled_done=True, post_status=PostStatus.OPEN, posts=[post])

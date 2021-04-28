@@ -30,7 +30,7 @@ export default function unreadPostsService($rootScope) {
         let isContrib = false;
 
         prevContributions.forEach((contrib) => {
-            if (contrib.id === post._id) {
+            if (contrib._id === post._id) {
                 isContrib = true;
             }
         });
@@ -49,7 +49,7 @@ export default function unreadPostsService($rootScope) {
     }
 
     // get the count of current comments.
-    const countScheduled = () => scheduled.length;
+    const countScheduled = () => scheduled.filter((post) => post.blog === blog._id).length;
 
     // reset the current state and keep the previous vector.
     function reset(panel) {
@@ -57,9 +57,14 @@ export default function unreadPostsService($rootScope) {
             prevContributions = contributions;
             contributions = [];
         }
+
         if (panel === 'comments') {
             prevComments = comments;
             comments = [];
+        }
+
+        if (panel === 'scheduled') {
+            scheduled = [];
         }
     }
 
@@ -104,7 +109,7 @@ export default function unreadPostsService($rootScope) {
             // Update unread comment array
             eventParams.posts.forEach((post) => {
                 comments = comments
-                    .filter((comment) => comment.id !== post._id);
+                    .filter((comment) => comment._id !== post._id);
             });
         }
     }

@@ -94,21 +94,8 @@ describe('Contributions Posts', function() {
                 return element(contributions.byPosts).isPresent();
             }, 5000);
             contributions.expectPost(0, contrib.quote);
-            browser.driver.manage().window().setSize(1280, 1024);
+            browser.driver.manage().window().setSize(1920, 1080);
             browser.get('/');
-            //element(by.css('button.current-user')).click();
-            //// wait for sidebar animation to finish
-            //browser.wait(function() {
-            //    return element(by.buttonText('SIGN OUT')).isDisplayed();
-            //}, 1000);
-            //element(by.buttonText('SIGN OUT')).click();
-            ////browser.wait(function() {
-            ////    return browser.driver.isElementPresent(by.id('login-btn'));
-            ////}, 5000);
-            //browser.sleep(5000); // it reloads page
-            //browser.executeScript('window.sessionStorage.clear();');
-            //browser.executeScript('window.localStorage.clear();');
-            //browser.sleep(2000); // it reloads page
             logout();
             browser.ignoreSynchronization = true;
 
