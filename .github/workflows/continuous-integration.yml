@@ -42,6 +42,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: nanasess/setup-chromedriver@master
 
     - name: Cache node modules
       uses: actions/cache@v2
@@ -118,10 +119,10 @@ jobs:
         cd dist
         while [ ! -f index.html ]; do sleep .5; done
         (nohup python -m http.server 9000 &)
-        cd ../
-        export DISPLAY=:99.0
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
-        export CHROME_BIN=`which google-chrome`
+        export DISPLAY=:99
+        export SELENIUM_ADDRESS='http://localhost:4444/wd/hub'
+        chromedriver --port=4444 --url-base=/wd/hub &
+        sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         $CHROME_BIN --version
-        CHROMEDRIVER_VERSION=89.0.4389.23 npm run webdriver-update
+        cd ../
         npm run e2e

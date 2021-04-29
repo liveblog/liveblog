@@ -3,17 +3,15 @@ import postTpl from 'scripts/liveblog-edit/views/post.ng1';
 lbPost.$inject = [
     'notify',
     'gettext',
-    'asset',
     'postsService',
     'modal',
-    'blogSecurityService',
     '$document',
     'instagramService',
     '$rootScope',
 ];
 
-export default function lbPost(notify, gettext, asset, postsService, modal,
-    blogSecurityService, $document, instagramService, $rootScope) {
+export default function lbPost(notify, gettext, postsService, modal,
+    $document, instagramService, $rootScope) {
     return {
         scope: {
             post: '=',
@@ -32,6 +30,8 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
             index: '=',
             // the controller of parent posts list directive
             postsListCtrl: '=',
+            // the function to remove the post from UI
+            removePostFromList: '=',
         },
         restrict: 'E',
         templateUrl: postTpl,
@@ -96,6 +96,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     postsService.remove(postToDelete).then((message) => {
                         notify.pop();
                         notify.info(gettext('Removing post...'));
+                        scope.removePostFromList(post);
                         $rootScope.$broadcast('removing_timeline_post', {post: post});
                     }, () => {
                         notify.pop();

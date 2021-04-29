@@ -64,4 +64,8 @@ var config = {
     }
 };
 
+if (process.env.SELENIUM_ADDRESS) {
+    config.seleniumAddress = process.env.SELENIUM_ADDRESS;
+}
+
 exports.config = config;

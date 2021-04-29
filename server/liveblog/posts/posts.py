@@ -229,6 +229,20 @@ class PostsService(ArchiveService):
             next_order = self.get_next_order_sequence(post['blog'])
             self.system_update(post['_id'], {'order': next_order}, post)
 
+    def _scheduled_notification_if_needed(self, post):
+        """
+        Check if the post it's been scheduled and send client notification
+        """
+
+        published_date = post.get('published_date')
+        post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
+
+        # now let's schedule the notification so posts get fetched at proper datetime
+        # but also let's append 10 more seconds to make sure it happens after
+        if post['scheduled']:
+            eta_time = arrow.get(published_date).replace(seconds=+10)
+            notify_scheduled_post.apply_async(args=[post, published_date], eta=eta_time)
+
     def check_post_permission(self, post):
         PUBLISH = 'publish_post'
         CONTRIBUTE = 'submit_post'
@@ -276,20 +290,14 @@ class PostsService(ArchiveService):
         for doc in docs:
             blog_id = doc.get('blog')
             post = {}
-            post['id'] = doc.get('_id')
+            post['_id'] = doc.get('_id')
             post['blog'] = blog_id
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
+            post['published_date'] = doc.get('published_date')
 
-            published_date = doc.get('published_date')
-            post['scheduled'] = published_date and arrow.get(published_date) > utcnow()
-
-            # now let's schedule the notification so posts get fetched at proper datetime
-            # but also let's append 10 more seconds to make sure it happens after
-            if post['scheduled']:
-                eta_time = arrow.get(published_date).replace(seconds=+10)
-                notify_scheduled_post.apply_async(args=[post], eta=eta_time)
+            self._scheduled_notification_if_needed(post)
 
             synd_in_id = doc.get('syndication_in')
             if synd_in_id:
@@ -308,7 +316,7 @@ class PostsService(ArchiveService):
             update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
-            if doc['post_status'] == 'open':
+            if doc['post_status'] == PostStatus.OPEN:
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
                 out_service.send_syndication_post(doc, action='created')
 
@@ -356,15 +364,19 @@ class PostsService(ArchiveService):
         post = original.copy()
         post.update(updates)
         self.check_post_permission(post)
+
         # when publishing, put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
-            updates['published_date'] = utcnow()
+            if 'published_date' not in updates.keys():
+                updates['published_date'] = utcnow()
             updates['publisher'] = get_publisher()
+
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
+
             # assure that the item info is keept if is needed.
             if original.get('post_status') == 'submitted' and original.get('original_creator', False) \
                     and updates.get('groups', False):
@@ -377,6 +389,7 @@ class PostsService(ArchiveService):
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
+
         super().on_update(updates, original)
 
     def on_updated(self, updates, original):
@@ -388,6 +401,7 @@ class PostsService(ArchiveService):
         doc = original.copy()
         doc.update(updates)
         posts = []
+
         # send notifications
         if updates.get('deleted', False):
             # Update blog post data and embed for SEO-enabled blogs.
@@ -410,6 +424,8 @@ class PostsService(ArchiveService):
             # Syndication
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
+
+            self._scheduled_notification_if_needed(doc)
 
             if updates.get('post_status') == 'open':
                 if original['post_status'] in ('submitted', 'draft', 'comment'):

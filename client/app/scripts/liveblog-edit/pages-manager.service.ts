@@ -47,7 +47,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
             // only care about the sticky status if post if open otherwise show them all together
             // @TODO refactor when refactoring the page manager
 
-            if (self.status === 'open') {
+            if (self.status === 'open' && !scheduled) {
                 options.sticky = sticky;
             }
 
