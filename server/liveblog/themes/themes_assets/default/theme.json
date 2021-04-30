@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.28",
+    "version": "3.6.31",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-d124cfde1f.css"],
-    "devScripts": ["dist/default-5c69d66782.js"],
-    "styles": ["dist/default-d124cfde1f.css"],
-    "scripts": ["dist/default-5c69d66782.js"],
+    "devStyles": ["dist/default-7679b7a6c1.css"],
+    "devScripts": ["dist/default-c9c1438664.js"],
+    "styles": ["dist/default-7679b7a6c1.css"],
+    "scripts": ["dist/default-c9c1438664.js"],
     "options": [
         {
             "name": "language",
@@ -519,6 +519,58 @@
                     "type": "dropdown",
                     "linkedToGroup": "typography",
                     "options": [
+                        {"value": null, "label": "Select a font"},
+                        {"value": "primary", "label": "Primary"},
+                        {"value": "secundary", "label": "Secundary"}
+                    ]
+                },
+                {
+                    "label": "Font Size",
+                    "property": "font-size",
+                    "type": "text",
+                    "placeholder": "px or rem"
+                },
+                {
+                    "label": "Font Weight",
+                    "property": "font-weight",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        {"value": "bold", "label": "Bold"},
+                        {"value": "normal", "label": "Normal"}
+                    ]
+                },
+                {
+                    "label": "Font Style",
+                    "property": "font-style",
+                    "type": "dropdown",
+                    "default": "normal",
+                    "options": [
+                        {"value": "italic", "label": "Italic"},
+                        {"value": "normal", "label": "Normal"}
+                    ]
+                },
+                {
+                    "label": "Font Color",
+                    "property": "color",
+                    "type": "colorpicker",
+                    "default": "#333333"
+                }
+            ]
+        },
+        {
+            "label": "Description",
+            "name": "blog-description",
+            "cssSelector": "div.lb-timeline .description",
+            "columns": 5,
+            "options": [
+                {
+                    "label": "Font Family",
+                    "property": "font-family",
+                    "type": "dropdown",
+                    "linkedToGroup": "typography",
+                    "options": [
+                        {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
                         {"value": "secundary", "label": "Secundary"}
                     ]
@@ -569,6 +621,7 @@
                     "type": "dropdown",
                     "linkedToGroup": "typography",
                     "options": [
+                        {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
                         {"value": "secundary", "label": "Secundary"}
                     ]
@@ -619,6 +672,7 @@
                     "type": "dropdown",
                     "linkedToGroup": "typography",
                     "options": [
+                        {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
                         {"value": "secundary", "label": "Secundary"}
                     ]
@@ -669,6 +723,7 @@
                     "type": "dropdown",
                     "linkedToGroup": "typography",
                     "options": [
+                        {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
                         {"value": "secundary", "label": "Secundary"}
                     ]
