@@ -259,6 +259,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'hook_urls': bool(TRIGGER_HOOK_URLS),
         'global_tags': global_tags
     }
+
     if is_amp:
         # Add AMP compatible css to template context
         styles = theme.get('files', {}).get('styles', {}).values()

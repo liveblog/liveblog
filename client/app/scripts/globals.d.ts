@@ -135,6 +135,7 @@ interface ITheme {
     repository: any;
     seoTheme: boolean;
     settings: IThemeSettings;
+    supportStylesSettings: boolean;
     styleSettings: IStyleSettings;
     template: string;
     version: string;

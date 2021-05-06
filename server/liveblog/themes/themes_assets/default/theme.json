@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.31",
+    "version": "3.6.32",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -448,6 +448,7 @@
             "help": "Domains separated by comma that will require user's consent to display embeds"
         }
     ],
+    "supportStylesSettings": true,
     "styleOptions": [
         {
             "label": "Typography",

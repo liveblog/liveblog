@@ -3,7 +3,6 @@
         <button class="modal__close pull-right" ng-click="vm.closeModal()"><i class="icon-close-small"></i></button>
         <h3 class="modal__heading">{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
     </div>
-    <!-- TODO: check if theme has support -->
     <ul class="nav nav-tabs">
         <li ng-class="{active: vm.activeTab === tab}" ng-repeat="tab in vm.tabs">
             <button ng-click="vm.activeTab = tab;" translate>{{ ::tab }}</button>
@@ -66,14 +65,16 @@
             </div>
         </form>
 
-        <div ng-if="!vm.styleOptionsAreloading"
-            ng-show="vm.activeTab === vm.stylesTab"
-            styles-tab-component
-            settings="vm.styleSettings"
-            options="vm.styleOptions"
-            form="vm.themeSettingsForm"
-            default-settings="vm.defaultStyleSettings"
-            >
+        <div ng-if="vm.theme.supportStylesSettings">
+            <div ng-if="!vm.styleOptionsAreloading"
+                ng-show="vm.activeTab === vm.stylesTab"
+                styles-tab-component
+                settings="vm.styleSettings"
+                options="vm.styleOptions"
+                form="vm.themeSettingsForm"
+                default-settings="vm.defaultStyleSettings"
+                >
+            </div>
         </div>
     </div>
     <div class="modal__footer">

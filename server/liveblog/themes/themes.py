@@ -138,6 +138,10 @@ class ThemesResource(Resource):
                 }
             }
         },
+        'supportStylesSettings': {
+            'type': 'boolean',
+            'default': False
+        },
         'styleOptions': {
             'type': 'list',
             'schema': {

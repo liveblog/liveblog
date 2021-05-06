@@ -49,8 +49,12 @@ interface IScope {
                         // all basic configuration for tabs
                         vm.settingsTab = 'Settings',
                         vm.stylesTab = 'Styles',
-                        vm.tabs = [vm.settingsTab, vm.stylesTab];
+                        vm.tabs = [vm.settingsTab];
                         vm.activeTab = vm.settingsTab;
+
+                        if (vm.theme.supportStylesSettings) {
+                            vm.tabs.push(vm.stylesTab);
+                        }
 
                         angular.extend(vm, {
                             optionsAreloading: true,

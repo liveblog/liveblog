@@ -49,6 +49,10 @@ def generate_theme_styles(theme):
     the coresponding css styling rules
     """
 
+    supportStylesSettings = theme.get('supportStylesSettings', False)
+    if not supportStylesSettings:
+        return ""
+
     options_groups = theme.get('styleOptions', {})
     settings = theme.get('styleSettings', {})
 
@@ -103,10 +107,11 @@ def google_fonts_url(theme):
         See for more info: https://developers.google.com/fonts/docs/css2
     """
 
+    supportStylesSettings = theme.get('supportStylesSettings', False)
     options_groups = theme.get('styleOptions', {})
     settings = theme.get('styleSettings', {})
 
-    if not options_groups or not settings:
+    if not options_groups or not settings or not supportStylesSettings:
         return None
 
     # let's extract the fontpicker ones
