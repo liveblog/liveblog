@@ -42,22 +42,14 @@ def build_css_selector(group_selector, styleOption):
 
     return css_selector
 
-
-def generate_theme_styles(theme):
+def compile_styles_map(settings, options_groups):
     """
-    It gets `styleSettings` attribute from the theme and generate
-    the coresponding css styling rules
+    Receives the theme styleSettings and styleOptions
+    and generates a dictionary with keys and array of tuples.
+
+    Produces something like this:
+        `{'div.lb-timeline': [('font-weight', 'normal'), ('font-style', 'normal')]}`
     """
-
-    supportStylesSettings = theme.get('supportStylesSettings', False)
-    if not supportStylesSettings:
-        return ""
-
-    options_groups = theme.get('styleOptions', {})
-    settings = theme.get('styleSettings', {})
-
-    if not options_groups or not settings:
-        return ""
 
     styles_map = {}
     for group in options_groups:
@@ -92,6 +84,27 @@ def generate_theme_styles(theme):
             final_css_selector = build_css_selector(css_selector, style_option)
             styles = styles_map.setdefault(final_css_selector, [])
             styles.append((property_name, option_value))
+
+    return styles_map
+
+
+def generate_theme_styles(theme):
+    """
+    It gets `styleSettings` attribute from the theme and generate
+    the coresponding css styling rules
+    """
+
+    supportStylesSettings = theme.get('supportStylesSettings', False)
+    if not supportStylesSettings:
+        return ""
+
+    options_groups = theme.get('styleOptions', {})
+    settings = theme.get('styleSettings', {})
+
+    if not options_groups or not settings:
+        return ""
+
+    styles_map = compile_styles_map(settings, options_groups)
 
     return convert_dict_to_css(styles_map)
 
