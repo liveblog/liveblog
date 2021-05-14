@@ -1,5 +1,4 @@
-
-def get_setting_value(settings, group_name, property_name):
+def get_setting_value(settings, group_name, property_name, default_value=None, linked_to_group=None):
     """
     Extracts the style setting value for the given option
     """
@@ -9,6 +8,13 @@ def get_setting_value(settings, group_name, property_name):
         return
 
     option_value = group.get(property_name)
+
+    # we need to extract the linked value if there is one connected
+    if linked_to_group and option_value:
+        option_value = get_setting_value(settings, linked_to_group, option_value)
+
+    if not option_value and default_value:
+        option_value = default_value
 
     return option_value
 
@@ -31,18 +37,19 @@ def convert_dict_to_css(styles_map):
     return "\n".join(styles)
 
 
-def build_css_selector(group_selector, styleOption):
+def build_css_selector(group_selector, styles_group):
     """
     Creates a compound css selector with the provided
     group selector and the option tag name if any
     E.g: `div.timeline a`
     """
-    tag_name = styleOption.get('tagName', '')
+    tag_name = styles_group.get('tagName', '')
     css_selector = '{} {}'.format(group_selector, tag_name).strip()
 
     return css_selector
 
-def compile_styles_map(settings, options_groups):
+
+def compile_styles_map(settings, style_options):
     """
     Receives the theme styleSettings and styleOptions
     and generates a dictionary with keys and array of tuples.
@@ -52,7 +59,7 @@ def compile_styles_map(settings, options_groups):
     """
 
     styles_map = {}
-    for group in options_groups:
+    for group in style_options:
         group_name = group.get('name')
         serializer_ignore = group.get('serializerIgnore', False)
         css_selector = group.get('cssSelector')
@@ -68,14 +75,7 @@ def compile_styles_map(settings, options_groups):
             if not property_name:
                 continue
 
-            option_value = get_setting_value(settings, group_name, property_name)
-
-            # if linked, then we need to extract the value of the connected one
-            if linked_to_group:
-                option_value = get_setting_value(settings, linked_to_group, option_value)
-
-            if not option_value and default_value:
-                option_value = default_value
+            option_value = get_setting_value(settings, group_name, property_name, default_value, linked_to_group)
 
             # we get to this point and no value so far, then skip this option
             if not option_value:
