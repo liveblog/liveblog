@@ -74,9 +74,9 @@ class EmbedUtilsTestCase(TestCase):
 
     def test_convert_styles_map_to_css(self):
         mock_css_styles_list = [
-            "div.lb-timeline h1 { font-family: Mukta Vaani; font-weight: normal; font-style: normal; color: #7d41a4 }",
             "div.lb-timeline { background: #ffffff }",
-            "div.lb-timeline a { color: #3394bc }"
+            "div.lb-timeline a { color: #3394bc }",
+            "div.lb-timeline h1 { font-family: Mukta Vaani; font-weight: normal; font-style: normal; color: #7d41a4 }"
         ]
 
         mock_css_styles = "\n".join(mock_css_styles_list)
