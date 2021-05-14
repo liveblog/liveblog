@@ -8,7 +8,9 @@ import liveblog.blogs.embeds as embeds
 from liveblog.blogs.embeds import embed_blueprint
 import liveblog.client_modules as client_modules_app
 
-from .mock_settings import default_seo_theme, classic_theme, amp_theme
+from .mock_settings.default_seo_theme import default_seo_theme
+from .mock_settings.classic_theme import classic_theme
+from .mock_settings.amp_theme import amp_theme
 
 
 class Foo():
@@ -113,6 +115,7 @@ class ThemeSettingsTestCase(TestCase):
                 }
             ]
         }
+
         self.classic_theme = classic_theme.copy()
         self.default_theme = default_seo_theme.copy()
         self.amp_theme = amp_theme.copy()
