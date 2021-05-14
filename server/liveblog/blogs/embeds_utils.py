@@ -19,7 +19,7 @@ def get_setting_value(settings, group_name, property_name, default_value=None, l
     return option_value
 
 
-def convert_dict_to_css(styles_map):
+def convert_styles_map_to_css(styles_map):
     """
     It receives a dictionary with selector and corresponding styles array
     in a JSON similar structure and converts is to css compatible string
@@ -106,7 +106,7 @@ def generate_theme_styles(theme):
 
     styles_map = compile_styles_map(settings, options_groups)
 
-    return convert_dict_to_css(styles_map)
+    return convert_styles_map_to_css(styles_map)
 
 
 def google_fonts_url(theme):
