@@ -113,9 +113,10 @@ class ThemeSettingsTestCase(TestCase):
                 }
             ]
         }
-        self.classic_theme = classic_theme
-        self.default_theme = default_seo_theme
-        self.amp_theme = amp_theme
+        self.classic_theme = classic_theme.copy()
+        self.default_theme = default_seo_theme.copy()
+        self.amp_theme = amp_theme.copy()
+
         # Create themes
         self.themeservice.save_or_update_theme(self.angular_theme)
         self.themeservice.save_or_update_theme(self.classic_theme)
