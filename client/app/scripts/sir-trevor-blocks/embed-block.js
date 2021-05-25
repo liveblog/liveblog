@@ -229,6 +229,30 @@ export default function embedBlockFactory(SirTrevor, config) {
             });
             return self.data;
         },
+
+        _handleTitleAndDescription: function(cardHtml, data) {
+            const isInstagramEmbed = (data.provider_name === 'Instagram');
+
+            // For instagram (TODO: check for others) we do not render this title and description
+            // So far, when clients want to add custom content, they add a separate text item which
+            // seems more logical and flexible
+            if (isInstagramEmbed) {
+                ['title', 'description'].forEach((fieldName) => {
+                    cardHtml.find('.' + fieldName + '-preview').addClass('hide');
+                });
+            } else {
+                if (_.has(data, 'title')) {
+                    cardHtml.find('.title-preview')
+                        .html(data.title);
+                }
+
+                if (_.has(data, 'description')) {
+                    cardHtml.find('.description-preview')
+                        .html(data.description);
+                }
+            }
+        },
+
         renderCard: function(data) {
             const cardClass = 'liveblog--card';
 
@@ -252,6 +276,7 @@ export default function embedBlockFactory(SirTrevor, config) {
                     '.cover-preview-handler',
                 ].join(', ')
             ).addClass('hidden');
+
             // set the link
             if (_.has(data, 'url')) {
                 html
@@ -260,12 +285,14 @@ export default function embedBlockFactory(SirTrevor, config) {
                     .html(data.original_url)
                     .removeClass('hidden');
             }
+
             // set the embed code
             if (_.has(data, 'html')) {
                 html.find('.embed-preview')
                     .html(data.html)
                     .removeClass('hidden');
             }
+
             // set the cover illustration
             if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
                 const ratio = data.thumbnail_width / data.thumbnail_height;
@@ -280,16 +307,9 @@ export default function embedBlockFactory(SirTrevor, config) {
                 });
                 html.find('.cover-preview-handler').removeClass('hidden');
             }
-            // set the title
-            if (_.has(data, 'title')) {
-                html.find('.title-preview')
-                    .html(data.title);
-            }
-            // set the description
-            if (_.has(data, 'description')) {
-                html.find('.description-preview')
-                    .html(data.description);
-            }
+
+            this._handleTitleAndDescription(html, data);
+
             // set the credit
             if (_.has(data, 'provider_name')) {
                 let creditText = data.provider_name;
