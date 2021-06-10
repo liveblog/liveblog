@@ -61,6 +61,47 @@ function fixSocial(html, data) {
     }
 }
 
+const handleTitleAndDescription = (cardHtml, data) => {
+    const isInstagramEmbed = (data.provider_name === 'Instagram');
+
+    // For instagram (TODO: check for others) we do not render this title and description
+    // So far, when clients want to add custom content, they add a separate text item which
+    // seems more logical and flexible
+    if (isInstagramEmbed) {
+        ['title', 'description'].forEach((fieldName) => {
+            cardHtml.find('.' + fieldName + '-preview').addClass('hide');
+        });
+
+        cardHtml.find('.show-embed-description').removeClass('hide');
+    } else {
+        if (_.has(data, 'title')) {
+            cardHtml.find('.title-preview')
+                .html(data.title);
+        }
+
+        if (_.has(data, 'description')) {
+            cardHtml.find('.description-preview')
+                .html(data.description);
+        }
+    }
+};
+
+const setCredit = (cardHtml, data) => {
+    if (_.has(data, 'provider_name')) {
+        let creditText = data.provider_name;
+
+        if (_.has(data, 'author_name')) {
+            creditText += ' | <a href="' + data.author_url + '" target="_blank">' +
+                data.author_name + '</a>';
+        }
+        cardHtml.find('.credit-preview').html(creditText);
+    }
+
+    if (_.has(data, 'credit')) {
+        cardHtml.find('.credit-preview').html(data.credit);
+    }
+};
+
 function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
 
@@ -230,31 +271,10 @@ export default function embedBlockFactory(SirTrevor, config) {
             return self.data;
         },
 
-        _handleTitleAndDescription: function(cardHtml, data) {
-            const isInstagramEmbed = (data.provider_name === 'Instagram');
-
-            // For instagram (TODO: check for others) we do not render this title and description
-            // So far, when clients want to add custom content, they add a separate text item which
-            // seems more logical and flexible
-            if (isInstagramEmbed) {
-                ['title', 'description'].forEach((fieldName) => {
-                    cardHtml.find('.' + fieldName + '-preview').addClass('hide');
-                });
-            } else {
-                if (_.has(data, 'title')) {
-                    cardHtml.find('.title-preview')
-                        .html(data.title);
-                }
-
-                if (_.has(data, 'description')) {
-                    cardHtml.find('.description-preview')
-                        .html(data.description);
-                }
-            }
-        },
-
         renderCard: function(data) {
             const cardClass = 'liveblog--card';
+
+            console.log(data); // eslint-disable-line
 
             const html = $([
                 '<div class="' + cardClass + ' hidden">',
@@ -265,7 +285,9 @@ export default function embedBlockFactory(SirTrevor, config) {
                 '  <div class="st-embed-block title-preview"></div>',
                 '  <div class="st-embed-block description-preview"></div>',
                 '  <div class="st-embed-block credit-preview"></div>',
-                '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
+                '  <div class="st-embed-block show-embed-description hide"><input name="show-desc" type="checkbox"> ',
+                '     Show Instagram description</div>',
+                '  <a class="hidden st-embed-block link-preview" target="_blank"></a><br />',
                 '</div>',
             ].join('\n'));
 
@@ -308,23 +330,8 @@ export default function embedBlockFactory(SirTrevor, config) {
                 html.find('.cover-preview-handler').removeClass('hidden');
             }
 
-            this._handleTitleAndDescription(html, data);
-
-            // set the credit
-            if (_.has(data, 'provider_name')) {
-                let creditText = data.provider_name;
-
-                if (_.has(data, 'author_name')) {
-                    creditText += ' | <a href="' + data.author_url + '" target="_blank">' +
-                        data.author_name + '</a>';
-                }
-                html.find('.credit-preview').html(creditText);
-            }
-
-            if (_.has(data, 'credit')) {
-                html.find('.credit-preview').html(data.credit);
-            }
-
+            handleTitleAndDescription(html, data);
+            setCredit(html, data);
             fixSocial(html, data);
 
             let htmlToReturn = '';
@@ -345,6 +352,7 @@ export default function embedBlockFactory(SirTrevor, config) {
             self.$('.embed-input')
                 .addClass('hidden')
                 .after(self.renderCard(data));
+
             ['title', 'description', 'credit'].forEach((fieldName) => {
                 self.$('.' + fieldName + '-preview').attr({
                     contenteditable: true,

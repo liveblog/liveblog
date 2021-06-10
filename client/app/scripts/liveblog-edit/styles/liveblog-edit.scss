@@ -648,6 +648,10 @@
                                         @include inline-field();
                                         text-transform: uppercase;
                                     }
+                                    &.show-embed-description {
+                                        @include inline-field();
+                                        padding: 3px 0px;
+                                    }
                                 }
                             }
                         }
