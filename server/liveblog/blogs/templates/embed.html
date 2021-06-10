@@ -45,15 +45,6 @@
     {% else %}
         {% for style in assets.styles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}
     {% endif %}
-
-    {% if fonts_url %}
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="{{ fonts_url }}" rel="stylesheet">
-    {% endif %}
-
-    <style>
-    {{ styles_settings }}
-    </style>
 <div style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% else %}
 <div style="{{ (output and output.get('style')) | tostyle | safe }}">
