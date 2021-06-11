@@ -15,7 +15,7 @@ Please disable your adblocker in order to work with the advertising manager and 
 		<header>
 	        <div class="section-title"><h2 translate>Adverts</h2></div>
 	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
-                <button class="dropdown__toggle sd-create-btn" dropdown__toggle></button>
+                <button class="dropdown__toggle sd-create-btn" data-test-id="open-adverts-modal" dropdown__toggle></button>
                 <ul class="dropdown__menu dropdown__menu--scrollable pull-right">
                 	<li>
                 		<div class="dropdown__menu-label" translate>Create new</div>
@@ -45,14 +45,14 @@ Please disable your adblocker in order to work with the advertising manager and 
 	                        </button>&nbsp;
 	                        <button ng-click="removeAdvert(advert, $index);" title="Delete">
 	                            <i class="icon-trash"></i>
-	                        </button>    
+	                        </button>
 	                    </div>
-	             
+
 	                </li>
 	                <li ng-if="adverts.length === 0">
 	                    {{ 'No Adverts for now' | translate }}
 	                </li>
-	            </ul>    
+	            </ul>
 	        </div>
 	    </div>
 	</div>
@@ -61,7 +61,7 @@ Please disable your adblocker in order to work with the advertising manager and 
 	<div class="ad-section" ng-if="activeState === 'collections'">
 		<header>
 	        <div class="section-title"><h2 translate>Collections</h2></div>
-	        
+
 	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
                 <button class="dropdown__toggle sd-create-btn" ng-click="openCollectionDialog();"></button>
             </div>
@@ -81,7 +81,7 @@ Please disable your adblocker in order to work with the advertising manager and 
                                     <li><div class="dropdown__menu-label" translate>Actions</div></li>
                                     <li class="divider"></li>
                                     <li><button ng-click="openCollectionDialog(collection)" title="{{:: 'Edit Collection' | translate }}"><i class="icon-pencil"></i>{{:: 'Edit'| translate}}</button></li>
-                                
+
                                     <li><button ng-click="removeCollection(collection, $index)" title="{{:: 'Remove collection'| translate }}"><i class="icon-trash"></i>{{:: 'Remove'| translate}}</button></li>
                                 </ul>
                             </div>

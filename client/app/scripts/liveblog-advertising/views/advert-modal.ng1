@@ -23,7 +23,7 @@
     </div>
     <div class="modal__footer">
         <div>
-            <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
+            <button type="button" class="btn btn-default pull-left" data-test-id="modal-cancel-advert-create" translate ng-click="cancelAdvertCreate()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
             ng-disabled="notValidName(advert, adverts) || dialogAdvertLoading || !freetypeValid()"
             >Save</button>

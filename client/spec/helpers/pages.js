@@ -221,7 +221,7 @@ function AdvertisingManagerPage() {
         return element(by.css('[ng-click="saveCollection()"]')).click();
     };
     self.openNewAdvertDialog = function() {
-        element(by.css('[dropdown__toggle]')).click();
+        element(by.testId('open-adverts-modal')).click();
         browser.wait(function() {
             return element(by.buttonText("Advertisement Remote")).isDisplayed();
         });
