@@ -8,7 +8,7 @@
             <fieldset>
                 <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Advert Name<span class="ft-alert" ng-if="notValidName(advert, adverts)">{{ notValidName(advert, adverts) }}</span></label>
-                    <input class="sd-line-input__input" type="text"  ng-model="advert.name" maxlength="24" required>
+                    <input class="sd-line-input__input" type="text" ng-model="advert.name" maxlength="24" required>
                     <div sd-character-count data-item="advert.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
                 </div>
                 <div class="field">
@@ -24,7 +24,7 @@
     <div class="modal__footer">
         <div>
             <button type="button" class="btn btn-default pull-left" data-test-id="modal-cancel-advert-create" translate ng-click="cancelAdvertCreate()">Cancel</button>
-            <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
+            <button type="button" class="btn btn-primary btn-info" data-test-id="modal-save-advert" translate ng-click="saveAdvert()"
             ng-disabled="notValidName(advert, adverts) || dialogAdvertLoading || !freetypeValid()"
             >Save</button>
         </div>

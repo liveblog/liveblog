@@ -17,14 +17,12 @@ describe('Advertising Manager', () => {
         expect(aM.getAdverts().count()).toBe(0);
 
         aM.openNewAdvertDialog();
-        aM.editFreetype().then((freeData) => {
+        aM.editAdvert().then((freeData) => {
             // we should not have two freetypes entered
             expect(aM.getAdverts().count()).toBe(1);
             // open 1st freetype and check contents
-            aM.getAdverts().get(0)
-                .click()
-                .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
-                .click();
+            aM.openAdvertModal();
+
             expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title);
             expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed);
 
@@ -56,7 +54,7 @@ describe('Advertising Manager', () => {
 
         // create an advert so we can add it to the collection
         aM.openNewAdvertDialog();
-        aM.editFreetype().then((freeData) => {
+        aM.editAdvert().then((freeData) => {
             // open the collections tab
             aM.openCollectionsTab();
             aM.openNewCollectionDialog();

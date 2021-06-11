@@ -215,7 +215,7 @@ function AdvertisingManagerPage() {
         return self;
     };
     self.saveAdvert = function() {
-        return element(by.css('[ng-click="saveAdvert()"]')).click();
+        return element(by.testId('modal-save-advert')).click();
     };
     self.saveCollection = function() {
         return element(by.css('[ng-click="saveCollection()"]')).click();
@@ -237,7 +237,7 @@ function AdvertisingManagerPage() {
             embed: randomString(10)
         };
     };
-    self.editFreetype = function() {
+    self.editAdvert = function() {
         var freeData = self.createAdvertData();
         self.advertTitle.sendKeys(freeData.title);
         self.advertEmbed.sendKeys(freeData.embed);
@@ -247,7 +247,15 @@ function AdvertisingManagerPage() {
         var freeData = self.createAdvertData();
         self.collectionTitle.sendKeys(freeData.title);
         return self.saveCollection().then(function() {return freeData;});
-    }
+    };
+    self.openAdvertModal = function(index) {
+        index = index || 0;
+        self.getAdverts().get(index)
+            .click()
+            .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
+            .click();
+        waitForModal();
+    };
     self.removeAdvert = function(index) {
         index = index || 0;
         self.getAdverts().get(index).click().all(by.css('[ng-click="removeAdvert(advert, $index);"]')).click();
