@@ -23,22 +23,22 @@ describe('Advertising Manager', () => {
             // open 1st freetype and check contents
             aM.openAdvertModal();
 
-            expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title);
-            expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed);
+            expect(aM.advertTitle().getAttribute('value')).toEqual(freeData.title);
+            expect(aM.advertEmbed().getAttribute('value')).toEqual(freeData.embed);
 
             // edit freetype
             var newData = aM.createAdvertData();
 
-            aM.advertTitle.sendKeys(newData.title);
-            aM.advertEmbed.sendKeys(newData.embed);
+            aM.advertTitle().sendKeys(newData.title);
+            aM.advertEmbed().sendKeys(newData.embed);
             aM.saveAdvert().then(() => {
                 // check the new contents to match
                 aM.getAdverts().get(0)
                     .click()
                     .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
                     .click();
-                expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
-                expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed + newData.embed);
+                expect(aM.advertTitle().getAttribute('value')).toEqual(freeData.title + newData.title);
+                expect(aM.advertEmbed().getAttribute('value')).toEqual(freeData.embed + newData.embed);
             });
             // close edit freetype dialog
             element(by.testId('modal-cancel-advert-create')).click();
@@ -69,12 +69,12 @@ describe('Advertising Manager', () => {
                 element(by.css('[ng-click="openCollectionDialog(collection)"]'))
                     .click();
 
-                expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title);
+                expect(aM.collectionTitle().getAttribute('value')).toEqual(freeData.title);
 
                 // edit collection
                 var newData = aM.createAdvertData();
 
-                aM.collectionTitle.sendKeys(newData.title);
+                aM.collectionTitle().sendKeys(newData.title);
 
                 // add one advert
                 aM.getAdverts().get(0)

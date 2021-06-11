@@ -187,9 +187,9 @@ function FreetypesManagerPage() {
 function AdvertisingManagerPage() {
     var self = this;
 
-    self.advertTitle = element(by.css('[ng-model="advert.name"]'));
-    self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
-    self.advertEmbed = element(by.css('[ng-model="embed"]'));
+    self.advertTitle = () => element(by.css('[ng-model="advert.name"]'));
+    self.collectionTitle = () => element(by.css('[ng-model="collection.name"]'));
+    self.advertEmbed = () => element(by.css('[ng-model="embed"]'));
 
     self.getAdverts = function() {
         return element.all(by.repeater('advert in adverts'));
@@ -239,13 +239,13 @@ function AdvertisingManagerPage() {
     };
     self.editAdvert = function() {
         var freeData = self.createAdvertData();
-        self.advertTitle.sendKeys(freeData.title);
-        self.advertEmbed.sendKeys(freeData.embed);
+        self.advertTitle().sendKeys(freeData.title);
+        self.advertEmbed().sendKeys(freeData.embed);
         return self.saveAdvert().then(function() {return freeData;});
     };
     self.editCollection = function() {
         var freeData = self.createAdvertData();
-        self.collectionTitle.sendKeys(freeData.title);
+        self.collectionTitle().sendKeys(freeData.title);
         return self.saveCollection().then(function() {return freeData;});
     };
     self.openAdvertModal = function(index) {
