@@ -77,7 +77,11 @@ angular
             });
         };
 
-        // Add toMeta method to all blocks.
+        // Add custom methods to all blocks.
+        SirTrevor.Block.prototype.toCleanHTML = function() {
+            return this.toHTML();
+        };
+
         SirTrevor.Block.prototype.toMeta = function() {
             return this.getData();
         };

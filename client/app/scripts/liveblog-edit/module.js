@@ -163,7 +163,7 @@ const app = angular.module('liveblog.edit',
                 get: function(block) {
                     return {
                         type: block.blockStorage.type,
-                        text: block.toHTML(),
+                        text: block.toCleanHTML(),
                         meta: block.toMeta(),
                     };
                 },
