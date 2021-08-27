@@ -19,6 +19,9 @@
 {% elif item_meta.provider_name == 'Instagram' and item_meta.original_id %}
   <amp-instagram
     data-shortcode="{{ item_meta.original_id }}"
+    {% if item_meta.show_embed_description %}
+    data-captioned
+    {% endif %}
     width="1"
     height="1"
     layout="responsive">

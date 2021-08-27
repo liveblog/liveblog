@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 AMP Theme",
     "name": "amp",
-    "version": "3.4.11",
+    "version": "3.4.12",
     "seoTheme": true,
     "ampTheme": true,
     "extends": "default",
@@ -20,10 +20,10 @@
     },
     "license": "AGPL-3.0",
     "devStyles": [
-        "dist/amp-8abae1a47a.css"
+        "dist/amp-74cdceb78e.css"
     ],
     "styles": [
-        "dist/amp-8abae1a47a.css"
+        "dist/amp-74cdceb78e.css"
     ],
     "supportAdsInjection": true,
     "options": [
