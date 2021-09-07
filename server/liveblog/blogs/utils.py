@@ -100,15 +100,16 @@ def check_limit_and_delete_oldest(blog_id):
 
     post_service = get_resource_service('posts')
     query_params = {'blog': ObjectId(blog_id), 'particular_type': 'post', 'deleted': False}
+    posts_limit = blog.get('posts_limit', UNLIMITED)
 
-    if blog['posts_limit'] != UNLIMITED and blog['total_posts'] > blog['posts_limit']:
+    if posts_limit != UNLIMITED and blog['total_posts'] > posts_limit:
         oldest_post = post_service.find(query_params).sort('_created', pymongo.ASCENDING).limit(1)
 
         for doc in oldest_post:
             post_service.update(doc['_id'], {'deleted': True}, doc)
             logger.warning(
                 'Deleted oldest post `%s` because posts_limit (%s) in blog `%s` has been reached'
-                % (doc['_id'], blog['posts_limit'], blog['_id']))
+                % (doc['_id'], posts_limit, blog['_id']))
 
         stats = get_blog_stats(blog_id)
         if stats:
@@ -132,7 +133,7 @@ def get_blog_stats(blog_or_id):
         {'deleted': False}
     ]}).count()
 
-    return {'total_posts': total_posts, 'posts_limit': blog['posts_limit']}
+    return {'total_posts': total_posts, 'posts_limit': blog.get('posts_limit')}
 
 
 def can_delete_blog(blog):
