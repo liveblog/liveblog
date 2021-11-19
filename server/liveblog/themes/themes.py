@@ -138,6 +138,10 @@ class ThemesResource(Resource):
                 }
             }
         },
+        'supportStylesSettings': {
+            'type': 'boolean',
+            'default': False
+        },
         'styleOptions': {
             'type': 'list',
             'schema': {
@@ -156,6 +160,13 @@ class ThemesResource(Resource):
             }
         },
         'settings': {
+            'type': 'dict',
+            'mapping': {
+                'type': 'object',
+                'enabled': False
+            }
+        },
+        'styleSettings': {
             'type': 'dict',
             'mapping': {
                 'type': 'object',
@@ -231,13 +242,14 @@ class ThemesService(BaseService):
             req.max_results = THEMES_MAX_RESULTS
         return super().get(req, lookup)
 
-    def get_options(self, theme, options=None, parents=[]):
+    def get_options(self, theme, options=None, parents=[], optionsKey='options'):
         """
-        Get theme options.
+        Get theme options or styleOptions.
 
         :param theme:
         :param options:
         :param parents:
+        :param optionsKey:
         :return:
         """
         options = options or []
@@ -245,16 +257,19 @@ class ThemesService(BaseService):
                 theme.get('name') != theme.get('extends') and \
                 theme.get('name') not in parents:
             parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+
             if parent_theme:
                 parents.append(theme.get('extends'))
-                options = self.get_options(parent_theme, options, parents)
+                options = self.get_options(parent_theme, options, parents, optionsKey)
             else:
                 error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
                     % (theme.get('name'), theme.get('extends'))
                 logger.info(error_message)
                 raise UnknownTheme(error_message)
-        if theme.get('options', False):
-            options += theme.get('options')
+
+        if theme.get(optionsKey, False):
+            options += theme.get(optionsKey)
+
         return options
 
     def get_default_settings(self, theme):
@@ -266,9 +281,40 @@ class ThemesService(BaseService):
         """
         settings = {}
         options = self.get_options(theme)
+
         for option in options:
             settings[option.get('name')] = option.get('default')
         settings.update(theme.get('settings', {}))
+
+        return settings
+
+    def get_default_style_settings(self, theme):
+        """
+        Get default theme style settings
+        """
+        settings = {}
+        options_groups = self.get_options(theme, optionsKey='styleOptions')
+
+        for group in options_groups:
+            group_options = {}
+            group_name = group.get('name')
+            serializer_ignore = group.get('serializerIgnore', False)
+            css_selector = group.get('cssSelector')
+
+            if serializer_ignore or not css_selector:
+                continue
+
+            for option in group.get('options', []):
+                default = option.get('default')
+                property_name = option.get('property')
+
+                if not default or not property_name:
+                    continue
+
+                group_options[property_name] = default
+
+            settings[group_name] = group_options
+
         return settings
 
     def is_local_theme(self, theme_name):
@@ -278,8 +324,6 @@ class ThemesService(BaseService):
         :param theme_name:
         :return:
         """
-        # theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
-        # return os.path.exists(theme_folder)
         return theme_name in system_themes
 
     def is_uploaded_theme(self, theme_name):
@@ -521,6 +565,23 @@ class ThemesService(BaseService):
 
         return theme_settings, default_theme_settings
 
+    def _set_style_settings(self, theme, previous_theme):
+        """
+        Extracts the default style settings for the theme and merge them
+        with the existing ones (if any)
+        """
+        style_settings = {}
+        key = 'styleSettings'
+
+        default_theme_settings = self.get_default_style_settings(theme)
+        style_settings.update(default_theme_settings)
+
+        if key in previous_theme:
+            prev_theme_settings = previous_theme.get(key, {})
+            style_settings.update(prev_theme_settings)
+
+        theme[key] = style_settings
+
     def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True, upload_path=None):
         theme_name = theme['name']
         # Save the file in the media storage if needed
@@ -536,7 +597,9 @@ class ThemesService(BaseService):
 
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
+            self._set_style_settings(theme, previous_theme)
             self.replace(previous_theme['_id'], theme, previous_theme)
+
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 response = dict(status='updated', theme=theme, blogs_updated=blogs_updated)

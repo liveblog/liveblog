@@ -61,6 +61,51 @@ function fixSocial(html, data) {
     }
 }
 
+const handleTitleAndDescription = (cardHtml, data) => {
+    const isInstagramEmbed = (data.provider_name === 'Instagram');
+
+    // For instagram (TODO: check for others) we do not render this title and description
+    // So far, when clients want to add custom content, they add a separate text item which
+    // seems more logical and flexible
+    if (isInstagramEmbed) {
+        ['title', 'description'].forEach((fieldName) => {
+            cardHtml.find('.' + fieldName + '-preview').addClass('hide');
+        });
+
+        cardHtml
+            .find('.show-embed-description input')
+            .attr('checked', data.show_embed_description)
+            .parent()
+            .removeClass('hide');
+    } else {
+        if (_.has(data, 'title')) {
+            cardHtml.find('.title-preview')
+                .html(data.title);
+        }
+
+        if (_.has(data, 'description')) {
+            cardHtml.find('.description-preview')
+                .html(data.description);
+        }
+    }
+};
+
+const setCredit = (cardHtml, data) => {
+    if (_.has(data, 'provider_name')) {
+        let creditText = data.provider_name;
+
+        if (_.has(data, 'author_name')) {
+            creditText += ' | <a href="' + data.author_url + '" target="_blank">' +
+                data.author_name + '</a>';
+        }
+        cardHtml.find('.credit-preview').html(creditText);
+    }
+
+    if (_.has(data, 'credit')) {
+        cardHtml.find('.credit-preview').html(data.credit);
+    }
+};
+
 function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
 
@@ -104,21 +149,25 @@ export default function embedBlockFactory(SirTrevor, config) {
         title: () => 'Embed',
         icon_name: 'embed',
         embedPlaceholder: window.gettext('url or embed code'),
+
         editorHTML: function() {
             return [
                 '<div class="st-required st-embed-block embed-input"',
                 ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>',
             ].join('\n');
         },
+
         onBlockRender: function() {
             var self = this;
-
-            let editableFields = self.$editor.next().find('[contenteditable]');
+            var editorParent = self.$editor.next();
+            let editableFields = editorParent.find('[contenteditable]');
+            let checkboxDesc = editorParent.find('.show-embed-description input[type=checkbox]');
 
             editableFields.on('focus', function(ev) {
                 const $this = $(this);
+                const html = $this.html();
 
-                $this.data('before', $this.html());
+                $this.data('before', html);
             });
 
             editableFields.on('blur keyup paste input', function(ev) {
@@ -128,6 +177,12 @@ export default function embedBlockFactory(SirTrevor, config) {
                     $this.data('before', $this.html());
                     self.getOptions().disableSubmit(false);
                 }
+            });
+
+            // enable publish button and also change html to mark it as modified
+            checkboxDesc.on('change', () => {
+                self.getOptions().disableSubmit(false);
+                editorParent.attr('data-desc-changed', '1');
             });
 
             handlePlaceholder(editableFields, self.embedPlaceholder);
@@ -201,11 +256,14 @@ export default function embedBlockFactory(SirTrevor, config) {
                 }
             });
         },
+
         isEmpty: function() {
             return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
         },
+
         retrieveData: function() {
             const self = this;
+
             // retrieve new data from editor
             var editorData = {
                 title: self.$('.title-preview').text(),
@@ -219,19 +277,21 @@ export default function embedBlockFactory(SirTrevor, config) {
             if (self.$('.cover-preview').hasClass('hidden')) {
                 editorData.thumbnail_url = null;
             }
+
             // add data which are not in the editor but has been saved before (like thumbnail_width)
-            _.merge(self.data, editorData);
             // clean data by removing empty string
+            _.merge(self.data, editorData);
             _.forEach(self.data, (value, key) => {
                 if (typeof value === 'string' && value.trim() === '') {
                     delete self.data[key];
                 }
             });
+
             return self.data;
         },
+
         renderCard: function(data) {
             const cardClass = 'liveblog--card';
-
             const html = $([
                 '<div class="' + cardClass + ' hidden">',
                 '  <div class="hidden st-embed-block embed-preview"></div>',
@@ -241,7 +301,9 @@ export default function embedBlockFactory(SirTrevor, config) {
                 '  <div class="st-embed-block title-preview"></div>',
                 '  <div class="st-embed-block description-preview"></div>',
                 '  <div class="st-embed-block credit-preview"></div>',
-                '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
+                '  <div class="st-embed-block show-embed-description hide"><input name="show-desc" type="checkbox"> ',
+                '     Show Instagram description</div>',
+                '  <a class="hidden st-embed-block link-preview" target="_blank"></a><br />',
                 '</div>',
             ].join('\n'));
 
@@ -252,6 +314,7 @@ export default function embedBlockFactory(SirTrevor, config) {
                     '.cover-preview-handler',
                 ].join(', ')
             ).addClass('hidden');
+
             // set the link
             if (_.has(data, 'url')) {
                 html
@@ -260,12 +323,14 @@ export default function embedBlockFactory(SirTrevor, config) {
                     .html(data.original_url)
                     .removeClass('hidden');
             }
+
             // set the embed code
             if (_.has(data, 'html')) {
                 html.find('.embed-preview')
                     .html(data.html)
                     .removeClass('hidden');
             }
+
             // set the cover illustration
             if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
                 const ratio = data.thumbnail_width / data.thumbnail_height;
@@ -274,45 +339,18 @@ export default function embedBlockFactory(SirTrevor, config) {
 
                 html.find('.cover-preview').css({
                     'background-image': 'url("' + data.thumbnail_url + '")',
+                    'background-size': 'cover',
                     width: coverWidth,
                     height: coverHeight,
-                    'background-size': 'cover',
                 });
                 html.find('.cover-preview-handler').removeClass('hidden');
             }
-            // set the title
-            if (_.has(data, 'title')) {
-                html.find('.title-preview')
-                    .html(data.title);
-            }
-            // set the description
-            if (_.has(data, 'description')) {
-                html.find('.description-preview')
-                    .html(data.description);
-            }
-            // set the credit
-            if (_.has(data, 'provider_name')) {
-                let creditText = data.provider_name;
 
-                if (_.has(data, 'author_name')) {
-                    creditText += ' | <a href="' + data.author_url + '" target="_blank">' +
-                        data.author_name + '</a>';
-                }
-                html.find('.credit-preview').html(creditText);
-            }
-
-            if (_.has(data, 'credit')) {
-                html.find('.credit-preview').html(data.credit);
-            }
-
+            handleTitleAndDescription(html, data);
+            setCredit(html, data);
             fixSocial(html, data);
 
-            let htmlToReturn = '';
-
-            htmlToReturn = '<div class="' + cardClass + '">';
-            htmlToReturn += html.get(0).innerHTML;
-            htmlToReturn += '</div>';
-            return htmlToReturn;
+            return `<div class="${cardClass}">${html.get(0).innerHTML}</div>`;
         },
 
         // render a card from data, and make it editable
@@ -325,21 +363,20 @@ export default function embedBlockFactory(SirTrevor, config) {
             self.$('.embed-input')
                 .addClass('hidden')
                 .after(self.renderCard(data));
+
             ['title', 'description', 'credit'].forEach((fieldName) => {
                 self.$('.' + fieldName + '-preview').attr({
                     contenteditable: true,
                     placeholder: fieldName,
                 });
             });
+
             // remove the loader when media is loadedhtml =
             const iframe = this.$('.embed-preview iframe');
 
-            if (iframe.length > 0) {
-                // special case for iframe
-                iframe.ready(this.ready.bind(this));
-            } else {
-                this.ready();
-            }
+            // special case for iframe
+            iframe.length > 0 ? iframe.ready(this.ready.bind(this)) : this.ready();
+
             const $coverHandler = this.$('.cover-preview-handler');
 
             if ($coverHandler.length > 0 && !$coverHandler.hasClass('hidden')) {
@@ -365,6 +402,7 @@ export default function embedBlockFactory(SirTrevor, config) {
                 });
                 $coverHandler.append($removeLink, $showLink);
             }
+
             // if instagram process the embed code
             if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
                 setTimeout(() => {
@@ -376,14 +414,31 @@ export default function embedBlockFactory(SirTrevor, config) {
         focus: function() {
             this.$('.embed-input').focus();
         },
-        // toMarkdown: function(markdown) {},
+
         toHTML: function() {
             const data = this.retrieveData();
 
             return this.renderCard(data);
         },
+
+        toCleanHTML: function() {
+            const html = $(this.toHTML());
+
+            html
+                .find('.show-embed-description')
+                .remove();
+
+            return html.get(0).innerHTML;
+        },
+
         toMeta: function() {
-            return this.retrieveData();
+            const meta = this.retrieveData();
+
+            meta.show_embed_description = $('.show-embed-description')
+                .find('input')
+                .is(':checked') || false;
+
+            return meta;
         },
     });
 }

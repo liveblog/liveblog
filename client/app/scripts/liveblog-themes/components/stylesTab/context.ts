@@ -1,8 +1,9 @@
 import React from 'react';
 import { IStyleAction } from './actions'; // eslint-disable-line
+import type { IStylesTabProps } from './types';
 
 interface IContext {
-    state?: IStyleSettings;
+    state?: IStylesTabProps;
     dispatch?: (action: IStyleAction) => void;
 }
 

@@ -1,78 +1,50 @@
 /* eslint-disable */
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { Input } from './elements/input';
+import hash from 'object-hash';
 import { Provider } from './context';
 import { rootReducer } from './reducer';
-import { connect } from './utils';
+import { StylesTabContent } from './style-tab-content';
+import ResetStylesPortal from './reset-styles-portal';
+import { fetchWebFonts, updateFontOptionsAction } from './actions';
+import type { IStylesTabProps } from './types';
 
-interface IStyleProps {
-    styleOptions: Array<IStyleGroup>;
-    settings: IStyleSettings;
-}
+export const StylesTab: React.FunctionComponent<IStylesTabProps> = (props) => {
+    const [state, dispatch] = useReducer(rootReducer, props);
+    const settingsChanged = hash(state.settings);
+    const isFirstRun = useRef(true);
 
-const availableElements = {
-    text: Input,
-};
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
 
-const StylesTab: React.SFC<IStyleProps> = (props) => {
-    const renderOptions = (group: IStyleGroup) => {
-        return group.options.map((option: IStyleOption, idx: number) => {
-            const _Element = availableElements[option.type];
+        props.onStoreChange();
+    }, [settingsChanged]);
 
-            if (!_Element) {
-                console.warn(`Style setting option "${option.type}" not found`);
-                return null;
-            }
+    if (isFirstRun.current) {
+        if (props.googleApiKey.length > 0) {
+            fetchWebFonts(props.googleApiKey)
+                .then((data) => {
+                    const actionUpdate = updateFontOptionsAction(data);
 
-            const Element = connect(group, option)(_Element);
-
-            return (
-                <div className="flex-item" key={`option-${idx}`}>
-                    <Element />
-                </div>
-            );
-        });
-    };
-
-    const renderGroup = (group: IStyleGroup, idx: number) => {
-        return (
-            <div className="form-group" key={idx}>
-                <div>
-                    <div className="lb-group-heading">
-                        <label className="sd-line-input__label text-uppercase text-bold">
-                            {group.label}
-                        </label>
-                    </div>
-
-                    <div className={`flex-grid wrap-items padded-grid small-1 medium-${group.columns}`}>
-                        {renderOptions(group)}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    const { settings, styleOptions } = props;
-    const groups = styleOptions.map(renderGroup);
-
-    const [state, dispatch] = useReducer(rootReducer, settings);
+                    dispatch(actionUpdate);
+                });
+        } else {
+            console.warn(`Google API Key required for FontPicker. \n
+                https://cloud.google.com/docs/authentication/api-keys`);
+        }
+    }
 
     return (
         <Provider value={{ state, dispatch }}>
-            <div className="styles-tab-content">
-                {groups}
-            </div>
+            <StylesTabContent {...props} />
+            <ResetStylesPortal />
         </Provider>
     );
 };
 
-const renderStylesTab = (element: HTMLDivElement, options: Array<IStyleGroup>, settings: IStyleSettings) => {
-    ReactDOM.render(
-        <StylesTab styleOptions={options} settings={settings} />, element);
-};
-
-export {
-    StylesTab,
-    renderStylesTab,
+export const renderStylesTab = (props: IStylesTabProps, mountPoint: HTMLDivElement) => {
+    ReactDOM.render(<StylesTab {...props} />, mountPoint);
 };

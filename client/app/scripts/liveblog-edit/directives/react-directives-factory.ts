@@ -19,7 +19,7 @@ interface IDirective {
  * to mount components. The properties for the component can be provided as the
  * directive attributes and will be passed to the component
  */
-export const simpleReactDirective = (Component: any, scopeDef: Array<IScopeDefinitions>) => {
+export const simpleReactDirective = (Component: any, scopeDef: IScopeDefinitions[]) => {
     const directive: IDirective = {
         restrict: 'E',
     };

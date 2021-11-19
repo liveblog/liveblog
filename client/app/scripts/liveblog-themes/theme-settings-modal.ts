@@ -1,7 +1,9 @@
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.ng1';
-import { Moment } from 'moment'; // eslint-disable-line
+import type { Moment } from 'moment';
 import { renderStylesTab } from './components/stylesTab';
+import { collectOptions, themeStylesOptionsAndSettings, defaultStyleSettings } from './theme-utils';
 
 interface IThemeName {
     label: string;
@@ -11,13 +13,13 @@ interface IThemeName {
 interface IScope {
     theme?: ITheme;
     modalOpened: any;
-    themeNames: Array<IThemeName>;
+    themeNames: IThemeName[];
 
     settings: any;
     styleSettings: IStyleSettings;
     settingsTab: string;
     stylesTab: string;
-    tabs: Array<string>;
+    tabs: string[];
     activeTab: string;
 
     themeSettingsForm: any;
@@ -44,16 +46,22 @@ interface IScope {
                     link: (scope: IScope) => {
                         const vm = scope;
 
-                        // all basic configudation for tabs
+                        // all basic configuration for tabs
                         vm.settingsTab = 'Settings',
                         vm.stylesTab = 'Styles',
-                        vm.tabs = [vm.settingsTab, vm.stylesTab];
+                        vm.tabs = [vm.settingsTab];
                         vm.activeTab = vm.settingsTab;
+
+                        if (vm.theme.supportStylesSettings) {
+                            vm.tabs.push(vm.stylesTab);
+                        }
 
                         angular.extend(vm, {
                             optionsAreloading: true,
+                            styleOptionsAreloading: true,
                             settings: angular.copy(vm.theme.settings) || {},
                             styleSettings: angular.copy(vm.theme.styleSettings) || {},
+                            defaultStyleSettings: {},
                             options: [],
                             styleOptions: [],
                             showAdvancedSettings: false,
@@ -68,8 +76,16 @@ interface IScope {
                             ],
 
                             submitSettings: (shouldClose: boolean) => {
-                                if (!angular.equals(vm.theme.settings, vm.settings)) {
-                                    api.themes.update(vm.theme, { settings: vm.settings }).then((data) => {
+                                const settingsChanged = !angular.equals(vm.theme.settings, vm.settings);
+                                const styleSettingsChanged = !angular.equals(vm.theme.styleSettings, vm.styleSettings);
+
+                                if (settingsChanged || styleSettingsChanged) {
+                                    const updates = {
+                                        settings: vm.settings,
+                                        styleSettings: vm.styleSettings,
+                                    };
+
+                                    api.themes.update(vm.theme, updates).then((data) => {
                                         vm.settings = angular.copy(data.settings);
                                         // reset the dirty state to false
                                         vm.themeSettingsForm.$setPristine();
@@ -106,43 +122,9 @@ interface IScope {
                         });
 
                         scope.vm = vm;
-                        // Initialization
-                        /**
-                         * Collect a list of options for the given theme and its parents
-                         * @param {object} theme
-                         * @param {string} optsAttr The attribute of options to be collected
-                         * @returns {array} Promise with list of options
-                         */
-                        const collectOptions = <T = any>(
-                            theme: ITheme, optionsParam = [], optsAttr = 'options'): Promise<T> => {
-                            // keep the theme's options in `options`
-                            let options = optionsParam;
-
-                            // attribute could be `options` or `styleOptions`
-                            // because they both share more or less the same logic
-                            const themeOptions = theme[optsAttr];
-
-                            if (themeOptions) {
-                                const alreadyPresent = _.map(options, (o: any) => o.name);
-                                // keep only options that are not already saved (children options are prioritary)
-
-                                options = _.filter(themeOptions, (option) =>
-                                    alreadyPresent.indexOf(option.name) === -1
-                                ).concat(options);
-                            }
-                            // retrieve parent options
-                            if (theme.extends) {
-                                return api.themes.getById(theme.extends).then((parentTheme) =>
-                                    collectOptions(parentTheme, options, optsAttr)
-                                );
-                            }
-
-                            // return the options when there is no more parent theme
-                            return $q.when(options);
-                        };
 
                         // collect the options for the theme and its parents
-                        collectOptions(vm.theme).then((options) => {
+                        collectOptions(api, $q, vm.theme).then((options) => {
                             // set default settings value from options default values
                             options.forEach((option) => {
                                 if (!angular.isDefined(vm.settings[option.name])) {
@@ -156,35 +138,46 @@ interface IScope {
                             });
                         });
 
-                        // time for styleOptions to be collected
-                        collectOptions<Array<IStyleGroup>>(vm.theme, [], 'styleOptions').then((styleOptions) => {
-                            styleOptions.forEach((group) => {
-                                if (!angular.isDefined(vm.styleSettings[group.name])) {
-                                    vm.styleSettings[group.name] = {};
-                                }
-
-                                group.options.forEach((option) => {
-                                    const propertyName = option.property as string;
-
-                                    if (!angular.isDefined(vm.styleSettings[group.name][propertyName])) {
-                                        vm.styleSettings[group.name][propertyName] = option.default || null;
-                                    }
+                        themeStylesOptionsAndSettings(api, $q, vm).then(({ styleOptions, styleSettings }) => {
+                            defaultStyleSettings(api, $q, vm.theme)
+                                .then((defaultSettings) => {
+                                    angular.extend(vm, {
+                                        styleOptions: styleOptions,
+                                        styleOptionsAreloading: false,
+                                        styleSettings: styleSettings,
+                                        defaultStyleSettings: defaultSettings,
+                                    });
                                 });
-                            });
-
-                            angular.extend(vm, { styleOptions: styleOptions });
                         });
                     },
                 };
             }])
-        .directive('stylesTabComponent', [() => {
+        .directive('stylesTabComponent', ['$rootScope', 'config', ($rootScope, config) => {
             return {
                 scope: {
+                    defaultSettings: '=',
                     settings: '=',
                     options: '=',
+                    form: '=',
                 },
                 link: (scope, element) => {
-                    renderStylesTab($(element).get(0), scope.options, scope.settings);
+                    const mountPoint = $(element).get(0);
+                    const submitForm = scope.form;
+                    const stylesTabProps = {
+                        styleOptions: scope.options,
+                        settings: scope.settings,
+                        defaultSettings: scope.defaultSettings,
+                        googleApiKey: config.google.key || '',
+
+                        onStoreChange: () => {
+                            submitForm.$setDirty();
+                            $rootScope.$apply();
+                        },
+                    };
+
+                    renderStylesTab(stylesTabProps, mountPoint);
+
+                    scope.$on('$destroy', () => ReactDOM.unmountComponentAtNode(mountPoint));
                 },
             };
         }])

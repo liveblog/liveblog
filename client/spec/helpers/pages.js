@@ -187,9 +187,9 @@ function FreetypesManagerPage() {
 function AdvertisingManagerPage() {
     var self = this;
 
-    self.advertTitle = element(by.css('[ng-model="advert.name"]'));
-    self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
-    self.advertEmbed = element(by.css('[ng-model="embed"]'));
+    self.advertTitle = () => element(by.css('[ng-model="advert.name"]'));
+    self.collectionTitle = () => element(by.css('[ng-model="collection.name"]'));
+    self.advertEmbed = () => element(by.css('[ng-model="embed"]'));
 
     self.getAdverts = function() {
         return element.all(by.repeater('advert in adverts'));
@@ -215,13 +215,13 @@ function AdvertisingManagerPage() {
         return self;
     };
     self.saveAdvert = function() {
-        return element(by.css('[ng-click="saveAdvert()"]')).click();
+        return element(by.testId('modal-save-advert')).click();
     };
     self.saveCollection = function() {
         return element(by.css('[ng-click="saveCollection()"]')).click();
     };
     self.openNewAdvertDialog = function() {
-        element(by.css('[dropdown__toggle]')).click();
+        element(by.testId('open-adverts-modal')).click();
         browser.wait(function() {
             return element(by.buttonText("Advertisement Remote")).isDisplayed();
         });
@@ -237,17 +237,25 @@ function AdvertisingManagerPage() {
             embed: randomString(10)
         };
     };
-    self.editFreetype = function() {
+    self.editAdvert = function() {
         var freeData = self.createAdvertData();
-        self.advertTitle.sendKeys(freeData.title);
-        self.advertEmbed.sendKeys(freeData.embed);
+        self.advertTitle().sendKeys(freeData.title);
+        self.advertEmbed().sendKeys(freeData.embed);
         return self.saveAdvert().then(function() {return freeData;});
     };
     self.editCollection = function() {
         var freeData = self.createAdvertData();
-        self.collectionTitle.sendKeys(freeData.title);
+        self.collectionTitle().sendKeys(freeData.title);
         return self.saveCollection().then(function() {return freeData;});
-    }
+    };
+    self.openAdvertModal = function(index) {
+        index = index || 0;
+        self.getAdverts().get(index)
+            .click()
+            .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
+            .click();
+        waitForModal();
+    };
     self.removeAdvert = function(index) {
         index = index || 0;
         self.getAdverts().get(index).click().all(by.css('[ng-click="removeAdvert(advert, $index);"]')).click();

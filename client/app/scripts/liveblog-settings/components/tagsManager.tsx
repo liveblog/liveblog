@@ -6,8 +6,8 @@ import { OptionsType } from 'react-select/src/types'; // eslint-disable-line
 import { ITagOption } from './types'; // eslint-disable-line
 
 interface IProps {
-    tags: Array<any>;
-    onChange: (value: Array<any>) => void;
+    tags: any[];
+    onChange: (value: any[]) => void;
 }
 
 const TagsSelector: React.FunctionComponent<IProps> = (props) => {
@@ -32,7 +32,7 @@ const TagsSelector: React.FunctionComponent<IProps> = (props) => {
 };
 
 const renderTagsManager = (
-    element: HTMLDivElement, tags: Array<any>, onChange: (tags: Array<any>) => void) => {
+    element: HTMLDivElement, tags: any[], onChange: (tags: any[]) => void) => {
     ReactDOM.render(
         <TagsSelector tags={tags} onChange={onChange} />, element);
 };

@@ -46,6 +46,15 @@ var config = {
         require('./node_modules/superdesk-core/spec/helpers/setup')({fixture_profile: 'test'});
         var reporters = require('jasmine-reporters');
 
+        by.addLocator('testId', function(value, parentElement) {
+            parentElement = parentElement || document;
+            var nodes = parentElement.querySelectorAll('[data-test-id]');
+
+            return Array.prototype.filter.call(nodes, function(node) {
+                return (node.getAttribute('data-test-id') === value);
+            });
+        });
+
         jasmine.getEnv().addReporter(
             new reporters.JUnitXmlReporter({
                 savePath: 'e2e-test-results',

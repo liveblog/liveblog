@@ -262,3 +262,16 @@ p.warn-block {
     clear: both;
     padding-top: 10px;
 }
+
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.react-select__selector {
+    z-index: 999;
+}
+
+.react-select__selector input {
+    min-height: unset;
+    height: unset;
+}

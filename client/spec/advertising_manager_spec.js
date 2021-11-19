@@ -3,6 +3,7 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 
 describe('Advertising Manager', () => {
     beforeEach((done) => {
+        browser.driver.manage().window().maximize();
         login()
             .then(done);
     });
@@ -13,37 +14,34 @@ describe('Advertising Manager', () => {
 
         // advert tab should be open by default
         // no adverts initialy
-
         expect(aM.getAdverts().count()).toBe(0);
 
         aM.openNewAdvertDialog();
-        aM.editFreetype().then((freeData) => {
+        aM.editAdvert().then((freeData) => {
             // we should not have two freetypes entered
             expect(aM.getAdverts().count()).toBe(1);
             // open 1st freetype and check contents
-            aM.getAdverts().get(0)
-                .click()
-                .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
-                .click();
-            expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title);
-            expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed);
+            aM.openAdvertModal();
+
+            expect(aM.advertTitle().getAttribute('value')).toEqual(freeData.title);
+            expect(aM.advertEmbed().getAttribute('value')).toEqual(freeData.embed);
 
             // edit freetype
             var newData = aM.createAdvertData();
 
-            aM.advertTitle.sendKeys(newData.title);
-            aM.advertEmbed.sendKeys(newData.embed);
+            aM.advertTitle().sendKeys(newData.title);
+            aM.advertEmbed().sendKeys(newData.embed);
             aM.saveAdvert().then(() => {
                 // check the new contents to match
                 aM.getAdverts().get(0)
                     .click()
                     .all(by.css('[ng-click="openAdvertDialog(advert);"]'))
                     .click();
-                expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
-                expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed + newData.embed);
+                expect(aM.advertTitle().getAttribute('value')).toEqual(freeData.title + newData.title);
+                expect(aM.advertEmbed().getAttribute('value')).toEqual(freeData.embed + newData.embed);
             });
             // close edit freetype dialog
-            element(by.css('[ng-click="cancelAdvertCreate()"]')).click();
+            element(by.testId('modal-cancel-advert-create')).click();
             // remove first freetype
             aM.removeAdvert(0);
             // expect no freetypes available
@@ -56,7 +54,7 @@ describe('Advertising Manager', () => {
 
         // create an advert so we can add it to the collection
         aM.openNewAdvertDialog();
-        aM.editFreetype().then((freeData) => {
+        aM.editAdvert().then((freeData) => {
             // open the collections tab
             aM.openCollectionsTab();
             aM.openNewCollectionDialog();
@@ -71,13 +69,12 @@ describe('Advertising Manager', () => {
                 element(by.css('[ng-click="openCollectionDialog(collection)"]'))
                     .click();
 
-                expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title);
-
+                expect(aM.collectionTitle().getAttribute('value')).toEqual(freeData.title);
 
                 // edit collection
                 var newData = aM.createAdvertData();
 
-                aM.collectionTitle.sendKeys(newData.title);
+                aM.collectionTitle().sendKeys(newData.title);
 
                 // add one advert
                 aM.getAdverts().get(0)

@@ -1,58 +1,63 @@
-{% if ref.item.meta.provider_name == 'YouTube' and ref.item.meta.original_id %}
+{% set item_meta = ref.item.meta %}
+
+{% if item_meta.provider_name == 'YouTube' and item_meta.original_id %}
   <amp-youtube
-    data-videoid="{{ ref.item.meta.original_id }}"
+    data-videoid="{{ item_meta.original_id }}"
     layout="responsive"
     width="480" height="270">
   </amp-youtube>
-{% elif ref.item.meta.provider_name == 'Facebook' and ref.item.meta.original_url %}
+{% elif item_meta.provider_name == 'Facebook' and item_meta.original_url %}
   <amp-facebook width="480" height="270"
     layout="responsive"
-    data-href="{{ ref.item.meta.original_url }}">
+    data-href="{{ item_meta.original_url }}">
   </amp-facebook>
-{% elif ref.item.meta.provider_name == 'Twitter' and ref.item.meta.original_id %}
+{% elif item_meta.provider_name == 'Twitter' and item_meta.original_id %}
   <amp-twitter width="480" height="270"
     layout="responsive"
-    data-tweetid="{{ ref.item.meta.original_id }}">
+    data-tweetid="{{ item_meta.original_id }}">
   </amp-twitter>
-{% elif ref.item.meta.provider_name == 'Instagram' and ref.item.meta.original_id %}
+{% elif item_meta.provider_name == 'Instagram' and item_meta.original_id %}
   <amp-instagram
-    data-shortcode="{{ ref.item.meta.original_id }}"
+    data-shortcode="{{ item_meta.original_id }}"
+    {% if item_meta.show_embed_description %}
+    data-captioned
+    {% endif %}
     width="1"
     height="1"
     layout="responsive">
   </amp-instagram>
-{% elif ref.item.meta.provider_name == 'YoutubeUpload' and ref.item.meta.original_id %}
+{% elif item_meta.provider_name == 'YoutubeUpload' and item_meta.original_id %}
   <amp-youtube
-    data-videoid="{{ ref.item.meta.original_id }}"
+    data-videoid="{{ item_meta.original_id }}"
     layout="responsive"
     width="480" height="270">
   </amp-youtube>
-  {% if ref.item.meta.title %}
+  {% if item_meta.title %}
     <div class="item--embed__info">
-      <div class="item--embed__title">{{ ref.item.meta.title }}</div>
-      <div class="item--embed__description">{{ ref.item.meta.caption }}</div>
-      <div class="item--embed__credit">{{ ref.item.meta.credit }}</div>
+      <div class="item--embed__title">{{ item_meta.title }}</div>
+      <div class="item--embed__description">{{ item_meta.caption }}</div>
+      <div class="item--embed__credit">{{ item_meta.credit }}</div>
     </div>
   {% endif %}
-{% elif ref.item.meta.provider_name == 'Brightcove' and ref.item.meta.original_url %}
-  {{ref.item.meta.original_url | ampify | safe}}
-{% elif 'iframely-embed' in ref.item.meta.html %}
-  <amp-iframe src="https://cdn.iframe.ly/api/iframe?iframe=amp&key=a5ee9a89addd13b7a2e3a48c23e74e8d&url={{ref.item.meta.original_url}}"
+{% elif item_meta.provider_name == 'Brightcove' and item_meta.original_url %}
+  {{item_meta.original_url | ampify | safe}}
+{% elif 'iframely-embed' in item_meta.html %}
+  <amp-iframe src="https://cdn.iframe.ly/api/iframe?iframe=amp&key=a5ee9a89addd13b7a2e3a48c23e74e8d&url={{item_meta.original_url}}"
     width="400" height="325" frameborder="0" allowfullscreen
     layout="responsive" resizable sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
   >
-    <amp-img layout="fill" src="//cdn.iframe.ly/api/thumbnail?url={{ref.item.meta.original_url}}&key=a5ee9a89addd13b7a2e3a48c23e74e8d" placeholder></amp-img>
+    <amp-img layout="fill" src="//cdn.iframe.ly/api/thumbnail?url={{item_meta.original_url}}&key=a5ee9a89addd13b7a2e3a48c23e74e8d" placeholder></amp-img>
     <div overflow tabindex=0 role=button aria-label="">&nbsp;</div>
   </amp-iframe>
 {% else %}
-  {% if ref.item.meta.html %}
-    {{ ref.item.meta.html | ampify | safe }}
+  {% if item_meta.html %}
+    {{ item_meta.html | ampify | safe }}
   {% endif %}
-  {% if ref.item.meta.title %}
+  {% if item_meta.title %}
     <div class="item--embed__title" >
-      <a href="{{ ref.item.meta.original_url }}" >{{ ref.item.meta.title }}</a>
+      <a href="{{ item_meta.original_url }}" >{{ item_meta.title }}</a>
     </div>
-    <div class="item--embed__description">{{ ref.item.meta.description }}</div>
-    <div class="item--embed__credit">{{ ref.item.meta.credit }}</div>
+    <div class="item--embed__description">{{ item_meta.description }}</div>
+    <div class="item--embed__credit">{{ item_meta.credit }}</div>
   {% endif %}
 {% endif %}

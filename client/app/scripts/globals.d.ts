@@ -16,6 +16,8 @@ declare module '*.css' {
     export default value;
 }
 
+declare module '@atlaskit/datetime-picker';
+
 declare const gettext: (text: string) => string;
 
 type Action<T = any> = {
@@ -114,12 +116,12 @@ interface ILinks {
 interface ITheme {
     asyncTheme: boolean;
     author: IAuthor;
-    blogs: Array<any>;
+    blogs: any[];
     blogs_count: number;
-    devScripts: Array<string>;
-    devStyles: Array<string>;
-    scripts: Array<string>;
-    styles: Array<string>;
+    devScripts: string[];
+    devStyles: string[];
+    scripts: string[];
+    styles: string[];
     files: IFiles;
     i18n: {
         [lang: string]: any
@@ -128,11 +130,12 @@ interface ITheme {
     license: string;
     name: string;
     extends?: string;
-    options: Array<any>;
-    styleOptions: Array<IStyleGroup>;
+    options: any[];
+    styleOptions: IStyleGroup[];
     repository: any;
     seoTheme: boolean;
     settings: IThemeSettings;
+    supportStylesSettings: boolean;
     styleSettings: IStyleSettings;
     template: string;
     version: string;
@@ -141,6 +144,11 @@ interface ITheme {
     _id: string;
     _links: ILinks;
     _updated: string;
+}
+
+interface IStyleDropdownOption {
+    value: string;
+    label: string;
 }
 
 interface IStyleOption {
@@ -157,7 +165,7 @@ interface IStyleOption {
     placeholder?: string;
 
     // if the type is select, then options is required to show in dropdown
-    options?: Array<any>;
+    options?: IStyleDropdownOption[];
 
     // basic help text
     help?: string;
@@ -167,6 +175,11 @@ interface IStyleOption {
 
     // Tag to apply the styling under group cssSelector. Eg. div.lb-timeline TagName { }
     tagName?: string;
+
+    // used to connect the current attribute's value with the value of an attribute
+    // from another group. E.g: the selected value of this option is "primary", then will be equivalent
+    // to the value of the group "typography" option "primary".
+    linkedToGroup?: string;
 }
 
 interface IStyleGroup {
@@ -181,8 +194,13 @@ interface IStyleGroup {
      */
     cssSelector: string;
 
-    options: Array<IStyleOption>;
+    options: IStyleOption[];
 
     // number of layout columns that it will use when rendering in settings tab
     columns: string;
+
+    // if this is present and true, the css serializer will ignore the convertion
+    // of this group. This can be useful to create a group of attribute on which other
+    // fields depend on. E.g. Primary and Secondary Fonts.
+    serializerIgnore?: boolean;
 }

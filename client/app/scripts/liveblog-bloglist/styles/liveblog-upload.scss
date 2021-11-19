@@ -44,6 +44,8 @@ blog image uploader
                 height: 100%;
                 @include box-sizing(border-box);
                 border: 2px dashed #e0e0e0;
+                padding: 15px;
+
                 .text {
                     text-align: center;
                     margin-top: 35px;
