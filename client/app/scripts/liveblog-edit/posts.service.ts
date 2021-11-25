@@ -49,15 +49,20 @@ const postsService = (api, $q, _userList, session) => {
         const excludeScheduled = typeof filters.status === 'undefined' || filters.status === 'open';
 
         if (excludeScheduled) {
-            const operator = filters.scheduled ? 'gte' : 'lte';
-            const postFilterRange = {};
-
-            postFilterRange['published_date'] = {};
-
-            // eslint-disable-next-line newline-per-chained-call
-            postFilterRange['published_date'][operator] = moment().utc().format();
-            postsCriteria.source.post_filter = { range: postFilterRange };
+            postsCriteria.source.post_filter = getPostFilters(filters);
         }
+    };
+
+    const getPostFilters = (filters: IFilters) => {
+        const operator = filters.scheduled ? 'gte' : 'lte';
+        const postFilterRange = {};
+        // eslint-disable-next-line newline-per-chained-call
+        const publishedDate = filters.maxPublishedDate || moment().utc().format();
+
+        postFilterRange['published_date'] = {};
+        postFilterRange['published_date'][operator] = publishedDate;
+
+        return { range: postFilterRange };
     };
 
     /**

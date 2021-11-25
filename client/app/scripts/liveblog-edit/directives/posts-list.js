@@ -153,53 +153,66 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
         self.fetchNewPage()
             // retrieve updates when event is received
             .then(() => {
-                // This function is responsible for updating the timeline,
-                // the contribution, the draft and the comment panel on incoming
-                // new post as well unpublished posts
-                const onNotification = _.throttle((e, eventParams) => {
-                    const mainTimeline = $element.hasClass('timeline-posts-list');
-
-                    if (!mainTimeline
-                        && $scope.lbPostsStatus !== 'comment'
-                        && eventParams.posts
-                        && _.has(eventParams.posts[0], 'syndication_in')) {
-                        return false;
-                    }
-
-                    if (!mainTimeline && angular.isDefined(eventParams.stages)) {
-                        return false;
-                    }
-
-                    if (eventParams.scheduled_done) {
-                        notify.pop();
-                        notify.info(gettext('Scheduled post has been published'));
-                    }
-
-                    // only update if posts belong to same blog
-                    const posts = eventParams.posts || [];
-
-                    if (posts && posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
-                        self.isLoading = true;
-                        self.pagesManager.retrieveUpdate(true).then(() => {
-                            // Regenerate the embed otherwise the image doesn't appear
-                            if (_.has(window, 'instgrm')) {
-                                window.instgrm.Embeds.process();
-                            }
-
-                            if (eventParams.deleted === true) {
-                                notify.pop();
-                                notify.info(gettext('Post removed'));
-                            }
-
-                            self.isLoading = false;
-                        });
-                    }
-                }, 100);
+                console.log('generating handler'); // eslint-disable-line
+                const onNotification = _.throttle((e, data) => handleNotification(data, $element, $scope), 100);
 
                 $scope.$on('posts', onNotification);
                 $scope.$on('content:update', onNotification);
             });
     }
+
+    // This function is responsible for updating the timeline,
+    // the contribution, the draft and the comment panel on incoming
+    // new post as well unpublished posts
+    const handleNotification = (eventParams, $element, $scope) => {
+        console.log(eventParams); // eslint-disable-line
+
+        const listInstance = $scope.lbPostsInstance;
+        const isMainTimeline = $element.hasClass('timeline-posts-list');
+        const isPanelOfComments = $scope.lbPostsStatus === 'comment';
+        const isFirstPostSyndicated = eventParams.posts && _.has(eventParams.posts[0], 'syndication_in');
+
+        if (!isMainTimeline && !isPanelOfComments && isFirstPostSyndicated)
+            return false;
+
+        if (!isMainTimeline && angular.isDefined(eventParams.stages))
+            return false;
+
+        if (eventParams.scheduled_done) {
+            notify.pop();
+            notify.info(gettext('Scheduled post has been published'));
+        }
+
+        // only update if posts belong to same blog
+        const posts = eventParams.posts || [];
+
+        if (posts && posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
+            const applyUpdatesToPostList = true;
+            const maxPublishedDate = getMaxPublishedDate(posts, eventParams.updated);
+
+            listInstance.isLoading = true;
+            listInstance.pagesManager.retrieveUpdate(applyUpdatesToPostList, maxPublishedDate).then(() => {
+                refreshInstagramEmbeds();
+
+                if (eventParams.deleted === true) {
+                    notify.pop();
+                    notify.info(gettext('Post removed'));
+                }
+
+                listInstance.isLoading = false;
+            });
+        }
+    };
+
+    const getMaxPublishedDate = (posts, isUpdated) =>
+        isUpdated ? undefined : posts.length > 0 && posts[0]['published_date'];
+
+    const refreshInstagramEmbeds = () => {
+        // Regenerate the embed otherwise the image doesn't appear
+        if (_.has(window, 'instgrm')) {
+            window.instgrm.Embeds.process();
+        }
+    };
 
     return {
         scope: {

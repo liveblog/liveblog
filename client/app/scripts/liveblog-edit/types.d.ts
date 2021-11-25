@@ -9,4 +9,5 @@ export interface IFilters {
     syndicationIn?: boolean;
     noSyndication?: boolean;
     scheduled?: boolean;
+    maxPublishedDate?: string;
 }

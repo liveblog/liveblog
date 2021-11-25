@@ -122,9 +122,10 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
         /**
          * Retrieve all the updates since the latest updated date
          * @param {boolean} [should_apply_updates=false] - If true, will apply the updates into the posts list
+         * @param {datetime string} [maxPublishedDate] - Max value for published_date filter range
          * @returns {promise}
          */
-        const retrieveUpdate = (shouldApplyUpdates) => {
+        const retrieveUpdate = (shouldApplyUpdates: boolean, maxPublishedDate) => {
             const date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
             let page = 1;
 
@@ -132,6 +133,7 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
                 updatedAfter: date,
                 excludeDeleted: false,
                 scheduled: false,
+                maxPublishedDate: maxPublishedDate,
             };
 
             return postsService.getPosts(self.blogId, filters, undefined, page)
