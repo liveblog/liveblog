@@ -153,7 +153,6 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
         self.fetchNewPage()
             // retrieve updates when event is received
             .then(() => {
-                console.log('generating handler'); // eslint-disable-line
                 const onNotification = _.throttle((e, data) => handleNotification(data, $element, $scope), 100);
 
                 $scope.$on('posts', onNotification);
@@ -165,8 +164,6 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
     // the contribution, the draft and the comment panel on incoming
     // new post as well unpublished posts
     const handleNotification = (eventParams, $element, $scope) => {
-        console.log(eventParams); // eslint-disable-line
-
         const listInstance = $scope.lbPostsInstance;
         const isMainTimeline = $element.hasClass('timeline-posts-list');
         const isPanelOfComments = $scope.lbPostsStatus === 'comment';
