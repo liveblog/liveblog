@@ -103,3 +103,4 @@ package-lock.json
 .vscode/
 .python-version
 setup.cfg
+.DS_Store
