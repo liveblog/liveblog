@@ -309,7 +309,7 @@ default_seo_theme = {
                 },
                 {
                     "label": "Secondary Font Family",
-                    "property": "secundary",
+                    "property": "secondary",
                     "type": "fontpicker"
                 }
             ]
@@ -367,7 +367,7 @@ default_seo_theme = {
                     "options": [
                         {"value": None, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {

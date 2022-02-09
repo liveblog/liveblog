@@ -7,7 +7,7 @@ from liveblog.themes.tests.mock_settings import default_seo_theme
 default_seo_theme_settings = {
     "typography": {
         "primary": "Mukta Vaani",
-        "secundary": "Oswald"
+        "secondary": "Oswald"
     },
     "general": {
         "color": "#3394bc",

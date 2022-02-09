@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.36",
+    "version": "3.6.37",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-7679b7a6c1.css"],
-    "devScripts": ["dist/default-ba59420188.js"],
+    "devScripts": ["dist/default-a1a6c30d6c.js"],
     "styles": ["dist/default-7679b7a6c1.css"],
-    "scripts": ["dist/default-ba59420188.js"],
+    "scripts": ["dist/default-a1a6c30d6c.js"],
     "options": [
         {
             "name": "language",
@@ -464,7 +464,7 @@
                 },
                 {
                     "label": "Secondary Font Family",
-                    "property": "secundary",
+                    "property": "secondary",
                     "type": "fontpicker"
                 }
             ]
@@ -522,7 +522,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -573,7 +573,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -624,7 +624,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -675,7 +675,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -726,7 +726,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -777,7 +777,7 @@
                     "options": [
                         {"value": null, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
