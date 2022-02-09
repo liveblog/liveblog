@@ -21,6 +21,7 @@ interface IScope {
     stylesTab: string;
     tabs: string[];
     activeTab: string;
+    supportThemeStyles: boolean;
 
     themeSettingsForm: any;
     closeModal: () => void;
@@ -34,8 +35,8 @@ interface IScope {
                 return moment().format(text);
             };
         }])
-        .directive('themeSettingsModal', ['api', '$q', 'notify',
-            (api, $q, notify) => {
+        .directive('themeSettingsModal', ['api', '$q', 'notify', 'config',
+            (api, $q, notify, config) => {
                 return {
                     templateUrl: themeSettingsModalTpl,
                     scope: {
@@ -45,14 +46,16 @@ interface IScope {
                     },
                     link: (scope: IScope) => {
                         const vm = scope;
+                        const isSoloSubscription = config.subscriptionLevel === 'solo';
 
                         // all basic configuration for tabs
                         vm.settingsTab = 'Settings',
                         vm.stylesTab = 'Styles',
                         vm.tabs = [vm.settingsTab];
                         vm.activeTab = vm.settingsTab;
+                        vm.supportThemeStyles = vm.theme.supportStylesSettings && !isSoloSubscription;
 
-                        if (vm.theme.supportStylesSettings) {
+                        if (vm.supportThemeStyles) {
                             vm.tabs.push(vm.stylesTab);
                         }
 
