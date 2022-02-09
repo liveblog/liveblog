@@ -84,10 +84,4 @@ class EmbedUtilsTestCase(TestCase):
             default_seo_theme_settings, default_seo_theme.get('styleOptions'))
         css_styles = convert_styles_map_to_css(styles_map)
 
-        print('*' * 30)
-        print(css_styles)
-
-        print('-' * 30)
-        print(mock_css_styles)
-
         self.assertEqual(css_styles, mock_css_styles)
