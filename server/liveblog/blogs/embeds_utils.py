@@ -1,5 +1,6 @@
 from settings import SUBSCRIPTION_LEVEL
 
+
 def get_setting_value(settings, group_name, property_name, default_value=None, linked_to_group=None):
     """
     Extracts the style setting value for the given option
@@ -98,7 +99,7 @@ def generate_theme_styles(theme):
 
     support_styles_settings = theme.get('supportStylesSettings', False)
     is_solo_subscription = 'solo' in SUBSCRIPTION_LEVEL
-    
+
     if not support_styles_settings or is_solo_subscription:
         return ""
 
