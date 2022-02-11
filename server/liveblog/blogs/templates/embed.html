@@ -28,15 +28,6 @@
         :root { --watermark: url('{{ assets_root }}images/logo-liveblog-watermark.svg') }
         </style>
         {% endif %}
-
-        {% if fonts_url %}
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="{{ fonts_url }}" rel="stylesheet">
-        {% endif %}
-
-        {% if styles_settings %}
-        <style>{{ styles_settings }}</style>
-        {% endif %}
     </head>
     <body class="lb-wrapBody {% if settings.watermark %}watermark{% endif %}" style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% elif not settings.removeStylesESI %}
@@ -49,6 +40,18 @@
 {% else %}
 <div style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% endif %}
+
+{% if fonts_url %}
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="{{ fonts_url }}" rel="stylesheet">
+{% endif %}
+
+{% if styles_settings %}
+<style>
+{{ styles_settings }}
+</style>
+{% endif %}
+
 {{ template | safe }}
 <script type="text/javascript">
     window.LB = {
