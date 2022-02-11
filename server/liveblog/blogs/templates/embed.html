@@ -34,9 +34,9 @@
         <link href="{{ fonts_url }}" rel="stylesheet">
         {% endif %}
 
-        <style>
-        {{ styles_settings }}
-        </style>
+        {% if styles_settings %}
+        <style>{{ styles_settings }}</style>
+        {% endif %}
     </head>
     <body class="lb-wrapBody {% if settings.watermark %}watermark{% endif %}" style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% elif not settings.removeStylesESI %}

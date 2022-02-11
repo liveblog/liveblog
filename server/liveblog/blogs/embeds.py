@@ -270,6 +270,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
 
     blog_archived = blog['blog_status'] == 'closed'
     solo_subscription = 'solo' in SUBSCRIPTION_LEVEL
+    
     if blog_archived and solo_subscription:
         scope['template'] = render_template('blog-unavailable.html', **scope)
         scope['assets']['scripts'] = []
