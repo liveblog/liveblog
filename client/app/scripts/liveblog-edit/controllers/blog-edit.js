@@ -220,10 +220,10 @@ export default function BlogEditController(
             return true;
         }
 
-        var areallBlocksempty = _.every(self.editor.blocks, (block) => block.isEmpty());
+        var areAllBlocksEmpty = _.every(self.editor.blocks, (block) => block.isEmpty());
         var isPostSaved = !$scope.isCurrentPostUnsaved();
 
-        return areallBlocksempty || isPostSaved;
+        return areAllBlocksEmpty || isPostSaved;
     }
 
     // ask in a modalbox if the user is sure to want to overwrite editor.
