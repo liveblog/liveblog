@@ -94,7 +94,7 @@ jobs:
       run: |
         npm config set loglevel warn
         npm install -g grunt-cli
-        npm install
+        npm install -ddd
         npm run lint
 
     - name: Initialize app data
