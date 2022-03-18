@@ -10,9 +10,9 @@ beautifulsoup4==4.6.0
 flask_pymongo>=0.5.2,<1.0
 pymongo==3.11.2
 google-auth-oauthlib==0.2.0
-hachoir==3.0a3
 
 # Superdesk
+-e git+https://github.com/vstinner/hachoir.git@3.0a2#egg=hachoir3
 -e git+https://github.com/liveblog/superdesk-core.git@liveblog-custom#egg=Superdesk-Core
 
 redis>=2.10.5,<3.0
