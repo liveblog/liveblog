@@ -6,15 +6,15 @@ describe('Contributions Posts', function() {
     'use strict';
 
     beforeEach(function(done) {
-        browser.ignoreSynchronization = true;
         login('editor', 'editor')
-            .then(() => browser.ignoreSynchronization = false)
             .then(done);
     });
 
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;
         browser.getCurrentUrl().then(function(url) {
+            browser.driver.manage().window().setSize(1920, 1080);
+
             browser.get(url.split('?')[0] + '?panel=contributions').then(function() {
                 expect(contributions.column.isPresent()).toBe(true);
             });
@@ -82,7 +82,7 @@ describe('Contributions Posts', function() {
         var contributions = blog.openContributions();
         browser.wait(function() {
             return element(contributions.byPosts).isPresent();
-        }, 5000);
+        }, 2000);
         expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(true);
     });
 
@@ -92,19 +92,19 @@ describe('Contributions Posts', function() {
             var contributions = blog.openContributions();
             browser.wait(function() {
                 return element(contributions.byPosts).isPresent();
-            }, 5000);
+            }, 2000);
+
             contributions.expectPost(0, contrib.quote);
             browser.driver.manage().window().setSize(1920, 1080);
             browser.get('/');
             logout();
-            browser.ignoreSynchronization = true;
 
             login('contributor', 'contributor').then(function() {
-                browser.ignoreSynchronization = false;
                 var contributions = blogs.openBlog(3).openContributions();
                 browser.wait(function() {
                     return element(contributions.byPosts).isPresent();
-                }, 5000);
+                }, 2000);
+
                 contributions.expectPost(0, contrib.quote);
                 expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
             });
