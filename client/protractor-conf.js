@@ -39,6 +39,8 @@ var config = {
 
     capabilities: {
         browserName: 'chrome',
+        maxInstances: 4,
+        shardTestFiles: true,
         chromeOptions: getChromeOptions(),
     },
 
