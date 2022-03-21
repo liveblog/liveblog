@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.37",
+    "version": "3.6.38",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -860,7 +860,7 @@
           "Show all posts": "Alle Beiträge anzeigen",
           "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
           "Sort by:": "Ordnen nach",
-          "Updated": "Aktualisiert am",
+          "Updated": "Aktualisiert",
           "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
           "credit:": "Bild:",
           "Activate": "Aktivieren"
