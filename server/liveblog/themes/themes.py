@@ -67,8 +67,10 @@ class UndefinedVar(jinja2.Undefined):
         try:
             return super(UndefinedVar, self).__getattribute__(name, *args, **kwargs)
         except Exception:
-            print('Template variable undefined `{}`'.format(self._undefined_name))
-            return UndefinedVar()
+            err_msg = 'Template variable undefined `{}`, parent reference `{}`'.format(
+                self._undefined_name, name)
+            print(err_msg)
+            return UndefinedVar(err_msg)
 
         return None
 

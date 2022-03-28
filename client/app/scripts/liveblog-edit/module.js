@@ -121,21 +121,26 @@ const app = angular.module('liveblog.edit',
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
         const SirTrevor = SirTrevorParam.$get();
 
-        var onRemoveBlock = function() {
+        var onRemoveBlockUpdateSubmitBtn = function() {
             const editorOptions = SirTrevor.Block.prototype.getOptions();
 
             // I don't like this solution using timeout, but we need to wait just a bit
             // to check if operations are done (block removing, reset, edit, etc)
             setTimeout(() => {
-                if (editorOptions.isEditorClean()) {
-                    editorOptions.disableSubmit(true);
-                }
+                editorOptions.disableSubmit(editorOptions.isEditorClean());
             }, 500);
+        };
+
+        const disableEditorSubmitButton = () => {
+            const editorOptions = SirTrevor.Block.prototype.getOptions();
+
+            if (editorOptions)
+                editorOptions.disableSubmit(true);
         };
 
         // let's make sure to avoid double binding
         SirTrevor.EventBus.off('block:remove');
-        SirTrevor.EventBus.on('block:remove', onRemoveBlock);
+        SirTrevor.EventBus.on('block:remove', onRemoveBlockUpdateSubmitBtn);
 
         // change the remove trash icon by a cross
         SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
@@ -152,7 +157,11 @@ const app = angular.module('liveblog.edit',
                             self.removeBlock(block.blockID);
                         }
                     });
+
+                    // disable submit once a block has been added
+                    disableEditorSubmitButton();
                 }
+
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
             },

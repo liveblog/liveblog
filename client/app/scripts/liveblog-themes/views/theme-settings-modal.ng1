@@ -65,7 +65,7 @@
             </div>
         </form>
 
-        <div ng-if="vm.theme.supportStylesSettings">
+        <div ng-if="vm.supportThemeStyles">
             <div ng-if="!vm.styleOptionsAreloading"
                 ng-show="vm.activeTab === vm.stylesTab"
                 styles-tab-component

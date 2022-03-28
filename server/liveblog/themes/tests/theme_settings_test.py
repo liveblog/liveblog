@@ -1039,7 +1039,7 @@ class ThemeSettingsTestCase(TestCase):
                     'Show all posts': 'Alle Beiträge anzeigen',
                     'Show highlighted post only': 'Anzeigen hervorgehoben Beitrag ist nur',
                     'Sort by:': 'Ordnen nach',
-                    'Updated': 'Aktualisiert am',
+                    'Updated': 'Aktualisiert',
                     'Your comment was sent for approval': 'Ihr Kommentar wartet auf Freischaltung',
                     'credit:': 'Bild:'
                 },
@@ -1339,7 +1339,7 @@ class ThemeSettingsTestCase(TestCase):
                     'Show all posts': 'Alle Beiträge anzeigen',
                     'Show highlighted post only': 'Anzeigen hervorgehoben Beitrag ist nur',
                     'Sort by:': 'Ordnen nach',
-                    'Updated': 'Aktualisiert am',
+                    'Updated': 'Aktualisiert',
                     'Your comment was sent for approval': 'Ihr Kommentar wartet auf Freischaltung',
                     'credit:': 'Bild:'
                 },

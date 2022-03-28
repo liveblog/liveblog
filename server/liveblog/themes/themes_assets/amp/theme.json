@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 AMP Theme",
     "name": "amp",
-    "version": "3.4.12",
+    "version": "3.4.13",
     "seoTheme": true,
     "ampTheme": true,
     "extends": "default",
@@ -122,7 +122,7 @@
             "Show all posts": "Alle Beiträge anzeigen",
             "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
             "Sort by:": "Ordnen nach",
-            "Updated": "Aktualisiert am",
+            "Updated": "Aktualisiert",
             "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
             "credit:": "Bild:"
         },

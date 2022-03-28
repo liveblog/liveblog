@@ -309,7 +309,7 @@ default_seo_theme = {
                 },
                 {
                     "label": "Secondary Font Family",
-                    "property": "secundary",
+                    "property": "secondary",
                     "type": "fontpicker"
                 }
             ]
@@ -367,7 +367,7 @@ default_seo_theme = {
                     "options": [
                         {"value": None, "label": "Select a font"},
                         {"value": "primary", "label": "Primary"},
-                        {"value": "secundary", "label": "Secundary"}
+                        {"value": "secondary", "label": "Secondary"}
                     ]
                 },
                 {
@@ -465,7 +465,7 @@ default_seo_theme = {
             'Show all posts': 'Alle Beiträge anzeigen',
             'Show highlighted post only': 'Anzeigen hervorgehoben Beitrag ist nur',
             'Sort by:': 'Ordnen nach',
-            'Updated': 'Aktualisiert am',
+            'Updated': 'Aktualisiert',
             'Your comment was sent for approval': 'Ihr Kommentar wartet auf Freischaltung',
             'credit:': 'Bild:'
         },

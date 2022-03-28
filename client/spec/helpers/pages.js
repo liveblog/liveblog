@@ -630,8 +630,8 @@ function EditPostPage() {
     self.addQuote = function(data) {
         // click on the quote button
         element(by.css('[data-type="quote"]')).click();
-        element(by.css('.editor .quote-input')).sendKeys(data.quote);
-        element(by.css('.editor .js-cite-input')).sendKeys(data.author);
+        element(by.testId('st-quote-input')).sendKeys(data.quote);
+        element(by.testId('st-cite-input')).sendKeys(data.author);
         return self;
     };
 

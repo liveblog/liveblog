@@ -102,10 +102,10 @@ angular
             creditPlaceholder: window.i18n.t('blocks:quote:credit_field'),
             editorHTML: function() {
                 const template = _.template([
-                    '<div class="st-required st-quote-block quote-input" ',
+                    '<div data-test-id="st-quote-input" class="st-required st-quote-block quote-input" ',
                     ' placeholder="' + this.quotePlaceholder + '" contenteditable="true"></div>',
-                    '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
-                    ' class="js-cite-input st-quote-block"></div>',
+                    '<div data-test-id="st-cite-input" contenteditable="true" name="cite" placeholder="',
+                    this.creditPlaceholder + '" class="js-cite-input st-quote-block"></div>',
                 ].join('\n'));
 
                 return template(this);

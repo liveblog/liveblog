@@ -107,6 +107,9 @@ function BlogSettingsController(
         }
     }
 
+    // make sure to remove duplicated members
+    blog.members = _.uniqBy(blog.members, 'user');
+
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject=' +
             encodeURIComponent(location.hostname) +
@@ -190,6 +193,7 @@ function BlogSettingsController(
                         {blog: vm.blog._id},
                     ],
                 }),
+                max_results: 100,
             };
 
             api('outputs').query(criteria)

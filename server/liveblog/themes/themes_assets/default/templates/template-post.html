@@ -68,8 +68,13 @@
   {% else %}
     {% if item and item.groups and item.groups[1] and item.groups[1].refs and (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
-          {% if ref.item.item_type == "image" %}
-            {% if settings.showGallery and loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+          {% if ref.item.item_type == "image" and ref.item.meta.media %}
+            {% set isNotTheLastItem = loop.index0 + 1 < loop.length %}
+            {% set isNextItemOfImageType = item.groups[1].refs[loop.index0 + 1].item.item_type == "image" %}
+            {% set isPreviousItemOfImageType = item.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
+            {% set inGalleryLoop = loop.index0 > 0 and isPreviousItemOfImageType %}
+
+            {% if settings.showGallery and isNotTheLastItem and isNextItemOfImageType and (loop.index0 - 1 < 0 or not inGalleryLoop) %}
               {# this works only for first element in gallery loop bcs variables are scoped in jinja2 #}
               {% set galleryItem = true %}
               <!-- slideshow start -->
@@ -77,21 +82,24 @@
                 <div class="lb-slideshow_frame">
                   <div class="lb-slideshow_slides">
             {% endif %}
+            
             {# if previous item was an image and current item is an image as well = we are inside gallery loop #}
-            {% if settings.showGallery and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
+            {% if settings.showGallery and isPreviousItemOfImageType %}
               {% set galleryItem = true %}
             {% endif %}
+
             <!-- image item start -->
             <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
           {% else %}
             <!-- item start -->
             <div class="lb-item {{ref.item.item_type}}">
           {% endif %}
+
           {% if ref.item.item_type == "embed" or ref.item.meta.provider_name == "YoutubeUpload" %}
             {% include "template-item-embed.html" %}
           {% elif ref.item.item_type == "image" and galleryItem %}
             {% include "template-item-galleryImage.html" %}
-          {% elif ref.item.item_type == "image" %}
+          {% elif ref.item.item_type == "image" and ref.item.meta.media %}
             {% include "template-item-image.html" %}
           {% elif ref.item.item_type == "quote" %}
             {% include "template-item-quote.html" %}
@@ -103,6 +111,7 @@
             <article>{{ ref.item.text | safe }}</article>
           {% endif %}
           </div>
+
           <!-- item end -->
           {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and item.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
                 <span class="lb-slideshow_prev">
