@@ -1,4 +1,4 @@
-# Contributing to superdesk client
+# Contributing to liveblog client [outdated]
 
 Great you got here! Please follow the guidelines to ease the process of accepting the changes.
 
@@ -14,12 +14,9 @@ will run all the existing test using `_spec.js` convetion.
 
 ## Check code style
 
-We use `jshint` and `jscs` to ensure we're all on same page regarding code style. There are `grunt` tasks:
+We use `eslint` to ensure we're all on same page regarding code style. Use the `npm` task:
 
-    grunt jshint
-    grunt jscs
-
-which runs those respective checkers.
+    npm run eslint
 
 You can also use `grunt ci` which runs both + unit tests all together (used by `travis-ci`).
 
@@ -39,7 +36,7 @@ Views are put into views subfolder and referenced using `require.toUrl`:
 // upload-directive.js
 define(['require'], function(require) {
     'use strict';
-    
+
     return function() {
         return {
             templateUrl: require.toUrl('./views/upload-directive.html'),
