@@ -16,7 +16,6 @@ import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.ng1';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.ng1';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.ng1';
 
-import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
