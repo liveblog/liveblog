@@ -107,7 +107,7 @@
     "jquery-jcrop": "0.9.13",
     "jquery-ui": "git+https://github.com/components/jqueryui#1.11.4",
     "gridster": "github:superdesk/gridster.js#885d0c9",
-    "lodash": "4.17.15",
+    "lodash": "~4.17.21",
     "lodash.sortbyorder": "3.4.4",
     "lr-infinite-scroll": "1.0.0",
     "medium-editor": "5.23.3",
