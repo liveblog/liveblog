@@ -102,7 +102,6 @@
     "angular-route": "1.6.9",
     "angular-vs-repeat": "1.1.7",
     "eslint-loader": "^2.1.2",
-    "eventable": "git+https://github.com/madebymany/eventable",
     "jquery": "^3.5.1",
     "jquery-jcrop": "0.9.13",
     "jquery-ui": "git+https://github.com/components/jqueryui#1.11.4",
