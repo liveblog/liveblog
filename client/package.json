@@ -101,10 +101,10 @@
     "angular-route": "1.6.9",
     "angular-vs-repeat": "1.1.7",
     "eslint-loader": "^2.1.2",
+    "gridster": "github:superdesk/gridster.js#885d0c9",
     "jquery": "^3.5.1",
     "jquery-jcrop": "0.9.13",
     "jquery-ui": "git+https://github.com/components/jqueryui#1.11.4",
-    "gridster": "github:superdesk/gridster.js#885d0c9",
     "lodash": "~4.17.21",
     "lodash.sortbyorder": "3.4.4",
     "lr-infinite-scroll": "1.0.0",
@@ -121,7 +121,7 @@
     "sanitize-html": "^1.18.2",
     "sir-trevor": "git+https://github.com/liveblog/sir-trevor-js",
     "styled-components": "^5.1.1",
-    "superdesk-core": "git+https://github.com/eos87/superdesk-client-core#v1.17.0-liveblog",
+    "superdesk-core": "github:liveblog/superdesk-client-core#v1.17.0-liveblog",
     "superdesk-ui-framework": "^1.8.13"
   },
   "engines": {
