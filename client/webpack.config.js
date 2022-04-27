@@ -33,7 +33,9 @@ module.exports = function makeConfig(grunt) {
         const validModules = [
             'superdesk-core',
             'node_modules/sanitize-html',
-            'node_modules/postcss' // dependency of `sanitize-html`
+            // dependencies of `sanitize-html`
+            'node_modules/postcss',
+            'node_modules/nanoid'
         ].concat(sdConfig.apps);
 
         return !validModules.some((app) => path.indexOf(app) > -1);
