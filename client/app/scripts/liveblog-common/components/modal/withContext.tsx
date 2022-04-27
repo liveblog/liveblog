@@ -46,7 +46,7 @@ const withModalContext = <T extends object>(Component: React.ComponentType<T>): 
         }
     }
 
-    return ComponentHOC;
+    return ComponentHOC as any;
 };
 
 export default withModalContext;
