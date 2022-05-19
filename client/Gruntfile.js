@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         tmpDir: '.tmp',
         distDir: 'dist',
         poDir: 'po',
-        livereloadPort: 35729
+        livereloadPort: 35729,
     };
 
     grunt.initConfig(config);
@@ -18,19 +18,17 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
     require('load-grunt-config')(grunt, {
         config: config,
-        configPath: require('path').join(process.cwd(), 'tasks', 'options')
+        configPath: require('path').join(process.cwd(), 'tasks', 'options'),
     });
 
-    grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('ci', ['eslint']);
-    grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
         'clean',
         'template:docs',
         'connect:test',
         'open:docs',
-        'ngtemplates:docs'
+        'ngtemplates:docs',
     ]);
 
     grunt.registerTask('server', [
@@ -41,7 +39,7 @@ module.exports = function(grunt) {
         'copy:config',
         'copy:sirTrevor',
         'build:embedScript',
-        'webpack-dev-server:start'
+        'webpack-dev-server:start',
     ]);
 
     grunt.registerTask('ci:travis', ['eslint']);
@@ -50,7 +48,7 @@ module.exports = function(grunt) {
         'clean',
         'template:mock',
         'ngtemplates:core',
-        'connect:mock' // nothing will be run after that
+        'connect:mock', // nothing will be run after that
     ]);
     grunt.registerTask('server:travis', ['clean', 'template:travis', 'connect:travis']);
 
@@ -66,7 +64,7 @@ module.exports = function(grunt) {
         'copy:index',
         'copy:sirTrevor',
         'build:embedScript',
-        'webpack:build'
+        'webpack:build',
     ]);
 
     grunt.registerTask('package', ['ci', 'build']);

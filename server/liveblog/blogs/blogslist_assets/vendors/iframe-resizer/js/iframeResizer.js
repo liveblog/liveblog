@@ -271,8 +271,8 @@
 			function debouncedTrigger(){
 				trigger(
 					'Send Page Info',
-					'pageInfo:' + getPageInfo(), 
-					iframe, 
+					'pageInfo:' + getPageInfo(),
+					iframe,
 					iframeId
 				);
 			}
@@ -304,7 +304,7 @@
 			function start(){
 				setListener('Add ', addEventListener);
 			}
-			
+
 			var id = iframeId; //Create locally scoped copy of iFrame ID
 
 			start();
@@ -341,7 +341,7 @@
 		}
 
 		function scrollRequestFromChild(addOffset){
-			/* istanbul ignore next */  //Not testable in Karma
+			/* istanbul ignore next */
 			function reposition(){
 				pagePosition = newPosition;
 				scrollTo();
