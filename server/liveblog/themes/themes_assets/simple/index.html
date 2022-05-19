@@ -7,11 +7,148 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     
     <!-- inject:css -->
-    <link rel="stylesheet" href="/dist/simple-51aa1fc630.css">
+    <link rel="stylesheet" href="/dist/simple-f7552c55dc.css">
     <!-- endinject -->
   </head>
   <body class="lb-wrapBody">
     
+
+<script>
+    function processInstagram() {
+        try{
+            instgrm.Embeds.process();
+            console.log('processing instagram embeds');
+        } catch(err) {console.log('instgrm script not loaded')}
+    }
+
+    function processTwitter() {
+        try{
+            twttr.widgets.load();
+            console.log('processing twitter embeds');
+        } catch(err) {console.log('twttr script not loaded')}
+    }
+
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v7.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+
+    function processEmbedly() {
+        embedly("defaults", {
+            cards: {
+                key: '82645d4daa7742cc891c21506d28235e',
+                align: 'left',
+                chrome: 0
+            }
+        });
+    }
+</script>
+
+<template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
+<script async defer src="https://platform.instagram.com/en_US/embeds.js" onload="processInstagram()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
+<script async defer src="https://platform.twitter.com/widgets.js" onload="processTwitter()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
+<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
+<script async defer src="https://www.youtube.com/player_api"></script>
+</template>
+
+<script async defer src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8" onload="processEmbedly()"></script>
+
+<script async defer src="https://cdn.iframe.ly/embed.js?key=a5ee9a89addd13b7a2e3a48c23e74e8d" onload="iframely.load()"></script>
+
+<script>
+    var SET_FLAG = 'player-set';
+    window.playersState = {};
+
+    function playerStateUpdate(playerId, isPlaying) {
+        window.playersState[playerId] = isPlaying;
+    }
+
+    // Handles direct youtube video embeds
+    function onYouTubeIframeAPIReady() {
+        var iframes = document.querySelectorAll("iframe[src^='https://www.youtube.com']");
+
+        iframes.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG)) return;
+
+            new YT.Player(iframe, {
+                events: {
+                    'onReady': function () { iframe.setAttribute(SET_FLAG, 1); },
+                    'onStateChange': function(event) {
+                        var playerId = event.target.a.id;
+                        var isPlaying = event.data === YT.PlayerState.PLAYING;
+                        playerStateUpdate(playerId, isPlaying);
+                    }
+                }
+            });
+        });
+    }
+
+    // Handles embedly players (legacy)
+    function onPlayerJSReady () {
+        var playerJsIFrames = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
+
+        playerJsIFrames.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG)) return;
+
+            // set id to be used later
+            if (!iframe.id) {
+                var parentId = iframe.closest('[data-post-id]').getAttribute('data-post-id');
+                iframe.id = "iplayer_" + parentId;
+            }
+
+            var player = new playerjs.Player(iframe);
+
+            player.on(playerjs.EVENTS.PLAY, function() {
+                playerStateUpdate(iframe.id, true);
+            });
+
+            player.on(playerjs.EVENTS.ENDED, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            player.on(playerjs.EVENTS.PAUSE, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            // flag to know if this it's been wired
+            iframe.setAttribute(SET_FLAG, 1);
+        });
+    }
+</script>
+<script async defer src="https://cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>
+
+<style class="embedly-css">
+    .card .hdr{
+      display: none;
+    }
+    body#cards {
+        padding: 0px;
+    }
+</style>
+
+
+
+<template id="lb_consent--placeholder-tmpl">
+    <div class="lb_consent--placeholder">
+        <div class="lb_consent--description">
+            
+            <button href="javascript:;" class="comment__button lb_consent--accept">
+                Activate
+            </button>
+        </div>
+    </div>
+</template>
 
 <div data-timeline class="lb-timeline de">
   
@@ -58,6 +195,7 @@
         </div>
       </div>
     
+    
     <div class="header-bar__actions"></div>
       
           <button class="header-bar__highlight" data-js-show-highlighted><span>Highlights</span></button>
@@ -83,23 +221,27 @@
 
   <!-- Comment -->
   
-    <form class="comment hide">
-  <div class="comment__wrap">
-    <h2 class="comment__headline">Kommentar posten</h2>
-    <div>
-      <input type="name" placeholder="Name" id="comment-name" />
+    <div class="comment_container">
+  <form class="comment hide">
+    <div class="comment__wrap">
+      <h2 class="comment__headline">Kommentar posten</h2>
+      <div>
+        <input type="name" placeholder="Name" id="comment-name" />
+      </div>
+      <div>
+        <textarea placeholder="Kommentar" id="comment-content"></textarea>
+      </div>
+      <div>
+        <button class="comment__button">Abschicken</button>
+        <button class="comment__button comment__button--grey" data-js-close-comment-dialog>Abbrechen</button>
+      </div>
     </div>
-    <div>
-      <textarea placeholder="Kommentar" id="comment-content"></textarea>
-    </div>
-    <div>
-      <button class="comment__button">Abschicken</button>
-      <button class="comment__button comment__button--grey" data-js-close-comment-dialog>Abbrechen</button>
-    </div>
-  </div>
-</form>
+  </form>
 
-<div class="comment-sent hide">Ihr Kommentar wartet auf Freischaltung.</div>
+  <div class="comment-sent hide">
+    <p>Your comment is being reviewed and will be published as soon as it&#39;s approved.</p>
+  </div>
+</div>
 
   
   <!-- Comment End -->
@@ -107,6 +249,12 @@
   
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
+      <div id="shared-post-container" class="shared-post-container mod--displaynone">
+        <div data-latest-updates class="lb-post new-updates">
+          <div>See latest updates</div>
+        </div>
+        <div class="post-wrap"></div>
+      </div>
       <div data-one-new-update class="lb-post new-updates mod--displaynone">
         <div>Neuen Beitrag anzeigen</div>
       </div>
@@ -174,7 +322,7 @@
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -192,10 +340,12 @@
             <!-- item start -->
             <div class="lb-item text">
           
+
           
             <article>Win your readers with custom post types (free types). Cover the upcoming presidential elections in France with post types specifically structured and designed for that purpose. Here we go:</article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -209,7 +359,7 @@
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-23T10:48:10+00:00">Thursday, March 23rd, 2017, 10:03:10 AM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-23T10:48:10+00:00">Thursday, March 23rd, 2017, 10:03:10 AM</span>
       </div>
     
     
@@ -281,7 +431,7 @@
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -299,10 +449,12 @@
             <!-- item start -->
             <div class="lb-item text">
           
+
           
             <article>It´s a pleasure to see our new post type "scorecard" in action honouring Lukas Podolski in his last match for the german national team:</article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -386,7 +538,7 @@
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -404,6 +556,7 @@
             <!-- item start -->
             <div class="lb-item Scorecard">
           
+
           
             <article><style>.scorecard {
         display: inline-flex;
@@ -501,6 +654,7 @@
     }</style><div class="scorecard"><div class="scorecard__column"><fieldset><legend class="legend--big">Home</legend><div><span  id="home.name"  class="freetype--element team-name" necessary="true">Germany</span></div><div><span  id="home.score"  class="freetype--element team-score" number="true" necessary="true" initial="0">1</span></div></fieldset><fieldset><ul class="scorecard__scorers"><li><div><span   tandem="$home.scorers[0].time"class="freetype--element" >Podolski</span></div><div class="time"><span   tandem="$home.scorers[0].name" number="true"class="freetype--element" >69</span></div></li></ul></fieldset></div><div class="scorecard__column"><fieldset><legend class="legend--big">Away</legend><div><span  id="away.name"  class="freetype--element team-name" necessary="true">England</span></div><div><span  id="away.score"  class="freetype--element team-score" necessary="true" initial="0" number="true">0</span></div></fieldset><fieldset><ul class="scorecard__scorers"></ul></fieldset></div></div></article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -584,7 +738,7 @@
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -602,6 +756,7 @@
             <!-- item start -->
             <div class="lb-item Election results">
           
+
           
             <article><p style="font-size:22px"><i>France presidential elections. Results from <span  
 /class="freetype--element" >6:34 pm</span></i></p><table style="min-width: 400px; padding:5px; 
@@ -623,6 +778,7 @@ style="color:blue"/class="freetype--element" >François Fillon</span></div></td>
 style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></table></article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -636,7 +792,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-23T10:35:28+00:00">Thursday, March 23rd, 2017, 10:03:28 AM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-23T10:35:28+00:00">Thursday, March 23rd, 2017, 10:03:28 AM</span>
       </div>
     
     
@@ -710,7 +866,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -728,13 +884,20 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item embed">
           
+
           
             
+
+
+
     
+
     
+
 
           
           </div>
+
           <!-- item end -->
           
         
@@ -818,7 +981,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -836,13 +999,20 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item embed">
           
+
           
             
+
+
+
     
+
     
+
 
           
           </div>
+
           <!-- item end -->
           
         
@@ -926,7 +1096,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -944,10 +1114,12 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item text">
           
+
           
             <article>Hello Live Bloggers, welcome to our news liveblogged from the producers of Live Blog. What you see is Live Blog in action and the posts are delivered in the look and feel of our Classic theme. By the way - we pinned this post to the timeline, so it always stays on top of all other posts.</article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -961,7 +1133,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-17T20:45:14+00:00">Friday, March 17th, 2017, 8:03:14 PM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-17T20:45:14+00:00">Friday, March 17th, 2017, 8:03:14 PM</span>
       </div>
     
     
@@ -1037,7 +1209,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -1055,13 +1227,20 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item embed">
           
+
           
             
+
+
+
     
+
     
+
 
           
           </div>
+
           <!-- item end -->
           
         
@@ -1151,7 +1330,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -1169,13 +1348,20 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item embed">
           
+
           
             
+
+
+
     
+
     
+
 
           
           </div>
+
           <!-- item end -->
           
         
@@ -1255,7 +1441,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -1273,6 +1459,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item comment">
           
+
           
             <div class="items-containerIndent">
   <!-- author plus avatar -->
@@ -1290,6 +1477,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
 </div>
           
           </div>
+
           <!-- item end -->
           
         
@@ -1303,7 +1491,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="">Thursday, September 27th, 2018, 4:09:07 AM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="">Thursday, May 19th, 2022, 11:05:07 AM</span>
       </div>
     
     
@@ -1375,7 +1563,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -1393,14 +1581,21 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item text">
           
+
           
             <article>A gallery of some of our Live Blog clients.</article>
           
           </div>
+
           <!-- item end -->
           
         
           
+            
+            
+            
+            
+
             
               
               
@@ -1411,9 +1606,12 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             
             
             
+            
+
             <!-- image item start -->
             <div class="lb-item image">
           
+
           
             <figure>
     <div class="lb-slideshow_imageContainer">
@@ -1433,6 +1631,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
       
           
           </div>
+
           <!-- item end -->
           
         
@@ -1440,11 +1639,19 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             
             
             
+            
+
+            
+            
+            
+            
               
             
+
             <!-- image item start -->
             <div class="lb-item image">
           
+
           
             <figure>
     <div class="lb-slideshow_imageContainer">
@@ -1464,6 +1671,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
       
           
           </div>
+
           <!-- item end -->
           
         
@@ -1471,11 +1679,19 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             
             
             
+            
+
+            
+            
+            
+            
               
             
+
             <!-- image item start -->
             <div class="lb-item image">
           
+
           
             <figure>
     <div class="lb-slideshow_imageContainer">
@@ -1495,6 +1711,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
       
           
           </div>
+
           <!-- item end -->
           
         
@@ -1502,11 +1719,19 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             
             
             
+            
+
+            
+            
+            
+            
               
             
+
             <!-- image item start -->
             <div class="lb-item image">
           
+
           
             <figure>
     <div class="lb-slideshow_imageContainer">
@@ -1526,6 +1751,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
       
           
           </div>
+
           <!-- item end -->
               </div>
                 <span class="lb-slideshow_prev">
@@ -1549,7 +1775,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-15T17:08:50+00:00">Wednesday, March 15th, 2017, 5:03:50 PM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-15T17:08:50+00:00">Wednesday, March 15th, 2017, 5:03:50 PM</span>
       </div>
     
     
@@ -1623,7 +1849,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
     
   </div>
   <!-- end author -->
-  
+
     
   </div>
   
@@ -1641,10 +1867,12 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             <!-- item start -->
             <div class="lb-item Advertisement Local">
           
+
           
             <article><a href="https://www.sourcefabric.org/" id="link" class="freetype--wrap"  target="_blank"><fieldset><div class="fieldset-group-image"><img src="https://sourcefabric.liveblog.pro/sourcefabric/20170315160348/705d83d945e3395df09fea784c670c0d38acbe9e3be282044d43b3c35df1a153.png"/></div><div class="fieldset-group"><span  type="text" id="text1"  compulsory="image.picture_url"class="freetype--element" >Example of local ad</span></div><div class="fieldset-group"></div></fieldset></a></article>
           
           </div>
+
           <!-- item end -->
           
         
@@ -1658,7 +1886,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
   <div class="lb-post-bottom">
     
       <div class="lb-post-updated">
-        <span>Aktualisiert am</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-15T15:52:05+00:00">Wednesday, March 15th, 2017, 3:03:05 PM</span>
+        <span>Aktualisiert</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="2017-03-15T15:52:05+00:00">Wednesday, March 15th, 2017, 3:03:05 PM</span>
       </div>
     
     
@@ -1705,26 +1933,6 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
 
 
 </div>
-
-<!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
-<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script>
-<script async defer src="https://platform.twitter.com/widgets.js"></script>
-<script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
-<script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
-<style class="embedly-css">
-    .card .hdr{
-      display: none;
-    }
-  </style>
-<script>
-    embedly("defaults", {
-        cards: {
-            key: '82645d4daa7742cc891c21506d28235e',
-            align: 'left',
-            chrome: 0
-        }
-    });
-</script>
 
 
   <script type="text/javascript">
@@ -1971,7 +2179,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
             "Show all posts": "Alle Beiträge anzeigen",
             "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
             "Sort by:": "Ordnen nach",
-            "Updated": "Aktualisiert am",
+            "Updated": "Aktualisiert",
             "Your comment was sent for approval": "Ihr Kommentar wartet auf Freischaltung",
             "credit:": "Bild:"
         },
@@ -2138,26 +2346,7 @@ style="color:blue"/class="freetype--element" >18,7 %</span></div></td></tr></tab
 
 
     <!-- inject:js -->
-    <script src="/dist/simple-1c4bac3a14.js"></script>
+    <script src="/dist/simple-aa2c29b9aa.js"></script>
     <!-- endinject -->
-    <!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
-<script async defer src="https://platform.instagram.com/en_US/embeds.js"></script>
-<script async defer src="https://platform.twitter.com/widgets.js"></script>
-<script async defer src="https://connect.facebook.net/en_US/all.js#xfbml=1&status=0&appId="></script>
-<script src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
-<style class="embedly-css">
-    .card .hdr{
-      display: none;
-    }
-  </style>
-<script>
-    embedly("defaults", {
-        cards: {
-            key: '82645d4daa7742cc891c21506d28235e',
-            align: 'left',
-            chrome: 0
-        }
-    });
-</script>
   </body>
 </html>
