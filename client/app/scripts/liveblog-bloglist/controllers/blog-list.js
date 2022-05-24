@@ -249,10 +249,9 @@ export default function BlogListController(
     $scope.createBlog = function() {
         $scope.creationInProcess = true;
 
-        const members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
-
         // Upload image only if we have a valid one chosen
         const promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
+        const members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
 
         return promise.then(() => api.blogs
             .save({
@@ -262,6 +261,7 @@ export default function BlogListController(
                 picture: $scope.newBlog.picture,
                 picture_renditions: $scope.newBlog.picture_renditions,
                 members: members,
+                blog_preferences: {theme: $scope.newBlog.theme.name},
             })
             .then((blog) => {
                 $scope.creationInProcess = false;
