@@ -50,6 +50,8 @@ export default function BlogListController(
     };
     $scope.modalActive = false;
     $scope.bulkActions = 0;
+    $scope.availableThemes = [];
+    $scope.globalPreferences = {defaultTheme: ''};
 
     $scope.mailto = 'mailto:upgrade@liveblog.pro?subject=' +
         encodeURIComponent(location.hostname) +
@@ -62,6 +64,7 @@ export default function BlogListController(
         $scope.newBlog = {
             title: '',
             description: '',
+            theme: {},
         };
         $scope.newBlogError = '';
         $scope.creationStep = 'Details';
@@ -72,7 +75,26 @@ export default function BlogListController(
     $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
     $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
     $scope.isUserAllowedToSelectblog = blogSecurityService.canAccessblogCheckbox;
-    // blog list embed code.
+
+    api.global_preferences
+        .query({where: {key: 'theme'}})
+        .then((preferences) => {
+            $scope.globalPreferences.defaultTheme = _.find(
+                preferences._items, (item) => item.key === 'theme');
+        });
+
+    const fetchAvailableThemes = () => {
+        if ($scope.availableThemes.length > 0) return;
+
+        api.themes
+            .query()
+            .then((data) => {
+                $scope.availableThemes = data._items.filter((theme) => !theme.abstract);
+                $scope.newBlog.theme = $scope.availableThemes.find(
+                    (theme) => theme.name === $scope.globalPreferences.defaultTheme.value);
+            });
+    };
+
     function fetchBloglistEmbed() {
         const criteria = {source: {
             query: {filtered: {filter: {term: {key: 'blogslist'}}}},
@@ -216,6 +238,7 @@ export default function BlogListController(
                 if (showUpgradeModal) {
                     $scope.embedUpgrade = true;
                 } else {
+                    fetchAvailableThemes();
                     $scope.newBlogModalActive = true;
                 }
             });

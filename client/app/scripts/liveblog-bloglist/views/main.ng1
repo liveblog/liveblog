@@ -196,6 +196,20 @@
                                 <input class="sd-line-input__input" type="text"  ng-model="newBlog.description">
                             </div>
 
+                            <div class="sd-line-input">
+                                <label class="sd-line-input__label" translate>Theme</label>
+                                <div class="form-input">
+                                    <select
+                                      ng-model="newBlog.theme"
+                                      ng-options="theme as theme.label for theme in availableThemes track by theme.name"
+                                      class="sd-line-input__input">
+                                    </select>
+                                    <p ng-if="newBlog.theme.name == 'amp'" class="warn-block" translate>
+                                         Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.
+                                    </p>
+                                </div>
+                            </div>
+
                             <div class="field">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">
