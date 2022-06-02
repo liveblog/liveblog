@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.38",
+    "version": "3.6.44",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-7679b7a6c1.css"],
-    "devScripts": ["dist/default-a1a6c30d6c.js"],
+    "devScripts": ["dist/default-80add39e06.js"],
     "styles": ["dist/default-7679b7a6c1.css"],
-    "scripts": ["dist/default-a1a6c30d6c.js"],
+    "scripts": ["dist/default-80add39e06.js"],
     "options": [
         {
             "name": "language",
@@ -254,6 +254,13 @@
             ],
             "default": "bottom",
             "help": "Please note: Pinned posts above the menu bar will not show the author info nor a timestamp. This setting is especially useful if you want to show a (streaming) video on top of your timeline."
+        },
+        {
+            "name": "hidePinnedPostDatetime",
+            "label": "Hide pinned posts date",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hides pinned posts created date"
         },
         {
             "name": "showGallery",
