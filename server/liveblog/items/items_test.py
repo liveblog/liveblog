@@ -1,3 +1,4 @@
+# flake8: noqa
 import json
 import liveblog.items as items
 from superdesk.tests import TestCase

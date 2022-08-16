@@ -93,7 +93,8 @@ class MembershipService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             doc['original_creator'] = get_user().get('_id')
-            if(self.find_one(req=None, blog=doc['blog'], original_creator=get_user().get('_id'))):
+
+            if self.find_one(req=None, blog=doc['blog'], original_creator=get_user().get('_id')):
                 raise SuperdeskApiError.badRequestError(message='A request has already been sent')
         super().on_create(docs)
 

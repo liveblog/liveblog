@@ -150,7 +150,7 @@ class ItemsService(ArchiveService):
         if req is None:
             req = ParsedRequest()
         docs = super().get(req, lookup)
-        return(docs)
+        return (docs)
 
     def on_create(self, docs):
         super().on_create(docs)
