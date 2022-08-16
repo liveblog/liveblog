@@ -11,7 +11,7 @@ from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOW
 from .utils import send_api_request
 
 
-logger = logging.getLogger('superdesk')
+logger = logging.getLogger('liveblog')
 
 
 @celery.task(bind=True)
