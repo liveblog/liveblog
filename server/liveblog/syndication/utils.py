@@ -84,8 +84,8 @@ def fetch_url(url, timeout=5):
     """Fetch url using python-requests and save data to temporary file."""
     try:
         response = requests.get(url, timeout=timeout)
-    except (ConnectionError, RequestException, MaxRetryError):
-        raise DownloadError('Unable to download url: "{}"'.format(url))
+    except (ConnectionError, RequestException, MaxRetryError) as err:
+        raise DownloadError('Unable to download url: "{}" Exception "{}"'.format(url, err))
     fd = tempfile.NamedTemporaryFile()
     for chunk in response.iter_content(chunk_size=1024):
         if chunk:
@@ -176,6 +176,7 @@ def _fetch_and_create_image_item(item):
 
     item_data = dict()
     item_data['type'] = 'picture'
+
     item_data['media'] = FileStorage(stream=fetch_url(image_url, timeout=10), content_type=mimetype)
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
