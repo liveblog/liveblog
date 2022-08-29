@@ -29,6 +29,7 @@ from liveblog.items.items import drag_and_drop_blueprint
 from liveblog.client_modules.client_modules import blog_posts_blueprint
 from liveblog.advertisements.advertisements import advertisements_blueprint
 from liveblog.video_upload.video_upload import video_upload_blueprint
+from liveblog.posts.middleware import PostEtagAutoFixerMiddleware
 
 from superdesk.factory import get_app as superdesk_app
 from superdesk.default_settings import celery_queue as instance_prefix
@@ -60,6 +61,10 @@ def get_app(config=None):
 
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
+
+    # simple registering here. Perhaps an auto-registerer in the
+    # future if we get to have multiple middlewares
+    app.wsgi_app = PostEtagAutoFixerMiddleware(app)
 
     # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
