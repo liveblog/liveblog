@@ -191,10 +191,10 @@ class PostsResource(ArchiveResource):
         good chance that the entries will get out of sync. For these cases, we need to
         be able to re-sync these registries without breaking the user experience.
 
-        This method tries to take care of that in an automated way. If the etags of the
-        registries in mongo and elastic don't match, but the incoming etag (request
-        `HTTP_IF_MATCH` header) does match one of the etags from the databases, then it
-        calculates the new proper document etag and sync both registries.
+        This method tries to take care of that in an automated way. If the incoming etag
+        (request`HTTP_IF_MATCH` header) doesn't match the mongo etag, but it does match
+        the one from elastic entry, then it calculates a new proper document etag and
+        override the header so the update and sync will succeed with the update/patch action.
         """
 
         etag = config.ETAG
@@ -208,22 +208,20 @@ class PostsResource(ArchiveResource):
         if not mongo_entry:
             return
 
-        elastic_entry = search_backend.find_one(endpoint_name, _id=post_id, req=None)
         etag_in_mongo = mongo_entry[etag]
-        etag_in_elastic = elastic_entry.get(etag)
         etag_if_match = request.environ.get('HTTP_IF_MATCH')
 
-        registries_out_of_sync = etag_in_mongo != etag_in_elastic
-        request_etag_match_any = etag_if_match in [etag_in_mongo, etag_in_elastic]
+        registries_out_of_sync = etag_in_mongo != etag_if_match
+        if not registries_out_of_sync:
+            return
 
-        if registries_out_of_sync and request_etag_match_any:
+        elastic_entry = search_backend.find_one(endpoint_name, _id=post_id, req=None)
+        etag_in_elastic = elastic_entry.get(etag)
+
+        request_etag_match_elastic = etag_if_match == etag_in_elastic
+        if request_etag_match_elastic:
             resolve_document_etag(mongo_entry, endpoint_name)
-
-            try:
-                eve_backend.replace(endpoint_name, post_id, mongo_entry, mongo_entry)
-                request.environ['HTTP_IF_MATCH'] = etag_in_mongo
-            except Exception as err:
-                logger.error('Unable to sync post %s. Error: %s', post_id, err)
+            request.environ['HTTP_IF_MATCH'] = etag_in_mongo
 
 
 class PostsService(ArchiveService):
