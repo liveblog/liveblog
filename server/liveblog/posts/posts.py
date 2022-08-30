@@ -9,7 +9,6 @@ from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
-from eve.methods.common import resolve_document_etag
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
@@ -220,7 +219,6 @@ class PostsResource(ArchiveResource):
 
         request_etag_match_elastic = etag_if_match == etag_in_elastic
         if request_etag_match_elastic:
-            resolve_document_etag(mongo_entry, endpoint_name)
             request.environ['HTTP_IF_MATCH'] = etag_in_mongo
 
 
