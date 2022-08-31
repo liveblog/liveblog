@@ -33,7 +33,7 @@ def blogslist_embed(api_host=None, assets_root=None):
 
 class BlogsListResource(Resource):
     datasource = {
-        'source': 'blog_list'
+        'source': 'blogs'
     }
     schema = {
         'key': {'type': 'string', 'required': True, 'unique': True},
