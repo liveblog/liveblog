@@ -1,9 +1,11 @@
 import json
 import hmac
+import arrow
+import uuid
 import logging
 import tempfile
 import urllib.parse
-import uuid
+
 from flask import abort
 import requests
 from bson import ObjectId
@@ -281,7 +283,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     }
 
     if 'published_date' in producer_post.keys():
-        new_post['published_date'] = producer_post['published_date']
+        producer_published_date = arrow.get(producer_post['published_date'])
+        new_post['published_date'] = producer_published_date.datetime
 
     if producer_post.get('syndication_in'):
         new_post['repeat_syndication'] = in_syndication['_id']
