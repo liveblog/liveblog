@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.82.2-rc2",
+  "version": "3.82.2-rc3",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
