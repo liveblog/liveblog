@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 from celery import chain
 
 from flask import current_app as app
@@ -173,3 +174,29 @@ def check_api_status(self, producer_or_id):
         '_id': producer['_id'],
         'api_status': api_status
     }, updated=True)
+
+
+@celery.task
+def unlink_syndicated_posts(producer_blog_id):
+    """
+    Takes the blog id from which the content was comsumed
+    and gets the existent syndicated posts the removes
+    the relation with the producer's blog
+    """
+
+    posts_service = get_resource_service('archive')
+    syndicated_posts = posts_service.find({'syndication_in': producer_blog_id})
+
+    for post in syndicated_posts:
+        post_id = post['_id']
+
+        try:
+            logger.warning('Delete syndication_in: {}'.format(post_id))
+            posts_service.system_update(post_id, {'syndication_in': None}, post)
+
+            # given that there are blog that could have thousands of syndicated entries
+            # we want to avoid hitting the database to ofter so, let's wait just a little
+            sleep(0.3)
+        except Exception as err:
+            logger.error(
+                'Unable to remove syndication relation for post "{}". Exc: "{}"', post_id, err)

@@ -11,7 +11,7 @@ from superdesk.services import BaseService
 from liveblog.utils.api import api_error, api_response
 
 from .auth import ConsumerBlogTokenAuth
-from .tasks import send_post_to_consumer, send_posts_to_consumer
+from .tasks import send_post_to_consumer, send_posts_to_consumer, unlink_syndicated_posts
 from .utils import (cast_to_object_id, create_syndicated_blog_post,
                     generate_api_key, get_post_creator,
                     get_producer_post_id, extract_post_items_data)
@@ -216,12 +216,7 @@ class SyndicationInService(BaseService):
 
     def on_delete(self, doc):
         super().on_delete(doc)
-        posts = get_resource_service('archive')
-        syndicated_posts = posts.find({'syndication_in': doc['_id']})
-        for post in syndicated_posts:
-            logger.warning('Delete syndication_in: {}'.format(post['_id']))
-            posts.system_update(post['_id'], {'syndication_in': None}, post)
-        # send notifications
+        unlink_syndicated_posts.delay(doc['_id'])
         push_notification(self.notification_key, syndication_in=doc, deleted=True)
 
 
