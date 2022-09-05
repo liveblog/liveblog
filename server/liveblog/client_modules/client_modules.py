@@ -320,18 +320,26 @@ class ClientOutputPostsService(ClientBlogPostsService):
             query_source = json.loads(new_args.get('source', '{}'))
 
             post_filter = query_source.setdefault('post_filter', {})
-            filter_must = post_filter.setdefault('bool', {}).setdefault('must', [])
+            must_filters = post_filter.setdefault('bool', {}).setdefault('must', [])
 
-            for must_el in filter_must:
-                if 'terms' in must_el:
-                    query_tags = must_el['terms'].get('tags', [])
+            # In case the request is provided with tags to filter the content, we loop
+            # through the elastic `terms` query and check the tags
+            isRequestFilteredByTags = len(must_filters) > 0
 
-                    if len(query_tags) == 0:
-                        must_el['terms'] = {'tags': output_tags}
-                    else:
-                        must_el['terms'] = {
-                            'tags': _filter_allowed_tags(query_tags, output_tags)}
-                    break
+            if isRequestFilteredByTags:
+                for must in must_filters:
+                    if 'terms' in must:
+                        query_tags = must['terms'].get('tags', [])
+
+                        if len(query_tags) == 0:
+                            must['terms'] = {'tags': output_tags}
+                        else:
+                            must['terms'] = {
+                                'tags': _filter_allowed_tags(query_tags, output_tags)}
+                        break
+            else:
+                # If not, then let's just add the tags from which are limiting the output channel
+                must_filters.append({'terms': {'tags': output_tags}})
 
             new_args['source'] = json.dumps(query_source)
             req.args = new_args
