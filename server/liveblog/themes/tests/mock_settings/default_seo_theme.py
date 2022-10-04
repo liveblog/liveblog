@@ -199,6 +199,13 @@ default_seo_theme = {
             especially useful if you want to show a (streaming) video on top of your timeline.'
         },
         {
+            "name": "hidePinnedPostDatetime",
+            "label": "Hide pinned posts date",
+            "type": "checkbox",
+            "default": False,
+            "help": "Hides pinned posts created date"
+        },
+        {
             'name': 'gaCode',
             'label': 'Google analytics code',
             'type': 'text',

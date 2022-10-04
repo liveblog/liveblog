@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.6.38",
+    "version": "3.6.52",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-7679b7a6c1.css"],
-    "devScripts": ["dist/default-a1a6c30d6c.js"],
-    "styles": ["dist/default-7679b7a6c1.css"],
-    "scripts": ["dist/default-a1a6c30d6c.js"],
+    "devStyles": ["dist/default-90cc79c39e.css"],
+    "devScripts": ["dist/default-d1c2be600f.js"],
+    "styles": ["dist/default-90cc79c39e.css"],
+    "scripts": ["dist/default-d1c2be600f.js"],
     "options": [
         {
             "name": "language",
@@ -254,6 +254,13 @@
             ],
             "default": "bottom",
             "help": "Please note: Pinned posts above the menu bar will not show the author info nor a timestamp. This setting is especially useful if you want to show a (streaming) video on top of your timeline."
+        },
+        {
+            "name": "hidePinnedPostDatetime",
+            "label": "Hide pinned posts date",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hides pinned posts created date"
         },
         {
             "name": "showGallery",
@@ -831,7 +838,8 @@
           "Updated": "Aktualizace",
           "Your comment is being reviewed and will be published as soon as it's approved": "Váš komentář se kontroluje a bude publikován, jakmile bude schválen",
           "credit:": " autor:",
-          "Activate": "Aktivovat"
+          "Activate": "Aktivovat",
+          "Filter": "Filtr"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
@@ -863,7 +871,8 @@
           "Updated": "Aktualisiert",
           "Your comment is being reviewed and will be published as soon as it's approved": "Ihr Kommentar wird überprüft und veröffentlicht, sobald er genehmigt wurde",
           "credit:": "Bild:",
-          "Activate": "Aktivieren"
+          "Activate": "Aktivieren",
+          "Filter": "Filter"
         }, "fi": {
           "Highlights": "Kohokohtia",
           "Comment by": "Comment by",
@@ -895,7 +904,8 @@
           "Updated": "Päivitetty",
           "Your comment is being reviewed and will be published as soon as it's approved": "Kommenttisi tarkistetaan ja julkaistaan heti, kun se on hyväksytty",
           "credit:": "©",
-          "Activate": "Aktivoida"
+          "Activate": "Aktivoida",
+          "Filter": "Suodattaa"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
           "Comment by": "Commentaire de",
@@ -927,7 +937,8 @@
           "Updated": "Mise à jour",
           "Your comment is being reviewed and will be published as soon as it's approved": "Votre commentaire est en cours de révision et sera publié dès qu'il aura été approuvé",
           "credit:": "crédit:",
-          "Activate": "Activer"
+          "Activate": "Activer",
+          "Filter": "Filtre"
         }, "nl": {
           "Highlights": "Highlights",
           "Comment by": "Commentaar door",
@@ -956,7 +967,8 @@
           "Sort by:": "Sorteer:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Uw opmerking wordt beoordeeld en wordt gepubliceerd zodra deze is goedgekeurd",
           "credit:": "credit:",
-          "Activate": "Activeren"
+          "Activate": "Activeren",
+          "Filter": "Filter"
         }, "no": {
           "Highlights": "Høydepunkter",
           "Comment by": "Kommentar av",
@@ -988,7 +1000,8 @@
           "Updated": "Oppdatert",
           "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar blir gjennomgått og vil bli publisert så snart den er godkjent",
           "credit:": "credit:",
-          "Activate": "Aktiver"
+          "Activate": "Aktiver",
+          "Filter": "Filter"
         }, "ro": {
           "Highlights": "Repere",
           "Comment by": "Comentariu de",
@@ -1017,7 +1030,8 @@
           "Sort by:": "Ordonează după:",
           "Your comment is being reviewed and will be published as soon as it's approved": "Comentariul dvs. este revizuit și va fi publicat de îndată ce va fi aprobat",
           "credit:": "credit:",
-          "Activate": "Activati"
+          "Activate": "Activati",
+          "Filter": "Filtru"
         }, "sv": {
             "Highlights": "Höjdpunkter",
             "Comment by": "Kommentar av",
@@ -1050,7 +1064,8 @@
             "Updated": "Uppdaterat",
             "Your comment is being reviewed and will be published as soon as it's approved": "Din kommentar granskas och publiceras så snart den godkänns",
             "credit:": "källa:",
-            "Activate": "Aktivera"
+            "Activate": "Aktivera",
+            "Filter": "Filtrera"
         }, "sr": {
             "Highlights": "Najvažnije",
             "Comment by": "Komentar postavio",
@@ -1082,7 +1097,8 @@
             "Updated": "Ažurirano",
             "Your comment is being reviewed and will be published as soon as it's approved": "Vaš komentar se pregledava i biće objavljen čim bude odobren",
             "credit:": "autor:",
-            "Activate": "Aktivirati"
+            "Activate": "Aktivirati",
+            "Filter": "Filter"
         }, "sr-cy": {
             "Highlights": "Најважније",
             "Comment by": "Коментар поставио",
@@ -1114,7 +1130,8 @@
             "Updated": "Ажурирано",
             "Your comment is being reviewed and will be published as soon as it's approved": "Ваш коментар се прегледава и биће објављен чим буде одобрен",
             "credit:": "аутор:",
-            "Activate": "Активирати"
+            "Activate": "Активирати",
+            "Filter": "Филтер"
         }, "es": {
             "Highlights": "Destacados",
             "Comment by": "Comentario por",
@@ -1146,7 +1163,8 @@
             "Updated": "Actualizado",
             "Your comment is being reviewed and will be published as soon as it's approved": "Su comentario se está revisando y se publicará tan pronto como se apruebe",
             "credit:": "Crédito:",
-            "Activate": "Activar"
+            "Activate": "Activar",
+            "Filter": "Filtrar"
         }, "pt": {
             "Highlights": "Em foco",
             "Comment by": "Comentado por",
@@ -1178,7 +1196,8 @@
             "Updated": "Atualizar",
             "Your comment is being reviewed and will be published as soon as it's approved": "Seu comentário aguarda aprovação",
             "credit:": "crédito:",
-            "Activate": "Ativar"
+            "Activate": "Ativar",
+            "Filter": "Filtrar"
         }
     }
 }

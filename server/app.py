@@ -15,6 +15,7 @@ import jinja2
 import flask_s3
 import settings
 from flask_cache import Cache
+from version import __version__
 from liveblog.blogs import bloglist_assets_blueprint, bloglist_blueprint
 from liveblog.blogs.embeds import embed_blueprint
 from liveblog.common import BlogCache
@@ -54,6 +55,8 @@ def get_app(config=None):
         media_storage = AmazonMediaStorage
 
     config['DOMAIN'] = {}
+    config['SENTRY_CONFIG'] = {'release': __version__}
+    config['SENTRY_NAME'] = settings.ELASTICSEARCH_INDEX
 
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)

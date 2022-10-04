@@ -23,6 +23,10 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
             type: 'http',
             backend: {rel: 'archive'},
         });
+        apiProvider.api('themes', {
+            type: 'http',
+            backend: {rel: 'themes'},
+        });
     }])
     .config(['superdeskProvider', function(superdesk) {
         superdesk

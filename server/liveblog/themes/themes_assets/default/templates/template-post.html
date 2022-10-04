@@ -44,7 +44,9 @@
       {% endif %}
 
       <!-- remove advertisement stylization-->
-      {% if item.post_items_type != "advertisement" %}
+      {% set showPostDate = item.post_items_type != "advertisement" and not (item.sticky and settings.hidePinnedPostDatetime) %}
+
+      {% if showPostDate %}
         <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
       {% endif %}
     </div>
@@ -82,7 +84,7 @@
                 <div class="lb-slideshow_frame">
                   <div class="lb-slideshow_slides">
             {% endif %}
-            
+
             {# if previous item was an image and current item is an image as well = we are inside gallery loop #}
             {% if settings.showGallery and isPreviousItemOfImageType %}
               {% set galleryItem = true %}

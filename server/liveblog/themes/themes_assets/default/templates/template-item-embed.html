@@ -27,11 +27,11 @@
             </blockquote>
         </div>
     </template>
-{% elif provider_name == 'facebook' and meta.original_url %}
+{% elif provider_name == 'facebook' and meta.url %}
     <template class="lb_consent--awaiting" data-provider-url="{{ meta.provider_url }}">
-        <div class="fb-post" data-href="{{ meta.original_url }}" data-show-text="true">
-            <blockquote cite="{{ meta.original_url }}" class="fb-xfbml-parse-ignore">
-                <h4><a href="{{ meta.original_url|decode_uri }}">{{ meta.credit }}</a></h4>
+        <div class="fb-post" data-href="{{ meta.url }}" data-show-text="true">
+            <blockquote cite="{{ meta.url }}" class="fb-xfbml-parse-ignore">
+                <h4><a href="{{ meta.url|decode_uri }}">{{ meta.credit }}</a></h4>
                 <p>{{ meta.title }}</p>
                 <div class="item--embed__description">{{ meta.description }}</div>
             </blockquote>

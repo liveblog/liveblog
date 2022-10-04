@@ -18,19 +18,27 @@ module.exports = function makeConfig(grunt) {
 
     const sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
 
-    // shouldExclude returns true if the path p should be excluded from loaders
-    // such as 'babel' or 'eslint'. This is to avoid including node_modules into
-    // these loaders, but not node modules that are superdesk apps.
-    const shouldExclude = function(p) {
-        // don't exclude anything outside node_modules
-        if (p.indexOf('node_modules') === -1) {
+    // shouldExclude returns true if the path should be excluded from `ts-loader`
+    // to avoid including node_modules into it, except `superdesk` modules and
+    // `sanitize-html` which does not provide a build in their releases anymore
+    // https://github.com/apostrophecms/sanitize-html/pull/380
+    const shouldExclude = function(path) {
+        const isPackageNotInNodeModules = path.indexOf('node_modules') === -1;
+
+        if (isPackageNotInNodeModules) {
             return false;
         }
 
         // include only 'superdesk-core' and valid modules inside node_modules
-        const validModules = ['superdesk-core'].concat(sdConfig.apps);
+        const validModules = [
+            'superdesk-core',
+            'node_modules/sanitize-html',
+            // dependencies of `sanitize-html`
+            'node_modules/postcss',
+            'node_modules/nanoid'
+        ].concat(sdConfig.apps);
 
-        return !validModules.some((app) => p.indexOf(app) > -1);
+        return !validModules.some((app) => path.indexOf(app) > -1);
     };
 
     return {

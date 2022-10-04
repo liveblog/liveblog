@@ -81,10 +81,14 @@ def ampify(html):
         '\/index\.html\?videoId=',
         '(?P<videoId>\d*)'
     ]
+
     match = re.compile(''.join(brightcove_re_array)).match(html)
     if match:
-        return ('<amp-brightcove data-account="{account}" data-player="{player}" data-embed="{embed}" data-video-id="{videoId}" \
-         layout="responsive" width="480" height="270"></amp-brightcove>'.format(**match.groupdict()))
+        return '''
+            <amp-brightcove data-account="{account}" data-player="{player}" data-embed="{embed}"
+            data-video-id="{videoId}" layout="responsive" width="480" height="270"></amp-brightcove>'
+            '''.format(**match.groupdict())
+
     if re.search('<\S*iframe', html, re.IGNORECASE):
         src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
         width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)

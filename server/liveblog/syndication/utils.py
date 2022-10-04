@@ -1,9 +1,11 @@
 import json
 import hmac
+import arrow
+import uuid
 import logging
 import tempfile
 import urllib.parse
-import uuid
+
 from flask import abort
 import requests
 from bson import ObjectId
@@ -84,8 +86,8 @@ def fetch_url(url, timeout=5):
     """Fetch url using python-requests and save data to temporary file."""
     try:
         response = requests.get(url, timeout=timeout)
-    except (ConnectionError, RequestException, MaxRetryError):
-        raise DownloadError('Unable to download url: "{}"'.format(url))
+    except (ConnectionError, RequestException, MaxRetryError) as err:
+        raise DownloadError('Unable to download url: "{}" Exception "{}"'.format(url, err))
     fd = tempfile.NamedTemporaryFile()
     for chunk in response.iter_content(chunk_size=1024):
         if chunk:
@@ -176,7 +178,8 @@ def _fetch_and_create_image_item(item):
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = FileStorage(stream=fetch_url(image_url), content_type=mimetype)
+
+    item_data['media'] = FileStorage(stream=fetch_url(image_url, timeout=10), content_type=mimetype)
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=item_id)
@@ -280,7 +283,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     }
 
     if 'published_date' in producer_post.keys():
-        new_post['published_date'] = producer_post['published_date']
+        producer_published_date = arrow.get(producer_post['published_date'])
+        new_post['published_date'] = producer_published_date.datetime
 
     if producer_post.get('syndication_in'):
         new_post['repeat_syndication'] = in_syndication['_id']

@@ -69,20 +69,18 @@ def send_email_to_added_members(blog, recipients, blog_url):
     for user in recipients:
         # If user want to receive email notification, we add him as recipient.
         if prefs_service.email_notification_is_enabled(user_id=user):
-            if isinstance(user, ObjectId):
-                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user))
-            else:
-                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user['user']))
+            user_id = user if isinstance(user, ObjectId) else user['user']
+            user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user_id))
             recipients_email.append(user_doc['email'])
 
     if recipients_email:
-        # Send emails.
         title = blog['title']
         admins = app.config['ADMINS']
         app_name = app.config['APPLICATION_NAME']
         subject = render_template("invited_members_subject.txt", app_name=app_name)
         text_body = render_template("invited_members.txt", app_name=app_name, link=blog_url, title=title)
         html_body = render_template("invited_members.html", app_name=app_name, link=blog_url, title=title)
+
         if not app.config.get('SUPERDESK_TESTING', False):
             send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
                              text_body=text_body, html_body=html_body)
@@ -104,11 +102,14 @@ class BlogService(BaseService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+
             # Set the blog_preferences by merging given preferences with global_prefs.
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
-            prefs = global_prefs.copy()
-            prefs.update(doc.get('blog_preferences', {}))
-            doc['blog_preferences'] = prefs
+            preferences = global_prefs.copy()
+            preferences.update(doc.get('blog_preferences', {}))
+
+            doc['blog_preferences'] = preferences
+
             # find the theme that is assigned to the blog
             theme_name = doc['blog_preferences'].get('theme')
             if theme_name:

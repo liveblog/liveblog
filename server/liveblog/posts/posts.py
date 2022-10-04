@@ -7,6 +7,7 @@ import datetime
 from enum import Enum
 from flask import current_app as app
 from bson.objectid import ObjectId
+from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
@@ -168,6 +169,57 @@ class PostsResource(ArchiveResource):
         '_created_-1': ([('_created', -1)]),
         'order_-1': ([('order', -1)]),
     }
+
+    def pre_request_patch(self, request, lookup):
+        """
+        Hooks to python-eve `on_pre_PATCH` event through superdesk wiring.
+        See `superdesk/resource.py` for more details
+        """
+
+        post_id = lookup.get('_id')
+        if not post_id:
+            return
+
+        self._sync_registries_if_needed(request, post_id)
+
+    def _sync_registries_if_needed(self, request, post_id):
+        """
+        There are certain situations where registries get out of sync between
+        mongodb and elastic search. To be more specific, if there is a network outage
+        in one of the databases, and there is user action/update on posts, there is a
+        good chance that the entries will get out of sync. For these cases, we need to
+        be able to re-sync these registries without breaking the user experience.
+
+        This method tries to take care of that in an automated way. If the incoming etag
+        (request`HTTP_IF_MATCH` header) doesn't match the mongo etag, but it does match
+        the one from elastic entry, then it calculates a new proper document etag and
+        override the header so the update and sync will succeed with the update/patch action.
+        """
+
+        etag = config.ETAG
+        endpoint_name = 'posts'
+        eve_backend = get_resource_service(endpoint_name).backend
+
+        data_backend = eve_backend._backend(endpoint_name)
+        search_backend = eve_backend._lookup_backend(endpoint_name, fallback=True)
+
+        mongo_entry = data_backend.find_one(endpoint_name, _id=post_id, req=None)
+        if not mongo_entry:
+            return
+
+        etag_in_mongo = mongo_entry[etag]
+        etag_if_match = request.environ.get('HTTP_IF_MATCH')
+
+        registries_out_of_sync = etag_in_mongo != etag_if_match
+        if not registries_out_of_sync:
+            return
+
+        elastic_entry = search_backend.find_one(endpoint_name, _id=post_id, req=None)
+        etag_in_elastic = elastic_entry.get(etag)
+
+        request_etag_match_elastic = etag_if_match == etag_in_elastic
+        if request_etag_match_elastic:
+            request.environ['HTTP_IF_MATCH'] = etag_in_mongo
 
 
 class PostsService(ArchiveService):

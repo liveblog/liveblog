@@ -105,21 +105,23 @@ class ConsumerService(BaseService):
         else:
             return response
 
-    def _allowed_by_tags(self, consumer_id, blog_id, post):
+    def is_allowed_by_tags(self, consumer_id, blog_id, post):
         """
         Checks if the consumer has the right tags so syndicated content can be sent
         """
         blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
         consumers_settings = blog.get('consumers_settings', {})
         settings = consumers_settings.get(str(consumer_id), {'tags': None})
-        tags = settings.get('tags', None)
-        post_tags = post.get('tags', [])
 
-        # means no settings has been set for consumer
-        if tags is None:
+        consumer_tags = settings.get('tags', None)
+
+        # tags hasn't been set for this consumer
+        # or the consumer has no tags selected, meaning tags allowed
+        if consumer_tags is None or len(consumer_tags) == 0:
             return True
 
-        return any([x in tags for x in post_tags])
+        post_tags = post.get('tags', [])
+        return any([x in consumer_tags for x in post_tags])
 
     def send_post(self, syndication_out, new_post, action='created'):
         """Receives post information and sends it over webhook request to consumer
@@ -134,8 +136,9 @@ class ConsumerService(BaseService):
             post = new_post['post']
             blog_id = post['blog']
 
-            if not self._allowed_by_tags(consumer_id, blog_id, post):
+            if not self.is_allowed_by_tags(consumer_id, blog_id, post):
                 return
+
         except KeyError as err:
             logger.error('Error while getting blog id in `send_post`. Err: "{0}"'.format(err))
 

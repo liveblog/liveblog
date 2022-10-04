@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.82.1*
+*Version 3.82.2*
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
