@@ -193,7 +193,7 @@ function BlogSettingsController(
                         {blog: vm.blog._id},
                     ],
                 }),
-                max_results: 100,
+                max_results: 500,
             };
 
             api('outputs').query(criteria)
