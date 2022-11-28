@@ -27,7 +27,7 @@ jobs:
       SYNDICATION: true
 
     services:
-      nginx:
+      mongodb:
         image: mongo:3.4.23
         ports:
           - 27017:27017
