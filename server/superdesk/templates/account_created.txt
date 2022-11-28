@@ -1,11 +1,18 @@
-Dear {{user.first_name}},
+Welcome to your new {{app_name}} Account on {{instance_url}}
 
-Someone has created a {{app_name}} user account for you with username {{user.username}} and this email address.
-Please visit {{url}} to choose your password.
+Hello {{user.first_name}},
 
-The above link expires in one week (168 hours).
+Sign in to your new Account to access the Live Blog services
 
-Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as {{username}} with your password.
+Your username: 
+{{user.username}}
+
+Password: 
+Click {{url}} to set your password and sign in. 
+
+For your security, the reset password link expires after one week (168 hours).
+
+Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as {{user.username}} with your password.
 See our User manual on https://sourcefabricberlin.zendesk.com/hc/en-us/sections/201858023-Live-Blog-Manual-Features to help you get started.
 
 Please ignore this email if you think your {{app_name}} account was created by mistake.
