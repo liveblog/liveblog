@@ -5,10 +5,7 @@ describe('timeline pagination', function() {
     'use strict';
 
     beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login()
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+      login().then(done);
     });
 
     it('can scroll to last item and load more', function() {
