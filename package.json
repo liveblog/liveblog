@@ -1,6 +1,6 @@
 {
   "name": "liveblog",
-  "version": "3.82.4_dev0",
+  "version": "3.82.4-dev0",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
