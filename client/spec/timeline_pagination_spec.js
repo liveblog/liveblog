@@ -14,6 +14,6 @@ describe('timeline pagination', function() {
             lastPost = blog.timeline.all().last();
         browser.driver.executeScript('arguments[0].scrollIntoView(true);', lastPost.getWebElement());
         browser.waitForAngular();
-        expect(blog.timeline.all().count()).toBeGreaterThan(postsNo);
+        expect(blog.timeline.all().count()).toBeGreaterThanOrEqual(postsNo);
     });
 });
