@@ -261,7 +261,7 @@
         // retrieve updates periodically
         .then(function() {
             vm.permalinkScroll();
-            if(vm.blog.blog_status !== 'closed') {
+            if(vm.blog.blog_status === 'open') {
                 vm.interval = {
                     posts: $interval(retrieveUpdate, UPDATE_EVERY),
                     blog: $interval(retrieveBlogSettings, 3 * UPDATE_EVERY)
