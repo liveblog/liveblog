@@ -262,21 +262,20 @@ vm.init = function() {
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
 
-  setInterval(() => {
-    vm.loadPosts({
-      fromDate: latestUpdate,
-      tags: selectedTags
-    })
-    .then(view.renderPosts)
-    .then((resp) => {
-      if (resp && resp._items.length > 0) {
-        view.consent.init();
-        view.adsManager.refreshAds();
-      }
-    });
-  }, 10*1000);
+  // avoid 
+  var isBlogOpen = LB.blog.blog_status === "open";
+  var tenSeconds = 10 * 1000;
 
-  //return this.vm.latestUpdate;
+  if (isBlogOpen) {
+    setInterval(() => {
+      vm.loadPosts({
+        fromDate: latestUpdate,
+        tags: selectedTags
+      })
+      .then(view.renderPosts)
+      .then(view.initGdprConsentAndRefreshAds);
+    }, tenSeconds);
+  }
 };
 
 /**
