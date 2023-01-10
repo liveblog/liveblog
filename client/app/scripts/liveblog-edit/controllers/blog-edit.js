@@ -652,7 +652,8 @@ export default function BlogEditController(
             $scope.currentPostTags = tags;
         },
 
-        onPublishedDateChange: (utcDateTime) => {
+        onPublishedDateChange: (utcDateTime, isDatetimeInvalid) => {
+            $scope.actionPending = isDatetimeInvalid;
             $scope.currentPostPublishedDate = utcDateTime;
         },
 
