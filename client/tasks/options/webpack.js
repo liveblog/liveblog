@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin-legacy');
 
 module.exports = function(grunt) {
     const config = require('../../webpack.config.js')(grunt);
@@ -8,8 +9,10 @@ module.exports = function(grunt) {
         new webpack.DefinePlugin({
             'process.env': {NODE_ENV: JSON.stringify('production')},
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
+        new TerserPlugin({
+            terserOptions: {
+                sourceMaps: true,
+            },
         })
     );
 
