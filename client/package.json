@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@atlaskit/calendar": "10.1.0",
-    "@atlaskit/datetime-picker": "10.0.1",
+    "@atlaskit/datetime-picker": "^12.3.5",
     "@atlaskit/icon": "21.1.2",
     "@types/react-dom": "^16.9.15",
     "adblock-detect": "1.0.5",
@@ -106,6 +106,7 @@
     "moment-timezone": "0.5.14",
     "ng-file-upload": "12.2.13",
     "object-hash": "^2.1.1",
+    "popper.js": "^1.16.1",
     "rangy": "1.3.0",
     "raven-js": "3.22.3",
     "react-select": "^3.0.4",
