@@ -403,11 +403,14 @@ export default function embedBlockFactory(SirTrevor, config) {
                 $coverHandler.append($removeLink, $showLink);
             }
 
-            // if instagram process the embed code
-            if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
-                setTimeout(() => {
-                    window.instgrm.Embeds.process();
-                }, 1000);
+            switch (data.provider_name) {
+            case 'Instagram':
+                setTimeout(window.instgrm.Embeds.process, 1000);
+                break;
+
+            case 'Twitter':
+                setTimeout(window.twttr.widgets.load, 500);
+                break;
             }
         },
 
