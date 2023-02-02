@@ -409,7 +409,7 @@ export default function embedBlockFactory(SirTrevor, config) {
                 break;
 
             case 'Twitter':
-                setTimeout(window.twttr.widgets.load, 500);
+                setTimeout(window.twttr.widgets.load, 1000);
                 break;
             }
         },
