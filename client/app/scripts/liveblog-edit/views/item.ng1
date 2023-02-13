@@ -7,13 +7,13 @@
     >
     </div>
 
-    <lb-item-embed ng-switch-when="embed"
-        meta="item.meta"
-        html-content="item.text|outboundAnchors"
+    <div ng-switch-when="embed"
+        lb-item-embed
+        item="item"
         class="lb-post__item" 
         ng-class-even="'lb-post__item--even'"
     >
-    </lb-item-embed>
+    </div>
 
     <div ng-switch-default 
         lb-bind-html 

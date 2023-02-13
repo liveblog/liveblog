@@ -1,17 +1,31 @@
 import React from 'react';
-import { ItemEmbedGeneric } from './itemEmbedGeneric';
-import { ItemEmbedTwitter } from './itemEmbedTwitter';
+import { ItemEmbedRender } from './itemEmbedRender';
 
 interface IProps {
-    meta: any;
-    htmlContent: string;
+    item: any;
 }
 
-export const ItemEmbed: React.FunctionComponent<IProps> = (props) => {
-    switch (props.meta.provider_name) {
-    case 'Twitter':
-        return <ItemEmbedTwitter {...props.meta} />;
-    default:
-        return <ItemEmbedGeneric htmlContent={props.htmlContent} />;
+export class ItemEmbed extends React.Component<IProps, IProps> {
+    constructor(props) {
+        super(props);
+
+        this.state = { item: props.item };
     }
-};
+
+    /**
+     * This is simply an exposed method to be able to update the item
+     * value from the exterior. The reason is that Angular two-way binding
+     * mechanism will not update the props of the component from outside so,
+     * we need to do it manually.
+     * @param nextItem
+     */
+    public updateItem(nextItem: any) {
+        this.setState({ item: nextItem });
+    }
+
+    render() {
+        const { item } = this.state;
+
+        return <ItemEmbedRender {...item.meta} text={item.text} />;
+    }
+}
