@@ -17,16 +17,15 @@ export const ItemEmbedRender: React.FunctionComponent<IProps> = (props) => {
     switch (props.provider_name) {
     case 'Twitter':
         return (
-            <div key={props.original_url} className="item-embed-container">
-                <TwitterEmbed
-                    url={props.original_url}
-                    style={{
-                        maxWidth: 550,
-                        minHeight: 600,
-                    }}
-                    width="100%"
-                />
-            </div>
+            <TwitterEmbed
+                linkText={props.title}
+                url={props.original_url}
+                style={{
+                    maxWidth: 550,
+                    minHeight: 600,
+                }}
+                width="100%"
+            />
         );
     default:
         return <ItemEmbedGeneric htmlContent={props.text} />;
