@@ -27,7 +27,7 @@ export class ItemEmbed extends React.Component<IProps, IProps> {
         const { item } = this.state;
 
         return (
-            <div key={item.meta.original_url} className="item-embed-container">
+            <div key={item.meta.original_url}>
                 <ItemEmbedRender {...item.meta} text={item.text} />
             </div>
         );
