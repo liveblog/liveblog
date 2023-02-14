@@ -7,6 +7,7 @@ export interface IItemMeta {
     credit: string;
     original_url: string; // eslint-disable-line camelcase
     provider_name: string; // eslint-disable-line camelcase
+    show_embed_description: boolean; // eslint-disable-line camelcase
 }
 
 export const ItemEmbedInfo: React.FunctionComponent<IItemMeta> = (props) => {

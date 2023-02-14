@@ -2,6 +2,7 @@ import React from 'react';
 import { FacebookEmbed, TwitterEmbed } from 'react-social-media-embed';
 import { ItemEmbedGeneric } from './itemEmbedGeneric';
 import { IItemMeta, ItemEmbedInfo } from './itemEmbedInfo';
+import { ItemEmbedInstagram } from './itemEmbedInstagram';
 
 interface IProps extends IItemMeta {
     text: string;
@@ -9,6 +10,16 @@ interface IProps extends IItemMeta {
 
 export const ItemEmbedRender: React.FunctionComponent<IProps> = (props) => {
     switch (props.provider_name) {
+    case 'Instagram':
+        return (
+            <div style={{ maxWidth: 550, width: '100%' }}>
+                <ItemEmbedInstagram
+                    {...props}
+                    captioned={!!props.show_embed_description}
+                />
+                <ItemEmbedInfo {...props} />
+            </div>
+        );
     case 'Facebook':
         return (
             <>

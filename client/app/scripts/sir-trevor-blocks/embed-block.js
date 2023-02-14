@@ -405,7 +405,10 @@ export default function embedBlockFactory(SirTrevor, config) {
 
             switch (data.provider_name) {
             case 'Instagram':
-                setTimeout(window.instgrm.Embeds.process, 1000);
+                setTimeout(() => {
+                    if (window.instgrm)
+                        window.instgrm.Embeds.process();
+                }, 1000);
                 break;
 
             case 'Twitter':
