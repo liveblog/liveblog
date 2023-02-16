@@ -1,10 +1,11 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { PlaceholderEmbed } from 'react-social-media-embed';
 import { IItemMeta } from './itemEmbedInfo';
 
 interface IProps extends IItemMeta {
     captioned?: boolean;
+    style?: CSSProperties | undefined;
 }
 
 const loadInstagramLib = (callback: () => void) => {
@@ -23,26 +24,29 @@ const loadInstagramLib = (callback: () => void) => {
     firstScript.parentNode.insertBefore(scriptElem, firstScript);
 };
 
+const RenderPlaceHolder = ({ url }: {url: string}) => {
+    return (
+        <PlaceholderEmbed
+            linkText="View post on Instagram"
+            url={url}
+            // @ts-ignore:next-line
+            style={{ maxWidth: 550, height: 600 }}
+        />
+    );
+};
+
 export const ItemEmbedInstagram: React.FunctionComponent<IProps> = (props) => {
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         loadInstagramLib(() => {
             setLoading(false);
-            setTimeout(() => (window as any).instgrm.Embeds.process, 500);
+            (window as any)?.instgrm?.Embeds?.process();
         });
     }, [props.original_url, props.captioned]);
 
-    if (isLoading) {
-        return (
-            <PlaceholderEmbed
-                linkText="View post on Instagram"
-                url={props.original_url}
-                // @ts-ignore:next-line
-                style={{ maxWidth: 550, height: 600 }}
-            />
-        );
-    }
+    if (isLoading)
+        return <RenderPlaceHolder url={props.original_url} />;
 
     const addAttrs = {};
 
@@ -50,11 +54,18 @@ export const ItemEmbedInstagram: React.FunctionComponent<IProps> = (props) => {
         addAttrs['data-instgrm-captioned'] = '';
 
     return (
-        <blockquote
-            className="instagram-media"
-            data-instgrm-permalink={props.original_url}
-            data-instgrm-version="12"
-            {...addAttrs}
-        />
+        <div>
+            <div className="instagram-embed-container" key={`${props.original_url}_${props.captioned}`}>
+                <blockquote
+                    style={props.style}
+                    className="instagram-media"
+                    data-instgrm-permalink={props.original_url}
+                    data-instgrm-version="12"
+                    {...addAttrs}
+                >
+                    <RenderPlaceHolder url={props.original_url} />
+                </blockquote>
+            </div>
+        </div>
     );
 };

@@ -12,9 +12,10 @@ export const ItemEmbedRender: React.FunctionComponent<IProps> = (props) => {
     switch (props.provider_name) {
     case 'Instagram':
         return (
-            <div style={{ maxWidth: 550, width: '100%' }}>
+            <div>
                 <ItemEmbedInstagram
                     {...props}
+                    style={{ maxWidth: 550, width: '100%' }}
                     captioned={!!props.show_embed_description}
                 />
                 <ItemEmbedInfo {...props} />

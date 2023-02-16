@@ -192,6 +192,14 @@
                 font-weight: 300;
             }
         }
+
+        .instagram-embed-container {
+            blockquote {
+                content: "";
+                margin-left: 0;
+                top: 0;
+            }
+        }
     }
     &__editable {
         border: 1px dotted #fff;
