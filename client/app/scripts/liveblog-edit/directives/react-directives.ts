@@ -14,8 +14,8 @@ export const lbItemEmbed = () => {
             item: '=',
         },
 
-        link: function(scope, element, attrs) {
-            let embedRef = createRef<ItemEmbed>();
+        link: (scope, element, attrs) => {
+            const embedRef = createRef<ItemEmbed>();
             const props = { item: scope.item, ref: embedRef };
             const mountPoint = $(element).get(0);
 

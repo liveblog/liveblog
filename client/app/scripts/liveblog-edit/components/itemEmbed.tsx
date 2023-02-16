@@ -19,7 +19,7 @@ export class ItemEmbed extends React.Component<IProps, IProps> {
      * we need to do it manually.
      * @param nextItem
      */
-    public updateItem(nextItem: any) {
+    updateItem(nextItem: any) {
         this.setState({ item: nextItem });
     }
 

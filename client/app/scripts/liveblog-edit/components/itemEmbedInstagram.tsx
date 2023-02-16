@@ -13,9 +13,11 @@ const loadInstagramLib = (callback: () => void) => {
     const id = 'instagram-js';
     const firstScript = document.getElementsByTagName(tag)[0];
 
-    if (document.getElementById(id)) callback();
+    if (document.getElementById(id)) {
+        callback();
+    }
 
-    let scriptElem = document.createElement(tag);
+    const scriptElem = document.createElement(tag);
 
     scriptElem.id = id;
     scriptElem.src = '//www.instagram.com/embed.js';
@@ -45,13 +47,15 @@ export const ItemEmbedInstagram: React.FunctionComponent<IProps> = (props) => {
         });
     }, [props.original_url, props.captioned]);
 
-    if (isLoading)
+    if (isLoading) {
         return <RenderPlaceHolder url={props.original_url} />;
+    }
 
     const addAttrs = {};
 
-    if (props.captioned)
+    if (props.captioned) {
         addAttrs['data-instgrm-captioned'] = '';
+    }
 
     return (
         <div>
