@@ -14,10 +14,11 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 
 from .constants import (
-    THEME, LANGUAGE, 
+    THEME,
+    LANGUAGE,
     YOUTUBE_CREDENTIALS,
-    YOUTUBE_SECRETS, 
-    GLOBAL_TAGS, 
+    YOUTUBE_SECRETS,
+    GLOBAL_TAGS,
     ALLOW_MULTIPLE_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT
