@@ -19,7 +19,12 @@ import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.ng1';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 import './../components/inactivity.modal';
-import {TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS} from '../../liveblog-common/constants';
+import {
+    TAGS,
+    ALLOW_PICK_MULTI_TAGS,
+    YOUTUBE_PRIVACY_STATUS,
+    EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+} from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
     'api',
@@ -99,7 +104,8 @@ export default function BlogEditController(
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
-    const whereParams = {key: {$in: [TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS]}};
+    const whereParams = {key: {$in: [
+        TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS, EMBED_HEIGHT_RESPONSIVE_DEFAULT]}};
 
     // let's get global tags and settings for post only once, when the controller loads
     api.global_preferences.query({where: whereParams})
