@@ -130,9 +130,11 @@
                             <div class="form-group" ng-if="settings.embedMultiHight && !settings.selectedTheme.settings.renderForESI">
                                 <label for="inputTitle" class="control-label" translate>Embed height</label>
                                 <div class="form-input relative">
-                                    <span class="blog-status">{{ settings.blogPreferences.embed_switch ? 'Responsive' : 'Normal' | translate }}</span>
-                                    <span style="display: block" sd-tooltip="{{ settings.blogPreferences.embed_switch ? 'Fluid height' : 'Normal, fixed height' | translate }}" data-flow="right">
-                                        <span class="pull-left" sd-switch ng-model="settings.blogPreferences.embed_switch" data-embed-status-switch></span>
+                                    <span class="blog-status">
+                                        {{ settings.blogPreferences.embed_height_responsive_default ? 'Responsive' : 'Normal' | translate }}
+                                    </span>
+                                    <span style="display: block" sd-tooltip="{{ settings.blogPreferences.embed_height_responsive_default ? 'Fluid height' : 'Normal, fixed height' | translate }}" data-flow="right">
+                                        <span class="pull-left" sd-switch ng-model="settings.blogPreferences.embed_height_responsive_default" data-embed-status-switch></span>
                                     </span>
                                 </div>
                             </div>
@@ -144,7 +146,7 @@
                                               class="form-control"
                                               rows="6"
                                               readonly="readonly"
-                                              select-text-on-click>{{ settings.blogPreferences.embed_switch ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
+                                              select-text-on-click>{{ settings.blogPreferences.embed_height_responsive_default ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
                                     <a href="{{ settings.publicUrl }}" target="_blank"><span ng-bind="settings.publicUrl"></span> <i class="icon-external"></i></a>
                                 </div>
                             </div>
