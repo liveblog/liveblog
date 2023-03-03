@@ -1,2 +1,2 @@
-superdesk-docker
+Live Blog Docker
 ================

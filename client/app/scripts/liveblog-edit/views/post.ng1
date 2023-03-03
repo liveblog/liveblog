@@ -104,7 +104,7 @@
                     <div ng-if="show_all">
                         <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
                            <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
-                               <div class="lb-post__figure">
+                                <div class="lb-post__figure">
                                     <figure ng-class="{'avatar': (item.item.item_type !== 'comment'),
                                                        'avatar-comment': (item.item.item_type === 'comment')}"
                                     >
@@ -123,11 +123,12 @@
                                 </div>
                             </div>
                             <div
-                                ng-if="!post.fullDetails || $first"
-                                lb-bind-html
-                                html-content="{{ item.item.text }}"
+                                lb-item
+                                ng-if="!post.fullDetails || $first"    
+                                item="item.item"
                                 class="lb-post__item"
-                                ng-class="{'lb-post__item--even': !$first}"></div>
+                                ng-class="{'lb-post__item--even': !$first}">
+                            </div>
                         </div>
                     </div>
                 </div>

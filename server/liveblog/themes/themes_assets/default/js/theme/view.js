@@ -8,7 +8,7 @@ const helpers = require('./helpers');
 const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
-const gdpr = require('./gdpr');
+const gdprConsent = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 const filters = require('../../misc/filters');
 
@@ -448,6 +448,13 @@ function attachDropdownCloseEvent() {
   });
 }
 
+function initGdprConsentAndRefreshAds(api_response) {
+  if (api_response && api_response._items.length > 0) {
+    gdprConsent.init();
+    adsManager.refreshAds();
+  }
+}
+
 module.exports = {
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
@@ -469,8 +476,9 @@ module.exports = {
   clearCommentDialog: clearCommentDialog,
   checkPending: checkPending,
   adsManager: adsManager,
-  consent: gdpr,
+  consent: gdprConsent,
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
   attachDropdownCloseEvent: attachDropdownCloseEvent,
-  loadEmbeds: loadEmbeds
+  loadEmbeds: loadEmbeds,
+  initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds
 };

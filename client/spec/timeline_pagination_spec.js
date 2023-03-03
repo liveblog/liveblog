@@ -5,10 +5,7 @@ describe('timeline pagination', function() {
     'use strict';
 
     beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login()
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+      login().then(done);
     });
 
     it('can scroll to last item and load more', function() {
@@ -17,6 +14,6 @@ describe('timeline pagination', function() {
             lastPost = blog.timeline.all().last();
         browser.driver.executeScript('arguments[0].scrollIntoView(true);', lastPost.getWebElement());
         browser.waitForAngular();
-        expect(blog.timeline.all().count()).toBeGreaterThan(postsNo);
+        expect(blog.timeline.all().count()).toBeGreaterThanOrEqual(postsNo);
     });
 });

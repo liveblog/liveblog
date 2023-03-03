@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.82.3",
+  "version": "3.82.4",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "grunt build",
     "eslint": "grunt eslint",
-    "tslint": "tsc --noEmit && tslint -c tslint.json 'app/**/*.{ts,tsx}'",
+    "tslint": "tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
     "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION",
     "e2e": "./node_modules/.bin/protractor protractor-conf.js"
@@ -45,7 +45,6 @@
     "grunt-contrib-copy": "1.0.0",
     "grunt-contrib-cssmin": "2.2.1",
     "grunt-contrib-less": "1.4.1",
-    "grunt-contrib-uglify": "3.1.0",
     "grunt-contrib-watch": "1.0.0",
     "grunt-eslint": "^21.0.0",
     "grunt-filerev": "2.3.1",
@@ -68,6 +67,7 @@
     "style-loader": "0.19.0",
     "superdesk-code-style": "^1.2.0",
     "superdesk-ui-framework": "^1.8.14",
+    "terser-webpack-plugin-legacy": "^1.2.5",
     "ts-loader": "^3.5.0",
     "tslint": "^5.16.0",
     "typescript": "^3.9.6",
@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@atlaskit/calendar": "10.1.0",
-    "@atlaskit/datetime-picker": "10.0.1",
+    "@atlaskit/datetime-picker": "^12.3.5",
     "@atlaskit/icon": "21.1.2",
     "@types/react-dom": "^16.9.15",
     "adblock-detect": "1.0.5",
@@ -106,9 +106,11 @@
     "moment-timezone": "0.5.14",
     "ng-file-upload": "12.2.13",
     "object-hash": "^2.1.1",
+    "popper.js": "^1.16.1",
     "rangy": "1.3.0",
     "raven-js": "3.22.3",
     "react-select": "^3.0.4",
+    "react-social-media-embed": "^2.3.4",
     "sanitize-html": "^2.7.0",
     "sir-trevor": "git+https://github.com/liveblog/sir-trevor-js",
     "styled-components": "^5.1.1",

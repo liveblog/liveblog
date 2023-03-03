@@ -1,15 +1,25 @@
-<p>Dear {{user.first_name}},</p>
+<p>Welcome to your new {{app_name}} Account on {{instance_url}}</p>
 
-<p>Someone has created a {{app_name}} user account for you with username {{user.username}} and this email address.<br/>
-Please visit {{url}} to choose your password.</p>
+<p>Hello {{user.first_name}},</p>
 
-<p>The above link expires in one week (168 hours).</p>
+<p>Sign in to your new Account to access the Live Blog services</p>
 
-<p>Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as {{username}} with your password.<br/>
+<p>
+<b>Your username:</b><br/>
+{{user.username}}
+</p>
+
+<p>
+<b>Password:</b><br/>
+<a href="{{url}}">Click here</a> to set your password and sign in. 
+</p>
+
+<p>For your security, the reset password link expires after one week (168 hours).</p>
+
+<p>Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as <b>{{user.username}}</b> with your password.<br/>
 See our <a href="https://sourcefabricberlin.zendesk.com/hc/en-us/sections/201858023-Live-Blog-Manual-Features">User manual</a> to help you get started.</p>
 
 <p>Please ignore this email if you think your {{app_name}} account was created by mistake.</p>
-
 
 <p>Happy blogging,<br/>
 The {{app_name}} Team</p>

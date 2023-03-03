@@ -107,7 +107,7 @@ def check_limit_and_delete_oldest(blog_id):
 
         for doc in oldest_post:
             post_service.update(doc['_id'], {'deleted': True}, doc)
-            logger.warning(
+            logger.info(
                 'Deleted oldest post `%s` because posts_limit (%s) in blog `%s` has been reached'
                 % (doc['_id'], posts_limit, blog['_id']))
 

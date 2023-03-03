@@ -6,7 +6,7 @@ import { Styles } from 'react-select/src/styles';
 
 interface IProps {
     datetime?: string;
-    onChange: (utcDatetime: string) => void;
+    onChange: (utcDatetime: string, isDatetimeInvalid: boolean) => void;
 }
 
 // otherwise TS will complain with warnings
@@ -53,14 +53,15 @@ export const DateTimePicker: React.FunctionComponent<IProps> = (props) => {
     const onChange = (datetime: string) => {
         const now = moment();
         const selectedDate = moment(datetime);
+        const isDatetimeInvalid = !selectedDate.isValid() || selectedDate <= now;
 
-        setInvalid(!selectedDate.isValid() || selectedDate <= now);
+        setInvalid(isDatetimeInvalid);
         setValue(datetime);
 
-        props.onChange(selectedDate.utc().format());
+        props.onChange(selectedDate.utc().format(), isDatetimeInvalid);
     };
 
-    const times = generateTimes('01:00', 30, 'minutes');
+    const times = generateTimes('00:00', 30, 'minutes');
     const [isFocused, setFocused] = useState(false);
     const containerClass = 'schedule-datetime-picker';
 
@@ -86,7 +87,11 @@ export const DateTimePicker: React.FunctionComponent<IProps> = (props) => {
                     onBlur={() => setFocused(false)}
                 />
 
-                {invalid ? <span>Please provide a valid date and time (in future)</span> : null}
+                {invalid && (
+                    <span className="freetype--error freetype--error-text">
+                        Please provide a valid date and time (in future)
+                    </span>
+                )}
             </div>
         </div>
     );

@@ -14,9 +14,15 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 
 from .constants import (
-    THEME, LANGUAGE, YOUTUBE_CREDENTIALS,
-    YOUTUBE_SECRETS, GLOBAL_TAGS, ALLOW_MULTIPLE_TAGS,
-    YOUTUBE_PRIVACY_STATUS)
+    THEME,
+    LANGUAGE,
+    YOUTUBE_CREDENTIALS,
+    YOUTUBE_SECRETS,
+    GLOBAL_TAGS,
+    ALLOW_MULTIPLE_TAGS,
+    YOUTUBE_PRIVACY_STATUS,
+    EMBED_HEIGHT_RESPONSIVE_DEFAULT
+)
 
 preferences_key = 'global_preferences'
 logger = logging.getLogger(__name__)
@@ -43,7 +49,8 @@ class GlobalPreferencesResource(Resource):
                 YOUTUBE_SECRETS,
                 YOUTUBE_PRIVACY_STATUS,
                 GLOBAL_TAGS,
-                ALLOW_MULTIPLE_TAGS
+                ALLOW_MULTIPLE_TAGS,
+                EMBED_HEIGHT_RESPONSIVE_DEFAULT
             ],
         },
         'value': {'type': ['string', 'list', 'boolean']}

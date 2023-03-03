@@ -115,6 +115,10 @@ class BlogService(BaseService):
             if theme_name:
                 self._update_theme_settings(doc, theme_name)
 
+            embed_height_key = 'embed_height_responsive_default'
+            if embed_height_key not in preferences:
+                doc['blog_preferences'][embed_height_key] = True
+
             # If "start_date" is set to None, change the value to utcnow().
             if doc['start_date'] is None:
                 doc['start_date'] = utcnow()
