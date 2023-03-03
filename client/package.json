@@ -71,7 +71,7 @@
     "ts-loader": "^3.5.0",
     "tslint": "^5.16.0",
     "typescript": "^3.9.6",
-    "webpack": "3.11.0",
+    "webpack": "5.75.0",
     "webpack-dev-server": "2.11.5"
   },
   "dependencies": {
