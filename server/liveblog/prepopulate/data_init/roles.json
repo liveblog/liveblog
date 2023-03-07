@@ -3,12 +3,35 @@
         "_id": "54e64cde1024542de2649be9",
         "description": "Editor can control and publish content to the liveblog and invite people to contribute",
         "name": "Editor",
-        "privileges": {"blogs": 1, "publish_post": 1, "posts": 1, "archive": 1, "submit_post": 1, "request_membership": 1, "outputs": 1}
+        "privileges": {
+            "blogs": 1,
+            "publish_post": 1,
+            "posts": 1,
+            "archive": 1,
+            "submit_post": 1,
+            "request_membership": 1,
+            "outputs": 1
+        }
     },
     {
         "_id": "54e64e671024542de640fee6",
         "description": "Contributor can submit post to be approved by the Editor",
         "name": "Contributor",
         "privileges": {"submit_post": 1, "posts": 1, "archive": 1, "request_membership": 1}
+    },
+    {
+        "_id": "01dd8d20ea9c412d86276b86",
+        "description": "Super editor is almost like an admin but not quite",
+        "name": "Super Editor",
+        "privileges": {
+            "blogs": 1,
+            "publish_post": 1,
+            "posts": 1,
+            "archive": 1,
+            "submit_post": 1,
+            "request_membership": 1,
+            "outputs": 1,
+            "global_preferences": 1
+        }
     }
 ]
