@@ -28,3 +28,16 @@ def init_app(app):
 
     superdesk.command('register_local_themes', RegisterLocalThemesCommand())
     superdesk.command('register_theme', RegisterThemeCommand())
+
+
+superdesk.privilege(
+    name='themes_create', label='Themes management', description='User can add new themes')
+
+superdesk.privilege(
+    name='themes_read', label='Themes management', description='User can access the list of themes')
+
+superdesk.privilege(
+    name='themes_update', label='Themes management', description='User can update existent themes')
+
+superdesk.privilege(
+    name='themes_delete', label='Themes management', description='User can delete themes')
