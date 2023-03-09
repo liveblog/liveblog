@@ -1,12 +1,36 @@
 import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
 (function() {
-    LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-        '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
-        '$http', 'session'];
-    function LiveblogThemesController(api, $location, notify, gettext,
-        $q, $sce, config, _, upload, blogService, $window, modal,
-        $http, session) {
+    LiveblogThemesController.$inject = [
+        'lodash',
+        '$http',
+        '$location',
+        '$sce',
+        '$window',
+        'api',
+        'blogService',
+        'config',
+        'gettext',
+        'modal',
+        'notify',
+        'session',
+        'upload',
+    ];
+    function LiveblogThemesController(
+        _,
+        $http,
+        $location,
+        $sce,
+        $window,
+        api,
+        blogService,
+        config,
+        gettext,
+        modal,
+        notify,
+        session,
+        upload
+    ) {
         const self = this;
         /**
          * Return a collection that represent the hierachy of the themes
