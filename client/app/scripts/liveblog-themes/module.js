@@ -187,7 +187,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     return self.getTheme(self.globalTheme.value).name === theme.name;
                 }
             },
-            cannotRemove: function(theme) {
+            cannotBeRemoved: function(theme) {
                 const hasChildren = self.themes.some((t) => t.extends === theme.name);
 
                 const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];

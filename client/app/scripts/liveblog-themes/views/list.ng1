@@ -109,8 +109,25 @@
                         </div>
                         <div class="side">
                             <div ng-style="{'visibility': (self.isDefaultTheme(theme) && 'hidden') || 'visible'}">
-                                <button ng-disabled="self.hasChildren(theme)" ng-click="self.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="self.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
+                                <button
+                                    ng-disabled="self.cannotBeRemoved(theme)"
+                                    ng-click="self.removeTheme(theme)"
+                                    class="btn btn-default pull-right"
+                                    type="button"
+                                    translate
+                                >
+                                    Remove
+                                </button>
+
+                                <button
+                                    ng-if="!theme.abstract"
+                                    ng-click="self.makeDefault(theme)"
+                                    class="btn btn--primary pull-right"
+                                    type="button"
+                                    translate
+                                >
+                                    Make default
+                                </button>
                             </div>
                             <button ng-click="self.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
                         </div>
