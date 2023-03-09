@@ -15,6 +15,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         'notify',
         'session',
         'upload',
+        'privileges',
     ];
     function LiveblogThemesController(
         _,
@@ -29,7 +30,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         modal,
         notify,
         session,
-        upload
+        upload,
+        privileges
     ) {
         const self = this;
         /**
@@ -217,7 +219,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
 
-                return hasChildren || isSystemTheme;
+                const isUserNotAllowed = !privileges.userHasPrivileges({themes_delete: 1});
+
+                return hasChildren || isSystemTheme || isUserNotAllowed;
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {
