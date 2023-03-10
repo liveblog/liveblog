@@ -12,8 +12,6 @@ from flask_cors import CORS
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-from superdesk.errors import SuperdeskApiError
-from superdesk.users.services import current_user_has_privilege
 
 from liveblog.utils.api import api_response, api_error
 
