@@ -43,7 +43,11 @@ Please disable your adblocker in order to work with the advertising manager and 
 	                        <button ng-click="openAdvertDialog(advert);" title="Edit">
 	                            <i class="icon-pencil"></i>
 	                        </button>&nbsp;
-	                        <button ng-click="removeAdvert(advert, $index);" title="Delete">
+	                        <button
+                                ng-click="removeAdvert(advert, $index);"
+                                ng-if="canRemoveAdvertisement()"
+                                title="Delete"
+                            >
 	                            <i class="icon-trash"></i>
 	                        </button>
 	                    </div>

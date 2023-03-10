@@ -12,6 +12,8 @@ from flask_cors import CORS
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
+from superdesk.errors import SuperdeskApiError
+from superdesk.users.services import current_user_has_privilege
 
 from liveblog.utils.api import api_response, api_error
 
@@ -52,10 +54,13 @@ class AdvertisementsResource(Resource):
         'source': 'advertisements',
         'default_sort': [('name', 1)]
     }
-    RESOURCE_METHODS = ['GET', 'POST']
-    ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'advertisements', 'POST': 'advertisements',
-                  'PATCH': 'advertisements', 'DELETE': 'advertisements'}
+
+    privileges = {
+        'GET': 'advertisements_read',
+        'POST': 'advertisements_create',
+        'PATCH': 'advertisements_update',
+        'DELETE': 'advertisements_delete'
+    }
 
 
 class AdvertisementsService(BaseService):
