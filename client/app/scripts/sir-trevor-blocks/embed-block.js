@@ -142,6 +142,20 @@ function replaceEmbedWithUrl(string) {
     return string;
 }
 
+/**
+ * We call the render of the embeds here as a fallback option.
+ * So if it fails it's not a big deal because we'll try to render
+ * again from within the editor item itself.
+ */
+const suppressEmbedLoadError = (fn) => {
+    try {
+        fn();
+    } catch (error) {
+        console.warn(`Embed library was not yet ready. "${error}"`);
+    }
+};
+
+
 export default function embedBlockFactory(SirTrevor, config) {
     return SirTrevor.Block.extend({
         type: 'embed',
@@ -405,14 +419,15 @@ export default function embedBlockFactory(SirTrevor, config) {
 
             switch (data.provider_name) {
             case 'Instagram':
-                setTimeout(() => {
-                    if (window.instgrm)
-                        window.instgrm.Embeds.process();
-                }, 1000);
+                suppressEmbedLoadError(() => {
+                    setTimeout(window.instgrm.Embeds.process, 1000);
+                });
                 break;
 
             case 'Twitter':
-                setTimeout(window.twttr.widgets.load, 1000);
+                suppressEmbedLoadError(() => {
+                    setTimeout(window.twttr.widgets.load, 1000);
+                });
                 break;
             }
         },
