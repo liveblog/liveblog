@@ -374,19 +374,16 @@ const postsService = (api, $q, _userList, session) => {
 
     const syncRemoveFlag = (url, etag) => {
         // NOTE: avoid using Promise as we are triggering this
-        // when unload & onunload window event. So if we use promises
-        // browser will kill the thread before the request is triggered
-        const jq = angular.element;
-
-        jq.ajax({
-            url: url,
+        // when unload & onunload window event. If we use a promise,
+        // the browser will kill the thread before the request is triggered
+        fetch(url, {
             method: 'DELETE',
-            crossDomain: true,
-            async: false,
             headers: {
                 Authorization: localStorage.getItem('sess:token'),
+                'Content-Type': 'application/json',
                 'If-Match': etag,
             },
+            keepalive: true,
         });
     };
 
