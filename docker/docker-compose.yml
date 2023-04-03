@@ -1,3 +1,4 @@
+version: '3'
 services:
   redis:
     container_name: redis
@@ -18,7 +19,25 @@ services:
   mongodb-3.4.23:
     container_name: mongodb
     image: mongo:3.4.23
-    ports: 
+    ports:
       - 27017:27017
     volumes:
       - ../data/mongodb:/data/db
+
+  liveblog_dev:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: liveblog_dev
+    ports:
+      - 5001:5001
+      - 9000:9000
+    volumes:
+      - ../server:/app/server
+      - ../client:/app/client
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - elasticsearch-1.7.2
+      - mongodb-3.4.23

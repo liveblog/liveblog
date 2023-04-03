@@ -36,10 +36,15 @@ class CollectionsResource(Resource):
         'source': 'collections',
         'default_sort': [('name', 1)]
     }
+
     RESOURCE_METHODS = ['GET', 'POST']
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'collections', 'POST': 'collections',
-                  'PATCH': 'collections', 'DELETE': 'collections'}
+    privileges = {
+        'GET': 'collections',
+        'POST': 'collections',
+        'PATCH': 'collections',
+        'DELETE': 'collections'
+    }
 
 
 class CollectionsService(BaseService):
