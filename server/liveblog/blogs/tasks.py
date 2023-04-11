@@ -180,11 +180,23 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=Fal
     public_url, public_urls = publish_blog_embed_on_s3(blog_or_id, safe=safe, save=subtask_save)
 
     outputs_service = get_resource_service('outputs')
-    for output in outputs_service.get(req=None, lookup=dict(blog=blog_id)):
-        public_urls = publish_blog_embed_on_s3(blog_or_id, output=output, safe=safe, save=subtask_save)[1]
+    page_size = 25
+    page = 0
+
+    while True:
+        outputs_results = outputs_service.find(dict(blog=blog_id))\
+            .limit(page_size)\
+            .skip(page_size * page)
+        if not outputs_results.count(with_limit_and_skip=True):
+            break
+        page += 1
+
+        for output in outputs_results:
+            public_urls = publish_blog_embed_on_s3(blog_or_id, output=output, safe=safe, save=subtask_save)[1]
 
     if save:
         blogs.system_update(blog_id, {'public_url': public_url, 'public_urls': public_urls}, blog)
+
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
