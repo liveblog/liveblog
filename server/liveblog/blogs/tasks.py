@@ -158,7 +158,7 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
         return
 
     logger.info('publish_blog_on_s3 for blog "{}"{} started.'
-                   .format(blog_id, ' with output="{}"'.format(output.get('name')) if output else ''))
+                .format(blog_id, ' with output="{}"'.format(output.get('name')) if output else ''))
 
     try:
         return _publish_blog_embed_on_s3(blog_or_id, theme, output, safe, save)
