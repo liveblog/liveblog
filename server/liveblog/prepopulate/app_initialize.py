@@ -215,9 +215,10 @@ class AppInitializeWithDataCommand(superdesk.Command):
         superdesk.Option('--full-path', '-p', dest='path'),
         superdesk.Option('--sample-data', action='store_true'),
         superdesk.Option('--force', '-f', action='store_true'),
+        superdesk.Option('--init-index-only', '-i', action='store_true'),
     ]
 
-    def run(self, entity_name=None, path=None, sample_data=False, force=False):
+    def run(self, entity_name=None, path=None, sample_data=False, force=False, init_index_only=False):
         """Run the initialization
 
         :param str,list,NoneType entity_name: entity(ies) to initialize
@@ -230,6 +231,10 @@ class AppInitializeWithDataCommand(superdesk.Command):
 
         # create indexes in mongo
         app.init_indexes()
+
+        if init_index_only:
+            logger.info('Only indexes initialized.')
+            return 0
 
         if sample_data:
             if not path:
