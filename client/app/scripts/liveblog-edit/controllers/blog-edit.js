@@ -133,16 +133,13 @@ export default function BlogEditController(
     function getItemsFromEditor() {
         if (!isPostFreetype()) {
             // go with the 'classic' editor items
-            const editorItems = _.map(self.editor.get(), (block) => {
+            return _.map(self.editor.get(), (block) => {
                 const meta = block.meta;
                 const syndicatedCreator = meta && meta.syndicated_creator;
 
                 if (syndicatedCreator || (meta && _.has(meta, 'syndicated_creator'))) {
                     delete meta.syndicated_creator;
                 }
-
-                if (block.type === 'image' && meta === null)
-                    return null;
 
                 return {
                     group_type: 'default',
@@ -155,9 +152,6 @@ export default function BlogEditController(
                     item_type: block.type,
                 };
             });
-
-            // let's filter out invalid items
-            return editorItems.filter((x) => x !== null);
         }
 
         // this is a freetype post

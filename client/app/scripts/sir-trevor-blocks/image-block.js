@@ -235,7 +235,7 @@ export default function imageBlock(SirTrevor, config) {
         retrieveData: function() {
             const data = this.getData();
 
-            if (data.media === undefined) return null;
+            if (data.media === undefined) return {};
 
             return {
                 media: data.media,
