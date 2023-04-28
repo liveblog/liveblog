@@ -43,8 +43,8 @@
         display: none;
     }
     .scorecard-top__column {
-        flex: 0 0 35%;
-        max-width: 35%;
+        flex: 0 0 32%;
+        max-width: 32%;
         text-align: center;
         padding: 0 10px;
         box-sizing: border-box;
@@ -63,8 +63,8 @@
         text-align: left;
     }
     .scorecard-top__column--result {
-        flex: 0 0 30%;
-        max-width: 30%;
+        flex: 0 0 35%;
+        max-width: 35%;
         max-height: 150px;
         align-items: center;
         order: 1;
