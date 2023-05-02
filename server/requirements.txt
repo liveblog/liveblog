@@ -10,6 +10,7 @@ beautifulsoup4==4.6.0
 flask_pymongo>=0.5.2,<1.0
 pymongo==3.11.2
 google-auth-oauthlib==0.2.0
+elastic-apm==6.15.1
 
 # Superdesk
 -e git+https://github.com/vstinner/hachoir.git@3.0a2#egg=hachoir3

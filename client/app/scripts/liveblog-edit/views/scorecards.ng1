@@ -43,8 +43,8 @@
         display: none;
     }
     .scorecard-top__column {
-        flex: 0 0 39%;
-        max-width: 39%;
+        flex: 0 0 32%;
+        max-width: 32%;
         text-align: center;
         padding: 0 10px;
         box-sizing: border-box;
@@ -63,8 +63,8 @@
         text-align: left;
     }
     .scorecard-top__column--result {
-        flex: 0 0 22%;
-        max-width: 22%;
+        flex: 0 0 35%;
+        max-width: 35%;
         max-height: 150px;
         align-items: center;
         order: 1;
@@ -275,14 +275,14 @@
     <div class="scorecard-top__column scorecard-top__column--result">
         <div>
             <label for="home.score" hide-render>Home Score</label>
-            <input id="home.score" name="$home.score" class="team-score" number="true" necessary="true" maxlength="4" />
+            <input id="home.score" name="$home.score" class="team-score" necessary="true" maxlength="4" />
         </div>
         <div class="team-score-colon">
             <span class="team-score">:</span>
         </div>
         <div>
             <label for="away.score" hide-render>Away Score</label>
-            <input id="away.score" name="$away.score" class="team-score" necessary="true" number="true" maxlength="4" />
+            <input id="away.score" name="$away.score" class="team-score" necessary="true" maxlength="4" />
         </div>
     </div>
     <hr hide-render>

@@ -100,6 +100,9 @@ export default angular
                 const debouncedChange = _.debounce(scope.debounceOnChange, scope.debounceTime);
 
                 element.on('keydown', debouncedChange);
+
+                // avoid hiting the debounce function if user leaves the app or reloads
+                angular.element(window).on('unload', debouncedChange.cancel);
             },
         };
 

@@ -230,7 +230,7 @@
                                     st-params="stParams"
                                     st-change="onEditorChanges"
                                     st-debounce-change="debouncedEditorChanges",
-                                    st-debounce-time=600></div>
+                                    st-debounce-time=1000></div>
                             </div>
                             <freetype-render
                                     ng-if="selectedPostType!='Default'"

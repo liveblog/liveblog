@@ -16,6 +16,7 @@ import flask_s3
 import settings
 from flask_cache import Cache
 from version import __version__
+from elastic_apm import setup_apm
 from liveblog.blogs import bloglist_assets_blueprint, bloglist_blueprint
 from liveblog.blogs.embeds import embed_blueprint
 from liveblog.common import BlogCache
@@ -60,6 +61,8 @@ def get_app(config=None):
 
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
+
+    setup_apm(app, settings.ELASTICSEARCH_INDEX)
 
     # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([

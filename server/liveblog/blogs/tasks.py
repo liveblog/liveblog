@@ -41,7 +41,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     # update the embed file
     file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')), filename=file_path, content_type='text/html',
                             version=False, check_exists=False)
-    logger.warning('Embed file "{}" for blog "{}" uploaded to s3'.format(file_path, blog_id))
+    logger.info('Embed file "{}" for blog "{}" uploaded to s3'.format(file_path, blog_id))
     return superdesk.upload.url_for_media(file_id)
 
 
@@ -157,15 +157,15 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
         logger.warning('publish_blog_on_s3 for blog "{}" not started: blog not found'.format(blog_id))
         return
 
-    logger.warning('publish_blog_on_s3 for blog "{}"{} started.'
-                   .format(blog_id, ' with output="{}"'.format(output.get('name')) if output else ''))
+    logger.info('publish_blog_on_s3 for blog "{}"{} started.'
+                .format(blog_id, ' with output="{}"'.format(output.get('name')) if output else ''))
 
     try:
         return _publish_blog_embed_on_s3(blog_or_id, theme, output, safe, save)
     except (Exception, SoftTimeLimitExceeded):
         logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
     finally:
-        logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
+        logger.info('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
 @celery.task(soft_time_limit=1800)
@@ -176,21 +176,33 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=Fal
         logger.warning('publish_blog_on_s3 for blog "{}" not started: blog not found'.format(blog_id))
         return
 
-    logger.warning('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
+    logger.info('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
     public_url, public_urls = publish_blog_embed_on_s3(blog_or_id, safe=safe, save=subtask_save)
 
     outputs_service = get_resource_service('outputs')
-    for output in outputs_service.get(req=None, lookup=dict(blog=blog_id)):
-        public_urls = publish_blog_embed_on_s3(blog_or_id, output=output, safe=safe, save=subtask_save)[1]
+    page_size = 25
+    page = 0
+
+    while True:
+        outputs_results = outputs_service.find(dict(blog=blog_id))\
+            .limit(page_size)\
+            .skip(page_size * page)
+        if not outputs_results.count(with_limit_and_skip=True):
+            break
+        page += 1
+
+        for output in outputs_results:
+            public_urls = publish_blog_embed_on_s3(blog_or_id, output=output, safe=safe, save=subtask_save)[1]
 
     if save:
         blogs.system_update(blog_id, {'public_url': public_url, 'public_urls': public_urls}, blog)
-    logger.warning('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
+
+    logger.info('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
 @celery.task(soft_time_limit=1800)
 def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
-    logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog.get('_id')))
+    logger.info('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog.get('_id')))
 
     try:
         delete_embed(blog, theme=theme, output=output)
@@ -200,7 +212,7 @@ def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
     except (Exception, SoftTimeLimitExceeded):
         logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog.get('_id')))
     finally:
-        logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog.get('_id')))
+        logger.info('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog.get('_id')))
 
 
 @celery.task(soft_time_limit=1800)
