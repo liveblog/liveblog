@@ -1,0 +1,179 @@
+@media(max-width: 800px) {
+    .blogedit .column {
+        width: 100% !important;
+    }
+    .blogedit .column--first {
+        width: 100% !important;
+    }
+    .blogedit .column--timeline {
+        display: none !important;
+        width: 100% !important;
+        left: 0 !important;
+    }
+
+    .panel--editor .btn.pull-right.btn--with-icon-right.btn--with-label {
+        width: 50px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-indent: -85px;
+        color: #d0d0d0;
+    }
+
+    .blogedit .panel--editor .content .option-not-activated {
+        display: flex;
+    }
+
+    .blogedit .panel--editor .content .actions .actions__label span, .btn.btn--primary.btn--contact-support span, .blogedit .panel--editor .content > .actions .btn .hideMobile {
+        display: none;
+    }
+
+    .blog-settings-view .settings-page .tabbable.outer > .nav-stacked {}
+
+    .blog-settings-view .settings-page .tabbable.outer > .nav-stacked {
+        width: 100% !important;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        z-index: 999;
+        display: flex;
+        flex-direction: row;
+        height: 48px;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .settings-page .tabbable.outer .tab-content.outer {
+        left: 0 !important;
+    }
+
+    .nav-stacked > li {
+        
+    }
+
+    .blog-settings-view .settings-page .tab-content > .content > * {
+        width: 100% !important;
+    }
+
+    .blog-settings-view .settings-page .tab-content > .content .form-group .control-label {
+        width: 22% !important;
+        margin-right: 4% !important;
+    }
+
+    .blog-settings-view .settings-page .tab-content > .content .form-group .form-input {
+        width: 74% !important;
+    }
+
+    .blog-settings-view .dropdown {
+        margin-top: 19px;
+        z-index: 300;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-settings-view .shadow-list-holder > .pills-list {
+        margin-top: 40px;
+    }
+
+    .blog-settings-view .pills-list > li .actions {
+        display: block;
+    }
+
+    #top-menu button.collapse-nav {
+        position: fixed !important;
+        left: 0 !important;
+    }
+
+    #top-menu button.current-user {
+        position: fixed !important;
+        right: 0px !important;
+    }
+
+    .sd-top-menu__header {
+        margin-left: 40px !important;
+    }
+
+    .modal {
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+
+    .subnav__button-stack--square-buttons {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-tabs > li > a, .nav-tabs > li > button {
+        line-height: 120% !important;
+    }
+
+    .bloglist header .view-select button:last-child {
+        display: none;
+    }
+
+    .bloglist header .pull-right.ng-isolate-scope {
+        width: 100%;
+    }
+
+    .bloglist header .pull-right.ng-isolate-scope .sd-pagination {
+        padding: 7px 10px;
+    }
+
+    .bloglist header .sd-pagination .page-info {
+        margin-right: 10px;
+    }
+
+    .bloglist .list-container {
+        top: 90px !important;
+    }
+
+    .preview-layout .preview-pane {
+        width: 100%;
+    }
+
+    .users .button-list--padded {
+        display: none;
+    }
+
+    .users .sd-pagination .page-info {
+        margin-right: 10px;
+    }
+
+    .users .sd-pagination .btn-group button:first-child, .users .sd-pagination .btn-group button:last-child {
+        display: none;
+    }
+
+    .users .sd-line-input.sd-line-input--is-select.sd-line-input--no-label.sd-line-input--no-margin {
+        display: none;
+    }
+
+    .themelist .list-container ul li {
+        margin-left: 20px !important;
+    }
+
+    .sd-page__sidebar {
+        position: relative !important;
+    }
+    
+    .sd-page__main-content {
+        position: relative !important;
+    }
+
+    .sd-left-nav {
+        width: 100% !important;
+    }
+
+    .sd-page__sidebar + .sd-page__main-content {
+        left: 0 !important;
+        height: 100%;
+    }
+
+    .split-content {
+        overflow: auto;
+        padding-bottom: 100px;
+    }
+
+    .split-content > .content {
+        position: relative;
+        width: 100%;
+    }
+    
+}
