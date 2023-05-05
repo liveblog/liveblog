@@ -24,6 +24,10 @@
             sd-tooltip="{{ 'Editor' | translate }}" flow="right" title="{{ 'Editor' | translate }}">
             <i class="lb-big-icon-editor" alt="editor"></i>
         </button>
+        <button class="navbtn timeline" ng-click="openPanel('timeline')" ng-class="{'active': panelState === 'timeline'}"
+            sd-tooltip="{{ 'Timeline' | translate }}" flow="right" title="{{ 'Timeline' | translate }}">
+            <strong>TL</strong>
+        </button>
         <button class="navbtn" ng-click="openPanel('contributions')"
             ng-class="{'active': panelState === 'contributions'}" sd-tooltip="{{ 'Contributions' | translate }}"
             flow="right" title="{{ 'Contributions' | translate }}">
