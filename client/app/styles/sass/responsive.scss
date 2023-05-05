@@ -1,3 +1,7 @@
+.timeline {
+    display: none !important;
+}
+
 @media(max-width: 800px) {
     .blogedit .column {
         width: 100% !important;
@@ -6,9 +10,37 @@
         width: 100% !important;
     }
     .blogedit .column--timeline {
-        display: none !important;
         width: 100% !important;
         left: 0 !important;
+    }
+    .navbtn.timeline {
+        display: block !important;
+    }
+
+    .lb-post__content {
+        margin-left: 0px !important;
+    }
+
+    .lb-post__actions {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .post__list {
+        clear: both;
+    }
+
+    .lb-post__actions [class^="icon-"], .lb-post__actions [class*=" icon-"] {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        font-size: 20px;
+    }
+
+    .lb-post__item .link-preview {
+        display: block;
+        text-overflow: ellipsis;
+        overflow: hidden; 
     }
 
     .panel--editor .btn.pull-right.btn--with-icon-right.btn--with-label {
