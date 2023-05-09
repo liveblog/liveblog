@@ -24,7 +24,7 @@
             sd-tooltip="{{ 'Editor' | translate }}" flow="right" title="{{ 'Editor' | translate }}">
             <i class="lb-big-icon-editor" alt="editor"></i>
         </button>
-        <button class="navbtn timeline" ng-click="openPanel('timeline')" ng-class="{'active': panelState === 'timeline'}"
+        <button class="navbtn timeline" ng-click="showTimelineMobile()" ng-class="{'active': panelState === 'timeline'}"
             sd-tooltip="{{ 'Timeline' | translate }}" flow="right" title="{{ 'Timeline' | translate }}">
             <strong>TL</strong>
         </button>
@@ -286,7 +286,7 @@
             </span>
         </div>
         <!-- timeline column -->
-        <div class="column column--timeline">
+        <div class="column column--timeline column-hidden-mobile">
             <header>
                 <div translate class="header--timeline">Timeline</div>
                 <div ng-if="isTimelineReordering()" class="cancel-reorder header--filters">

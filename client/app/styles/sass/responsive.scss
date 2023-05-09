@@ -40,7 +40,7 @@
     .lb-post__item .link-preview {
         display: block;
         text-overflow: ellipsis;
-        overflow: hidden; 
+        overflow: hidden;
     }
 
     .panel--editor .btn.pull-right.btn--with-icon-right.btn--with-label {
@@ -79,7 +79,7 @@
     }
 
     .nav-stacked > li {
-        
+
     }
 
     .blog-settings-view .settings-page .tab-content > .content > * {
@@ -184,7 +184,7 @@
     .sd-page__sidebar {
         position: relative !important;
     }
-    
+
     .sd-page__main-content {
         position: relative !important;
     }
@@ -207,5 +207,8 @@
         position: relative;
         width: 100%;
     }
-    
+
+    .column-hidden-mobile {
+        display: none;
+    }
 }
