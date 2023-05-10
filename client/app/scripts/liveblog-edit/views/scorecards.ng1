@@ -239,7 +239,10 @@
     .marginleft10 {
         margin-left: 10px!important;
     }
-    @media (max-width:650px) {
+    @media (max-width: 650px) {
+        .scorecard-top {
+            width: 100%;
+        }
         .scorecard-top__column {
             flex: 0 0 50%;
             max-width: 50%;
