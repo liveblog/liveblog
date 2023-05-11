@@ -436,6 +436,8 @@ export default function BlogEditController(
         filter: {isHighlight: false},
         selectPostTypeDialog: false,
         selectedPostType: 'Default',
+        editorColumn: angular.element('.column.column--first'),
+        timelineColumn: angular.element('.column.column--timeline'),
         toggleTypePostDialog: function() {
             $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
         },
@@ -683,6 +685,16 @@ export default function BlogEditController(
 
             $route.updateParams(params);
             unreadPostsService.reset(panel);
+
+            $scope.editorColumn.removeClass('column-hidden-mobile');
+            $scope.timelineColumn.addClass('column-hidden-mobile');
+        },
+
+        showTimelineMobile: function() {
+            $scope.panelState = 'timeline';
+
+            $scope.editorColumn.addClass('column-hidden-mobile');
+            $scope.timelineColumn.removeClass('column-hidden-mobile');
         },
 
         // SirTrevor params that can be accessed using this.getOptions()
