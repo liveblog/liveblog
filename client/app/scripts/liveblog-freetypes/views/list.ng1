@@ -11,7 +11,15 @@
 <section class="main-section freetypeslist">
     <div class="loading-indicator" ng-show="self.loading"><span translate>loading</span></div>
     <div class="list-container content desk-settings">
-        <div class="alert alert-info alert--margin-left" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Posts of type "free" will allow you to create post types combining text, image and embeds. A free type is composed of a `name` and a `template`. A template consists of normal html which supports variable injections and manipulation. Variables are easily defined with the prefix of a dollar sign as in this sample: `$party_name`. Find the complete documentation and sample posts on our Wiki page: <a href="https://wiki.sourcefabric.org/x/jACMAw" target="_blank">New post types technical documentation.</a></div>
+        <div class="alert alert-info alert--margin-left" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="icon-close-small"></i>
+            </button>
+            Posts of type "free" will allow you to create post types combining text, image and embeds. A free type is composed of a `name` and a `template`. A template consists of normal html which supports variable injections and manipulation. Variables are easily defined with the prefix of a dollar sign as in this sample: `$party_name`. Find the complete documentation and sample posts on our Wiki page:
+            <a href="https://sofab.atlassian.net/l/cp/Qo8ShATE" target="_blank">
+                Post Types Technical Documentation.
+            </a>
+        </div>
         <!-- LIST VIEW -->
         <div class="scroll-shadow">
             <div class="inner"></div>
@@ -60,7 +68,7 @@
                     </div>
                     <div class="field ft-comments">
                     <span translate class="c">* Must contain at least one variable.<span><span>&nbsp;Do not use the DOCTYPE, BODY and HEAD tags.</span><span translate>&nbsp;All used tags must be closed.</span>
-                    <a href="https://wiki.sourcefabric.org/x/jACMAw" target="_blank" translate>See the technical documentation for further details</a>
+                    <a href="https://sofab.atlassian.net/l/cp/Qo8ShATE" target="_blank" translate>See the technical documentation for further details</a>
                     </div>
                 </fieldset>
             </div>

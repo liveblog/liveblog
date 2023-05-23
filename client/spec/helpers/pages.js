@@ -173,6 +173,7 @@ function FreetypesManagerPage() {
         self.template.sendKeys(freeData.template);
         return self.saveFreetype().then(() => freeData);
     };
+
     self.removeFreetype = function(index) {
         index = index || 0;
         self.getFreetypes()
