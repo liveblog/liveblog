@@ -6,6 +6,7 @@ LiveblogFreetypesController.$inject = [
     'gettext',
     '$q',
     'modal',
+    'privileges',
 ];
 
 function LiveblogFreetypesController(
@@ -13,7 +14,8 @@ function LiveblogFreetypesController(
     notify,
     gettext,
     $q,
-    modal
+    modal,
+    privileges
 ) {
     const self = this;
 
@@ -174,6 +176,9 @@ function LiveblogFreetypesController(
                     });
                 });
             });
+        },
+        canRemoveFreetype: function() {
+            return privileges.userHasPrivileges({freetypes_delete: 1});
         },
         cancelCreate: function() {
             self.freetypeModalActive = false;

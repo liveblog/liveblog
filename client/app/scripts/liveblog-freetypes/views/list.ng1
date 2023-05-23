@@ -34,7 +34,11 @@
                         <button ng-click="self.openFreetypeDialog(freetype);" title="Edit">
                             <i class="icon-pencil"></i>
                         </button>&nbsp;
-                        <button ng-click="self.removeFreetype(freetype, $index);" title="Delete">
+                        <button
+                            ng-click="self.removeFreetype(freetype, $index);"
+                            ng-if="self.canRemoveFreetype()"
+                            title="Delete"
+                        >
                             <i class="icon-trash"></i>
                         </button>
                     </div>
