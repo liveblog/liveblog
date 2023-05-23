@@ -37,7 +37,10 @@
             "themes_update": 1,
             "advertisements_read": 1,
             "advertisements_create": 1,
-            "advertisements_update": 1
+            "advertisements_update": 1,
+            "freetypes_create": 1,
+            "freetypes_read": 1,
+            "freetypes_update": 1
         }
     }
 ]
