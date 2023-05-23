@@ -390,3 +390,6 @@ LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:63
 # to complete author information. Next setting is to enable a workaround to behave like before to avoid
 # breaking the Liveblog Reporter app
 MOBILE_APP_WORKAROUND = env('MOBILE_APP_WORKAROUND', False)
+
+APM_SERVER_URL = env('APM_SERVER_URL')
+APM_SECRET_TOKEN = env('APM_SECRET_TOKEN')

@@ -168,6 +168,14 @@ class PostsResource(ArchiveResource):
         '_created_1': ([('_created', 1)]),
         '_created_-1': ([('_created', -1)]),
         'order_-1': ([('order', -1)]),
+        'blog_posts_optimized': ([
+            ('blog', 1),
+            ('post_status', 1),
+            ('deleted', 1),
+            ('published_date', 1),
+            ('sticky', 1),
+            ('tags', 1)
+        ])
     }
 
     def pre_request_patch(self, request, lookup):

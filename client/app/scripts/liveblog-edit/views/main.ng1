@@ -1,15 +1,17 @@
 <div class="subnav">
-    <div class="button-stack left-stack" >
+    <div class="button-stack left-stack">
         <a class="navbtn homebtn" ng-click="backToBlogsList()">
             <i class="icon-th-large"></i>
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
-        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}" title="{{ 'Analytics' | translate }}">
+        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}"
+            title="{{ 'Analytics' | translate }}">
             <i class="big-icon--analytics"></i>
         </a>
-        <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}" title="{{ 'Settings' | translate }}">
+        <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}"
+            title="{{ 'Settings' | translate }}">
             <i class="big-icon--cog"></i>
         </a>
     </div>
@@ -18,57 +20,42 @@
 <section class="main-section blogedit">
     <!-- left sidebar -->
     <div class="side-menu">
-        <button class="navbtn" ng-click="openPanel('editor')"
-            ng-class="{'active': panelState === 'editor'}"
-            sd-tooltip="{{ 'Editor' | translate }}"
-            flow="right"
-            title="{{ 'Editor' | translate }}"
-        >
+        <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}"
+            sd-tooltip="{{ 'Editor' | translate }}" flow="right" title="{{ 'Editor' | translate }}">
             <i class="lb-big-icon-editor" alt="editor"></i>
         </button>
+        <button class="navbtn timeline" ng-click="showTimelineMobile()" ng-class="{'active': panelState === 'timeline'}"
+            sd-tooltip="{{ 'Timeline' | translate }}" flow="right" title="{{ 'Timeline' | translate }}">
+            <strong>TL</strong>
+        </button>
         <button class="navbtn" ng-click="openPanel('contributions')"
-            ng-class="{'active': panelState === 'contributions'}"
-            sd-tooltip="{{ 'Contributions' | translate }}"
-            flow="right" title="{{ 'Contributions' | translate }}"
-        >
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">
+            ng-class="{'active': panelState === 'contributions'}" sd-tooltip="{{ 'Contributions' | translate }}"
+            flow="right" title="{{ 'Contributions' | translate }}">
+            <span class="label label-info circle small notification-counter"
+                ng-if="unreadPostsService.countContributions() > 0">
                 {{ unreadPostsService.countContributions() }}
             </span>
             <i class="lb-big-icon-contributions" alt="contributions"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('scheduled')"
-            ng-class="{'active': panelState === 'scheduled'}"
-            sd-tooltip="{{ 'Scheduled' | translate }}"
-            flow="right" title="{{ 'Scheduled' | translate }}">
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countScheduled() > 0">{{ unreadPostsService.countScheduled() }}</span>
+        <button class="navbtn" ng-click="openPanel('scheduled')" ng-class="{'active': panelState === 'scheduled'}"
+            sd-tooltip="{{ 'Scheduled' | translate }}" flow="right" title="{{ 'Scheduled' | translate }}">
+            <span class="label label-info circle small notification-counter"
+                ng-if="unreadPostsService.countScheduled() > 0">{{ unreadPostsService.countScheduled() }}</span>
             <i class="lb-big-icon-scheduled-posts" alt="scheduled posts"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('drafts')"
-            ng-class="{'active': panelState === 'drafts'}"
-            sd-tooltip="{{ 'Drafts' | translate }}"
-            flow="right" title="{{ 'Drafts' | translate }}">
+        <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}"
+            sd-tooltip="{{ 'Drafts' | translate }}" flow="right" title="{{ 'Drafts' | translate }}">
             <i class="lb-big-icon-archive" alt="draft posts"></i>
         </button>
-        <button
-            class="navbtn"
-            sd-tooltip="{{ 'Ingest' | translate }}"
-            flow="right"
-            title="{{ 'Ingest' | translate }}"
-            ng-if="syndicationEnabled"
-            lb-notifications-count
-            ng-click="openPanel('ingest')"
+        <button class="navbtn" sd-tooltip="{{ 'Ingest' | translate }}" flow="right" title="{{ 'Ingest' | translate }}"
+            ng-if="syndicationEnabled" lb-notifications-count ng-click="openPanel('ingest')"
             ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
         </button>
-        <button
-            ng-if="blog.blog_preferences.theme.settings.canComment || blog.users_can_comment === 'enabled'"
-            class="navbtn ng-cloak"
-            ng-click="openPanel('comments')"
-            ng-class="{'active': panelState === 'comments'}"
-            sd-tooltip="{{ 'Comments' | translate }}"
-            flow="right"
-            title="{{ 'Comments' | translate }}"
-        >
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
+        <button ng-if="blog.blog_preferences.theme.settings.canComment || blog.users_can_comment === 'enabled'"
+            class="navbtn ng-cloak" ng-click="openPanel('comments')" ng-class="{'active': panelState === 'comments'}"
+            sd-tooltip="{{ 'Comments' | translate }}" flow="right" title="{{ 'Comments' | translate }}">
+            <span class="label label-info circle small notification-counter"
+                ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
             <i class="lb-big-icon-comments" alt="comments posts"></i>
         </button>
     </div>
@@ -78,22 +65,19 @@
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
                 <div class="panel panel--draft" ng-if="panelState === 'drafts'">
-                    <header><h4 translate>Drafts</h4></header>
+                    <header>
+                        <h4 translate>Drafts</h4>
+                    </header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
-                        <lb-posts-list
-                          lb-posts-instance="blogEdit.draftPostsInstance"
-                          lb-posts-blog-id="blog._id"
-                          lb-posts-status="draft"
-                          lb-posts-order-by="updated_first"
-                          lb-posts-allow-unpublishing="false"
-                          lb-posts-allow-reordering="false"
-                          lb-posts-allow-editing="true"
-                          lb-posts-allow-deleting="true"
-                          lb-posts-on-post-selected="openPostInEditor"
-                        >
+                        <lb-posts-list lb-posts-instance="blogEdit.draftPostsInstance" lb-posts-blog-id="blog._id"
+                            lb-posts-status="draft" lb-posts-order-by="updated_first"
+                            lb-posts-allow-unpublishing="false" lb-posts-allow-reordering="false"
+                            lb-posts-allow-editing="true" lb-posts-allow-deleting="true"
+                            lb-posts-on-post-selected="openPostInEditor">
                             <p>You don't have any draft yet.</p>
                             <p>
-                                To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button.
+                                To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34;
+                                button.
                                 You will be able to re-open it later in the editor.
                             </p>
                         </lb-posts-list>
@@ -101,29 +85,24 @@
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
-                    <header><h4 translate>Contributions</h4></header>
+                    <header>
+                        <h4 translate>Contributions</h4>
+                    </header>
                     <div class="panel--contribution__filters">
                         <span class="panel--contribution__filters__title">Filter by user</span>
-                        <lb-filter-by-member
-                            on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"
+                        <lb-filter-by-member on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"
                             blog-id="blog._id">
                         </lb-filter-by-member>
                     </div>
                     <div class="content" lr-infinite-scroll="fetchNewContributionPage" full-height>
-                        <lb-posts-list
-                          lb-posts-instance="blogEdit.contributionsPostsInstance"
-                          lb-posts-blog-id="blog._id"
-                          lb-posts-status="submitted"
-                          lb-posts-order-by="updated_first"
-                          lb-posts-allow-unpublishing="false"
-                          lb-posts-allow-reordering="false"
-                          lb-posts-no-syndication="true"
-                          lb-posts-is-unread-post="unreadPostsService.isContribution"
-                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrCanPublishAPost"
-                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrCanPublishAPost"
-                          lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
-                          lb-posts-on-post-selected="openPostInEditor"
-                        >
+                        <lb-posts-list lb-posts-instance="blogEdit.contributionsPostsInstance"
+                            lb-posts-blog-id="blog._id" lb-posts-status="submitted" lb-posts-order-by="updated_first"
+                            lb-posts-allow-unpublishing="false" lb-posts-allow-reordering="false"
+                            lb-posts-no-syndication="true" lb-posts-is-unread-post="unreadPostsService.isContribution"
+                            lb-posts-allow-editing="blogSecurityService.isUserOwnerOrCanPublishAPost"
+                            lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrCanPublishAPost"
+                            lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
+                            lb-posts-on-post-selected="openPostInEditor">
                             <div ng-if="!blogEdit.contributionsPostsInstance.isFilterEnable()">
                                 <p>There is no contribution yet.</p>
                                 <p>
@@ -140,57 +119,39 @@
 
                 <!-- scheduled posts -->
                 <div class="panel panel--scheduled" ng-if="panelState === 'scheduled'">
-                    <header><h4 translate>Scheduled Posts</h4></header>
+                    <header>
+                        <h4 translate>Scheduled Posts</h4>
+                    </header>
                     <div class="content" lr-infinite-scroll="fetchNewScheduledPage">
-                        <lb-posts-list
-                          lb-posts-instance="blogEdit.scheduledPostsInstance"
-                          lb-posts-blog-id="blog._id"
-                          lb-posts-status="open"
-                          lb-scheduled="true"
-                          lb-posts-order-by="editorial_asc"
-                          lb-posts-allow-unpublishing="false"
-                          lb-posts-allow-reordering="false"
-                          lb-posts-is-unread-post="false"
-                          lb-posts-allow-editing="true"
-                          lb-posts-allow-deleting="true"
-                          lb-posts-allow-publishing="false"
-                          lb-posts-on-post-selected="openPostInEditor"
-                          lb-should-render-post="shouldRenderScheduled"
-                        >
+                        <lb-posts-list lb-posts-instance="blogEdit.scheduledPostsInstance" lb-posts-blog-id="blog._id"
+                            lb-posts-status="open" lb-scheduled="true" lb-posts-order-by="editorial_asc"
+                            lb-posts-allow-unpublishing="false" lb-posts-allow-reordering="false"
+                            lb-posts-is-unread-post="false" lb-posts-allow-editing="true" lb-posts-allow-deleting="true"
+                            lb-posts-allow-publishing="false" lb-posts-on-post-selected="openPostInEditor"
+                            lb-should-render-post="shouldRenderScheduled">
                             <p translate>There aren't any scheduled posts.</p>
                         </lb-posts-list>
                     </div>
                 </div>
                 <!-- ingest -->
-                <div
-                    lb-ingest-panel
-                    ingest-queue="ingestQueue"
-                    open-panel="openPanel"
-                    ng-if="panelState === 'ingest'"></div>
+                <div lb-ingest-panel ingest-queue="ingestQueue" open-panel="openPanel" ng-if="panelState === 'ingest'">
+                </div>
                 <!-- incoming syndication -->
-                <div
-                    lb-incoming-syndication
-                    lb-posts-on-post-selected="openPostInEditor"
-                    open-panel="openPanel"
-                    synd-id="syndId"
-                    ng-if="panelState === 'incoming-syndication'"></div>
+                <div lb-incoming-syndication lb-posts-on-post-selected="openPostInEditor" open-panel="openPanel"
+                    synd-id="syndId" ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
-                    <header><h4>{{'Comments' | translate}}</h4></header>
+                    <header>
+                        <h4>{{'Comments' | translate}}</h4>
+                    </header>
                     <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
-                        <lb-posts-list
-                          lb-posts-instance="blogEdit.commentPostsInstance"
-                          lb-posts-blog-id="blog._id"
-                          lb-posts-status="comment"
-                          lb-posts-order-by="updated_first"
-                          lb-posts-allow-unpublishing="false"
-                          lb-posts-allow-reordering="false"
-                          lb-posts-is-unread-post="unreadPostsService.isComment"
-                          lb-posts-allow-editing="true"
-                          lb-posts-allow-deleting="true"
-                          lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
-                          lb-posts-on-post-selected="openPostInEditor"
-                        >
+                        <lb-posts-list lb-posts-instance="blogEdit.commentPostsInstance" lb-posts-blog-id="blog._id"
+                            lb-posts-status="comment" lb-posts-order-by="updated_first"
+                            lb-posts-allow-unpublishing="false" lb-posts-allow-reordering="false"
+                            lb-posts-is-unread-post="unreadPostsService.isComment" lb-posts-allow-editing="true"
+                            lb-posts-allow-deleting="true"
+                            lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
+                            lb-posts-on-post-selected="openPostInEditor">
                             <p translate>There aren't any comments.</p>
                         </lb-posts-list>
                     </div>
@@ -200,14 +161,19 @@
                     <div ng-if="!preview">
                         <header>
                             <h4>{{'Editor' | translate}}</h4>
-                            <button class="btn btn--primary pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
+                            <button class="btn btn--primary pull-right" ng-click="togglePreview()"
+                                ng-disabled="actionStatus() && !isCurrentPostPublished()" translate
+                                ng-if="selectedPostType=='Default'">Preview
                             </button>
-                            <button class="btn pull-right" ng-disabled="uploadingImage" ng-click="askAndResetEditor()" translate>Reset</button>
-                            <button class="btn pull-right btn--with-icon-right btn--with-label" ng-click="toggleTypePostDialog()">
+                            <button class="btn pull-right" ng-disabled="uploadingImage" ng-click="askAndResetEditor()"
+                                translate>Reset</button>
+                            <button class="btn pull-right btn--with-icon-right btn--with-label"
+                                ng-click="toggleTypePostDialog()">
                                 <span ng-if="selectedPostType=='Default'">
                                     {{'Choose post type' | translate}}
                                 </span>
-                                <span ng-if="selectedPostType!='Default'" translate class="selector-size-limit">{{selectedPostType.name}}</span>
+                                <span ng-if="selectedPostType!='Default'" translate
+                                    class="selector-size-limit">{{selectedPostType.name}}</span>
                                 <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
@@ -215,59 +181,64 @@
                     <div ng-if="preview">
                         <header>
                             <h4>{{'Preview' | translate}}</h4>
-                            <span ng-click="togglePreview()" class="close-preview pull-right"
-                                flow="down" sd-tooltip="{{ 'Back to edit' | translate }}">⨯</span>
+                            <span ng-click="togglePreview()" class="close-preview pull-right" flow="down"
+                                sd-tooltip="{{ 'Back to edit' | translate }}">⨯</span>
                         </header>
                     </div>
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div
-                                    class="editor"
-                                    ng-if="selectedPostType=='Default' && enableEditor"
-                                    ng-sir-trevor
-                                    st-model="blogEdit.editor"
-                                    st-params="stParams"
-                                    st-change="onEditorChanges"
-                                    st-debounce-change="debouncedEditorChanges",
-                                    st-debounce-time=600></div>
+                                <div class="editor" ng-if="selectedPostType=='Default' && enableEditor" ng-sir-trevor
+                                    st-model="blogEdit.editor" st-params="stParams" st-change="onEditorChanges"
+                                    st-debounce-change="debouncedEditorChanges" , st-debounce-time=1000></div>
                             </div>
-                            <freetype-render
-                                    ng-if="selectedPostType!='Default'"
-                                    freetype="selectedPostType"
-                                    freetype-data="freetypesData"
-                                    validation="validation"
-                                    control="freetypeControl">
+                            <freetype-render ng-if="selectedPostType!='Default'" freetype="selectedPostType"
+                                freetype-data="freetypesData" validation="validation" control="freetypeControl">
                             </freetype-render>
 
                             <div class="tags-selector">
                                 <div class="selector__label">Tag(s):</div>
-                                <tags-selector
-                                    ng-if="showTagsSelector"
-                                    is-multi="liveblogSettings.allow_multiple_tag_selection"
-                                    on-change="onTagsChange"
+                                <tags-selector ng-if="showTagsSelector"
+                                    is-multi="liveblogSettings.allow_multiple_tag_selection" on-change="onTagsChange"
                                     selected-tags="currentPostTags" />
                             </div>
                             <div class="schedule-selector" ng-if="scheduled">
                                 <div class="selector__label">Publish on:</div>
-                                <date-time-picker datetime="currentPost.published_date" on-change="onPublishedDateChange" />
+                                <date-time-picker datetime="currentPost.published_date"
+                                    on-change="onPublishedDateChange" />
                             </div>
                         </div>
                         <div class="actions">
                             <div class="actions__options" style="display:table-row">
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleSticky();" flow="up" sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>PIN POST</span><span class="actions__icon"><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
+                                    <div ng-click="toggleSticky();" flow="up"
+                                        sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}"
+                                        ng-class="{'option-not-activated': !sticky}" class="pull-right"
+                                        ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                        <span class="actions__label" translate>PIN <span>POST</span></span>
+                                        <span class="actions__icon">
+                                            <i class="icon-pin rotate" ng-class="{'blue': sticky}"></i>
+                                        </span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleHighlight();" flow="up" sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>HIGHTLIGHT POST</span><span class="actions__icon"><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
+                                    <div ng-click="toggleHighlight();" flow="up"
+                                        sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}"
+                                        ng-class="{'option-not-activated': !highlight}" class="pull-right"
+                                        ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                        <span class="actions__label" translate>HIGHTLIGHT <span>POST</span></span>
+                                        <span class="actions__icon">
+                                            <i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i>
+                                        </span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleScheduler();" flow="up" sd-tooltip="{{ 'Schedule Post' | translate }}" ng-class="{'option-not-activated': !scheduled}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>SCHEDULE POST</span><span class="actions__icon">
+                                    <div ng-click="toggleScheduler();" flow="up"
+                                        sd-tooltip="{{ 'Schedule Post' | translate }}"
+                                        ng-class="{'option-not-activated': !scheduled}" class="pull-right"
+                                        ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                        <span class="actions__label" translate>SCHEDULE <span>POST</span></span>
+                                        <span class="actions__icon">
                                             <i class="icon-calendar rotate" ng-class="{'blue': scheduled}"></i>
                                         </span>
                                     </div>
@@ -275,24 +246,29 @@
                             </div>
                             <div class="actions__buttons" style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
-                                    <button class="btn btn--primary" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                                        <span ng-switch-when="true"  translate>Update</span>
+                                    <button class="btn btn--primary" ng-disabled="actionStatus()" ng-click="publish()"
+                                        ng-switch="isCurrentPostPublished()">
+                                        <span ng-switch-when="true" translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
                                     </button>
                                 </div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()" translate>Save draft</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()"
+                                        ng-disabled="isCurrentPostPublished() || actionStatus()"
+                                        translate>Submit</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()"
+                                        ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()"
+                                        translate><span class="hideMobile">Save</span> draft</button></div>
                             </div>
                         </div>
                     </div>
-                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog" ng-class="{'default': selectedPostType === 'Default'}">
+                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog"
+                        ng-class="{'default': selectedPostType === 'Default'}">
                         <ul class="users-list-embed">
                             <li translate ng-click="selectPostType('Default')"
-                            ng-class="{'active': selectedPostType === 'Default'}">Default</li>
+                                ng-class="{'active': selectedPostType === 'Default'}">Default</li>
 
                             <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
-                            ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
-                            >
+                                ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}">
                                 {{ freetype.name }}
                             </li>
                         </ul>
@@ -302,74 +278,69 @@
             </span>
             <span ng-if="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
-                    <span><strong translate>This blog is {{ blog.blog_status === 'deleted' ? "going to be deleted": "closed" }}!</strong></span><br />
-                    <span translate>To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
+                    <span><strong translate>This blog is {{ blog.blog_status === 'deleted' ? "going to be deleted":
+                            "closed" }}!</strong></span><br />
+                    <span translate>To add or edit the content please <a
+                            ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
                 </div>
             </span>
         </div>
         <!-- timeline column -->
-        <div class="column column--timeline">
+        <div class="column column--timeline column-hidden-mobile">
             <header>
                 <div translate class="header--timeline">Timeline</div>
                 <div ng-if="isTimelineReordering()" class="cancel-reorder header--filters">
                     <i class="svg-icon-move fix-cancel-move-icon"></i>
-                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" flow="down" sd-tooltip="Cancel and exit reordering mode">Cancel</button>
+                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();"
+                        flow="down" sd-tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
                 <div class="header--live" ng-if="isBlogOpened()">
                     <a href="{{ publicUrl }}" target="_blank" ng-show="publicUrl" translate>Live</a>
                 </div>
                 <div class="header--filters">
-                    <button class="btn btn-xs active" ng-click="filterHighlight(false);" ng-class="{'active': !filter.isHighlight}" flow="down" sd-tooltip="Show all" translate>All</button>
-                    <button class="btn btn-xs" ng-click="filterHighlight(true);" ng-class="{'active': filter.isHighlight}" flow="down" sd-tooltip="Show highlights" translate><i class="icon-star"></i></button>
+                    <button class="btn btn-xs active" ng-click="filterHighlight(false);"
+                        ng-class="{'active': !filter.isHighlight}" flow="down" sd-tooltip="Show all"
+                        translate>All</button>
+                    <button class="btn btn-xs" ng-click="filterHighlight(true);"
+                        ng-class="{'active': filter.isHighlight}" flow="down" sd-tooltip="Show highlights" translate><i
+                            class="icon-star"></i></button>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
                     <lb-posts-list ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
-                        !blogEdit.timelineStickyInstance.hideSticky"
-                        data-test-id="timeline-posts-pinned"
-                        class="timeline-posts-list pinned"
-                        lb-posts-instance="blogEdit.timelineStickyInstance"
-                        lb-posts-blog-id="blog._id"
-                        lb-posts-status="open"
-                        lb-sticky="true"
+                        !blogEdit.timelineStickyInstance.hideSticky" data-test-id="timeline-posts-pinned"
+                        class="timeline-posts-list pinned" lb-posts-instance="blogEdit.timelineStickyInstance"
+                        lb-posts-blog-id="blog._id" lb-posts-status="open" lb-sticky="true"
                         lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
-                        lb-posts-allow-reordering="false"
-                        lb-posts-allow-editing="blogSecurityService.canPublishAPost"
+                        lb-posts-allow-reordering="false" lb-posts-allow-editing="blogSecurityService.canPublishAPost"
                         lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
-                        lb-posts-on-post-selected="openPostInEditor"
-                        >
+                        lb-posts-on-post-selected="openPostInEditor">
                     </lb-posts-list>
 
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()" class="pin-drawer">
-                        <div ng-if="blogEdit.timelineStickyInstance.hideSticky"
-                            translate translate-n="blogEdit.timelineStickyInstance.numberOfPosts()"
-                            translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS"
-                            >1 PINNED POST
+                        <div ng-if="blogEdit.timelineStickyInstance.hideSticky" translate
+                            translate-n="blogEdit.timelineStickyInstance.numberOfPosts()"
+                            translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS">1 PINNED
+                            POST
                         </div>
 
                         <button class="pin-drawer-button"
                             ng-class="{active: blogEdit.timelineStickyInstance.hideSticky}"
-                            ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky"
-                            >
+                            ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky">
                             <i class="icon-chevron-up-thin"></i>
                         </button>
                     </div>
 
-                    <lb-posts-list
-                      class="timeline-posts-list"
-                      lb-posts-instance="blogEdit.timelineInstance"
-                      lb-posts-blog-id="blog._id"
-                      lb-posts-status="open"
-                      lb-sticky="false"
-                      lb-sticky-instance="blogEdit.timelineStickyInstance"
-                      lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
-                      lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
-                      lb-posts-allow-editing="blogSecurityService.canPublishAPost"
-                      lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
-                      lb-posts-on-post-selected="openPostInEditor"
-                    >
-                    There are no posts yet for this blog!
+                    <lb-posts-list class="timeline-posts-list" lb-posts-instance="blogEdit.timelineInstance"
+                        lb-posts-blog-id="blog._id" lb-posts-status="open" lb-sticky="false"
+                        lb-sticky-instance="blogEdit.timelineStickyInstance"
+                        lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
+                        lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
+                        lb-posts-allow-editing="blogSecurityService.canPublishAPost"
+                        lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
+                        lb-posts-on-post-selected="openPostInEditor">
+                        There are no posts yet for this blog!
                     </lb-posts-list>
                 </div>
             </div>
