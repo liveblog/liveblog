@@ -1,12 +1,38 @@
 import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
 (function() {
-    LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-        '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
-        '$http', 'session'];
-    function LiveblogThemesController(api, $location, notify, gettext,
-        $q, $sce, config, _, upload, blogService, $window, modal,
-        $http, session) {
+    LiveblogThemesController.$inject = [
+        'lodash',
+        '$http',
+        '$location',
+        '$sce',
+        '$window',
+        'api',
+        'blogService',
+        'config',
+        'gettext',
+        'modal',
+        'notify',
+        'session',
+        'upload',
+        'privileges',
+    ];
+    function LiveblogThemesController(
+        _,
+        $http,
+        $location,
+        $sce,
+        $window,
+        api,
+        blogService,
+        config,
+        gettext,
+        modal,
+        notify,
+        session,
+        upload,
+        privileges
+    ) {
         const self = this;
         /**
          * Return a collection that represent the hierachy of the themes
@@ -187,13 +213,15 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     return self.getTheme(self.globalTheme.value).name === theme.name;
                 }
             },
-            cannotRemove: function(theme) {
+            cannotBeRemoved: function(theme) {
                 const hasChildren = self.themes.some((t) => t.extends === theme.name);
 
                 const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
 
-                return hasChildren || isSystemTheme;
+                const isUserNotAllowed = !privileges.userHasPrivileges({themes_delete: 1});
+
+                return hasChildren || isSystemTheme || isUserNotAllowed;
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {

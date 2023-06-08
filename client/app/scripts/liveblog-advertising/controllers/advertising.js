@@ -4,11 +4,29 @@ import advertModalTpl from 'scripts/liveblog-advertising/views/advert-modal.ng1'
 import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-modal.ng1';
 import adblockDetect from 'adblock-detect';
 
-LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
-    'upload', '$templateCache', 'freetypeService', 'modal', 'adsUtilSevice'];
+LiveblogAdvertisingController.$inject = [
+    '$scope',
+    'api',
+    'notify',
+    'gettext',
+    '$templateCache',
+    'freetypeService',
+    'modal',
+    'adsUtilSevice',
+    'privileges',
+];
 
-export default function LiveblogAdvertisingController($scope, api, notify, gettext,
-    upload, $templateCache, freetypeService, modal, adsUtilSevice) {
+export default function LiveblogAdvertisingController(
+    $scope,
+    api,
+    notify,
+    gettext,
+    $templateCache,
+    freetypeService,
+    modal,
+    adsUtilSevice,
+    privileges
+) {
     adblockDetect((adblockDetected) => {
         $scope.adblockDetected = adblockDetected;
     });
@@ -74,12 +92,12 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
             .then((data) => {
                 $scope.adverts = data._items;
                 if (!silent) {
-                    notify.info('Adverts loaded');
+                    notify.info('Advertisements loaded');
                 }
                 $scope.advertsLoading = false;
             }, (data) => {
                 $scope.advertsLoading = false;
-                notify.error(gettext('There was an error getting the adverts'));
+                notify.error(gettext('There was an error getting the advertisements'));
             });
     }
 
@@ -97,13 +115,21 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
 
     $scope.removeAdvert = function(advert, $index) {
         modal.confirm(gettext('Are you sure you want to remove this advert?')).then(() => {
-            api('advertisements').save(advert, {deleted: true})
+            api('advertisements').remove(advert)
                 .then((data) => {
                     $scope.adverts.splice($index, 1);
                 }, (data) => {
-                    notify.error(gettext('Can\'t remove advert'));
+                    const errorMsg = (data.status === 403) ?
+                        'You do not have enough permissions to remove this advertisement' :
+                        'There has been a problem while trying to remove the advertisement';
+
+                    notify.error(gettext(errorMsg));
                 });
         });
+    };
+
+    $scope.canRemoveAdvertisement = function() {
+        return privileges.userHasPrivileges({advertisements_delete: 1});
     };
 
     $scope.saveAdvert = function() {
@@ -137,7 +163,7 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
             })
             .catch((data) => {
                 $scope.collectionsLoading = false;
-                notify.error(gettext('There was an error getting the adverts'));
+                notify.error(gettext('There was an error getting the advertisements'));
             });
     }
 

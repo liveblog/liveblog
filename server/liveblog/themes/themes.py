@@ -63,7 +63,6 @@ themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_
 
 class UndefinedVar(jinja2.Undefined):
     def __getattribute__(self, name, *args, **kwargs):
-
         try:
             return super(UndefinedVar, self).__getattribute__(name, *args, **kwargs)
         except Exception:
@@ -71,8 +70,6 @@ class UndefinedVar(jinja2.Undefined):
                 self._undefined_name, name)
             print(err_msg)
             return UndefinedVar(err_msg)
-
-        return None
 
 
 class ThemesResource(Resource):
@@ -223,8 +220,12 @@ class ThemesResource(Resource):
 
     # point accessible at '/themes/<theme_name>'.
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
-                  'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
+    privileges = {
+        'POST': 'themes_create',
+        'GET': 'themes_read',
+        'PATCH': 'themes_update',
+        'DELETE': 'themes_delete'
+    }
 
 
 class UnknownTheme(Exception):
@@ -668,18 +669,17 @@ class ThemesService(BaseService):
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
         # Raise an exception if the removed theme is the default one.
         if deleted_theme['name'] == global_default_theme:
-            raise SuperdeskApiError.forbiddenError('This is a default theme and can not be deleted')
+            raise SuperdeskApiError.forbiddenError('This theme is marked as default and cannot be removed')
 
         # Raise an exception if the removed theme has children.
         if self.get(req=None, lookup={'extends': deleted_theme['name']}).count() > 0:
-            raise SuperdeskApiError.forbiddenError('This theme has children. It can\'t be removed')
+            raise SuperdeskApiError.forbiddenError('This theme has child themes and cannot be removed')
 
         # Update all the blogs using the removed theme and assign the default theme.
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': deleted_theme['name']})
 
         for blog in blogs:
-            # will assign the default theme to this blog
             blog['blog_preferences']['theme'] = global_default_theme
             blogs_service.system_update(ObjectId(blog['_id']), {'blog_preferences': blog['blog_preferences']}, blog)
 

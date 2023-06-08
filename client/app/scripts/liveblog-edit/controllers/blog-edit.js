@@ -751,7 +751,7 @@ export default function BlogEditController(
             },
             displayModalBox: function() {
                 function openCredentialForm() {
-                    const helpLink = 'https://wiki.sourcefabric.org/x/PABIBg';
+                    const helpLink = 'https://sofab.atlassian.net/l/cp/7dsumzXN';
                     const callbackURI = `${config.server.url}/video_upload/oauth2callback`;
 
                     // @NOTE: this is ugly. Figure out how to improve this.
