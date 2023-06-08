@@ -5,7 +5,7 @@ from superdesk.users.services import DBUsersService
 
 class LiveBlogUserService(DBUsersService):
     """
-    Exnteds superdesk.users default app to add some additional functionality
+    Extends superdesk.users default app to add some additional functionality
     only concerning Live Blog, like hiding users' sensitive information for users
     that do not have enough permissions to do so.
     """
