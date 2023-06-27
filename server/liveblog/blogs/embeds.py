@@ -26,6 +26,7 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
+from liveblog.blogposting_schema.utils import generate_schema_for
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
@@ -243,6 +244,12 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
     api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
 
+    try:
+        blog_schema = generate_schema_for(blog, posts.get('_items', []), theme_settings)
+    except Exception as e:
+        blog_schema = ''
+        logger.error('Error generating schema for blog %s: %s' % (blog_id, e))
+
     scope = {
         'blog': blog,
         'settings': theme_settings,
@@ -257,7 +264,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'async': asyncTheme,
         'i18n': i18n,
         'hook_urls': bool(TRIGGER_HOOK_URLS),
-        'global_tags': global_tags
+        'global_tags': global_tags,
+        'schema': blog_schema
     }
 
     if is_amp:

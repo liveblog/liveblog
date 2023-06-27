@@ -52,7 +52,12 @@
 </style>
 {% endif %}
 
+<script type="application/ld+json">
+{{ schema | safe }}
+</script>
+
 {{ template | safe }}
+
 <script type="text/javascript">
     window.LB = {
         blog: {{ blog | tojson | safe }},

@@ -123,8 +123,12 @@ class AuthorsMixin:
 
             post['byline'] = byline
 
-    def get_main_item(self, post):
-        """It gets the first related item of a post. If the post is syndicated"""
+    @staticmethod
+    def get_main_item(post):
+        """
+        It gets the first related item of a post. If the post is syndicated then
+        it will return the syndicated item instead as the main item
+        """
         is_syndicated = post.get('syndication_in')
         main_item = {}
 
@@ -154,7 +158,7 @@ class AuthorsMixin:
         for post in posts:
             post_author_id = str(post.get('original_creator', '__not_found__'))
             original_creator = self.authors_map.get(post_author_id)
-            main_item = self.get_main_item(post)
+            main_item = AuthorsMixin.get_main_item(post)
 
             if not original_creator:
                 if main_item.get('item_type') == 'comment':

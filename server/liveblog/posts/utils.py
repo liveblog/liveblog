@@ -23,7 +23,6 @@ def get_related_items(post):
     """
     Returns a list of all the related items for the given post.
     """
-
     items = []
     items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
 
@@ -33,6 +32,13 @@ def get_related_items(post):
             items.append(item)
 
     return items
+
+
+def get_first_item_of_type(items, item_type):
+    """ Returns the first item for the given type. """
+    for item in items:
+        if item.get('item_type') == item_type:
+            return item
 
 
 def calculate_post_type(post, items=None):

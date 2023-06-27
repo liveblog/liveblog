@@ -188,9 +188,16 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div class="editor" ng-if="selectedPostType=='Default' && enableEditor" ng-sir-trevor
-                                    st-model="blogEdit.editor" st-params="stParams" st-change="onEditorChanges"
-                                    st-debounce-change="debouncedEditorChanges" , st-debounce-time=1000></div>
+                                <div
+                                    class="editor"
+                                    ng-if="selectedPostType=='Default' && enableEditor"
+                                    ng-sir-trevor
+                                    st-model="blogEdit.editor"
+                                    st-params="stParams"
+                                    st-change="onEditorChanges"
+                                    st-debounce-change="debouncedEditorChanges"
+                                    st-debounce-time=1000
+                                ></div>
                             </div>
                             <freetype-render ng-if="selectedPostType!='Default'" freetype="selectedPostType"
                                 freetype-data="freetypesData" validation="validation" control="freetypeControl">
