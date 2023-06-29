@@ -1,8 +1,7 @@
 import json
 import datetime
 
-from liveblog.posts.mixins import AuthorsMixin
-from liveblog.posts import utils as post_utils
+from liveblog.posts.utils import get_main_item, get_first_item_of_type, get_related_items
 
 from .schema import LiveBlogPostingSchema
 from .models import BlogPosting, ImageObject, LiveBlogPosting, MainEntityOfPage, Author
@@ -23,7 +22,7 @@ def get_base_image(item):
         return media.get('renditions', {}).get('baseImage')
 
 def generate_blogupdate(post, theme_settings):
-    main_post_item = AuthorsMixin.get_main_item(post)
+    main_post_item = get_main_item(post)
     if not main_post_item:
         return None
 
@@ -32,13 +31,13 @@ def generate_blogupdate(post, theme_settings):
 
     # we need to preferably set the article body and and image
     # so we're gonna get the first item of type image and text
-    items = post_utils.get_related_items(post)
+    items = get_related_items(post)
 
-    text_item = post_utils.get_first_item_of_type(items, 'text')
+    text_item = get_first_item_of_type(items, 'text')
     if text_item:
         blog_posting.article_body = text_item.get('text')
 
-    image_item = post_utils.get_first_item_of_type(items, 'image')
+    image_item = get_first_item_of_type(items, 'image')
     if image_item:
         main_image = get_base_image(image_item)
         image = ImageObject.from_rendition_image(main_image)

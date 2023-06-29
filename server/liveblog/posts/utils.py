@@ -1,6 +1,9 @@
+import logging
 from itertools import groupby
 from superdesk import get_resource_service
 
+
+logger = logging.getLogger('superdesk')
 
 def get_associations(post):
     for group in post.get('groups', []):
@@ -98,3 +101,30 @@ def attach_syndication(post):
     if post.get('syndication_in'):
         post['syndication_in'] = get_resource_service('syndication_in')\
             .find_one(req=None, _id=post['syndication_in'])
+
+
+def get_main_item(post):
+        """
+        It gets the first related item of a post. If the post is syndicated then
+        it will return the syndicated item instead as the main item
+        """
+        is_syndicated = post.get('syndication_in')
+        main_item = {}
+
+        try:
+            for group in post['groups']:
+                if group['id'] == 'main':
+                    if is_syndicated:
+                        for ref in group['refs']:
+                            syndicated_creator = ref.get('item', {}).get('syndicated_creator')
+                            if syndicated_creator:
+                                main_item = ref.get('item')
+                                break
+                    else:
+                        main_item = group['refs'][0]['item']
+                        break
+
+        except Exception as err:
+            logger.info('Imposible to get the main item for the post {}. Error: {}'.format(post, err))
+
+        return main_item

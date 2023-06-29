@@ -1,26 +1,26 @@
 import superdesk
-from liveblog.posts.posts import PostsService, PostsResource,\
-    BlogPostsService, BlogPostsResource, PostsVersionsService, PostsVersionsResource, \
-    PostFlagResource, PostFlagService
 from superdesk import get_backend
 
 
 def init_app(app):
+    # to avoid circular imports
+    from liveblog.posts import posts
+
     endpoint_name = 'posts'
-    service = PostsService(endpoint_name, backend=superdesk.get_backend())
-    PostsResource(endpoint_name, app=app, service=service)
+    service = posts.PostsService(endpoint_name, backend=superdesk.get_backend())
+    posts.PostsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'post_flags'
-    service = PostFlagService(endpoint_name, backend=superdesk.get_backend())
-    PostFlagResource(endpoint_name, app=app, service=service)
+    service = posts.PostFlagService(endpoint_name, backend=superdesk.get_backend())
+    posts.PostFlagResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'blog_posts'
-    service = BlogPostsService(endpoint_name, backend=superdesk.get_backend())
-    BlogPostsResource(endpoint_name, app=app, service=service)
+    service = posts.BlogPostsService(endpoint_name, backend=superdesk.get_backend())
+    posts.BlogPostsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'posts_versions'
-    service = PostsVersionsService(endpoint_name, backend=get_backend())
-    PostsVersionsResource(endpoint_name, app=app, service=service)
+    service = posts.PostsVersionsService(endpoint_name, backend=get_backend())
+    posts.PostsVersionsResource(endpoint_name, app=app, service=service)
 
 
 superdesk.privilege(name='posts', label='Can create a post', description='User can create a post from items')

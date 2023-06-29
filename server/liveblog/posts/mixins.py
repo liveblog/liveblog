@@ -4,9 +4,7 @@ from bson.objectid import ObjectId
 
 from superdesk import get_resource_service
 from settings import MOBILE_APP_WORKAROUND
-
 from . import utils as post_utils
-
 
 logger = logging.getLogger('superdesk')
 
@@ -29,7 +27,6 @@ class AuthorsMixin:
         Calculates the post types for each given post. Attaches the syndicated post information if needed.
         Retrieves authors information from database in a performant way and set it to posts.
         """
-
         for doc in posts:
             post_utils.calculate_post_type(doc)
             post_utils.attach_syndication(doc)
@@ -123,33 +120,6 @@ class AuthorsMixin:
 
             post['byline'] = byline
 
-    @staticmethod
-    def get_main_item(post):
-        """
-        It gets the first related item of a post. If the post is syndicated then
-        it will return the syndicated item instead as the main item
-        """
-        is_syndicated = post.get('syndication_in')
-        main_item = {}
-
-        try:
-            for group in post['groups']:
-                if group['id'] == 'main':
-                    if is_syndicated:
-                        for ref in group['refs']:
-                            syndicated_creator = ref.get('item', {}).get('syndicated_creator')
-                            if syndicated_creator:
-                                main_item = ref.get('item')
-                                break
-                    else:
-                        main_item = group['refs'][0]['item']
-                        break
-
-        except Exception as err:
-            logger.info('Imposible to get the main item for the post {}. Error: {}'.format(post, err))
-
-        return main_item
-
     def attach_authors(self, posts):
         """Simply gets author id from items related and for post itself and adds author info"""
 
@@ -158,7 +128,7 @@ class AuthorsMixin:
         for post in posts:
             post_author_id = str(post.get('original_creator', '__not_found__'))
             original_creator = self.authors_map.get(post_author_id)
-            main_item = AuthorsMixin.get_main_item(post)
+            main_item = post_utils.get_main_item(post)
 
             if not original_creator:
                 if main_item.get('item_type') == 'comment':
