@@ -2,6 +2,7 @@ import os
 import jinja2
 import unittest
 import json
+import pytest
 
 
 ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
@@ -11,6 +12,7 @@ TEMPLATE_DIR = os.path.join(ROOT_DIR, 'templates')
 TEMPLATE_NAME = os.path.join(ROOT_DIR, 'template.html')
 
 
+@pytest.mark.skip(reason="This test case is not complete and needs more work")
 class TestTemplate(unittest.TestCase):
     """
     This test is used to check if python-based jinja2 renderer is

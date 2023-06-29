@@ -59,10 +59,10 @@ For more commandline magic go to their docs: http://www.fig.sh/cli.html
 
 ## CI
 
-Use nosetests for unit tests:
+Use pytest for unit tests:
 
 ```sh
-$ nosetests
+$ pytest
 ```
 
 Behave for behaviour testing:
