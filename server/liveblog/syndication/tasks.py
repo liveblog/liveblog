@@ -8,11 +8,13 @@ from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
 from .exceptions import APIConnectionError
-from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
+from settings import (
+    SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN, SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER)
 from .utils import send_api_request
 
 
 logger = logging.getLogger('liveblog')
+LIMIT_POSTS = SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER
 
 
 @celery.task(bind=True)
@@ -32,7 +34,7 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
 
 
 @celery.task(bind=True)
-def send_posts_to_consumer(self, syndication_out, action='created', limit=50, post_status='submitted'):
+def send_posts_to_consumer(self, syndication_out, action='created', limit=LIMIT_POSTS, post_status='submitted'):
     """
     Sends latest blog post updates to consumers webhook.
 
