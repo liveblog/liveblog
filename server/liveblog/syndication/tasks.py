@@ -16,7 +16,7 @@ from .utils import send_api_request
 
 logger = logging.getLogger('liveblog')
 LIMIT_POSTS = SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER
-CHUNK_SIZE = 5
+CHUNK_SIZE = 50
 
 
 @celery.task(bind=True)
