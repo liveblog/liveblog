@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from math import ceil
 from celery import chain
 
 from flask import current_app as app
@@ -15,6 +16,7 @@ from .utils import send_api_request
 
 logger = logging.getLogger('liveblog')
 LIMIT_POSTS = SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER
+CHUNK_SIZE = 5
 
 
 @celery.task(bind=True)
@@ -50,47 +52,52 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=LIMIT_
     blog_id = syndication_out['blog_id']
     lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False, 'post_status': 'open'}
 
-    posts = posts_service.find(lookup)
-    posts = posts.sort('order', -1)  # order to latest first
+    total_posts = posts_service.find(lookup).count()
+    num_chunks = ceil(min(limit, total_posts) / CHUNK_SIZE)
 
-    array = []
-    for element in posts:
-        array.append(element)
+    result = None
+    for i in range(num_chunks):
+        posts = posts_service.find(lookup).skip(i * CHUNK_SIZE).limit(CHUNK_SIZE)
+        # order to earliest first
+        posts = posts.sort('order', 1)
 
-        if len(array) >= limit:
-            break
+        subtasks = []
+        for producer_post in posts:
+            is_repeated_syndication = 'repeat_syndication' in producer_post.keys()
+            if is_repeated_syndication:
+                continue
 
-    subtasks = []
-    array.reverse()
-    for producer_post in array:
-        is_repeated_syndication = 'repeat_syndication' in producer_post.keys()
-        if is_repeated_syndication:
-            continue
+            items = extract_post_items_data(producer_post)
+            post = extract_producer_post_data(producer_post)
 
-        items = extract_post_items_data(producer_post)
-        post = extract_producer_post_data(producer_post)
+            # Force post_status for old posts
+            post['post_status'] = post_status
 
-        # Force post_status for old posts
-        post['post_status'] = post_status
+            post_data = {
+                'items': items,
+                'post': post
+            }
+            subtask_args = [syndication_out, post_data, action]
 
-        post_data = {
-            'items': items,
-            'post': post
-        }
-        subtask_args = [syndication_out, post_data, action]
+            # Because we are running the subtask in a chained mode, we need to provide
+            # the initial param or result of other tasks as None. Read more here:
+            # https://docs.celeryq.dev/en/stable/userguide/canvas.html#chains
+            # This is required as we need to keep the order of the posts
+            if len(subtasks) == 0:
+                subtask_args.insert(0, None)
 
-        # Because we are running the subtask in a chained mode, we need to provide
-        # the initial param or result of other tasks as None. Read more here:
-        # https://docs.celeryq.dev/en/stable/userguide/canvas.html#chains
-        # This is required as we need to keep the order of the posts
-        if len(subtasks) == 0:
-            subtask_args.insert(0, None)
+            send_internal = send_single_post_subtask.subtask(args=subtask_args)
+            subtasks.append(send_internal)
 
-        send_internal = send_single_post_subtask.subtask(args=subtask_args)
-        subtasks.append(send_internal)
+        # Create a chain for the current chunk and apply it asynchronously
+        job = chain(subtasks)
 
-    job = chain(subtasks)
-    job.apply_async()
+        # If there's a previous job, wait for it to finish
+        if result:
+            while not result.ready():
+                sleep(0.5)
+
+        result = job.apply_async()
 
 
 @celery.task(bind=True)
@@ -98,6 +105,7 @@ def send_single_post_subtask(self, chained_result, syndication_out, post_data, a
     try:
         consumers = get_resource_service('consumers')
         consumers.send_post(syndication_out, post_data, action)
+        return True
     except Exception as err:
         # once retry limit is reached, let's return instead of raising an exception
         # so the next subtask (post) will be also sent
@@ -197,7 +205,7 @@ def unlink_syndicated_posts(producer_blog_id):
             posts_service.system_update(post_id, {'syndication_in': None}, post)
 
             # given that there are blog that could have thousands of syndicated entries
-            # we want to avoid hitting the database to ofter so, let's wait just a little
+            # we want to avoid hitting the database to often so, let's wait just a little
             sleep(0.3)
         except Exception as err:
             logger.error(

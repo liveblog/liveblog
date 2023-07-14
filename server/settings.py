@@ -138,6 +138,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
 CELERY_TASK_PROTOCOL = 1
 
+CELERY_TASK_IGNORE_RESULT = False
+
 CELERYBEAT_SCHEDULE_FILENAME = env('CELERYBEAT_SCHEDULE_FILENAME', './celerybeatschedule.db')
 CELERYBEAT_SCHEDULE = {
     'session:gc': {
