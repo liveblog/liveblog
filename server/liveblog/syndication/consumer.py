@@ -93,7 +93,12 @@ class ConsumerService(BaseService):
             raise ConsumerAPIError('Unable to get consumer "{}".'.format(consumer_id))
 
         api_url = trailing_slash(consumer['webhook_url'])
-        if not consumer.get('webhook_enabled', False) and 'localhost' not in api_url:
+        localhost_addresses = ['localhost', '127.0.0.1']
+
+        is_webhook_enabled = consumer.get('webhook_enabled', False)
+        is_localhost = any([host in api_url for host in localhost_addresses])
+
+        if not is_webhook_enabled and not is_localhost:
             logger.warning('Unable to send request. Consumer "{}" webhook is not available'.format(api_url))
             return
 

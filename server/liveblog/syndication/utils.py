@@ -234,17 +234,28 @@ def get_post_creator(post):
 
 
 def create_syndicated_blog_post(producer_post, items, in_syndication):
-    """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
+    """
+    Create syndicted blog post data using producer post, fetched items and incoming syndication.
+    """
+
     post_items = []
+
     for item in items:
         if item['item_type'] == 'image':
-            item = _fetch_and_create_image_item(item)
+            try:
+                item = _fetch_and_create_image_item(item)
+            except DownloadError as err:
+                logger.error(
+                    'Unable to download image from syndicated item: {}. Err: {}'.format(item, err))
+                continue
+
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
     items_service = get_resource_service('blog_items')
     item_ids = items_service.post(post_items)
     item_refs = []
+
     for i, item_id in enumerate(item_ids):
         item_refs.append({
             'residRef': str(item_id)
