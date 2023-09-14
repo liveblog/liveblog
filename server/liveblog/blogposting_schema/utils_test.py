@@ -1,6 +1,29 @@
-import pytest
 from datetime import datetime
 from .utils import get_base_image, get_modified_date, get_post_author, generate_schema_for
+
+
+def _generate_image_item():
+    return {
+        'item_type': 'image',
+        'meta': {
+            'media': {
+                'renditions': {
+                    'baseImage': {
+                        'href': 'https://example.com/post-image.jpg',
+                        'width': 100, 'height': 100
+                    }
+                }
+            }
+        },
+    }
+
+
+def _generate_text_item(body_text='Test post body', published_date=datetime(2022, 1, 1)):
+    return {
+        'item_type': 'text',
+        'text': body_text,
+        'published_date': published_date,
+    }
 
 
 class TestGetModifiedDate:
@@ -102,34 +125,14 @@ class TestGenerateSchemaFor:
         post = {
             'title': 'Test Post',
             'description': 'A test post',
-            'start_date': datetime(2022, 1, 1),
+            'published_date': datetime(2022, 1, 1),
             'groups': [
                 {'id': 'root'},
                 {
                     'id': 'main',
                     'refs': [
-                        {
-                            'item': {
-                                'item_type': 'text',
-                                'text': 'Test post body',
-                                'published_date': datetime(2022, 1, 1),
-                            }
-                        },
-                        {
-                            'item': {
-                                'item_type': 'image',
-                                'meta': {
-                                    'media': {
-                                        'renditions': {
-                                            'baseImage': {
-                                                'href': 'https://example.com/post-image.jpg',
-                                                'width': 100, 'height': 100
-                                            }
-                                        }
-                                    }
-                                },
-                            }
-                        }
+                        {'item': _generate_text_item()},
+                        {'item': _generate_image_item()}
                     ]
                 }
             ]
@@ -138,64 +141,77 @@ class TestGenerateSchemaFor:
 
         result = generate_schema_for(blog, posts)
 
-        print(result)
-
         assert result != ""
+
+        # assert all types are present
         assert '"@type": "LiveBlogPosting"' in result
+        assert '"@type": "WebPage"' in result
         assert '"@type": "BlogPosting"' in result
+
+        # assert some blog and post properties
         assert '"headline": "Test Blog"' in result
         assert '"description": "A test blog"' in result
         assert '"datePublished": "2022-01-01T00:00:00"' in result
+        assert '"articleBody": "Test post body"' in result
 
-    @pytest.mark.skip(reason="Not implemented yet")
+        # assert only one post
+        assert result.count('"@type": "BlogPosting"') == 1
+
+        # assert two image objects (blog and post)
+        assert result.count('"@type": "ImageObject"') == 2
+
     def test_multiple_posts(self):
         blog = {
             'title': 'Test Blog',
             'description': 'A test blog',
-            'start_date': '2022-01-01',
-            'picture_renditions': {'baseImage': 'https://example.com/image.jpg'}
+            'start_date': datetime(2022, 1, 1),
+            'picture_renditions': {'baseImage': {'href': 'https://example.com/image.jpg', 'width': 100, 'height': 100}},
         }
+
         post1 = {
             'title': 'Test Post 1',
             'description': 'A test post',
-            'start_date': '2022-01-02',
-            'meta': {'media': {'renditions': {'baseImage': 'https://example.com/post1-image.jpg'}}},
-            'related_items': [{'type': 'text', 'text': 'Test post 1 body'}]
+            'published_date': datetime(2022, 1, 1),
+            'groups': [
+                {'id': 'root'},
+                {
+                    'id': 'main',
+                    'refs': [
+                        {'item': _generate_text_item()},
+                        {'item': _generate_image_item()}
+                    ]
+                }
+            ]
         }
+
         post2 = {
-            'title': 'Test Post 2',
+            'title': 'Test Post 1',
             'description': 'A test post',
-            'start_date': '2022-01-03',
-            'meta': {'media': {'renditions': {'baseImage': 'https://example.com/post2-image.jpg'}}},
-            'related_items': [{'type': 'text', 'text': 'Test post 2 body'}]
+            'published_date': datetime(2022, 1, 1),
+            'groups': [
+                {'id': 'root'},
+                {
+                    'id': 'main',
+                    'refs': [
+                        {'item': _generate_text_item()},
+                        {'item': _generate_image_item()}
+                    ]
+                }
+            ]
         }
+
         posts = [post1, post2]
 
         result = generate_schema_for(blog, posts)
 
         assert result != ""
-        assert '"@type": "LiveBlogPosting"' in result
-        assert '"@type": "BlogPosting"' in result
-        assert '"headline": "Test Blog"' in result
-        assert '"description": "A test blog"' in result
-        assert '"datePublished": "2022-01-01"' in result
-        assert '"dateModified": "2022-01-03"' in result
-        assert '"url": "https://example.com/blog/to-be-collected.html"' in result
-        assert '"@type": "ImageObject"' in result
-        assert '"url": "https://example.com/image.jpg"' in result
-        assert '"@type": "LiveBlogUpdate"' in result
-        assert '"@type": "BlogPosting"' in result
-        assert '"headline": "Test Post 1"' in result
-        assert '"description": "A test post"' in result
-        assert '"datePublished": "2022-01-02"' in result
-        assert '"@type": "ImageObject"' in result
-        assert '"url": "https://example.com/post1-image.jpg"' in result
-        assert '"articleBody": "Test post 1 body"' in result
-        assert '"@type": "LiveBlogUpdate"' in result
-        assert '"@type": "BlogPosting"' in result
-        assert '"headline": "Test Post 2"' in result
-        assert '"description": "A test post"' in result
-        assert '"datePublished": "2022-01-03"' in result
-        assert '"@type": "ImageObject"' in result
-        assert '"url": "https://example.com/post2-image.jpg"' in result
-        assert '"articleBody": "Test post 2 body"' in result
+
+        # assert we have two posts
+        assert result.count('"@type": "BlogPosting"') == 2
+
+        # assert three image objects (blog and two posts)
+        assert result.count('"@type": "ImageObject"') == 3
+        assert result.count('https://example.com/post-image.jpg') == 2
+
+        # assert datePublished is 3 times (blog and two posts)
+        assert result.count('datePublished') == 3
