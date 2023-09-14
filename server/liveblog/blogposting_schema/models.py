@@ -27,6 +27,7 @@ class ImageObject:
             image.get('height')
         )
 
+
 @dataclass
 class BlogPosting:
     date_published: datetime
@@ -52,7 +53,7 @@ class LiveBlogPosting:
     headline: str
     description: str
     date_published: datetime
-    date_podified: datetime
+    date_modified: datetime
 
     coverage_start_time: datetime
     coverage_end_time: datetime
@@ -60,5 +61,3 @@ class LiveBlogPosting:
     author: Optional[Author] = None
     main_entity_of_page: Optional[MainEntityOfPage] = None
     live_blog_update: Optional[List] = None
-
-
