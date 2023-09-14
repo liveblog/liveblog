@@ -81,6 +81,10 @@ blogs_schema = {
         'type': 'datetime',
         'default': None
     },
+    'end_date': {
+        'type': 'datetime',
+        'default': None
+    },
     'delete_not_before': {
         'type': 'datetime',
         'default': None,

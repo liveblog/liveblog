@@ -197,7 +197,7 @@
                                 <label
                                     for="start_date"
                                     class="control-label"
-                                    translate>Start date</label>
+                                    translate>Coverage start</label>
                                 <div
                                     sd-datepicker
                                     ng-model="settings.start_date"
@@ -208,10 +208,32 @@
                                 <label
                                     for="start_time"
                                     class="control-label"
-                                    translate>Start time</label>
+                                    translate>Coverate start time</label>
                                 <div
                                     sd-timepicker
                                     ng-model="settings.start_time"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="end_date"
+                                    class="control-label"
+                                    translate>Coverage end</label>
+                                <div
+                                    sd-datepicker
+                                    ng-model="settings.end_date"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="end_time"
+                                    class="control-label"
+                                    translate>Coverage end time</label>
+                                <div
+                                    sd-timepicker
+                                    ng-model="settings.end_time"
                                     class="form-input"></div>
                             </div>
 

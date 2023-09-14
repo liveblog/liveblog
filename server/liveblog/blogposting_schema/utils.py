@@ -155,8 +155,8 @@ def generate_schema_for(blog, posts, theme_settings={}):
         date_published=blog['start_date'],
         date_modified=get_modified_date(blog),
 
-        coverage_start_time=datetime.datetime.now(),
-        coverage_end_time=datetime.datetime.now()
+        coverage_start_time=blog['start_date'],
+        coverage_end_time=blog.get('end_date', None)
     )
 
     blog_image = blog.get('picture_renditions', {})
