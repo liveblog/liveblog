@@ -144,7 +144,6 @@ class LiveBlogPostingSchema(Schema):
     date_published = fields.DateTime(data_key="datePublished")
     data_modified = fields.DateTime(data_key="dateModified")
 
-    # TODO: we need to collect these 3 below
     coverage_start_time = fields.DateTime(data_key="coverageStartTime")
     coverage_end_time = fields.DateTime(data_key="coverageEndTime")
     url = fields.Str()

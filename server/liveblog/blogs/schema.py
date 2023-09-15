@@ -75,7 +75,7 @@ blogs_schema = {
         'type': 'string',
         'allowed': ["", "Breaking News", "Entertainment", "Business and Finance",
                     "Sport", "Technology", "Politics", "Others"],
-        'default': ""
+        'default': ''
     },
     'start_date': {
         'type': 'datetime',
@@ -84,6 +84,14 @@ blogs_schema = {
     'end_date': {
         'type': 'datetime',
         'default': None
+    },
+    'main_page_url': {
+        'type': 'string',
+        'default': ''
+    },
+    'blog_author': {
+        'type': 'string',
+        'default': ''
     },
     'delete_not_before': {
         'type': 'datetime',

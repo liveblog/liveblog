@@ -237,6 +237,34 @@
                                     class="form-input"></div>
                             </div>
 
+                            <div class="form-group">
+                                <label for="main_page_url" class="control-label" translate>Main Page Url</label>
+                                <div class="form-input">
+                                    <input
+                                        name="main_page_url"
+                                        ng-model="settings.newBlog.main_page_url"
+                                        class="form-control"
+                                    />
+                                    <span class="form-input__hint" translate>
+                                        Used as mainEntityOfPage url for LiveBlogPosting schema. More info <a href="https://schema.org/LiveBlogPosting" target="_blank">here</a>.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="blog_author" class="control-label" translate>Blog Author</label>
+                                <div class="form-input">
+                                    <input
+                                        name="blog_author"
+                                        ng-model="settings.newBlog.blog_author"
+                                        class="form-control"
+                                    />
+                                    <span class="form-input__hint" translate>
+                                        Used as author for LiveBlogPosting schema. More info <a href="https://schema.org/author" target="_blank">here</a>.
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="form-group" ng-if="isAdmin()">
                                 <label for="inputPostslimit" class="control-label" translate>Posts limit</label>
                                 <div class="form-input">

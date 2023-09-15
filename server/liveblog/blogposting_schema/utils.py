@@ -165,12 +165,14 @@ def generate_schema_for(blog, posts, theme_settings={}):
     if main_image:
         liveblogposting.image = ImageObject.from_rendition_image(main_image)
 
-    liveblogposting.main_entity_of_page = MainEntityOfPage(url="https://example.com/blog/to-be-collected.html")
+    liveblogposting.main_entity_of_page = MainEntityOfPage(
+        url=blog.get('main_page_url', ''))
+
+    blog_author = blog.get('blog_author', '')
+    if blog_author:
+        liveblogposting.author = Author(blog_author)
+
     liveblogposting.live_blog_update = []
-
-    # maybe it's the organization name
-    # author = Author("John Doe")
-
     for post in posts:
         blog_update = generate_blogupdate(post, theme_settings)
         if not blog_update:
