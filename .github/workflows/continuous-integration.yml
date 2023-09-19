@@ -84,7 +84,7 @@ jobs:
         pip install 'pip<=20.2.3'
         pip install 'setuptools<50'
         pip install -r dev-requirements.txt
-        pytest
+        pytest --ignore=src/ -v
         behave --format progress2 --logging-level ERROR
         flake8
 
