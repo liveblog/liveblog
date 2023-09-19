@@ -1,8 +1,5 @@
 import json
-import datetime
-
 from liveblog.posts.utils import get_main_item, get_first_item_of_type, get_related_items
-
 from .schema import LiveBlogPostingSchema
 from .models import BlogPosting, ImageObject, LiveBlogPosting, MainEntityOfPage, Author
 
