@@ -34,7 +34,7 @@ from liveblog.utils.api import api_error
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
-from .template.filters import moment_date_filter_container, addten, ampify, ampsupport, decode_uri
+from .template.filters import moment_date_filter_container, addten, ampify, ampsupport, decode_uri, fix_x_domain_embed
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -376,6 +376,7 @@ class ThemesService(BaseService):
         embed_env.filters['ampify'] = ampify
         embed_env.filters['ampsupport'] = ampsupport
         embed_env.filters['decode_uri'] = decode_uri
+        embed_env.filters['fix_x_domain_embed'] = fix_x_domain_embed
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):

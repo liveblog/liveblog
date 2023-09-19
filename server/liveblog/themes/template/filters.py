@@ -179,3 +179,12 @@ def decode_uri(url):
     """
 
     return unquote(url)
+
+
+def fix_x_domain_embed(url):
+    """
+    This will replace the x.com domain with twitter.com as X's embedding library
+    has not yet been adjusted to work with x.com domain embeds
+    """
+
+    return url.replace('x.com', 'twitter.com')
