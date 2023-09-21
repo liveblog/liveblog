@@ -26,7 +26,7 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
-from liveblog.blogposting_schema.utils import generate_schema_for
+from liveblog.blogposting_schema.utils import generate_liveblog_posting_schema
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
@@ -180,16 +180,17 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     theme_settings = theme_service.get_default_settings(theme)
     i18n = theme.get('i18n', {})
 
-    # the blog level theme overrides the one in theme level
-    # this way we allow user to enable commenting only for certain blog(s)
-    # or the other way around
+    # the blog level setting overrides the one in theme level
+    # this way we allow user to enable/disable commenting only for certain blog(s)
     unset = 'unset'
     blog_users_can_comment = blog.get('users_can_comment', unset)
-    if blog_users_can_comment != unset:
-        theme_settings['canComment'] = True if blog_users_can_comment == 'enabled' else False
+    is_users_can_comment_set = blog_users_can_comment != unset
 
-    # also when blog has been archived, we should disable commenting
-    if blog.get('blog_status') == 'closed':
+    if is_users_can_comment_set:
+        theme_settings['canComment'] = blog_users_can_comment == 'enabled'
+
+    is_blog_closed = blog.get('blog_status') == 'closed'
+    if is_blog_closed:
         theme_settings['canComment'] = False
 
     theme_settings['watermark'] = ACTIVATE_WATERMARK
@@ -244,11 +245,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
     api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
 
-    try:
-        blog_schema = generate_schema_for(blog, posts.get('_items', []), theme_settings)
-    except Exception as e:
-        blog_schema = ''
-        logger.error('Error generating schema for blog %s: %s' % (blog_id, e))
+    post_items = posts.get('_items', [])
+    blog_schema = generate_liveblog_posting_schema(blog, post_items, output, theme_settings)
 
     scope = {
         'blog': blog,

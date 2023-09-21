@@ -89,7 +89,7 @@ blogs_schema = {
     },
     'main_page_url': {
         'type': 'string',
-        'default': ''
+        'nullable': True
     },
     'blog_author': {
         'type': 'string',
