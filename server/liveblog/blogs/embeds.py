@@ -200,6 +200,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     is_seo = theme.get('seoTheme', False)
 
     global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
+    blog_schema = ""
 
     if is_seo:
         # Fetch initial blog posts for SEO theme
@@ -241,12 +242,12 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             global_tags=dropdown_tags
         )
 
+        post_items = posts.get('_items', [])
+        blog_schema = generate_liveblog_posting_schema(blog, post_items, output, theme_settings)
+
     asyncTheme = theme.get('asyncTheme', False)
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
     api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
-
-    post_items = posts.get('_items', [])
-    blog_schema = generate_liveblog_posting_schema(blog, post_items, output, theme_settings)
 
     scope = {
         'blog': blog,
