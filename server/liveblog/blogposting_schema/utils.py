@@ -146,6 +146,9 @@ def generate_schema_for(blog, posts, theme_settings={}):
         JSON-LD formatted string representing the schema for the blog. Returns an empty string if there are no posts.
     """
 
+    if not posts:
+        return ""
+
     liveblogposting = LiveBlogPosting(
         headline=blog['title'],
         description=blog['description'],
@@ -180,13 +183,10 @@ def generate_schema_for(blog, posts, theme_settings={}):
     return json.dumps(result, indent=4)
 
 
-def generate_liveblog_posting_schema(blog, post_items, output=None, theme_settings={}) -> str:
+def generate_liveblog_posting_schema(blog, posts, output=None, theme_settings={}) -> str:
     """
     Generates a JSON-LD schema for a blog and its posts.
     """
-
-    if not post_items:
-        return ""
 
     # if output is provided, let's override the blog's main page url
     # as the output channel would probably be embedded in a different website
@@ -194,7 +194,7 @@ def generate_liveblog_posting_schema(blog, post_items, output=None, theme_settin
         blog['main_page_url'] = output['main_page_url']
 
     try:
-        return generate_schema_for(blog, post_items, theme_settings)
+        return generate_schema_for(blog, posts, theme_settings)
     except Exception as e:
         logger.error('Error generating schema for blog %s: %s' % (blog['_id'], e))
         return ""
