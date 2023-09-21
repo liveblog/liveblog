@@ -64,6 +64,10 @@ class OutputsResource(Resource):
                 }
             }
         },
+        'main_page_url': {
+            'type': 'string',
+            'nullable': True
+        },
         'deleted': {
             'type': 'boolean',
             'default': False

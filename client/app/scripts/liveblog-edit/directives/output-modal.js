@@ -107,10 +107,12 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             settings: self.output.settings,
             logo_url: self.output.logo_url,
             tags: self.output.tags,
+            main_page_url: self.output.main_page_url,
         };
-        // disable save button
 
+        // disable save button
         self.disableSave = true;
+
         // if there is a new background image uploaded
         if (self.output.preview && self.output.preview.img) {
             promises.push(saveOutputImage('preview', 'progress')

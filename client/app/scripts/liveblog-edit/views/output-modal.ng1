@@ -29,6 +29,14 @@
                 </div>
 
                 <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Main Page Url</label>
+                    <input class="sd-line-input__input" type="text" ng-model="self.output.main_page_url">
+                    <p class="sd-line-input__message">
+                        Used as mainEntityOfPage url for LiveBlogPosting schema. More info <a href="https://schema.org/LiveBlogPosting" target="_blank">here</a>.
+                    </p>
+                </div>
+
+                <div class="sd-line-input">
                     <label class="sd-line-input__label translate" translate>Background color</label>
                     <input class="sd-line-input__input" type="color" ng-model="self.output.style['background-color']">
                 </div>
