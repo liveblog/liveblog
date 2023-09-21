@@ -83,7 +83,9 @@ blogs_schema = {
     },
     'end_date': {
         'type': 'datetime',
-        'default': None
+        'default': None,
+        'nullable': True,
+        'required': False
     },
     'main_page_url': {
         'type': 'string',
