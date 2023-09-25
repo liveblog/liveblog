@@ -43,7 +43,7 @@ def get_base_image(item):
         return media.get('renditions', {}).get('baseImage')
 
 
-def generate_blogupdate(post, theme_settings):
+def generate_blogupdate(blog, post, theme_settings):
     """
     Generates a BlogPosting object from a blog post.
 
@@ -51,6 +51,7 @@ def generate_blogupdate(post, theme_settings):
     Sets the article body and image of the BlogPosting object based on the related items in the post data.
 
     Args:
+        blog (dict): A dictionary representing the blog.
         post (dict): A dictionary representing the blog post.
         theme_settings (dict): A dictionary representing the theme settings.
 
@@ -64,6 +65,7 @@ def generate_blogupdate(post, theme_settings):
 
     author = get_post_author(post, main_post_item, theme_settings)
     blog_posting = BlogPosting.from_blog_post(post, author)
+    blog_posting.set_post_url(theme_settings, blog)
 
     # we need to preferably set the article body and and image
     # so we're gonna get the first item of type image and text
@@ -174,7 +176,7 @@ def generate_schema_for(blog, posts, theme_settings={}):
 
     liveblogposting.live_blog_update = []
     for post in posts:
-        blog_update = generate_blogupdate(post, theme_settings)
+        blog_update = generate_blogupdate(blog, post, theme_settings)
         if not blog_update:
             continue
         liveblogposting.live_blog_update.append(blog_update)

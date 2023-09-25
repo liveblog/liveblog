@@ -88,9 +88,6 @@ class BlogPostingSchema(Schema):
 
     _type = fields.Str(dump_default="BlogPosting", data_key="@type")
 
-    # TODO: skip until we figure out how to handle the URL of the post
-    # url = fields.Str()
-
     # TODO: figure out how to handle the headline
     # headline = fields.Str()
 
@@ -99,6 +96,7 @@ class BlogPostingSchema(Schema):
     article_body = fields.Str(data_key="articleBody")
     author = fields.Nested(AuthorSchema)
     image = fields.Nested(ImageObjectSchema)
+    url = fields.Str()
 
     class Meta:
         ordered = True
