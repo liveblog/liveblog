@@ -15,26 +15,25 @@ from settings import SUPPORTED_LANGUAGES
 class LanguagesResource(Resource):
 
     schema = {
-        'language_code': {
-            'type': 'string',
-            'allowed': SUPPORTED_LANGUAGES['languages']
+        "language_code": {
+            "type": "string",
+            "allowed": SUPPORTED_LANGUAGES["languages"],
         },
-        'name': {
-            'type': 'string'
-        }
+        "name": {"type": "string"},
     }
-    datasource = {
-        'source': 'languages',
-        'default_sort': [('language_name', 1)]
+    datasource = {"source": "languages", "default_sort": [("language_name", 1)]}
+    RESOURCE_METHODS = ["GET", "POST"]
+    ITEM_METHODS = ["GET", "POST", "DELETE"]
+    privileges = {
+        "GET": "global_preferences",
+        "POST": "global_preferences",
+        "PATCH": "global_preferences",
+        "DELETE": "global_preferences",
     }
-    RESOURCE_METHODS = ['GET', 'POST']
-    ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
-                  'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
 
 
 class LanguagesService(BaseService):
     def on_create(self, docs):
         for doc in docs:
-            doc['name'] = SUPPORTED_LANGUAGES['languages'][doc['language_code']]
+            doc["name"] = SUPPORTED_LANGUAGES["languages"][doc["language_code"]]
             return doc

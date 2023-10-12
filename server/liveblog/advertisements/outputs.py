@@ -15,86 +15,65 @@ from superdesk import get_resource_service
 
 class OutputsResource(Resource):
     schema = {
-        'name': {
-            'type': 'string',
-            'required': True
+        "name": {"type": "string", "required": True},
+        "collection": Resource.rel("collections", True),
+        "blog": Resource.rel("blogs"),
+        "theme": {"type": "string", "nullable": True},
+        "tags": {"type": "list", "default": []},
+        "picture": Resource.rel(
+            "archive", embeddable=True, nullable=True, type="string"
+        ),
+        "logo": Resource.rel("archive", embeddable=True, nullable=True, type="string"),
+        "logo_url": {"type": "string", "nullable": True},
+        "style": {
+            "type": "dict",
+            "schema": {
+                "background-color": {"type": "string", "nullable": True},
+                "background-image": {"type": "string", "nullable": True},
+            },
         },
-        'collection': Resource.rel('collections', True),
-        'blog': Resource.rel('blogs'),
-        'theme': {
-            'type': 'string',
-            'nullable': True
-        },
-        'tags': {
-            'type': 'list',
-            'default': []
-        },
-        'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
-        'logo': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
-        'logo_url': {
-            'type': 'string',
-            'nullable': True
-        },
-        'style': {
-            'type': 'dict',
-            'schema': {
-                'background-color': {
-                    'type': 'string',
-                    'nullable': True
+        "settings": {
+            "type": "dict",
+            "schema": {
+                "frequency": {"type": "integer", "default": 10, "nullable": True},
+                "order": {
+                    "type": "integer",
+                    "allowed": [-1, 1],
+                    "default": -1,
+                    "nullable": True,
                 },
-                'background-image': {
-                    'type': 'string',
-                    'nullable': True
-                }
-            }
+            },
         },
-        'settings': {
-            'type': 'dict',
-            'schema': {
-                'frequency': {
-                    'type': 'integer',
-                    'default': 10,
-                    'nullable': True
-                },
-                'order': {
-                    'type': 'integer',
-                    'allowed': [-1, 1],
-                    'default': -1,
-                    'nullable': True
-                }
-            }
-        },
-        'main_page_url': {
-            'type': 'string',
-            'nullable': True
-        },
-        'deleted': {
-            'type': 'boolean',
-            'default': False
-        }
+        "main_page_url": {"type": "string", "nullable": True},
+        "deleted": {"type": "boolean", "default": False},
     }
-    datasource = {
-        'source': 'outputs',
-        'default_sort': [('name', 1)]
+    datasource = {"source": "outputs", "default_sort": [("name", 1)]}
+    RESOURCE_METHODS = ["GET", "POST"]
+    ITEM_METHODS = ["GET", "POST", "DELETE"]
+    privileges = {
+        "GET": "outputs",
+        "POST": "outputs",
+        "PATCH": "outputs",
+        "DELETE": "outputs",
     }
-    RESOURCE_METHODS = ['GET', 'POST']
-    ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'outputs', 'POST': 'outputs',
-                  'PATCH': 'outputs', 'DELETE': 'outputs'}
 
 
 class OutputsService(BaseService):
     def on_created(self, outputs):
         for output in outputs:
-            if output.get('blog'):
-                publish_blog_embed_on_s3.apply_async(args=[output.get('blog')], kwargs={'output': output}, countdown=2)
+            if output.get("blog"):
+                publish_blog_embed_on_s3.apply_async(
+                    args=[output.get("blog")], kwargs={"output": output}, countdown=2
+                )
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        blogs = get_resource_service('blogs')
+        blogs = get_resource_service("blogs")
 
-        if updates.get('deleted', False):
-            blog = blogs.find_one(req=None, _id=original.get('blog'))
-            delete_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'output': original}, countdown=2)
+        if updates.get("deleted", False):
+            blog = blogs.find_one(req=None, _id=original.get("blog"))
+            delete_blog_embeds_on_s3.apply_async(
+                args=[blog], kwargs={"output": original}, countdown=2
+            )
         else:
-            publish_blog_embed_on_s3(original.get('blog'), output=updates)
+            publish_blog_embed_on_s3(original.get("blog"), output=updates)

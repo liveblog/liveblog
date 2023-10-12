@@ -1,6 +1,10 @@
 import superdesk
 from liveblog.validator import LiveblogValidator
-from .global_preferences import preferences_key, GlobalPreferencesResource, GlobalPreferencesService
+from .global_preferences import (
+    preferences_key,
+    GlobalPreferencesResource,
+    GlobalPreferencesService,
+)
 
 
 def init_app(app):
@@ -10,5 +14,8 @@ def init_app(app):
     app.validator = LiveblogValidator
 
 
-superdesk.privilege(name='global_preferences', label='Global Settings Management',
-                    description='User can access global settings.')
+superdesk.privilege(
+    name="global_preferences",
+    label="Global Settings Management",
+    description="User can access global settings.",
+)

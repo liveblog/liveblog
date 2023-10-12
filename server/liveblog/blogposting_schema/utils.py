@@ -1,10 +1,14 @@
 import json
 import logging
-from liveblog.posts.utils import get_main_item, get_first_item_of_type, get_related_items
+from liveblog.posts.utils import (
+    get_main_item,
+    get_first_item_of_type,
+    get_related_items,
+)
 from .schema import LiveBlogPostingSchema
 from .models import BlogPosting, ImageObject, LiveBlogPosting, MainEntityOfPage, Author
 
-logger = logging.getLogger('superdesk')
+logger = logging.getLogger("superdesk")
 
 
 def get_modified_date(blog):
@@ -20,10 +24,10 @@ def get_modified_date(blog):
     Returns:
         str: The modified date of the blog.
     """
-    last_updated_post = blog.get('last_updated_post')
+    last_updated_post = blog.get("last_updated_post")
     if last_updated_post:
-        return last_updated_post.get('_updated')
-    return blog['start_date']
+        return last_updated_post.get("_updated")
+    return blog["start_date"]
 
 
 def get_base_image(item):
@@ -36,11 +40,11 @@ def get_base_image(item):
     Returns:
         str: The URL of the base image, or None if not found.
     """
-    meta = item.get('meta', {})
-    media = meta.get('media', {})
+    meta = item.get("meta", {})
+    media = meta.get("media", {})
 
     if media:
-        return media.get('renditions', {}).get('baseImage')
+        return media.get("renditions", {}).get("baseImage")
 
 
 def generate_blogupdate(blog, post, theme_settings):
@@ -71,11 +75,11 @@ def generate_blogupdate(blog, post, theme_settings):
     # so we're gonna get the first item of type image and text
     items = get_related_items(post)
 
-    text_item = get_first_item_of_type(items, 'text')
+    text_item = get_first_item_of_type(items, "text")
     if text_item:
-        blog_posting.article_body = text_item.get('text')
+        blog_posting.article_body = text_item.get("text")
 
-    image_item = get_first_item_of_type(items, 'image')
+    image_item = get_first_item_of_type(items, "image")
     if image_item:
         main_image = get_base_image(image_item)
         image = ImageObject.from_rendition_image(main_image)
@@ -100,21 +104,21 @@ def get_post_author(post, main_post_item, theme_settings):
     Returns:
         Author or None: An Author object representing the author of the blog post, or None if no author is found.
     """
-    show_syndicated_author = theme_settings.get('showSyndicatedAuthor', False)
-    is_syndicated = post.get('syndication_in', False)
+    show_syndicated_author = theme_settings.get("showSyndicatedAuthor", False)
+    is_syndicated = post.get("syndication_in", False)
 
     if is_syndicated and show_syndicated_author:
-        syndicated_creator = main_post_item.get('syndicated_creator', {})
-        return Author(syndicated_creator.get('display_name'))
+        syndicated_creator = main_post_item.get("syndicated_creator", {})
+        return Author(syndicated_creator.get("display_name"))
 
-    original_creator = post.get('original_creator')
+    original_creator = post.get("original_creator")
     if original_creator:
-        author_name_format = theme_settings.get('authorNameFormat', 'display_name')
+        author_name_format = theme_settings.get("authorNameFormat", "display_name")
         return Author(original_creator.get(author_name_format))
 
-    publisher = main_post_item.get('publisher')
+    publisher = main_post_item.get("publisher")
     if publisher:
-        return Author(publisher.get('display_name'))
+        return Author(publisher.get("display_name"))
 
     return None
 
@@ -152,25 +156,25 @@ def generate_schema_for(blog, posts, theme_settings={}):
         return ""
 
     liveblogposting = LiveBlogPosting(
-        headline=blog['title'],
-        description=blog['description'],
-        date_published=blog['start_date'],
+        headline=blog["title"],
+        description=blog["description"],
+        date_published=blog["start_date"],
         date_modified=get_modified_date(blog),
-
-        coverage_start_time=blog['start_date'],
-        coverage_end_time=blog.get('end_date', None)
+        coverage_start_time=blog["start_date"],
+        coverage_end_time=blog.get("end_date", None),
     )
 
-    blog_image = blog.get('picture_renditions', {})
-    main_image = blog_image.get('baseImage')
+    blog_image = blog.get("picture_renditions", {})
+    main_image = blog_image.get("baseImage")
 
     if main_image:
         liveblogposting.image = ImageObject.from_rendition_image(main_image)
 
     liveblogposting.main_entity_of_page = MainEntityOfPage(
-        url=blog.get('main_page_url', ''))
+        url=blog.get("main_page_url", "")
+    )
 
-    blog_author = blog.get('blog_author', '')
+    blog_author = blog.get("blog_author", "")
     if blog_author:
         liveblogposting.author = Author(blog_author)
 
@@ -185,18 +189,20 @@ def generate_schema_for(blog, posts, theme_settings={}):
     return json.dumps(result, indent=4)
 
 
-def generate_liveblog_posting_schema(blog, posts, output=None, theme_settings={}) -> str:
+def generate_liveblog_posting_schema(
+    blog, posts, output=None, theme_settings={}
+) -> str:
     """
     Generates a JSON-LD schema for a blog and its posts.
     """
 
     # if output is provided, let's override the blog's main page url
     # as the output channel would probably be embedded in a different website
-    if output and output.get('main_page_url', None):
-        blog['main_page_url'] = output['main_page_url']
+    if output and output.get("main_page_url", None):
+        blog["main_page_url"] = output["main_page_url"]
 
     try:
         return generate_schema_for(blog, posts, theme_settings)
     except Exception as e:
-        logger.error('Error generating schema for blog %s: %s' % (blog['_id'], e))
+        logger.error("Error generating schema for blog %s: %s" % (blog["_id"], e))
         return ""

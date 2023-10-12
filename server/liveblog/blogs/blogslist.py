@@ -19,29 +19,30 @@ from .app_settings import BLOGSLIST_ASSETS_DIR
 from .embeds import render_bloglist_embed
 from .tasks import publish_bloglist_embed_on_s3
 
-logger = logging.getLogger('superdesk')
+logger = logging.getLogger("superdesk")
 
 
-bloglist_blueprint = superdesk.Blueprint('embed_blogslist', __name__, template_folder='templates')
-bloglist_assets_blueprint = superdesk.Blueprint('blogslist_assets', __name__, static_folder=BLOGSLIST_ASSETS_DIR)
+bloglist_blueprint = superdesk.Blueprint(
+    "embed_blogslist", __name__, template_folder="templates"
+)
+bloglist_assets_blueprint = superdesk.Blueprint(
+    "blogslist_assets", __name__, static_folder=BLOGSLIST_ASSETS_DIR
+)
 
 
-@bloglist_blueprint.route('/blogslist_embed')
+@bloglist_blueprint.route("/blogslist_embed")
 def blogslist_embed(api_host=None, assets_root=None):
     return render_bloglist_embed(api_host=api_host, assets_root=assets_root)
 
 
 class BlogsListResource(Resource):
-    datasource = {
-        'source': 'blogs'
-    }
+    datasource = {"source": "blogs"}
     schema = {
-        'key': {'type': 'string', 'required': True, 'unique': True},
-        'value': {'type': 'string'}
+        "key": {"type": "string", "required": True, "unique": True},
+        "value": {"type": "string"},
     }
-    RESOURCE_METHODS = ['GET', 'POST', 'PATCH']
-    privileges = {'GET': 'generic', 'POST': 'generic',
-                  'PATCH': 'generic'}
+    RESOURCE_METHODS = ["GET", "POST", "PATCH"]
+    privileges = {"GET": "generic", "POST": "generic", "PATCH": "generic"}
 
 
 class BlogsListService(BaseService):
@@ -49,7 +50,7 @@ class BlogsListService(BaseService):
         publish_bloglist_embed_on_s3()
 
 
-@bloglist_blueprint.app_template_filter('tojson')
+@bloglist_blueprint.app_template_filter("tojson")
 def tojson(obj):
     #  TODO: remove duplicate template filters.
     return json.dumps(obj, cls=MongoJSONEncoder)

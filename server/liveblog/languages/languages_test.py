@@ -6,7 +6,7 @@ from superdesk import get_resource_service
 class ClientModuleTest(TestCase):
     def setUp(self):
         languages.init_app(self.app)
-        self.languages_service = get_resource_service('languages')
+        self.languages_service = get_resource_service("languages")
         self.languages_doc = [{"language_code": "de"}]
 
     def test_on_create(self):

@@ -44,20 +44,21 @@ def get_app(config=None):
     if config is None:
         config = {}
 
-    config['APP_ABSPATH'] = os.path.abspath(os.path.dirname(__file__))
+    config["APP_ABSPATH"] = os.path.abspath(os.path.dirname(__file__))
 
     for key in dir(settings):
         if key.isupper():
             config.setdefault(key, getattr(settings, key))
 
     media_storage = None
-    if config.get('AMAZON_CONTAINER_NAME'):
+    if config.get("AMAZON_CONTAINER_NAME"):
         from superdesk.storage.amazon_media_storage import AmazonMediaStorage
+
         media_storage = AmazonMediaStorage
 
-    config['DOMAIN'] = {}
-    config['SENTRY_CONFIG'] = {'release': __version__}
-    config['SENTRY_NAME'] = settings.ELASTICSEARCH_INDEX
+    config["DOMAIN"] = {}
+    config["SENTRY_CONFIG"] = {"release": __version__}
+    config["SENTRY_NAME"] = settings.ELASTICSEARCH_INDEX
 
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
@@ -65,19 +66,20 @@ def get_app(config=None):
     setup_apm(app, settings.ELASTICSEARCH_INDEX)
 
     # Add custom jinja2 template loader.
-    custom_loader = jinja2.ChoiceLoader([
-        jinja2.FileSystemLoader('superdesk/templates'),
-        app.jinja_loader
-    ])
+    custom_loader = jinja2.ChoiceLoader(
+        [jinja2.FileSystemLoader("superdesk/templates"), app.jinja_loader]
+    )
     app.jinja_loader = custom_loader
 
     # Caching. By default 'simple' cache will be used
-    cache_config = {'CACHE_TYPE': settings.LIVEBLOG_CACHE_TYPE}
-    if cache_config['CACHE_TYPE'] == 'redis':
-        cache_config.update({
-            'CACHE_REDIS_URL': settings.LIVEBLOG_CACHE_REDIS_URL,
-            'CACHE_KEY_PREFIX': instance_prefix('_lb-cache_')
-        })
+    cache_config = {"CACHE_TYPE": settings.LIVEBLOG_CACHE_TYPE}
+    if cache_config["CACHE_TYPE"] == "redis":
+        cache_config.update(
+            {
+                "CACHE_REDIS_URL": settings.LIVEBLOG_CACHE_REDIS_URL,
+                "CACHE_KEY_PREFIX": instance_prefix("_lb-cache_"),
+            }
+        )
 
     app.cache = Cache(app, config=cache_config)
     app.blog_cache = BlogCache(cache=app.cache)
@@ -120,9 +122,9 @@ def get_app(config=None):
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     debug = True
-    host = '0.0.0.0'
-    port = int(os.environ.get('PORT', '5000'))
+    host = "0.0.0.0"
+    port = int(os.environ.get("PORT", "5000"))
     app = get_app()
     app.run(host=host, port=port, debug=debug, use_reloader=debug)

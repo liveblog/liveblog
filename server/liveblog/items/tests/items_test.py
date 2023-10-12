@@ -10,8 +10,7 @@ from unittest.mock import patch
 import flask
 
 
-class Foo():
-
+class Foo:
     def __init__(self):
         self.setup_call = False
 
@@ -28,20 +27,20 @@ class ItemsTest(TestCase):
         if not foo.setup_call:
             items.init_app(self.app)
             test_config = {
-                'LIVEBLOG_DEBUG': True,
-                'EMBED_PROTOCOL': 'http://',
-                'DEBUG': False,
+                "LIVEBLOG_DEBUG": True,
+                "EMBED_PROTOCOL": "http://",
+                "DEBUG": False,
             }
             foo.setup_called()
             self.app.config.update(test_config)
-            self.archive_service = get_resource_service('archive')
-            self.items_service = get_resource_service('items')
+            self.archive_service = get_resource_service("archive")
+            self.items_service = get_resource_service("items")
             self.app.register_blueprint(drag_and_drop_blueprint)
 
-        self.img_regular = '\
-            https://raw.githubusercontent.com/liveblog/liveblog/master/client/app/images/lb-logo-about.png'
+        self.img_regular = "\
+            https://raw.githubusercontent.com/liveblog/liveblog/master/client/app/images/lb-logo-about.png"
 
-        self.img_jpeg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxASEhISEhMWFhUVFRUVFxYVFxUQFRUVF\
+        self.img_jpeg = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxASEhISEhMWFhUVFRUVFxYVFxUQFRUVF\
             RUXFhUVFhUYHSggGBolGxUVITEhJSk3Li4vFx8zODMsNygtLisBCgoKDg0OFxAPGy0dHyYwLS4uMi02LCstLSstLS0rLS0tLS0rLS0tLS\
             0tLS0vKy8rNTUtLS01Ly0xLSsrLTItLf/AABEIANgA6QMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABAIDBQYHAQj/xABBEAA\
             CAgEBBQYDBQQJAwUAAAABAgADEQQFBhIhMRNBUWFxgQcikSMycqGxFEJSolNic4KSssHC0TND8AgVk8PT/8QAGQEBAQEBAQEAAAAAAAAA\
@@ -99,79 +98,82 @@ class ItemsTest(TestCase):
             /t5V3vQfDqlcG657PJQKlP0yfzm26DZ9NC8FSKi+CjGfMnqT6zhGzPiPtfT4HEmoTl8toyw9LBg+5zOgbv/FCm3A1NDUE/vAi6vPqPmA9\
             puZ4Od4s/pt0CJbouV1DowZWGQwOQR5ES5OjkREQEREBERAREQEREBERAREQEREBERAREQEREBI+0NIt1VlT/dsRkPowIP6xEDhSbhapN\
             VXp7KiwNi/OATW1YYcTcQ6Dhzy6ib/tb4WaR8nTu1J/hP21f0Y8Q/xRE5zix7l7dsubK6s6anr/AIda6rPCi2jxrYZx5q+Dn0zMnuNsas\
-            2NptZpTlgWR3R6myPvLxcsjHMehiJj2ZLuN/8ARllNV0jZOyKdMpWlSqk54eJmGfEBice0nxE7yaee23ukREIREQEREBERAREQP//Z'
+            2NptZpTlgWR3R6myPvLxcsjHMehiJj2ZLuN/8ARllNV0jZOyKdMpWlSqk54eJmGfEBice0nxE7yaee23ukREIREQEREBERAREQP//Z"
 
-        self.img_png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAuCAYAAAAcEfjaAAABV0lEQVRIx+2VsW7CQBBEDwT\
+        self.img_png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAuCAYAAAAcEfjaAAABV0lEQVRIx+2VsW7CQBBEDwT\
             pIkXICMuyJdtfQsGXQUVFlSpVmjTESOn4BAoXLigsueAvaM2MBAht7g6v06ZYwNK8893ezGLatjV5ni9QO2PMC599ZdI0nWdZdgbQ4vsH\
             0NgLQLSn+FZ4/gY0cgJBELxCdHiEUF+AhlaAH9jWG0SleNOnDbr/iON4AlEloA9AAyvAiqIogPAooHcnwIJghqrFmTZOgJUkSQRRI6C1E\
             7huL8GbTmJ7Ky2w/PuWVIcOw3Daua2qi1NZQ20+i723XnurA/QQ0aJTRJ8J/oEuAFvNqcjWPwV4ibzM66Weeck+8YhTUNhm7xIPaUAhPt\
             CoVjGtLdxbMgK/zsCwMDRi5YrhsnaJcRQrHzkNrW1l0MXKNQeCy95rsXLDUeNK3EqsfOIQ8/0DLVWAeku9Du1rK6ehE1BfnNoavcwn7L3\
-            tZO9eARIRLW4RvQA0+6DNwTHW6QAAAABJRU5ErkJggg=='
+            tZO9eARIRLW4RvQA0+6DNwTHW6QAAAABJRU5ErkJggg=="
 
     def test_d_drag_and_drop(self):
-        headers = {'content-type': 'application/json'}
-        with self.app.test_request_context('drag_and_drop', method='POST'):
+        headers = {"content-type": "application/json"}
+        with self.app.test_request_context("drag_and_drop", method="POST"):
             response = self.client.post(
-                '/api/archive/draganddrop/',
-                data=json.dumps({'image_url': self.img_regular, 'mimetype': 'image/jpeg'}),
-                headers=headers)
+                "/api/archive/draganddrop/",
+                data=json.dumps(
+                    {"image_url": self.img_regular, "mimetype": "image/jpeg"}
+                ),
+                headers=headers,
+            )
 
             self.assertEqual(response.status_code, 201)
             self.assertIsNotNone(response.data, True)
 
     def test_drag_and_drop_base64(self):
-        headers = {'content-type': 'application/json'}
-        with self.app.test_request_context('drag_and_drop', method='POST'):
+        headers = {"content-type": "application/json"}
+        with self.app.test_request_context("drag_and_drop", method="POST"):
             # test with jpeg base64 image
             response = self.client.post(
-                '/api/archive/draganddrop/',
-                data=json.dumps({'image_url': self.img_jpeg, 'mimetype': 'image/jpeg'}),
-                headers=headers)
+                "/api/archive/draganddrop/",
+                data=json.dumps({"image_url": self.img_jpeg, "mimetype": "image/jpeg"}),
+                headers=headers,
+            )
             self.assertEqual(response.status_code, 201)
             self.assertIsNotNone(response.data, True)
 
             # test with png base64 image
             response = self.client.post(
-                '/api/archive/draganddrop/',
-                data=json.dumps({'image_url': self.img_png, 'mimetype': 'image/png'}),
-                headers=headers)
+                "/api/archive/draganddrop/",
+                data=json.dumps({"image_url": self.img_png, "mimetype": "image/png"}),
+                headers=headers,
+            )
             self.assertEqual(response.status_code, 201)
             self.assertIsNotNone(response.data, True)
 
     def test_invalid_content(self):
-        img_url = 'https://www.sourcefabric.org/'
-        headers = {'content-type': 'application/json'}
-        with self.app.test_request_context('drag_and_drop', method='POST'):
+        img_url = "https://www.sourcefabric.org/"
+        headers = {"content-type": "application/json"}
+        with self.app.test_request_context("drag_and_drop", method="POST"):
             response = self.client.post(
-                '/api/archive/draganddrop/',
-                data=json.dumps({'image_url': img_url, 'mimetype': 'image/jpeg'}),
-                headers=headers)
+                "/api/archive/draganddrop/",
+                data=json.dumps({"image_url": img_url, "mimetype": "image/jpeg"}),
+                headers=headers,
+            )
             self.assertEqual(response.status_code, 406)
 
 
 class ClientModuleTest(TestCase):
     def setUp(self):
         items.init_app(self.app)
-        test_config = {
-            'LIVEBLOG_DEBUG': True,
-            'EMBED_PROTOCOL': 'http://'
-        }
+        test_config = {"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://"}
         self.app.config.update(test_config)
         self.client = self.app.test_client()
-        self.items_service = get_resource_service('items')
-        self.users_service = get_resource_service('users')
+        self.items_service = get_resource_service("items")
+        self.users_service = get_resource_service("users")
         self.app.register_blueprint(drag_and_drop_blueprint)
 
         self.item_meta_doc = {
-            'meta': {
-                'provider_url': 'http://www.facebook.com',
-                'description': 'This teacher is amazing at pranking his class! 😂 😂',
-                'title': 'Daily Mail',
-                'author_name': 'Daily Mail',
-                'height': '350',
-                'thumbnail_width': 1080,
-                'width': '350',
-                'html': '<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.facebook.com%2Fplugin\
+            "meta": {
+                "provider_url": "http://www.facebook.com",
+                "description": "This teacher is amazing at pranking his class! 😂 😂",
+                "title": "Daily Mail",
+                "author_name": "Daily Mail",
+                "height": "350",
+                "thumbnail_width": 1080,
+                "width": "350",
+                "html": '<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.facebook.com%2Fplugin\
                 s%2Fvideo.php%3Fhref%3Dhttps%253A%252F%252Fwww.facebook.com%252FDailyMail%252Fvideos%252F2146147295445007%252F%26width%3D1080\
                 &amp;url=https%3A%2F%2Fwww.facebook.com%2FDailyMail%2Fvideos%2F2146147295445007%2F&amp;image=https%3A%2F%2Fscontent-iad3-1.xx.\
                 fbcdn.net%2Fv%2Ft15.0-10%2F17779781_2146151762111227_4585838175095619584_n.jpg%3F_nc_cat%3D0%26oh%3Ded34385514e6d30eac5c5cfe4b0\
@@ -179,70 +181,76 @@ class ClientModuleTest(TestCase):
                 schema=facebook" width="350" height="350" scrolling="no" frameborder="0" allowfullscreen="">\
                 </iframe><script>  if(window.FB !== undefined) {    \
                 window.FB.XFBML.parse(document.getElementById("_4x7jtrtep"));  }</script>',
-                'author_url': 'http://facebook.com/164305410295882',
-                'version': '1.0',
-                'provider_name': 'Facebook',
-                'thumbnail_url': 'https://scontent-iad3-1.xx.fbcdn.net/v/t15.0-10/17779781_2146151762111227_\
-                4585838175095619584_n.jpg?_nc_cat=0&oh=ed34385514e6d30eac5c5cfe4b044f1b&oe=5B2A5C85',
-                'type': 'video',
-                'thumbnail_height': 1080,
-                'original_url': 'https://www.facebook.com/DailyMail/videos/2146147295445007/',
-                'credit': 'Facebook | Daily Mail'
+                "author_url": "http://facebook.com/164305410295882",
+                "version": "1.0",
+                "provider_name": "Facebook",
+                "thumbnail_url": "https://scontent-iad3-1.xx.fbcdn.net/v/t15.0-10/17779781_2146151762111227_\
+                4585838175095619584_n.jpg?_nc_cat=0&oh=ed34385514e6d30eac5c5cfe4b044f1b&oe=5B2A5C85",
+                "type": "video",
+                "thumbnail_height": 1080,
+                "original_url": "https://www.facebook.com/DailyMail/videos/2146147295445007/",
+                "credit": "Facebook | Daily Mail",
             },
-            '_id': 'urn:newsml:localhost:2018-04-12T14:33:11.178189:2fe55c2b-399d-488f-a6f7-6c518f01d3f2'
+            "_id": "urn:newsml:localhost:2018-04-12T14:33:11.178189:2fe55c2b-399d-488f-a6f7-6c518f01d3f2",
         }
 
-        self.item_doc = [{
-            'blog': ObjectId('5ab90249fd16ad1752b39b74'),
-            'text': 'Testing post for blog',
-            'meta': {},
-            'group_type': 'default',
-            'item_type': 'text',
-            '_updated': datetime.datetime(2018, 4, 12, 12, 40, 44),
-            '_created': datetime.datetime(2018, 4, 12, 12, 40, 44),
-            'type': 'text',
-            'pubstatus': 'usable',
-            'flags': {
-                'marked_for_not_publication': False,
-                'marked_for_legal': False,
-                'marked_archived_only': False,
-                'marked_for_sms': False
-            },
-            'format': 'HTML',
-            'particular_type': 'item',
-            '_current_version': 1
-        }]
+        self.item_doc = [
+            {
+                "blog": ObjectId("5ab90249fd16ad1752b39b74"),
+                "text": "Testing post for blog",
+                "meta": {},
+                "group_type": "default",
+                "item_type": "text",
+                "_updated": datetime.datetime(2018, 4, 12, 12, 40, 44),
+                "_created": datetime.datetime(2018, 4, 12, 12, 40, 44),
+                "type": "text",
+                "pubstatus": "usable",
+                "flags": {
+                    "marked_for_not_publication": False,
+                    "marked_for_legal": False,
+                    "marked_archived_only": False,
+                    "marked_for_sms": False,
+                },
+                "format": "HTML",
+                "particular_type": "item",
+                "_current_version": 1,
+            }
+        ]
 
-        self.user_list = [{
-            'username': 'admin',
-            'display_name': 'Edwin the admin',
-            "first_name": "Edwin",
-            "is_active": True,
-            "is_enabled": True,
-            "last_name": "the admin",
-            'sign_off': 'off',
-            'byline': 'by',
-            "email": "abc@other.com",
-        }]
+        self.user_list = [
+            {
+                "username": "admin",
+                "display_name": "Edwin the admin",
+                "first_name": "Edwin",
+                "is_active": True,
+                "is_enabled": True,
+                "last_name": "the admin",
+                "sign_off": "off",
+                "byline": "by",
+                "email": "abc@other.com",
+            }
+        ]
 
-        self.app.data.insert('users', self.user_list)
+        self.app.data.insert("users", self.user_list)
 
     def test_a_set_embed_metadata(self):
         result = self.items_service.set_embed_metadata(self.item_meta_doc)
-        self.assertIsNotNone(result['meta']['original_id'], True)
+        self.assertIsNotNone(result["meta"]["original_id"], True)
 
-    @patch('liveblog.items.items.logger')
+    @patch("liveblog.items.items.logger")
     def test_b_set_embed_metadata(self, mock_logger):
-        self.item_meta_doc['meta']['original_url'] = None
+        self.item_meta_doc["meta"]["original_url"] = None
         self.items_service.set_embed_metadata(self.item_meta_doc)
         self.assertTrue(mock_logger.warning.called)
 
     def test_c_item_on_create(self):
-        flask.g.user = get_resource_service('users').find_one(req=None, username='admin')
-        self.assertIsNone(self.item_doc[0].get('original_creator'), True)
-        self.assertIsNone(self.item_doc[0].get('firstcreated'), True)
-        self.assertIsNone(self.item_doc[0].get('versioncreated'), True)
+        flask.g.user = get_resource_service("users").find_one(
+            req=None, username="admin"
+        )
+        self.assertIsNone(self.item_doc[0].get("original_creator"), True)
+        self.assertIsNone(self.item_doc[0].get("firstcreated"), True)
+        self.assertIsNone(self.item_doc[0].get("versioncreated"), True)
         response = self.items_service.on_create(self.item_doc)
-        self.assertIsNotNone(response.get('original_creator'), True)
-        self.assertIsNotNone(response.get('firstcreated'), True)
-        self.assertIsNotNone(response.get('versioncreated'), True)
+        self.assertIsNotNone(response.get("original_creator"), True)
+        self.assertIsNotNone(response.get("firstcreated"), True)
+        self.assertIsNotNone(response.get("versioncreated"), True)

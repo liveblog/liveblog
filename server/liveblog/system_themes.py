@@ -1,1 +1,1 @@
-system_themes = ('angular', 'classic', 'default', 'amp', 'simple')
+system_themes = ("angular", "classic", "default", "amp", "simple")

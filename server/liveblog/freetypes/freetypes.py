@@ -13,40 +13,27 @@ from superdesk.services import BaseService
 
 class FreetypesResource(Resource):
     schema = {
-        'name': {
-            'type': 'string'
-        },
-        'template': {
-            'type': 'string',
-            'htmloutput': {
-                'template_vars_required': True
-            }
-        }
+        "name": {"type": "string"},
+        "template": {"type": "string", "htmloutput": {"template_vars_required": True}},
     }
-    datasource = {
-        'source': 'freetypes',
-        'default_sort': [('name', 1)]
-    }
-    RESOURCE_METHODS = ['GET', 'POST']
-    ITEM_METHODS = ['GET', 'POST', 'DELETE']
+    datasource = {"source": "freetypes", "default_sort": [("name", 1)]}
+    RESOURCE_METHODS = ["GET", "POST"]
+    ITEM_METHODS = ["GET", "POST", "DELETE"]
 
     privileges = {
-        'GET': 'freetypes_read',
-        'POST': 'freetypes_create',
-        'PATCH': 'freetypes_update',
-        'DELETE': 'freetypes_delete'
+        "GET": "freetypes_read",
+        "POST": "freetypes_create",
+        "PATCH": "freetypes_update",
+        "DELETE": "freetypes_delete",
     }
 
 
 class FreetypesService(BaseService):
     def register_freetype_files(self, template, name):
-        freetype = {
-            'name': name,
-            'template': template
-        }
+        freetype = {"name": name, "template": template}
         previous = self.find_one(req=None, name=name)
 
         if previous:
-            self.replace(previous['_id'], freetype, previous)
+            self.replace(previous["_id"], freetype, previous)
         else:
             self.create([freetype])

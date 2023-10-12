@@ -21,11 +21,7 @@ class ImageObject:
 
     @staticmethod
     def from_rendition_image(image):
-        return ImageObject(
-            image.get('href'),
-            image.get('width'),
-            image.get('height')
-        )
+        return ImageObject(image.get("href"), image.get("width"), image.get("height"))
 
 
 @dataclass
@@ -34,27 +30,29 @@ class BlogPosting:
     date_published: datetime
     date_modified: datetime
     author: Author
-    article_body: Optional[str] = ''
+    article_body: Optional[str] = ""
 
     def set_image(self, image):
         if image:
             self.image = image
 
     def set_post_url(self, theme_settings, blog):
-        delimiter = theme_settings.get('permalinkDelimiter', '?')
-        sort_order = theme_settings.get('postOrder')
+        delimiter = theme_settings.get("permalinkDelimiter", "?")
+        sort_order = theme_settings.get("postOrder")
 
-        main_page_url = blog.get('main_page_url')
+        main_page_url = blog.get("main_page_url")
         if main_page_url:
-            self.url = f'{main_page_url}{delimiter}liveblog._id={self.post_id}__{sort_order}'
+            self.url = (
+                f"{main_page_url}{delimiter}liveblog._id={self.post_id}__{sort_order}"
+            )
 
     @staticmethod
     def from_blog_post(post, author):
         return BlogPosting(
-            post_id=post.get('_id'),
-            date_published=post.get('published_date'),
-            date_modified=post.get('content_updated_date'),
-            author=author
+            post_id=post.get("_id"),
+            date_published=post.get("published_date"),
+            date_modified=post.get("content_updated_date"),
+            author=author,
         )
 
 

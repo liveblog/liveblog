@@ -6,7 +6,7 @@ from superdesk import get_resource_service
 from settings import MOBILE_APP_WORKAROUND
 from . import utils as post_utils
 
-logger = logging.getLogger('superdesk')
+logger = logging.getLogger("superdesk")
 
 AGENT_MOBILE_ANDROID = "okhttp/"
 AGENT_MOBILE_IOS = "org.sourcefabric.LiveBlogReporter"
@@ -42,12 +42,13 @@ class AuthorsMixin:
         Users collection will be used many times if pulling authors one by one
         so we need to get all the IDs, store them in an object and hit DB once per request
         """
+
         def _append_author(item):
-            author_id = item.get('original_creator', None)
+            author_id = item.get("original_creator", None)
 
             try:
                 if isinstance(author_id, dict):
-                    author_id = author_id.get('_id', '')
+                    author_id = author_id.get("_id", "")
 
                 # author_id might be an empty string, for instance when the post is syndicated in
                 # for this case we use the syndicated_creator in `attach_authors` method
@@ -55,7 +56,7 @@ class AuthorsMixin:
                     author_id = ObjectId(author_id)
                     self.authors_list.append(author_id)
             except Exception as err:
-                logger.info('Unable to add author id to map. {}'.format(err))
+                logger.info("Unable to add author id to map. {}".format(err))
 
         items = items or post_utils.get_related_items(doc)
         for item in items:
@@ -74,8 +75,8 @@ class AuthorsMixin:
         """
         ids = set(self.authors_list)
 
-        for user in get_resource_service('users').find({'_id': {'$in': ids}}):
-            author_id = str(user.get('_id'))
+        for user in get_resource_service("users").find({"_id": {"$in": ids}}):
+            author_id = str(user.get("_id"))
             self.authors_map[author_id] = user
 
     def _is_mobile_app(self):
@@ -84,13 +85,15 @@ class AuthorsMixin:
 
         try:
             user_agent = request.user_agent.string
-            logger.debug('Looking for user agent mobile app %s' % user_agent)
+            logger.debug("Looking for user agent mobile app %s" % user_agent)
 
-            is_mobile_app = any([
-                (AGENT_MOBILE_IOS in user_agent),
-                (AGENT_MOBILE_GENERIC in user_agent),
-                (AGENT_MOBILE_ANDROID in user_agent)
-            ])
+            is_mobile_app = any(
+                [
+                    (AGENT_MOBILE_IOS in user_agent),
+                    (AGENT_MOBILE_GENERIC in user_agent),
+                    (AGENT_MOBILE_ANDROID in user_agent),
+                ]
+            )
         except RuntimeError:
             # RuntimeError happens when out of the context
             # it will be thrown when running celery tasks to update blog in S3
@@ -113,12 +116,12 @@ class AuthorsMixin:
         # so we are fine when using original_creator instead of syndicated_creator
         creator = author_dict
 
-        if not post.get('byline') and isinstance(creator, dict):
-            byline = creator.get('byline')
+        if not post.get("byline") and isinstance(creator, dict):
+            byline = creator.get("byline")
             if not byline:
-                byline = creator.get('display_name')
+                byline = creator.get("display_name")
 
-            post['byline'] = byline
+            post["byline"] = byline
 
     def attach_authors(self, posts):
         """Simply gets author id from items related and for post itself and adds author info"""
@@ -126,25 +129,36 @@ class AuthorsMixin:
         is_mobile_app = self._is_mobile_app()
 
         for post in posts:
-            post_author_id = str(post.get('original_creator', '__not_found__'))
+            post_author_id = str(post.get("original_creator", "__not_found__"))
             original_creator = self.authors_map.get(post_author_id)
             main_item = post_utils.get_main_item(post)
 
             if not original_creator:
-                if main_item.get('item_type') == 'comment':
-                    original_creator = {'display_name': main_item.get('commenter'), '_id': None}
+                if main_item.get("item_type") == "comment":
+                    original_creator = {
+                        "display_name": main_item.get("commenter"),
+                        "_id": None,
+                    }
 
-                elif post.get('syndication_in'):
-                    original_creator = main_item.get('syndicated_creator', {})
+                elif post.get("syndication_in"):
+                    original_creator = main_item.get("syndicated_creator", {})
 
-            post['original_creator'] = original_creator.get('_id') if is_mobile_app else original_creator
+            post["original_creator"] = (
+                original_creator.get("_id") if is_mobile_app else original_creator
+            )
 
             self._set_by_line(post, original_creator)
 
             # TODO: check if we really need to complete items' author info. Most likely is only needed for post
-            items_refs = [assoc for group in post.get('groups', []) for assoc in group.get('refs', [])]
+            items_refs = [
+                assoc
+                for group in post.get("groups", [])
+                for assoc in group.get("refs", [])
+            ]
             for ref in items_refs:
-                item = ref.get('item')
+                item = ref.get("item")
                 if item:
-                    author_id = str(item['original_creator'])
-                    item['original_creator'] = author_id if is_mobile_app else self.authors_map.get(author_id)
+                    author_id = str(item["original_creator"])
+                    item["original_creator"] = (
+                        author_id if is_mobile_app else self.authors_map.get(author_id)
+                    )

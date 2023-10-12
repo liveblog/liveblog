@@ -1,4 +1,3 @@
-
 from marshmallow import Schema, fields
 
 
@@ -130,7 +129,9 @@ class LiveBlogPostingSchema(Schema):
     context = fields.Str(dump_default="http://schema.org", data_key="@context")
     _type = fields.Str(dump_default="LiveBlogPosting", data_key="@type")
 
-    main_entity_of_page = fields.Nested(MainEntityOfPageSchema, data_key="mainEntityOfPage")
+    main_entity_of_page = fields.Nested(
+        MainEntityOfPageSchema, data_key="mainEntityOfPage"
+    )
 
     # using blog title for now but we should collect headline
     headline = fields.Str()
@@ -148,7 +149,9 @@ class LiveBlogPostingSchema(Schema):
 
     image = fields.Nested(ImageObjectSchema)
     author = fields.Nested(AuthorSchema)
-    live_blog_update = fields.Nested(BlogPostingSchema, many=True, data_key="liveBlogUpdate")
+    live_blog_update = fields.Nested(
+        BlogPostingSchema, many=True, data_key="liveBlogUpdate"
+    )
 
     # TODO: consider later if we should include about section.
     # it requires some additional information we don't collect at the moment

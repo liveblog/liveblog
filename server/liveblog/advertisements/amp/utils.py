@@ -17,7 +17,7 @@ from jinja2 import Environment, BaseLoader
 from superdesk import get_resource_service
 from liveblog.exceptions import ParameterError
 
-logger = logging.getLogger('superdesk.lb.advertisments')
+logger = logging.getLogger("superdesk.lb.advertisments")
 
 
 # NOTE: consider later to move to separate file if needed
@@ -48,12 +48,12 @@ class AdsSettings(object):
     #   Make `article_class` parameter optional
 
     DEFAULT_SETTINGS = {
-        'frequency': 2,
-        'article_tag': 'article',
-        'article_class': 'lb-post',
-        'tombstone_class': 'hide-item',
-        'template': '{{ item.text }}',
-        'order': ASC
+        "frequency": 2,
+        "article_tag": "article",
+        "article_class": "lb-post",
+        "tombstone_class": "hide-item",
+        "template": "{{ item.text }}",
+        "order": ASC,
     }
 
     def __init__(self, **kwargs):
@@ -72,7 +72,7 @@ class AdsSettings(object):
     def __repr__(self):
         """Nice string representation of the object"""
         attrs = ["  %s=%r\n" % (attr, value) for attr, value in self.__dict__.items()]
-        return 'AdsSettings\n%s' % "".join(attrs)
+        return "AdsSettings\n%s" % "".join(attrs)
 
     def _validate_parameters(self, settings):
         """
@@ -108,17 +108,24 @@ def inject_advertisements(content, settings, ads_list, theme):
 
     if not isinstance(content, bs4.BeautifulSoup):
         raise ParameterError(
-            "Wrong `content` parameter type. Expected `bs4.BeautifulSoup` instance")
+            "Wrong `content` parameter type. Expected `bs4.BeautifulSoup` instance"
+        )
 
     if not isinstance(settings, AdsSettings):
         raise ParameterError(
-            "Wrong `settings` parameter type. Expected `AdsSettings` instance")
+            "Wrong `settings` parameter type. Expected `AdsSettings` instance"
+        )
 
     def _not_tombstone_item(css_class):
-        return settings.article_class in css_class and settings.tombstone_class not in css_class
+        return (
+            settings.article_class in css_class
+            and settings.tombstone_class not in css_class
+        )
 
     articles = content.find_all(
-        lambda x: x.name == settings.article_tag and _not_tombstone_item(x.get('class', [])))
+        lambda x: x.name == settings.article_tag
+        and _not_tombstone_item(x.get("class", []))
+    )
 
     pcount = len(articles)
     acount = len(ads_list)
@@ -128,7 +135,7 @@ def inject_advertisements(content, settings, ads_list, theme):
     if settings.order == DESC:
         ads_list = ads_list[::-1]
 
-    theme_service = get_resource_service('themes')
+    theme_service = get_resource_service("themes")
     theme_settings = theme_service.get_default_settings(theme)
 
     for i in range(frequency, pcount, frequency):
@@ -137,15 +144,16 @@ def inject_advertisements(content, settings, ads_list, theme):
 
             ref_article = articles[i]
             item = ads_list[index]
-            ad_id = "ads_%s_%s" % (item['_id'], i)
+            ad_id = "ads_%s_%s" % (item["_id"], i)
 
             ad_content = template.render(
-                ad_id=ad_id, item=item, theme=theme, settings=theme_settings)
+                ad_id=ad_id, item=item, theme=theme, settings=theme_settings
+            )
             ad_content = prepare_amp_content(ad_content)
 
             # we need to increment the data-update-time in order to trigger amp updating
             # if date-update-time is not updated, the advertisement will display wrong content
-            ref_article['data-update-time'] = int(time.time())
+            ref_article["data-update-time"] = int(time.time())
             ref_article.append(ad_content)
 
 
@@ -165,15 +173,15 @@ def prepare_amp_content(content):
 
     # time to adjust couple of things from advertisement render
     # e.g: image and some wrong attributes
-    ad_image = ad_content.find('img')
-    if (ad_image):
-        amp_img = ad_content.new_tag('amp-img')
-        amp_img['src'] = ad_image.attrs['src']
-        amp_img['width'], amp_img['height'] = 600, 200
-        amp_img['layout'] = 'responsive'
+    ad_image = ad_content.find("img")
+    if ad_image:
+        amp_img = ad_content.new_tag("amp-img")
+        amp_img["src"] = ad_image.attrs["src"]
+        amp_img["width"], amp_img["height"] = 600, 200
+        amp_img["layout"] = "responsive"
         ad_image.replace_with(amp_img)
 
-    REMOVE_ATTRIBUTES = ['compulsory', 'type']
+    REMOVE_ATTRIBUTES = ["compulsory", "type"]
     for tag in ad_content.find_all():
         for attr in REMOVE_ATTRIBUTES:
             if attr in tag.attrs:

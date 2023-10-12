@@ -11,85 +11,82 @@ from superdesk.services import BaseService
 from liveblog.utils.api import api_error, api_response
 
 from .auth import ConsumerBlogTokenAuth
-from .tasks import send_post_to_consumer, send_posts_to_consumer, unlink_syndicated_posts
-from .utils import (cast_to_object_id, create_syndicated_blog_post,
-                    generate_api_key, get_post_creator,
-                    get_producer_post_id, extract_post_items_data)
+from .tasks import (
+    send_post_to_consumer,
+    send_posts_to_consumer,
+    unlink_syndicated_posts,
+)
+from .utils import (
+    cast_to_object_id,
+    create_syndicated_blog_post,
+    generate_api_key,
+    get_post_creator,
+    get_producer_post_id,
+    extract_post_items_data,
+)
 
-logger = logging.getLogger('superdesk')
-syndication_blueprint = Blueprint('syndication', __name__)
+logger = logging.getLogger("superdesk")
+syndication_blueprint = Blueprint("syndication", __name__)
 CORS(syndication_blueprint)
 
 
-WEBHOOK_METHODS = {
-    'created': 'POST',
-    'updated': 'PUT',
-    'deleted': 'DELETE'
-}
+WEBHOOK_METHODS = {"created": "POST", "updated": "PUT", "deleted": "DELETE"}
 
 syndication_out_schema = {
-    'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
-    'consumer_id': Resource.rel('consumers', embeddable=True, required=True, type="objectid"),
-    'consumer_blog_id': {
-        'type': 'objectid',
-        'required': True
-    },
-    'token': {
-        'type': 'string',
-        'unique': True
-    },
-    'auto_retrieve': {
-        'type': 'boolean',
-        'default': True
-    },
-    'start_date': {
-        'type': 'datetime',
-        'default': None
-    }
+    "blog_id": Resource.rel("blogs", embeddable=True, required=True, type="objectid"),
+    "consumer_id": Resource.rel(
+        "consumers", embeddable=True, required=True, type="objectid"
+    ),
+    "consumer_blog_id": {"type": "objectid", "required": True},
+    "token": {"type": "string", "unique": True},
+    "auto_retrieve": {"type": "boolean", "default": True},
+    "start_date": {"type": "datetime", "default": None},
 }
 
 
 class SyndicationOutService(BaseService):
-    notification_key = 'syndication_out'
+    notification_key = "syndication_out"
 
     def _cursor(self, resource=None):
         resource = resource or self.datasource
         return app.data.mongo.pymongo(resource=resource).db[resource]
 
     def _get_blog(self, blog_id):
-        return self._cursor('blogs').find_one({'_id': ObjectId(blog_id)})
+        return self._cursor("blogs").find_one({"_id": ObjectId(blog_id)})
 
     def _lookup(self, consumer_id, producer_blog_id, consumer_blog_id):
-        lookup = {'$and': [
-            {'consumer_id': consumer_id},
-            {'blog_id': producer_blog_id},
-            {'consumer_blog_id': consumer_blog_id}
-        ]}
+        lookup = {
+            "$and": [
+                {"consumer_id": consumer_id},
+                {"blog_id": producer_blog_id},
+                {"consumer_blog_id": consumer_blog_id},
+            ]
+        }
         return lookup
 
     def get_syndication(self, consumer_id, producer_blog_id, consumer_blog_id):
         try:
-            return self.find(self._lookup(consumer_id, producer_blog_id, consumer_blog_id))[0]
+            return self.find(
+                self._lookup(consumer_id, producer_blog_id, consumer_blog_id)
+            )[0]
         except IndexError:
             return
 
     def consumer_is_syndicating(self, consumer_id):
         try:
-            result = self.find({'$and': [
-                {'consumer_id': consumer_id}
-            ]})
+            result = self.find({"$and": [{"consumer_id": consumer_id}]})
             return result.count() > 0
         except IndexError:
             return
 
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
-        if not blog.get('syndication_enabled'):
-            logger.info('Syndication not enabled for blog "{}"'.format(blog['_id']))
+        if not blog.get("syndication_enabled"):
+            logger.info('Syndication not enabled for blog "{}"'.format(blog["_id"]))
             return []
         else:
-            logger.info('Syndication enabled for blog "{}"'.format(blog['_id']))
-            return self.find({'blog_id': blog_id})
+            logger.info('Syndication enabled for blog "{}"'.format(blog["_id"]))
+            return self.find({"blog_id": blog_id})
 
     def has_blog_syndication(self, blog):
         out_syndication = self.get_blog_syndication(blog)
@@ -100,21 +97,30 @@ class SyndicationOutService(BaseService):
 
     def _is_repeat_syndication(self, post):
         # Prevent "loops" by sending only posts with repeat_syndication to false
-        if post.get('repeat_syndication'):
-            logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
+        if post.get("repeat_syndication"):
+            logger.debug(
+                'Not sending post "{}": syndicated content.'.format(post["_id"])
+            )
             return False
 
         items = extract_post_items_data(post)
         for item in items:
-            if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
-                logger.debug('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
+            if (
+                item["group_type"] == "freetype"
+                and item["item_type"] in app.config["SYNDICATION_EXCLUDED_ITEMS"]
+            ):
+                logger.debug(
+                    'Not sending post "{}": syndicated content contains excluded items.'.format(
+                        post["_id"]
+                    )
+                )
                 return False
 
         return True
 
-    def send_syndication_post(self, post, action='created'):
+    def send_syndication_post(self, post, action="created"):
         if self._is_repeat_syndication(post):
-            blog_id = ObjectId(post['blog'])
+            blog_id = ObjectId(post["blog"])
             out_syndication = self.get_blog_syndication(blog_id)
             for out in out_syndication:
                 send_post_to_consumer.delay(out, post, action)
@@ -122,9 +128,9 @@ class SyndicationOutService(BaseService):
     def on_create(self, docs):
         super().on_create(docs)
         for doc in docs:
-            if not doc.get('token'):
-                doc['token'] = generate_api_key()
-            cast_to_object_id(doc, ['consumer_id', 'blog_id', 'consumer_blog_id'])
+            if not doc.get("token"):
+                doc["token"] = generate_api_key()
+            cast_to_object_id(doc, ["consumer_id", "blog_id", "consumer_blog_id"])
 
     def on_created(self, docs):
         super().on_created(docs)
@@ -145,179 +151,188 @@ class SyndicationOutService(BaseService):
 
 class SyndicationOut(Resource):
     datasource = {
-        'source': 'syndication_out',
-        'search_backend': None,
-        'default_sort': [('_updated', -1)],
+        "source": "syndication_out",
+        "search_backend": None,
+        "default_sort": [("_updated", -1)],
     }
 
-    item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'POST': 'syndication_out', 'PATCH': 'syndication_out', 'PUT': 'syndication_out',
-                  'DELETE': 'syndication_out'}
+    item_methods = ["GET", "PATCH", "PUT", "DELETE"]
+    privileges = {
+        "POST": "syndication_out",
+        "PATCH": "syndication_out",
+        "PUT": "syndication_out",
+        "DELETE": "syndication_out",
+    }
     schema = syndication_out_schema
 
 
 syndication_in_schema = {
-    'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
-    'blog_token': {
-        'type': 'string',
-        'required': True,
-        'unique': True
-    },
-    'producer_id': Resource.rel('producers', embeddable=True, required=True, type="objectid"),
-    'producer_blog_id': {
-        'type': 'objectid',
-        'required': True
-    },
-    'producer_blog_title': {
-        'type': 'string',
-        'required': True
-    },
-    'auto_publish': {
-        'type': 'boolean',
-        'default': False
-    },
-    'auto_retrieve': {
-        'type': 'boolean',
-        'default': True
-    },
-    'start_date': {
-        'type': 'datetime',
-        'default': None
-    }
+    "blog_id": Resource.rel("blogs", embeddable=True, required=True, type="objectid"),
+    "blog_token": {"type": "string", "required": True, "unique": True},
+    "producer_id": Resource.rel(
+        "producers", embeddable=True, required=True, type="objectid"
+    ),
+    "producer_blog_id": {"type": "objectid", "required": True},
+    "producer_blog_title": {"type": "string", "required": True},
+    "auto_publish": {"type": "boolean", "default": False},
+    "auto_retrieve": {"type": "boolean", "default": True},
+    "start_date": {"type": "datetime", "default": None},
 }
 
 
 class SyndicationInService(BaseService):
-    notification_key = 'syndication_in'
+    notification_key = "syndication_in"
 
     def _lookup(self, producer_id, producer_blog_id, consumer_blog_id):
-        lookup = {'$and': [
-            {'producer_id': producer_id},
-            {'blog_id': consumer_blog_id},
-            {'producer_blog_id': producer_blog_id}
-        ]}
+        lookup = {
+            "$and": [
+                {"producer_id": producer_id},
+                {"blog_id": consumer_blog_id},
+                {"producer_blog_id": producer_blog_id},
+            ]
+        }
         return lookup
 
     def get_syndication(self, producer_id, producer_blog_id, consumer_blog_id):
         try:
-            return self.find(self._lookup(producer_id, producer_blog_id, consumer_blog_id))[0]
+            return self.find(
+                self._lookup(producer_id, producer_blog_id, consumer_blog_id)
+            )[0]
         except IndexError:
             return
 
     def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
-        logger.warning('SyndicationInService.is_syndicated is deprecated!')
+        logger.warning("SyndicationInService.is_syndicated is deprecated!")
         item = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
         return bool(item)
 
     def on_create(self, docs):
         super().on_create(docs)
         for doc in docs:
-            cast_to_object_id(doc, ['blog_id', 'producer_id', 'producer_blog_id', 'consumer_blog_id'])
+            cast_to_object_id(
+                doc, ["blog_id", "producer_id", "producer_blog_id", "consumer_blog_id"]
+            )
 
     def on_delete(self, doc):
         super().on_delete(doc)
-        unlink_syndicated_posts.delay(doc['_id'])
+        unlink_syndicated_posts.delay(doc["_id"])
         push_notification(self.notification_key, syndication_in=doc, deleted=True)
 
 
 class SyndicationIn(Resource):
     datasource = {
-        'source': 'syndication_in',
-        'search_backend': None,
-        'default_sort': [('_updated', -1)],
+        "source": "syndication_in",
+        "search_backend": None,
+        "default_sort": [("_updated", -1)],
     }
 
-    item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'POST': 'syndication_in_p', 'PATCH': 'syndication_in_p', 'PUT': 'syndication_in_p',
-                  'DELETE': 'syndication_in_p'}
+    item_methods = ["GET", "PATCH", "PUT", "DELETE"]
+    privileges = {
+        "POST": "syndication_in_p",
+        "PATCH": "syndication_in_p",
+        "PUT": "syndication_in_p",
+        "DELETE": "syndication_in_p",
+    }
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@syndication_blueprint.route(
+    "/api/syndication/webhook", methods=["GET", "POST", "PUT", "DELETE"]
+)
 def syndication_webhook():
-    in_service = get_resource_service('syndication_in')
-    blog_token = request.headers.get('Authorization')
+    in_service = get_resource_service("syndication_in")
+    blog_token = request.headers.get("Authorization")
     # assume if there is no blog token that a get request is just checking for a response from the webhook
-    if not blog_token and request.method == 'GET':
+    if not blog_token and request.method == "GET":
         return api_response({}, 200)
 
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
     if in_syndication is None:
-        return api_error('Blog is not being syndicated', 406)
+        return api_error("Blog is not being syndicated", 406)
 
-    blog_service = get_resource_service('client_blogs')
-    blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
+    blog_service = get_resource_service("client_blogs")
+    blog = blog_service.find_one(req=None, _id=in_syndication["blog_id"])
     if blog is None:
-        return api_error('Blog not found', 404)
+        return api_error("Blog not found", 404)
 
-    if blog['blog_status'] != 'open':
-        return api_error('Updates should not be sent for a blog which is not open', 409)
+    if blog["blog_status"] != "open":
+        return api_error("Updates should not be sent for a blog which is not open", 409)
 
     data = request.get_json()
     try:
-        items, producer_post = data['items'], data['post']
+        items, producer_post = data["items"], data["post"]
     except KeyError:
-        return api_error('Bad Request', 400)
+        return api_error("Bad Request", 400)
 
-    logger.info('Webhook Request - method: {} items: {} post: {}'.format(request.method, items, producer_post))
-    posts_service = get_resource_service('posts')
-    producer_post_id = get_producer_post_id(in_syndication, producer_post['_id'])
+    logger.info(
+        "Webhook Request - method: {} items: {} post: {}".format(
+            request.method, items, producer_post
+        )
+    )
+    posts_service = get_resource_service("posts")
+    producer_post_id = get_producer_post_id(in_syndication, producer_post["_id"])
     post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
 
     post_id = None
     publisher = None
     if post:
-        post_id = str(post['_id'])
+        post_id = str(post["_id"])
         publisher = get_post_creator(post)
 
     if publisher:
-        return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
-                         post_id, publisher), 409)
+        return api_error(
+            'Post "{}" cannot be updated: already updated by "{}"'.format(
+                post_id, publisher
+            ),
+            409,
+        )
 
-    if request.method == 'GET':
+    if request.method == "GET":
         return api_response({}, 200)
-    elif request.method in ('POST', 'PUT'):
+    elif request.method in ("POST", "PUT"):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
 
         def _notify(**kwargs):
             dicc = {"posts": [new_post]}
             dicc.update(kwargs)
-            push_notification('posts', **dicc)
+            push_notification("posts", **dicc)
 
-        if request.method == 'POST':
+        if request.method == "POST":
             # Create post
             if post:
                 # Post may have been previously deleted
-                if post.get('deleted'):
+                if post.get("deleted"):
                     posts_service.update(post_id, new_post, post)
                     _notify(updated=True)
-                    return api_response({'post_id': post_id}, 200)
+                    return api_response({"post_id": post_id}, 200)
                 else:
-                    return api_error('Post already exist', 409)
+                    return api_error("Post already exist", 409)
 
             new_post_id = posts_service.post([new_post])[0]
             _notify(created=True)
-            return api_response({'post_id': str(new_post_id)}, 201)
+            return api_response({"post_id": str(new_post_id)}, 201)
         else:
             # Update post
             if not post:
-                return api_error('Post does not exist', 404)
+                return api_error("Post does not exist", 404)
 
             posts_service.patch(post_id, new_post)
             _notify(updated=True)
-            return api_response({'post_id': post_id}, 200)
+            return api_response({"post_id": post_id}, 200)
     else:
         # Delete post
-        posts_service.patch(post_id, {'deleted': True})
-        return api_response({'post_id': post_id}, 200)
+        posts_service.patch(post_id, {"deleted": True})
+        return api_response({"post_id": post_id}, 200)
 
 
 def _syndication_blueprint_auth():
     auth = ConsumerBlogTokenAuth()
     # get requests do no require authorization
-    authorized = request.method == 'GET' or auth.authorized(allowed_roles=[], resource='syndication_blogs')
+    authorized = request.method == "GET" or auth.authorized(
+        allowed_roles=[], resource="syndication_blogs"
+    )
     if not authorized:
-        return abort(401, 'Authorization failed.')
+        return abort(401, "Authorization failed.")
 
 
 syndication_blueprint.before_request(_syndication_blueprint_auth)
