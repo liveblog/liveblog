@@ -6,3 +6,4 @@ pep8
 httmock
 wooper
 pytest<7.1.0
+black~=22.0

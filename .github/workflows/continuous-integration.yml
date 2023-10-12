@@ -86,7 +86,6 @@ jobs:
         pip install -r dev-requirements.txt
         pytest --ignore=src/ -v
         behave --format progress2 --logging-level ERROR
-        flake8
 
     - name: Install Nodejs dependencies and lint
       working-directory: ./client
