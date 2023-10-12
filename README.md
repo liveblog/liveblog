@@ -7,7 +7,7 @@
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
-[![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
+[![Lint](https://github.com/liveblog/liveblog/actions/workflows/lint.yml/badge.svg)](https://github.com/liveblog/liveblog/actions/workflows/lint.yml)
 
 ## Liveblog Setup
 
