@@ -29,8 +29,13 @@ class FreetypesResource(Resource):
     }
     RESOURCE_METHODS = ['GET', 'POST']
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
-                  'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
+
+    privileges = {
+        'GET': 'freetypes_read',
+        'POST': 'freetypes_create',
+        'PATCH': 'freetypes_update',
+        'DELETE': 'freetypes_delete'
+    }
 
 
 class FreetypesService(BaseService):
@@ -40,6 +45,7 @@ class FreetypesService(BaseService):
             'template': template
         }
         previous = self.find_one(req=None, name=name)
+
         if previous:
             self.replace(previous['_id'], freetype, previous)
         else:

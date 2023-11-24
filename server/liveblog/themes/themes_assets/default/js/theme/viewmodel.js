@@ -262,19 +262,24 @@ vm.init = function() {
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
 
-  // avoid 
+  function fetchLatestAndRender() {
+    vm.loadPosts({
+      fromDate: latestUpdate,
+      tags: selectedTags
+    })
+    .then(view.renderPosts)
+    .then(view.initGdprConsentAndRefreshAds);
+  }
+
   var isBlogOpen = LB.blog.blog_status === "open";
   var tenSeconds = 10 * 1000;
 
   if (isBlogOpen) {
-    setInterval(() => {
-      vm.loadPosts({
-        fromDate: latestUpdate,
-        tags: selectedTags
-      })
-      .then(view.renderPosts)
-      .then(view.initGdprConsentAndRefreshAds);
-    }, tenSeconds);
+    // let's hit backend right away after load and render latest updates
+    fetchLatestAndRender();
+
+    // then every 10 seconds
+    setInterval(fetchLatestAndRender, tenSeconds);
   }
 };
 

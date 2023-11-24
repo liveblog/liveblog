@@ -18,9 +18,21 @@ def init_app(app):
     OutputsResource(endpoint_name, app=app, service=service)
 
 
-superdesk.privilege(name='advertisements',
+superdesk.privilege(name='advertisements_read',
                     label='Advertisements Management',
-                    description='User can manage advertisements')
+                    description='User can access the list of advertisements')
+
+superdesk.privilege(name='advertisements_create',
+                    label='Advertisements Management',
+                    description='User can add new advertisements')
+
+superdesk.privilege(name='advertisements_update',
+                    label='Advertisements Management',
+                    description='User can update advertisements')
+
+superdesk.privilege(name='advertisements_delete',
+                    label='Advertisements Management',
+                    description='User can delete advertisements')
 
 superdesk.privilege(name='collections',
                     label='Collections Management',

@@ -52,10 +52,13 @@ class AdvertisementsResource(Resource):
         'source': 'advertisements',
         'default_sort': [('name', 1)]
     }
-    RESOURCE_METHODS = ['GET', 'POST']
-    ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'advertisements', 'POST': 'advertisements',
-                  'PATCH': 'advertisements', 'DELETE': 'advertisements'}
+
+    privileges = {
+        'GET': 'advertisements_read',
+        'POST': 'advertisements_create',
+        'PATCH': 'advertisements_update',
+        'DELETE': 'advertisements_delete'
+    }
 
 
 class AdvertisementsService(BaseService):

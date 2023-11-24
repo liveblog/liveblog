@@ -1,10 +1,22 @@
 import listViewTpl from 'scripts/liveblog-freetypes/views/list.ng1';
 
-LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
+LiveblogFreetypesController.$inject = [
+    'api',
+    'notify',
+    'gettext',
+    '$q',
+    'modal',
+    'privileges',
+];
 
-function LiveblogFreetypesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService, modal) {
+function LiveblogFreetypesController(
+    api,
+    notify,
+    gettext,
+    $q,
+    modal,
+    privileges
+) {
     const self = this;
 
     function getFreetypes(silent = false) {
@@ -164,6 +176,9 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
                     });
                 });
             });
+        },
+        canRemoveFreetype: function() {
+            return privileges.userHasPrivileges({freetypes_delete: 1});
         },
         cancelCreate: function() {
             self.freetypeModalActive = false;

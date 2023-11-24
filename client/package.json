@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "3.82.5-rc1",
+  "version": "3.84.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
@@ -120,5 +120,8 @@
   "engines": {
     "node": ">=6.6.0 <7.0.0",
     "npm": ">=3.10 <4.0.0"
+  },
+  "volta": {
+    "node": "10.24.1"
   }
 }

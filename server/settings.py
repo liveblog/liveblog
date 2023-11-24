@@ -20,7 +20,9 @@ from celery.schedules import crontab
 # they produce some errors given their missing configurations
 EXCLUDED_APPS = [
     'apps.archived',
-    'apps.auth.db',  # this is replace with local one in liveblog
+    # db and users are replaced with local one in liveblog
+    'apps.auth.db',
+    'superdesk.users',
     'content_api.publish',
     'content_api.items',
     'content_api.tokens',
@@ -159,7 +161,6 @@ INSTALLED_APPS = [
     'apps.auth',
     'apps.preferences',
     'superdesk.roles',
-    'superdesk.users',
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
@@ -178,6 +179,7 @@ INSTALLED_APPS = [
     'apps.content_types',
 
     'liveblog.core',
+    'liveblog.users',
     'liveblog.prepopulate',
     'liveblog.blogs',
     'liveblog.posts',
@@ -390,3 +392,8 @@ LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:63
 # to complete author information. Next setting is to enable a workaround to behave like before to avoid
 # breaking the Liveblog Reporter app
 MOBILE_APP_WORKAROUND = env('MOBILE_APP_WORKAROUND', False)
+
+APM_SERVER_URL = env('APM_SERVER_URL')
+APM_SECRET_TOKEN = env('APM_SECRET_TOKEN')
+
+HIDE_USERS_SENSITIVE_DATA = env('HIDE_USERS_SENSITIVE_DATA', False)

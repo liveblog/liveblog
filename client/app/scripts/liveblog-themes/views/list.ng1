@@ -34,9 +34,10 @@
             <div
                 ng-if="!self.isSolo()"
                 class="alert alert-info alert--margin-left"
-                role="alert">
+                role="alert"
+            >
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="self.setNotificationCookie('notification1','customize_theme')"><i class="icon-close-small"></i></button>
-                You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://wiki.sourcefabric.org/display/LIVEBLOG/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
+                You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://sofab.atlassian.net/wiki/spaces/LIVEBLOG/pages/9667641534/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
             </div>
         </div>
         <div ng-if="!self.getNotificationCookie('notification2')">
@@ -109,8 +110,25 @@
                         </div>
                         <div class="side">
                             <div ng-style="{'visibility': (self.isDefaultTheme(theme) && 'hidden') || 'visible'}">
-                                <button ng-disabled="self.hasChildren(theme)" ng-click="self.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="self.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
+                                <button
+                                    ng-disabled="self.cannotBeRemoved(theme)"
+                                    ng-click="self.removeTheme(theme)"
+                                    class="btn btn-default pull-right"
+                                    type="button"
+                                    translate
+                                >
+                                    Remove
+                                </button>
+
+                                <button
+                                    ng-if="!theme.abstract"
+                                    ng-click="self.makeDefault(theme)"
+                                    class="btn btn--primary pull-right"
+                                    type="button"
+                                    translate
+                                >
+                                    Make default
+                                </button>
                             </div>
                             <button ng-click="self.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
                         </div>

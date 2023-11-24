@@ -57,6 +57,7 @@ blog image uploader
                     text-align: center;
                     margin: 30px auto 0;
                     width: 175px;
+
                     input {
                         width: 100%;
                         height: auto;
@@ -93,6 +94,17 @@ blog image uploader
                     input:active:before {
                       background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
                       outline: none;
+                    }
+                }
+
+                @media (max-width: 800px) {
+                    .input-holder {
+                        width: unset;
+                    }
+
+                    .text {
+                        line-height: 25px;
+                        margin-top: unset;
                     }
                 }
             }
