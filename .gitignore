@@ -105,3 +105,4 @@ package-lock.json
 .python-version
 setup.cfg
 .DS_Store
+server/initialized
