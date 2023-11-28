@@ -23,11 +23,11 @@ RUN curl https://get.volta.sh | bash
 WORKDIR /app
 
 # Copy the requirements.txt file
-COPY server/dev-requirements.txt /app/server/dev-requirements.txt
-COPY server/requirements.txt /app/server/requirements.txt
+COPY server/docker-requirements.txt /app/server/docker-requirements.txt
+# COPY server/requirements.txt /app/server/requirements.txt
 
 # Install python packages
-RUN pip install -r /app/server/dev-requirements.txt
+RUN pip install -r /app/server/docker-requirements.txt
 
 # Copy the project files
 COPY . /app

@@ -1,0 +1,26 @@
+gunicorn==19.7.1
+honcho==1.0.1
+newrelic>=2.66,<2.67
+Flask==1.0
+Flask-Cache==0.13.1
+Flask-Cors==3.0.9
+Flask-S3==0.1.7
+html5lib==0.999999999
+beautifulsoup4==4.6.0
+flask_pymongo>=0.5.2,<1.0
+pymongo==3.11.2
+google-auth-oauthlib==0.2.0
+elastic-apm==6.15.1
+
+# Superdesk
+-e git+https://github.com/vstinner/hachoir.git@3.0a2#egg=hachoir3
+-e git+https://github.com/liveblog/superdesk-core.git@liveblog-custom#egg=Superdesk-Core
+
+redis>=2.10.5,<3.0
+kombu<4.3.0
+werkzeug<1.0
+flake8
+nose
+pep8
+httmock
+wooper
