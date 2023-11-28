@@ -22,11 +22,13 @@ def get_advertisements_list(output):
 
     ads = []
 
-    if output and output.get('collection', False):
-        ads_ids = output['collection'].get('advertisements', [])
-        ads_ids = list(map(lambda x: x['advertisement_id'], ads_ids))
+    if output and output.get("collection", False):
+        ads_ids = output["collection"].get("advertisements", [])
+        ads_ids = list(map(lambda x: x["advertisement_id"], ads_ids))
 
-        ads_query = get_resource_service('advertisements').find({"_id": {"$in": ads_ids}})
+        ads_query = get_resource_service("advertisements").find(
+            {"_id": {"$in": ads_ids}}
+        )
         ads = list(ads_query)
 
     return ads

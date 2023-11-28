@@ -5,11 +5,11 @@ from .themes import UnknownTheme
 from .commands import RegisterLocalThemesCommand, RegisterThemeCommand
 from .utils import send_uploaded_static_file
 
-__all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'UnknownTheme']
+__all__ = ["upload_theme_blueprint", "ThemesService", "ThemesResource", "UnknownTheme"]
 
 
 def init_app(app):
-    endpoint_name = 'themes'
+    endpoint_name = "themes"
     service = ThemesService(endpoint_name, backend=superdesk.get_backend())
     ThemesResource(endpoint_name, app=app, service=service)
 
@@ -21,23 +21,37 @@ def init_app(app):
     # Additional endpoint to serve uploaded themes (used when s3 storage is disabled)
     try:
         app.add_url_rule(
-            '/themes_uploads/<path:filename>', endpoint='themes_uploads.static',
-            view_func=send_uploaded_static_file(app))
+            "/themes_uploads/<path:filename>",
+            endpoint="themes_uploads.static",
+            view_func=send_uploaded_static_file(app),
+        )
     except AssertionError:
         pass
 
-    superdesk.command('register_local_themes', RegisterLocalThemesCommand())
-    superdesk.command('register_theme', RegisterThemeCommand())
+    superdesk.command("register_local_themes", RegisterLocalThemesCommand())
+    superdesk.command("register_theme", RegisterThemeCommand())
 
 
 superdesk.privilege(
-    name='themes_create', label='Themes management', description='User can add new themes')
+    name="themes_create",
+    label="Themes management",
+    description="User can add new themes",
+)
 
 superdesk.privilege(
-    name='themes_read', label='Themes management', description='User can access the list of themes')
+    name="themes_read",
+    label="Themes management",
+    description="User can access the list of themes",
+)
 
 superdesk.privilege(
-    name='themes_update', label='Themes management', description='User can update existent themes')
+    name="themes_update",
+    label="Themes management",
+    description="User can update existent themes",
+)
 
 superdesk.privilege(
-    name='themes_delete', label='Themes management', description='User can delete themes')
+    name="themes_delete",
+    label="Themes management",
+    description="User can delete themes",
+)

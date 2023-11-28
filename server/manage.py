@@ -16,7 +16,7 @@ def publish():
     flask_s3.create_all(app)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     manager.run(superdesk.COMMANDS)
 
 # EOF

@@ -8,7 +8,7 @@ const nunjucks = require('nunjucks');
 const dateFilter = require('nunjucks-date-filter');
 
 const { ThemeTemplatesLoader } = require('liveblog-shared-tools');
-const { ampifyFilter, addtenFilter, decodeUri } = require('./misc/filters');
+const { ampifyFilter, addtenFilter, decodeUri, fixXDomainEmbed } = require('./misc/filters');
 
 // import all gulp tasks
 const { ampValidate } = require('./tasks/amp');
@@ -121,6 +121,7 @@ nunjucksEnv.addFilter('date', dateFilter);
 nunjucksEnv.addFilter('ampify', ampifyFilter);
 nunjucksEnv.addFilter('addten', addtenFilter);
 nunjucksEnv.addFilter('decode_uri', decodeUri);
+nunjucksEnv.addFilter('fix_x_domain_embed', fixXDomainEmbed);
 
 
 // TODO: add docstrings after merge default theme refactor

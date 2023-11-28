@@ -26,140 +26,168 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
+from liveblog.blogposting_schema.utils import generate_liveblog_posting_schema
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 from .embeds_utils import generate_theme_styles, google_fonts_url
 from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL, ACTIVATE_WATERMARK
 
-logger = logging.getLogger('superdesk')
-embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
-THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
+logger = logging.getLogger("superdesk")
+embed_blueprint = superdesk.Blueprint(
+    "embed_liveblog", __name__, template_folder="templates"
+)
+THEMES_DIRECTORY = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, "themes")
+)
 
 
 def collect_theme_assets(theme, assets=None, template=None, parents=[]):
     from liveblog.themes import UnknownTheme
-    theme_name = theme['name']
-    themes = get_resource_service('themes')
-    is_local_upload = themes.is_uploaded_theme(theme_name) and not themes.is_s3_storage_enabled
 
-    assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
+    theme_name = theme["name"]
+    themes = get_resource_service("themes")
+    is_local_upload = (
+        themes.is_uploaded_theme(theme_name) and not themes.is_s3_storage_enabled
+    )
+
+    assets = assets or {"scripts": [], "styles": [], "devScripts": [], "devStyles": []}
     # Load the template.
     if template is None:
         if themes.is_local_theme(theme_name) or is_local_upload:
             template_file_name = themes.get_theme_template_filename(theme_name)
             if os.path.exists(template_file_name):
-                template = open(template_file_name, encoding='utf-8').read()
+                template = open(template_file_name, encoding="utf-8").read()
             else:
-                template = theme.get('template')
+                template = theme.get("template")
         else:
-            template = theme.get('template')
+            template = theme.get("template")
 
     # Add assets from parent theme.
-    if theme.get('extends') and not \
-            theme.get('seoTheme') and \
-            (theme.get('name') != theme.get('extends')) and \
-            (theme.get('extends') not in parents):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+    if (
+        theme.get("extends")
+        and not theme.get("seoTheme")
+        and (theme.get("name") != theme.get("extends"))
+        and (theme.get("extends") not in parents)
+    ):
+        parent_theme = get_resource_service("themes").find_one(
+            req=None, name=theme.get("extends")
+        )
         if parent_theme:
-            parents.append(theme.get('extends'))
-            assets, template = collect_theme_assets(parent_theme, assets=assets, template=template, parents=parents)
+            parents.append(theme.get("extends"))
+            assets, template = collect_theme_assets(
+                parent_theme, assets=assets, template=template, parents=parents
+            )
         else:
-            error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme_name, theme.get('extends'))
+            error_message = (
+                'Embed: "%s" theme depends on "%s" but this theme is not registered.'
+                % (theme_name, theme.get("extends"))
+            )
             logger.info(error_message)
             raise UnknownTheme(error_message)
 
     # Add assets from theme.
-    static_endpoint = 'themes_assets.static'
+    static_endpoint = "themes_assets.static"
     if themes.is_uploaded_theme(theme_name):
-        static_endpoint = 'themes_uploads.static'
+        static_endpoint = "themes_uploads.static"
 
-    for asset_type in ('scripts', 'styles', 'devScripts', 'devStyles'):
-        theme_folder = theme['name']
+    for asset_type in ("scripts", "styles", "devScripts", "devStyles"):
+        theme_folder = theme["name"]
         for url in theme.get(asset_type, []):
             if is_relative_to_current_folder(url):
-                if theme.get('public_url', False):
-                    url = '%s%s' % (theme.get('public_url'), url)
+                if theme.get("public_url", False):
+                    url = "%s%s" % (theme.get("public_url"), url)
                 else:
-                    url = url_for(static_endpoint, filename=os.path.join(theme_folder, url), _external=False)
+                    url = url_for(
+                        static_endpoint,
+                        filename=os.path.join(theme_folder, url),
+                        _external=False,
+                    )
             assets[asset_type].append(url)
 
     return assets, template
 
 
 def render_bloglist_embed(api_host=None, assets_root=None):
-    compiled_api_host = "{}://{}/".format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'])
+    compiled_api_host = "{}://{}/".format(
+        app.config["URL_PROTOCOL"], app.config["SERVER_NAME"]
+    )
     api_host = api_host or compiled_api_host
-    assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
+    assets_root = assets_root or BLOGSLIST_ASSETS_DIR + "/"
     assets = copy.deepcopy(BLOGLIST_ASSETS)
 
     # Compute path relative to the assets_root for `styles` and `scripts`.
-    for index, script in enumerate(assets.get('scripts')):
-        assets['scripts'][index] = os.path.join(assets_root, script)
-    for index, style in enumerate(assets.get('styles')):
-        assets['styles'][index] = os.path.join(assets_root, style)
+    for index, script in enumerate(assets.get("scripts")):
+        assets["scripts"][index] = os.path.join(assets_root, script)
+    for index, style in enumerate(assets.get("styles")):
+        assets["styles"][index] = os.path.join(assets_root, style)
 
     scope = {
-        'debug': app.config.get('LIVEBLOG_DEBUG'),
-        'api_host': api_host,
-        'assets': assets,
-        'assets_root': assets_root
+        "debug": app.config.get("LIVEBLOG_DEBUG"),
+        "api_host": api_host,
+        "assets": assets,
+        "assets_root": assets_root,
     }
-    return render_template('blog-list-embed.html', **scope)
+    return render_template("blog-list-embed.html", **scope)
 
 
-@embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
-@embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
+@embed_blueprint.route("/embed/<blog_id>", defaults={"theme": None, "output": None})
+@embed_blueprint.route("/embed/<blog_id>/<output>", defaults={"theme": None})
+@embed_blueprint.route("/embed/<blog_id>/theme/<theme>", defaults={"output": None})
+@embed_blueprint.route("/embed/<blog_id>/<output>/theme/<theme>/")
 def embed(blog_id, theme=None, output=None, api_host=None):
     from liveblog.themes import UnknownTheme
+
     # adding import here to avoid circular references
     from liveblog.advertisements.utils import get_advertisements_list
     from liveblog.advertisements.amp import AdsSettings, inject_advertisements
 
     api_host = api_host or request.url_root
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
     if not blog:
-        return 'blog not found', 404
+        return "blog not found", 404
 
     # if the `output` is the `_id` get the data.
     if output:
         if isinstance(output, str):
-            output = get_resource_service('outputs').find_one(req=None, _id=output)
+            output = get_resource_service("outputs").find_one(req=None, _id=output)
         if not output:
-            return 'output not found', 404
+            return "output not found", 404
         else:
-            collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
-            output['collection'] = collection
+            collection = get_resource_service("collections").find_one(
+                req=None, _id=output.get("collection")
+            )
+            output["collection"] = collection
 
     # Retrieve picture url from relationship.
-    if blog.get('picture', None):
-        blog['picture'] = get_resource_service('archive').find_one(req=None, _id=blog['picture'])
+    if blog.get("picture", None):
+        blog["picture"] = get_resource_service("archive").find_one(
+            req=None, _id=blog["picture"]
+        )
 
     # Retrieve the wanted theme and add it to blog['theme'] if is not the registered one.
     try:
-        theme_name = request.args.get('theme', theme)
+        theme_name = request.args.get("theme", theme)
     except RuntimeError:
         # This method can be called outside from a request context.
         theme_name = theme
 
-    blog_preferences = blog.get('blog_preferences')
+    blog_preferences = blog.get("blog_preferences")
     if blog_preferences is None:
-        return 'blog preferences are not available', 404
+        return "blog preferences are not available", 404
 
-    blog_theme_name = blog_preferences.get('theme')
+    blog_theme_name = blog_preferences.get("theme")
     if not theme_name:
         # No theme specified. Fallback to theme in blog_preferences.
         theme_name = blog_theme_name
 
-    theme_service = get_resource_service('themes')
+    theme_service = get_resource_service("themes")
     theme = theme_service.find_one(req=None, name=theme_name)
 
     if theme is None:
         raise SuperdeskApiError.badRequestError(
-            message='You will be able to access the embed after you register the themes')
+            message="You will be able to access the embed after you register the themes"
+        )
 
     try:
         assets, template_content = collect_theme_assets(theme, parents=[])
@@ -167,63 +195,82 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         return str(e), 500
 
     if not template_content:
-        logger.warning('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
-        return 'Template file not found', 500
+        logger.warning(
+            'Template file not found for theme "%s". Theme: %s' % (theme_name, theme)
+        )
+        return "Template file not found", 500
 
     # Compute the assets root.
-    if theme.get('public_url', False):
-        assets_root = theme.get('public_url')
+    if theme.get("public_url", False):
+        assets_root = theme.get("public_url")
     else:
         assets_root = theme_service.get_theme_assets_url(theme_name)
 
     theme_settings = theme_service.get_default_settings(theme)
-    i18n = theme.get('i18n', {})
+    i18n = theme.get("i18n", {})
 
-    # the blog level theme overrides the one in theme level
-    # this way we allow user to enable commenting only for certain blog(s)
-    # or the other way around
-    unset = 'unset'
-    blog_users_can_comment = blog.get('users_can_comment', unset)
-    if blog_users_can_comment != unset:
-        theme_settings['canComment'] = True if blog_users_can_comment == 'enabled' else False
+    # the blog level setting overrides the one in theme level
+    # this way we allow user to enable/disable commenting only for certain blog(s)
+    unset = "unset"
+    blog_users_can_comment = blog.get("users_can_comment", unset)
+    is_users_can_comment_set = blog_users_can_comment != unset
 
-    # also when blog has been archived, we should disable commenting
-    if blog.get('blog_status') == 'closed':
-        theme_settings['canComment'] = False
+    if is_users_can_comment_set:
+        theme_settings["canComment"] = blog_users_can_comment == "enabled"
 
-    theme_settings['watermark'] = ACTIVATE_WATERMARK
+    is_blog_closed = blog.get("blog_status") == "closed"
+    if is_blog_closed:
+        theme_settings["canComment"] = False
+
+    theme_settings["watermark"] = ACTIVATE_WATERMARK
 
     # Check if theme is SEO and/or AMP compatible.
-    is_amp = theme.get('ampTheme', False)
-    is_seo = theme.get('seoTheme', False)
+    is_amp = theme.get("ampTheme", False)
+    is_seo = theme.get("seoTheme", False)
 
-    global_tags = get_resource_service('global_preferences').get_global_prefs().get('global_tags', [])
+    global_tags = (
+        get_resource_service("global_preferences")
+        .get_global_prefs()
+        .get("global_tags", [])
+    )
+    blog_schema = ""
 
     if is_seo:
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
-        page_limit = theme_settings.get('postsPerPage', 10)
-        sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
-        ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
+        page_limit = theme_settings.get("postsPerPage", 10)
+        sticky_limit = theme_settings.get("stickyPostsPerPage", 10)
+        ordering = theme_settings.get("postOrder", blog_instance.default_ordering)
 
         dropdown_tags = []
         # let's get the output channel tags if any
         if output:
-            dropdown_tags = output.get('tags', [])
+            dropdown_tags = output.get("tags", [])
 
-        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp, tags=dropdown_tags)
-        sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
-                                           ordering='newest_first', deleted=is_amp, tags=dropdown_tags)
+        posts = blog_instance.posts(
+            wrap=True,
+            limit=page_limit,
+            ordering=ordering,
+            deleted=is_amp,
+            tags=dropdown_tags,
+        )
+        sticky_posts = blog_instance.posts(
+            wrap=True,
+            limit=sticky_limit,
+            sticky=True,
+            ordering="newest_first",
+            deleted=is_amp,
+            tags=dropdown_tags,
+        )
 
         # get global_tags if this is not an output channel or if the output channel is not restricted to a set of tags
         if len(dropdown_tags) == 0:
             dropdown_tags = global_tags
 
-        api_response = {
-            'posts': posts,
-            'stickyPosts': sticky_posts
-        }
-        embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
+        api_response = {"posts": posts, "stickyPosts": sticky_posts}
+        embed_env = theme_service.get_theme_template_env(
+            theme, loader=CompiledThemeTemplateLoader
+        )
         embed_template = embed_env.from_string(template_content)
 
         template_content = embed_template.render(
@@ -236,73 +283,94 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             assets_root=assets_root,
             i18n=i18n,
             api_host=api_host,
-            global_tags=dropdown_tags
+            global_tags=dropdown_tags,
         )
 
-    asyncTheme = theme.get('asyncTheme', False)
-    api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
-    api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
+        post_items = posts.get("_items", [])
+        blog_schema = generate_liveblog_posting_schema(
+            blog, post_items, output, theme_settings
+        )
+
+    asyncTheme = theme.get("asyncTheme", False)
+    api_host = (
+        api_host.replace("//", app.config.get("EMBED_PROTOCOL"))
+        if api_host.startswith("//")
+        else api_host
+    )
+    api_host = api_host.replace("http://", app.config.get("EMBED_PROTOCOL"))
 
     scope = {
-        'blog': blog,
-        'settings': theme_settings,
-        'styles_settings': generate_theme_styles(theme),
-        'fonts_url': google_fonts_url(theme),
-        'assets': assets,
-        'api_host': api_host,
-        'output': output,
-        'template': template_content,
-        'debug': app.config.get('LIVEBLOG_DEBUG'),
-        'assets_root': assets_root,
-        'async': asyncTheme,
-        'i18n': i18n,
-        'hook_urls': bool(TRIGGER_HOOK_URLS),
-        'global_tags': global_tags
+        "blog": blog,
+        "settings": theme_settings,
+        "styles_settings": generate_theme_styles(theme),
+        "fonts_url": google_fonts_url(theme),
+        "assets": assets,
+        "api_host": api_host,
+        "output": output,
+        "template": template_content,
+        "debug": app.config.get("LIVEBLOG_DEBUG"),
+        "assets_root": assets_root,
+        "async": asyncTheme,
+        "i18n": i18n,
+        "hook_urls": bool(TRIGGER_HOOK_URLS),
+        "global_tags": global_tags,
+        "schema": blog_schema,
     }
 
     if is_amp:
         # Add AMP compatible css to template context
-        styles = theme.get('files', {}).get('styles', {}).values()
+        styles = theme.get("files", {}).get("styles", {}).values()
         if len(styles):
-            scope['amp_style'] = next(iter(styles))
+            scope["amp_style"] = next(iter(styles))
 
-    embed_template = 'embed_amp.html' if is_amp else 'embed.html'
+    embed_template = "embed_amp.html" if is_amp else "embed.html"
 
-    blog_archived = blog['blog_status'] == 'closed'
-    solo_subscription = 'solo' in SUBSCRIPTION_LEVEL
+    blog_archived = blog["blog_status"] == "closed"
+    solo_subscription = "solo" in SUBSCRIPTION_LEVEL
 
     if blog_archived and solo_subscription:
-        scope['template'] = render_template('blog-unavailable.html', **scope)
-        scope['assets']['scripts'] = []
+        scope["template"] = render_template("blog-unavailable.html", **scope)
+        scope["assets"]["scripts"] = []
 
     response_content = render_template(embed_template, **scope)
 
     # TODO: move to somewhere else to simplify this method
-    if is_amp and output and theme.get('supportAdsInjection', False):
-        parsed_content = BeautifulSoup(response_content, 'lxml')
+    if is_amp and output and theme.get("supportAdsInjection", False):
+        parsed_content = BeautifulSoup(response_content, "lxml")
         ads = get_advertisements_list(output)
 
-        frequency = output['settings'].get('frequency', 4)
-        order = output['settings'].get('order', 1)
+        frequency = output["settings"].get("frequency", 4)
+        order = output["settings"].get("order", 1)
 
-        ad_template = get_theme_template(theme, 'template-ad-entry.html')
+        ad_template = get_theme_template(theme, "template-ad-entry.html")
         ads_settings = AdsSettings(
-            frequency=frequency, order=order,
-            template=ad_template, tombstone_class='hide-item')
+            frequency=frequency,
+            order=order,
+            template=ad_template,
+            tombstone_class="hide-item",
+        )
 
         # let's remove hidden elements initially because they're just garbage
         # complex validation because `embed` it's also called from outside without request context
-        if not request or request and not request.args.get('amp_latest_update_time', False):
-            hidden_items = parsed_content.find_all('article', class_=ads_settings.tombstone_class)
+        if (
+            not request
+            or request
+            and not request.args.get("amp_latest_update_time", False)
+        ):
+            hidden_items = parsed_content.find_all(
+                "article", class_=ads_settings.tombstone_class
+            )
             for tag in hidden_items:
                 tag.decompose()
 
-        styles_tmpl = get_theme_template(theme, 'template-ad-styles.html')
-        amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), 'html.parser')
+        styles_tmpl = get_theme_template(theme, "template-ad-styles.html")
+        amp_style = BeautifulSoup(
+            styles_tmpl.render(frequency=frequency), "html.parser"
+        )
 
-        style_tag = parsed_content.find('style', attrs={'amp-custom': True})
+        style_tag = parsed_content.find("style", attrs={"amp-custom": True})
         if style_tag:
-            style_tag.append(amp_style.find('style').contents[0])
+            style_tag.append(amp_style.find("style").contents[0])
 
         inject_advertisements(parsed_content, ads_settings, ads, theme)
         response_content = parsed_content.prettify()
@@ -310,32 +378,40 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     return response_content
 
 
-@embed_blueprint.route('/api/embed/shared_post/<blog_id>/<post_id>')
+@embed_blueprint.route("/api/embed/shared_post/<blog_id>/<post_id>")
 @cross_origin()
 def embed_shared_post(blog_id, post_id):
-    post = get_resource_service('client_posts').find_one(req=None, _id=post_id)
-    if not post or (post and str(post.get('blog')) != blog_id):
-        return 'Post not found', 404
+    post = get_resource_service("client_posts").find_one(req=None, _id=post_id)
+    if not post or (post and str(post.get("blog")) != blog_id):
+        return "Post not found", 404
 
-    theme_service = get_resource_service('themes')
-    theme = theme_service.find_one(req=None, name='default')
+    theme_service = get_resource_service("themes")
+    theme = theme_service.find_one(req=None, name="default")
     settings = theme_service.get_default_settings(theme)
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
 
-    if theme.get('public_url', False):
-        assets_root = theme.get('public_url')
+    if theme.get("public_url", False):
+        assets_root = theme.get("public_url")
     else:
-        assets_root = theme_service.get_theme_assets_url(theme.get('name'))
+        assets_root = theme_service.get_theme_assets_url(theme.get("name"))
 
-    assets, template_content = collect_theme_assets(theme, template='template-shared-post.html', parents=[])
+    assets, template_content = collect_theme_assets(
+        theme, template="template-shared-post.html", parents=[]
+    )
 
-    embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
+    embed_env = theme_service.get_theme_template_env(
+        theme, loader=CompiledThemeTemplateLoader
+    )
     embed_template = embed_env.get_template(template_content)
 
     api_host = request.url_root
-    api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
-    api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
-    i18n = theme.get('i18n', {})
+    api_host = (
+        api_host.replace("//", app.config.get("EMBED_PROTOCOL"))
+        if api_host.startswith("//")
+        else api_host
+    )
+    api_host = api_host.replace("http://", app.config.get("EMBED_PROTOCOL"))
+    i18n = theme.get("i18n", {})
 
     base_ctx = dict(
         blog=blog,
@@ -343,74 +419,65 @@ def embed_shared_post(blog_id, post_id):
         settings=settings,
         i18n=i18n,
         assets_root=assets_root,
-        api_host=api_host
+        api_host=api_host,
     )
 
     post_ctx = dict(
-        options=theme,
-        item=post,
-        json_options=bson_dumps(theme),
-        **base_ctx
+        options=theme, item=post, json_options=bson_dumps(theme), **base_ctx
     )
     template_content = embed_template.render(post_ctx)
 
-    context = dict(
-        theme=theme,
-        assets=assets,
-        template=template_content,
-        **base_ctx
-    )
+    context = dict(theme=theme, assets=assets, template=template_content, **base_ctx)
 
-    return render_template('embed_shared_post.html', **context)
+    return render_template("embed_shared_post.html", **context)
 
 
-@embed_blueprint.route('/embed/iframe/<blog_id>')
+@embed_blueprint.route("/embed/iframe/<blog_id>")
 def embed_iframe(blog_id):
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
     if not blog:
-        return 'blog not found', 404
-    theme_name = blog['blog_preferences'].get('theme')
-    theme_service = get_resource_service('themes')
+        return "blog not found", 404
+    theme_name = blog["blog_preferences"].get("theme")
+    theme_service = get_resource_service("themes")
     theme = theme_service.find_one(req=None, name=theme_name)
     if not theme:
-        return 'theme not found', 404
+        return "theme not found", 404
     settings = theme_service.get_default_settings(theme)
-    return render_template('embed_iframe.html', blog=blog, theme=theme, settings=settings)
+    return render_template(
+        "embed_iframe.html", blog=blog, theme=theme, settings=settings
+    )
 
 
-@embed_blueprint.route('/embed/<blog_id>/overview')
+@embed_blueprint.route("/embed/<blog_id>/overview")
 def embed_overview(blog_id, api_host=None):
     """
     Show a theme with all the available themes in different iframes
     """
 
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    themes = get_resource_service('themes').get_local_themes_packages()
-    blog['_id'] = str(blog['_id'])
-    scope = {
-        'blog': blog,
-        'themes': [t[0] for t in themes]
-    }
-    return render_template('iframe-for-every-themes.html', **scope)
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
+    themes = get_resource_service("themes").get_local_themes_packages()
+    blog["_id"] = str(blog["_id"])
+    scope = {"blog": blog, "themes": [t[0] for t in themes]}
+    return render_template("iframe-for-every-themes.html", **scope)
 
 
-@embed_blueprint.app_template_filter('tojson')
+@embed_blueprint.app_template_filter("tojson")
 def tojson(obj):
     return json.dumps(obj, cls=MongoJSONEncoder)
 
 
-@embed_blueprint.app_template_filter('tostyle')
+@embed_blueprint.app_template_filter("tostyle")
 def tostyle(obj):
     if obj:
         styles = []
         for (key, value) in obj.items():
-            if key.lower() == 'background-image':
+            if key.lower() == "background-image":
                 value = "url({})".format(value)
             styles.append("{}: {}".format(key, value))
-        return ';'.join(styles)
-    return ''
+        return ";".join(styles)
+    return ""
 
 
-@embed_blueprint.app_template_filter('is_relative_to_current_folder')
+@embed_blueprint.app_template_filter("is_relative_to_current_folder")
 def is_relative_to_current_folder_filter(s):
     return is_relative_to_current_folder(s)

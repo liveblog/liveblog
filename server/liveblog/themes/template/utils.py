@@ -4,7 +4,7 @@ import logging
 from superdesk import get_resource_service
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
-logger = logging.getLogger('superdesk.liveblog.themes.utils')
+logger = logging.getLogger("superdesk.liveblog.themes.utils")
 
 
 def get_theme_template(theme, template_name, theme_service=None):
@@ -22,17 +22,22 @@ def get_theme_template(theme, template_name, theme_service=None):
     """
 
     if not theme_service:
-        theme_service = get_resource_service('themes')
+        theme_service = get_resource_service("themes")
 
-    theme_name = theme.get('name')
-    template_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
+    theme_name = theme.get("name")
+    template_env = theme_service.get_theme_template_env(
+        theme, loader=CompiledThemeTemplateLoader
+    )
     template_file_name = theme_service.get_theme_template_filename(
-        theme_name, os.path.join("templates", template_name))
+        theme_name, os.path.join("templates", template_name)
+    )
 
     if os.path.exists(template_file_name):
-        template_cnt = open(template_file_name, encoding='utf-8').read()
+        template_cnt = open(template_file_name, encoding="utf-8").read()
         return template_env.from_string(template_cnt)
     else:
         logger.warning(
-            "Theme template `%s` not found. Trying to get it from env (inheritance)" % template_file_name)
+            "Theme template `%s` not found. Trying to get it from env (inheritance)"
+            % template_file_name
+        )
         return template_env.get_template(template_name)

@@ -58,42 +58,41 @@ TEST_ADS = [
         "_id": "5b05db9c3f291000e028a30d",
         "text": "Test ad 1",
         "type": "Advertisement Local",
-        "name": "Test Ad 1"
+        "name": "Test Ad 1",
     },
     {
         "_id": "5b05dba33f291000e028a30f",
         "text": "Test ad 2",
         "type": "Advertisement Local",
-        "name": "Test Ad 2"
-    }
+        "name": "Test Ad 2",
+    },
 ]
 
 DEFAULT_THEME_JSON = {
-    'name': 'default',
-    'version': '3.3.56',
-    'asyncTheme': True,
-    'seoTheme': True,
-    'contributors': [],
-    'options': [],
-    'i18n': {}
+    "name": "default",
+    "version": "3.3.56",
+    "asyncTheme": True,
+    "seoTheme": True,
+    "contributors": [],
+    "options": [],
+    "i18n": {},
 }
 
 AMP_THEME_JSON = {
-    'name': 'amp',
-    'version': '3.3.22',
-    'seoTheme': True,
-    'ampTheme': True,
-    'extends': 'default',
-    'onlyOwnCss': 'true',
-    'supportAdsInjection': 'true',
-    'contributors': [],
-    'options': [],
-    'i18n': {}
+    "name": "amp",
+    "version": "3.3.22",
+    "seoTheme": True,
+    "ampTheme": True,
+    "extends": "default",
+    "onlyOwnCss": "true",
+    "supportAdsInjection": "true",
+    "contributors": [],
+    "options": [],
+    "i18n": {},
 }
 
 
 class AdvertisementUtilsTestCase(unittest.TestCase):
-
     def test_default_ads_settings(self):
         """This should test default settings"""
 
@@ -108,7 +107,9 @@ class AdvertisementUtilsTestCase(unittest.TestCase):
         # now check if default template is working fine
         test_item = {"item": {"text": "test content"}}
         jinja_env = Environment(loader=BaseLoader())
-        default_template = jinja_env.from_string(AdsSettings.DEFAULT_SETTINGS["template"])
+        default_template = jinja_env.from_string(
+            AdsSettings.DEFAULT_SETTINGS["template"]
+        )
         default_rendered = default_template.render(test_item)
 
         self.assertEqual(settings.template.render(test_item), default_rendered)
@@ -117,7 +118,8 @@ class AdvertisementUtilsTestCase(unittest.TestCase):
         """Should test some optional parameters provided"""
 
         settings = AdsSettings(
-            frequency=4, article_tag="test_tag", tombstone_class="do_not_show")
+            frequency=4, article_tag="test_tag", tombstone_class="do_not_show"
+        )
 
         self.assertEqual(settings.frequency, 4)
         self.assertEqual(settings.article_tag, "test_tag")
@@ -126,14 +128,18 @@ class AdvertisementUtilsTestCase(unittest.TestCase):
     def test_ads_settings_unknown_params(self):
         """ParameterError exception is thrown if unknown parameters are provided"""
 
-        self.assertRaises(ParameterError, AdsSettings,
-                          unknown_param="some_weird_value__:P")
+        self.assertRaises(
+            ParameterError, AdsSettings, unknown_param="some_weird_value__:P"
+        )
 
     def test_parameters_inject_advertisements(self):
         """ParameterError exception is thrown if `content` parameter is not instance of BeautifulSoup"""
 
-        self.assertRaises(ParameterError, inject_advertisements,
-                          content="content should be BeautifulSoup4 instance")
+        self.assertRaises(
+            ParameterError,
+            inject_advertisements,
+            content="content should be BeautifulSoup4 instance",
+        )
 
     def test_parameters_inject_advertisements(self):
         """ParameterError exception is thrown if settings parameter is not instance of AdsSettings"""
@@ -144,20 +150,20 @@ class AdvertisementUtilsTestCase(unittest.TestCase):
         invalid_settings = {}  # the key of exception :)
 
         self.assertRaises(
-            ParameterError, inject_advertisements,
+            ParameterError,
+            inject_advertisements,
             content=valid_content,
             settings=invalid_settings,
             ads_list=ads_list,
-            theme="theme"
+            theme="theme",
         )
 
 
 class AdvertisementInjectionTestCase(supertests.TestCase):
-
     def setUp(self):
         themesapp.init_app(self.app)
 
-        self.themeservice = get_resource_service('themes')
+        self.themeservice = get_resource_service("themes")
 
         # let's register themes in order to use them later
         self.themeservice.save_or_update_theme(DEFAULT_THEME_JSON)

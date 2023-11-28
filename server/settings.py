@@ -19,20 +19,20 @@ from celery.schedules import crontab
 # these apps below are not used in Liveblog and because of that
 # they produce some errors given their missing configurations
 EXCLUDED_APPS = [
-    'apps.archived',
+    "apps.archived",
     # db and users are replaced with local one in liveblog
-    'apps.auth.db',
-    'superdesk.users',
-    'content_api.publish',
-    'content_api.items',
-    'content_api.tokens',
-    'content_api.items_versions',
-    'content_api.api_audit',
-    'content_api.search'
+    "apps.auth.db",
+    "superdesk.users",
+    "content_api.publish",
+    "content_api.items",
+    "content_api.tokens",
+    "content_api.items_versions",
+    "content_api.api_audit",
+    "content_api.search",
 ]
 
 CORE_APPS = [app for app in core_apps if app not in EXCLUDED_APPS]
-CORE_APPS.append('liveblog.auth')
+CORE_APPS.append("liveblog.auth")
 
 
 try:
@@ -43,7 +43,7 @@ except ImportError:
 
 def env(variable, fallback_value=None):
     # Get env value from env
-    env_value = os.environ.get(variable, '')
+    env_value = os.environ.get(variable, "")
     env_value = env_value.strip()
     if not env_value:
         # No env value, return fallback_value.
@@ -51,7 +51,7 @@ def env(variable, fallback_value=None):
 
     if env_value == "__EMPTY__":
         # Return None for __EMPTY__.
-        return ''
+        return ""
 
     if fallback_value is None:
         # Return env value if fallback is not available
@@ -61,12 +61,12 @@ def env(variable, fallback_value=None):
     type_of = type(fallback_value)
     if isinstance(fallback_value, (list, tuple)):
         # Cast comma-separated env value to list.
-        return [value.strip() for value in env_value.split(',')]
+        return [value.strip() for value in env_value.split(",")]
     elif isinstance(fallback_value, bool):
         # Cast string env value to bool.
-        if env_value in ('1', 'true', 'True'):
+        if env_value in ("1", "true", "True"):
             return True
-        elif env_value in ('0', 'false', 'False'):
+        elif env_value in ("0", "false", "False"):
             return False
         else:
             return fallback_value
@@ -76,221 +76,232 @@ def env(variable, fallback_value=None):
 
 
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
-BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, 'features', 'steps', 'fixtures')
+BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, "features", "steps", "fixtures")
 XML = False
 IF_MATCH = True
 BANDWIDTH_SAVER = False
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
 PAGINATION_LIMIT = 200
 
-LOG_CONFIG_FILE = env('LOG_CONFIG_FILE', 'logging_config.yml')
-LOG_SERVER_ADDRESS = env('LOG_SERVER_ADDRESS', 'localhost')
-LOG_SERVER_PORT = int(env('LOG_SERVER_PORT', 5555))
+LOG_CONFIG_FILE = env("LOG_CONFIG_FILE", "logging_config.yml")
+LOG_SERVER_ADDRESS = env("LOG_SERVER_ADDRESS", "localhost")
+LOG_SERVER_PORT = int(env("LOG_SERVER_PORT", 5555))
 
-APPLICATION_NAME = env('APP_NAME', 'Live Blog')
-server_url = urlparse(env('SUPERDESK_URL', 'http://localhost:5000/api'))
-CLIENT_URL = env('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
+APPLICATION_NAME = env("APP_NAME", "Live Blog")
+server_url = urlparse(env("SUPERDESK_URL", "http://localhost:5000/api"))
+CLIENT_URL = env("SUPERDESK_CLIENT_URL", "http://localhost:9000")
 # Add absolute url protocol to make sure it work with email clients
-if not CLIENT_URL.startswith('http'):
-    CLIENT_URL = 'http:' + CLIENT_URL
+if not CLIENT_URL.startswith("http"):
+    CLIENT_URL = "http:" + CLIENT_URL
 
 URL_PROTOCOL = server_url.scheme or None
-URL_PREFIX = server_url.path.lstrip('/') or ''
+URL_PREFIX = server_url.path.lstrip("/") or ""
 
 SERVER_NAME = server_url.netloc or None
 
 VALIDATION_ERROR_STATUS = 400
 JSON_SORT_KEYS = True
 
-CACHE_CONTROL = 'max-age=0, no-cache'
+CACHE_CONTROL = "max-age=0, no-cache"
 
-X_DOMAINS = '*'
+X_DOMAINS = "*"
 X_MAX_AGE = 24 * 3600
-X_HEADERS = ['Content-Type', 'Authorization', 'If-Match']
+X_HEADERS = ["Content-Type", "Authorization", "If-Match"]
 
 MONGO_ENABLE_MULTI_DBS = False
-MONGO_DBNAME = env('MONGO_DBNAME', 'liveblog')
-if env('MONGO_URI'):
-    MONGO_URI = env('MONGO_URI')
-elif env('MONGODB_PORT'):
-    MONGO_URI = '{0}/{1}'.format(env('MONGODB_PORT').replace('tcp:', 'mongodb:'), MONGO_DBNAME)
+MONGO_DBNAME = env("MONGO_DBNAME", "liveblog")
+if env("MONGO_URI"):
+    MONGO_URI = env("MONGO_URI")
+elif env("MONGODB_PORT"):
+    MONGO_URI = "{0}/{1}".format(
+        env("MONGODB_PORT").replace("tcp:", "mongodb:"), MONGO_DBNAME
+    )
 
-LEGAL_ARCHIVE_DBNAME = env('LEGAL_ARCHIVE_DBNAME', 'legal_archive')
-if env('LEGAL_ARCHIVE_URI'):
-    LEGAL_ARCHIVE_URI = env('LEGAL_ARCHIVE_URI')
-elif env('LEGAL_ARCHIVEDB_PORT'):
-    LEGAL_ARCHIVE_URI = '{0}/{1}'.format(env('LEGAL_ARCHIVEDB_PORT').replace('tcp:', 'mongodb:'),
-                                         LEGAL_ARCHIVE_DBNAME)
+LEGAL_ARCHIVE_DBNAME = env("LEGAL_ARCHIVE_DBNAME", "legal_archive")
+if env("LEGAL_ARCHIVE_URI"):
+    LEGAL_ARCHIVE_URI = env("LEGAL_ARCHIVE_URI")
+elif env("LEGAL_ARCHIVEDB_PORT"):
+    LEGAL_ARCHIVE_URI = "{0}/{1}".format(
+        env("LEGAL_ARCHIVEDB_PORT").replace("tcp:", "mongodb:"), LEGAL_ARCHIVE_DBNAME
+    )
 
-ELASTICSEARCH_URL = env('ELASTICSEARCH_URL', 'http://localhost:9200')
-ELASTICSEARCH_INDEX = env('ELASTICSEARCH_INDEX', 'liveblog')
-if env('ELASTIC_PORT'):
-    ELASTICSEARCH_URL = env('ELASTIC_PORT').replace('tcp:', 'http:')
-ELASTICSEARCH_FORCE_REFRESH = env('ELASTICSEARCH_FORCE_REFRESH', 'True')
+ELASTICSEARCH_URL = env("ELASTICSEARCH_URL", "http://localhost:9200")
+ELASTICSEARCH_INDEX = env("ELASTICSEARCH_INDEX", "liveblog")
+if env("ELASTIC_PORT"):
+    ELASTICSEARCH_URL = env("ELASTIC_PORT").replace("tcp:", "http:")
+ELASTICSEARCH_FORCE_REFRESH = env("ELASTICSEARCH_FORCE_REFRESH", "True")
 
-REDIS_URL = env('REDIS_URL', 'redis://localhost:6379')
-if env('REDIS_PORT'):
-    REDIS_URL = env('REDIS_PORT').replace('tcp:', 'redis:')
-BROKER_URL = env('CELERY_BROKER_URL', REDIS_URL)
-CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', REDIS_URL)
-CELERY_ALWAYS_EAGER = (env('CELERY_ALWAYS_EAGER', False) == 'True')
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
+REDIS_URL = env("REDIS_URL", "redis://localhost:6379")
+if env("REDIS_PORT"):
+    REDIS_URL = env("REDIS_PORT").replace("tcp:", "redis:")
+BROKER_URL = env("CELERY_BROKER_URL", REDIS_URL)
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", REDIS_URL)
+CELERY_ALWAYS_EAGER = env("CELERY_ALWAYS_EAGER", False) == "True"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["pickle", "json"]  # it's using pickle when in eager mode
 CELERY_TASK_PROTOCOL = 1
 
-CELERYBEAT_SCHEDULE_FILENAME = env('CELERYBEAT_SCHEDULE_FILENAME', './celerybeatschedule.db')
+CELERY_TASK_IGNORE_RESULT = False
+
+CELERYBEAT_SCHEDULE_FILENAME = env(
+    "CELERYBEAT_SCHEDULE_FILENAME", "./celerybeatschedule.db"
+)
 CELERYBEAT_SCHEDULE = {
-    'session:gc': {
-        'task': 'apps.auth.session_purge',
-        'schedule': crontab(minute=20)
+    "session:gc": {"task": "apps.auth.session_purge", "schedule": crontab(minute=20)},
+    "blogs:delete": {
+        "task": "liveblog.blogs.tasks.remove_deleted_blogs",
+        "schedule": crontab(hour="*/1"),  # run every hour
     },
-    'blogs:delete': {
-        'task': 'liveblog.blogs.tasks.remove_deleted_blogs',
-        'schedule': crontab(hour='*/1')  # run every hour
-    }
 }
 
 # trying to fix stuff
 CELERY_BEAT_SCHEDULE_FILENAME = CELERYBEAT_SCHEDULE_FILENAME
 CELERY_BEAT_SCHEDULE = CELERYBEAT_SCHEDULE
 
-SENTRY_DSN = env('SENTRY_DSN')
-SENTRY_INCLUDE_PATHS = ['superdesk']
+SENTRY_DSN = env("SENTRY_DSN")
+SENTRY_INCLUDE_PATHS = ["superdesk"]
 
 INSTALLED_APPS = [
-    'apps.auth',
-    'apps.preferences',
-    'superdesk.roles',
-    'superdesk.upload',
-    'superdesk.notification',
-    'superdesk.activity',
-    'superdesk.sequences',
-    'superdesk.vocabularies',
-    'superdesk.commands',
-    'superdesk.io',
-    'superdesk.publish',
-
-    'apps.archive',
-    'apps.desks',
-    'apps.stages',
-    'apps.privilege',
-    'apps.legal_archive',
-    'apps.archive_broadcast',
-    'apps.content_types',
-
-    'liveblog.core',
-    'liveblog.users',
-    'liveblog.prepopulate',
-    'liveblog.blogs',
-    'liveblog.posts',
-    'liveblog.items',
-    'liveblog.languages',
-    'liveblog.themes',
-    'liveblog.client_modules',
-    'liveblog.syndication',
-    'liveblog.freetypes',
-    'liveblog.marketplace',
-    'liveblog.analytics',
-    'liveblog.advertisements',
-    'liveblog.video_upload',
+    "apps.auth",
+    "apps.preferences",
+    "superdesk.roles",
+    "superdesk.upload",
+    "superdesk.notification",
+    "superdesk.activity",
+    "superdesk.sequences",
+    "superdesk.vocabularies",
+    "superdesk.commands",
+    "superdesk.io",
+    "superdesk.publish",
+    "apps.archive",
+    "apps.desks",
+    "apps.stages",
+    "apps.privilege",
+    "apps.legal_archive",
+    "apps.archive_broadcast",
+    "apps.content_types",
+    "liveblog.core",
+    "liveblog.users",
+    "liveblog.prepopulate",
+    "liveblog.blogs",
+    "liveblog.posts",
+    "liveblog.items",
+    "liveblog.languages",
+    "liveblog.themes",
+    "liveblog.client_modules",
+    "liveblog.syndication",
+    "liveblog.freetypes",
+    "liveblog.marketplace",
+    "liveblog.analytics",
+    "liveblog.advertisements",
+    "liveblog.video_upload",
 ]
 
-RESOURCE_METHODS = ['GET', 'POST']
-ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
-EXTENDED_MEDIA_INFO = ['content_type', 'name', 'length']
+RESOURCE_METHODS = ["GET", "POST"]
+ITEM_METHODS = ["GET", "PATCH", "PUT", "DELETE"]
+EXTENDED_MEDIA_INFO = ["content_type", "name", "length"]
 RETURN_MEDIA_AS_BASE64_STRING = False
-VERSION = '_current_version'
-AMAZON_CONTAINER_NAME = env('AMAZON_CONTAINER_NAME', '')
-AMAZON_ACCESS_KEY_ID = env('AMAZON_ACCESS_KEY_ID', '')
-AMAZON_SECRET_ACCESS_KEY = env('AMAZON_SECRET_ACCESS_KEY', '')
-AMAZON_REGION = env('AMAZON_REGION', 'us-east-1')
-AMAZON_PROXY_SERVER = env('AMAZON_PROXY_SERVER', '')
-AMAZON_SERVER = env('AMAZON_SERVER', 'amazonaws.com')
-AMAZON_URL_GENERATOR = env('AMAZON_URL_GENERATOR', 'default')
+VERSION = "_current_version"
+AMAZON_CONTAINER_NAME = env("AMAZON_CONTAINER_NAME", "")
+AMAZON_ACCESS_KEY_ID = env("AMAZON_ACCESS_KEY_ID", "")
+AMAZON_SECRET_ACCESS_KEY = env("AMAZON_SECRET_ACCESS_KEY", "")
+AMAZON_REGION = env("AMAZON_REGION", "us-east-1")
+AMAZON_PROXY_SERVER = env("AMAZON_PROXY_SERVER", "")
+AMAZON_SERVER = env("AMAZON_SERVER", "amazonaws.com")
+AMAZON_URL_GENERATOR = env("AMAZON_URL_GENERATOR", "default")
 AMAZON_SERVE_DIRECT_LINKS = True
 AWS_ACCESS_KEY_ID = AMAZON_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = AMAZON_SECRET_ACCESS_KEY
 S3_BUCKET_NAME = AMAZON_CONTAINER_NAME
 S3_USE_HTTPS = False
 FLASK_ASSETS_USE_S3 = False
-AMAZON_S3_SUBFOLDER = env('AMAZON_S3_SUBFOLDER', None)
+AMAZON_S3_SUBFOLDER = env("AMAZON_S3_SUBFOLDER", None)
 USE_S3 = FLASK_ASSETS_USE_S3
 
 
 SUPPORTED_LANGUAGES = {
-    'languages': {
-        'en': 'english',
-        'fr': 'french',
-        'de': 'deutsch',
-        'fi': 'finnish',
-        'nl': 'nederlands',
-        'no': 'norsk',
-        'cs': 'čeština',
-        'ro': 'română'
+    "languages": {
+        "en": "english",
+        "fr": "french",
+        "de": "deutsch",
+        "fi": "finnish",
+        "nl": "nederlands",
+        "no": "norsk",
+        "cs": "čeština",
+        "ro": "română",
     }
 }
 
 RENDITIONS = {
-    'picture': {
+    "picture": {
         #  The resolution for small displays.
-        'thumbnail': {'width': 480, 'height': 320},
+        "thumbnail": {"width": 480, "height": 320},
         # The resolution for full hd and retina.
-        'viewImage': {'width': 1280, 'height': 720},
+        "viewImage": {"width": 1280, "height": 720},
         # The original image is resize to this resolution.
-        'baseImage': {'width': 1920, 'height': 1080},
+        "baseImage": {"width": 1920, "height": 1080},
     },
-    'avatar': {
-        'thumbnail': {'width': 60, 'height': 60},
-        'viewImage': {'width': 200, 'height': 200},
-    }
+    "avatar": {
+        "thumbnail": {"width": 60, "height": 60},
+        "viewImage": {"width": 200, "height": 200},
+    },
 }
 
-SERVER_DOMAIN = 'localhost'
+SERVER_DOMAIN = "localhost"
 
 BCRYPT_GENSALT_WORK_FACTOR = 12
-RESET_PASSWORD_TOKEN_TIME_TO_LIVE = int(env('RESET_PASS_TTL', 1))  # The number of days a token is valid
+RESET_PASSWORD_TOKEN_TIME_TO_LIVE = int(
+    env("RESET_PASS_TTL", 1)
+)  # The number of days a token is valid
 # The number of days an activation token is valid
-ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(env('ACTIVATE_TTL', 7))
+ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(env("ACTIVATE_TTL", 7))
 
 # email server
-MAIL_SERVER = env('MAIL_SERVER', 'smtp.googlemail.com')
-MAIL_PORT = env('MAIL_PORT', 465)
-MAIL_USE_TLS = env('MAIL_USE_TLS', False)
-MAIL_USE_SSL = env('MAIL_USE_SSL', False)
-MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
-MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
-MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
-MAIL_SUPPRESS_SEND = env('MAIL_SUPPRESS_SEND', False)
+MAIL_SERVER = env("MAIL_SERVER", "smtp.googlemail.com")
+MAIL_PORT = env("MAIL_PORT", 465)
+MAIL_USE_TLS = env("MAIL_USE_TLS", False)
+MAIL_USE_SSL = env("MAIL_USE_SSL", False)
+MAIL_USERNAME = env("MAIL_USERNAME", "liveblogsf@gmail.com")
+MAIL_PASSWORD = env("MAIL_PASSWORD", "fabric2010")
+MAIL_FROM = env("MAIL_FROM", "liveblogsf@gmail.com")
+MAIL_SUPPRESS_SEND = env("MAIL_SUPPRESS_SEND", False)
 ADMINS = [MAIL_FROM]
 
 # LDAP settings
-LDAP_SERVER = env('LDAP_SERVER', '')  # Ex: ldap://sourcefabric.org
-LDAP_SERVER_PORT = env('LDAP_SERVER_PORT', 389)
+LDAP_SERVER = env("LDAP_SERVER", "")  # Ex: ldap://sourcefabric.org
+LDAP_SERVER_PORT = env("LDAP_SERVER_PORT", 389)
 
 # Fully Qualified Domain Name. Ex: sourcefabric.org
-LDAP_FQDN = env('LDAP_FQDN', '')
+LDAP_FQDN = env("LDAP_FQDN", "")
 
 # LDAP_BASE_FILTER limit the base filter to the security group. Ex: OU=Superdesk Users,dc=sourcefabric,dc=org
-LDAP_BASE_FILTER = env('LDAP_BASE_FILTER', '')
+LDAP_BASE_FILTER = env("LDAP_BASE_FILTER", "")
 
 # change the user depending on the LDAP directory structure
-LDAP_USER_FILTER = env('LDAP_USER_FILTER', "(&(objectCategory=user)(objectClass=user)(sAMAccountName={}))")
+LDAP_USER_FILTER = env(
+    "LDAP_USER_FILTER", "(&(objectCategory=user)(objectClass=user)(sAMAccountName={}))"
+)
 
 # LDAP User Attributes to fetch. Keys would be LDAP Attribute Name and Value would be Supderdesk Model Attribute Name
-LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayName': 'display_name',
-                        'mail': 'email', 'ipPhone': 'phone'}
+LDAP_USER_ATTRIBUTES = {
+    "givenName": "first_name",
+    "sn": "last_name",
+    "displayName": "display_name",
+    "mail": "email",
+    "ipPhone": "phone",
+}
 
 if LDAP_SERVER:
-    INSTALLED_APPS.append('apps.auth.ldap')
+    INSTALLED_APPS.append("apps.auth.ldap")
 else:
-    INSTALLED_APPS.append('liveblog.auth')
+    INSTALLED_APPS.append("liveblog.auth")
 
-SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
+SUPERDESK_TESTING = env("SUPERDESK_TESTING", "false").lower() == "true"
 
 # Debugging state, this is used when generating theme embed files default `false`.
-LIVEBLOG_DEBUG = (env('LIVEBLOG_DEBUG', 'false').lower() == 'true')
+LIVEBLOG_DEBUG = env("LIVEBLOG_DEBUG", "false").lower() == "true"
 
-EMBED_PROTOCOL = env('EMBED_PROTOCOL', 'http://' if LIVEBLOG_DEBUG else 'https://')
+EMBED_PROTOCOL = env("EMBED_PROTOCOL", "http://" if LIVEBLOG_DEBUG else "https://")
 
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
@@ -311,89 +322,106 @@ MAX_SEARCH_DEPTH = -1
 # Defines the maximum value of Ingest Sequence Number after which the value will start from 1
 MAX_VALUE_OF_INGEST_SEQUENCE = 9999
 
-DAYS_TO_KEEP = int(env('INGEST_ARTICLES_TTL', '2'))
+DAYS_TO_KEEP = int(env("INGEST_ARTICLES_TTL", "2"))
 
-WS_HOST = env('WSHOST', '0.0.0.0')
-WS_PORT = env('WSPORT', '5100')
+WS_HOST = env("WSHOST", "0.0.0.0")
+WS_PORT = env("WSPORT", "5100")
 
 # Defines default value for Source to be set for manually created articles
-DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES', 'Liveblog')
+DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES = env(
+    "DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES", "Liveblog"
+)
 
 # Defines default value for Priority to be set for manually created articles
-DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES', 3)
+DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES = env(
+    "DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES", 3
+)
 
 # Defines default value for Urgency to be set for manually created articles
-DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES', 3)
+DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env(
+    "DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES", 3
+)
 
 ORGANIZATION_NAME = "Sourcefabric"
 ORGANIZATION_NAME_ABBREVIATION = "SF"
 
 # Syndication Global Settings
-SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
-SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
-SYNDICATION_EXCLUDED_ITEMS = env('SYNDICATION_EXCLUDED_ITEMS', ('Advertisement Local', 'Advertisement Remote'))
+SYNDICATION_CELERY_MAX_RETRIES = env("SYNDICATION_CELERY_MAX_RETRIES", 5)
+SYNDICATION_CELERY_COUNTDOWN = env("SYNDICATION_CELERY_COUNTDOWN", 60)
+SYNDICATION_EXCLUDED_ITEMS = env(
+    "SYNDICATION_EXCLUDED_ITEMS", ("Advertisement Local", "Advertisement Remote")
+)
+SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER = env(
+    "SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER", 50
+)
 
 # S3 Blog Publishing Settings
-S3_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
-S3_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+S3_CELERY_MAX_RETRIES = env("SYNDICATION_CELERY_MAX_RETRIES", 5)
+S3_CELERY_COUNTDOWN = env("SYNDICATION_CELERY_COUNTDOWN", 60)
 
 # Marketplace Settings
-MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
+MARKETPLACE_APP_URL = env(
+    "MARKETPLACE_APP_URL", "https://lb-market.lab.sourcefabric.org/api"
+)
 
 # Settings related to subscription levels
-SUBSCRIPTION_LEVEL_SOLO = 'solo'
-SUBSCRIPTION_LEVEL_TEAM = 'team'
-SUBSCRIPTION_LEVEL_NETWORK = 'network'
-SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
+SUBSCRIPTION_LEVEL_SOLO = "solo"
+SUBSCRIPTION_LEVEL_TEAM = "team"
+SUBSCRIPTION_LEVEL_NETWORK = "network"
+SUBSCRIPTION_LEVEL = env("SUBSCRIPTION_LEVEL", SUBSCRIPTION_LEVEL_NETWORK)
 SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
 SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
 SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 6}
-ACCESS_SUBSCRIPTIONS_MOBILE = ['solo-mobile', 'team', 'network']
+ACCESS_SUBSCRIPTIONS_MOBILE = ["solo-mobile", "team", "network"]
 
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
 NO_TAKES = True
 
 # Blog embeds S3 publishing options.
-S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
+S3_PUBLISH_BLOGSLIST = env("S3_PUBLISH_BLOGSLIST", True)
 
 # Superdesk-core related settings.
 CONTENTAPI_URL = None
 
 # Temp uploaded themes directory.
-UPLOAD_THEMES_DIRECTORY = env('UPLOAD_THEMES_DIRECTORY', os.path.join(ABS_PATH, 'themes'))
+UPLOAD_THEMES_DIRECTORY = env(
+    "UPLOAD_THEMES_DIRECTORY", os.path.join(ABS_PATH, "themes")
+)
 
 # Compiled jinja2 templates path for SEO themes.
-COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, '.jinja2'))
+COMPILED_TEMPLATES_PATH = env(
+    "COMPILED_TEMPLATES_PATH", os.path.join(ABS_PATH, ".jinja2")
+)
 
-DEFAULT_THEME_DATE_FORMAT = env('DEFAULT_THEME_DATE_FORMAT', 'D. MMMM YYYY HH:mm')
-DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ'))
+DEFAULT_THEME_DATE_FORMAT = env("DEFAULT_THEME_DATE_FORMAT", "D. MMMM YYYY HH:mm")
+DEFAULT_THEME_TIMEZONE = env("DEFAULT_THEME_TIMEZONE", arrow.now().format("ZZZ"))
 
 # TTL for editing post flag (seconds). Default: 5 hours
-EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60 * 60))
+EDIT_POST_FLAG_TTL = int(env("EDIT_POST_FLAG_TTL", 5 * 60 * 60))
 
 # list of URLs where the hooks would be trigger too. POST only for now
 # This should be comma separated string like: 'example.com, domain.com'
-TRIGGER_HOOK_URLS = env('TRIGGER_HOOK_URLS', [])
+TRIGGER_HOOK_URLS = env("TRIGGER_HOOK_URLS", [])
 
 # will add a watermark to the live embed timeline with liveblog logo
-ACTIVATE_WATERMARK = env('ACTIVATE_WATERMARK', False)
+ACTIVATE_WATERMARK = env("ACTIVATE_WATERMARK", False)
 
 # numbers of days to remove blogs after marked for deletion
-DAYS_REMOVE_DELETED_BLOGS = int(env('DAYS_REMOVE_DELETED_BLOGS', 3))
+DAYS_REMOVE_DELETED_BLOGS = int(env("DAYS_REMOVE_DELETED_BLOGS", 3))
 
 # using Flask-Cache. Using `simple` as default for simple or local environments
 # See https://flask-caching.readthedocs.io/en/latest/#configuring-flask-caching for more info
-LIVEBLOG_CACHE_TYPE = env('LIVEBLOG_CACHE_TYPE', 'simple')
+LIVEBLOG_CACHE_TYPE = env("LIVEBLOG_CACHE_TYPE", "simple")
 
 # used if LIVEBLOG_CACHE_TYPE='redis' otherwise is ignored
-LIVEBLOG_CACHE_REDIS_URL = env('LIVEBLOG_CACHE_REDIS_URL', 'redis://localhost:6379/0')
+LIVEBLOG_CACHE_REDIS_URL = env("LIVEBLOG_CACHE_REDIS_URL", "redis://localhost:6379/0")
 
 # original_creator in posts and items used to be a string. This has been changed to avoid extra api hits
 # to complete author information. Next setting is to enable a workaround to behave like before to avoid
 # breaking the Liveblog Reporter app
-MOBILE_APP_WORKAROUND = env('MOBILE_APP_WORKAROUND', False)
+MOBILE_APP_WORKAROUND = env("MOBILE_APP_WORKAROUND", False)
 
-APM_SERVER_URL = env('APM_SERVER_URL')
-APM_SECRET_TOKEN = env('APM_SECRET_TOKEN')
+APM_SERVER_URL = env("APM_SERVER_URL")
+APM_SECRET_TOKEN = env("APM_SECRET_TOKEN")
 
-HIDE_USERS_SENSITIVE_DATA = env('HIDE_USERS_SENSITIVE_DATA', False)
+HIDE_USERS_SENSITIVE_DATA = env("HIDE_USERS_SENSITIVE_DATA", False)

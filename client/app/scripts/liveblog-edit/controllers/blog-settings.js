@@ -107,6 +107,15 @@ function BlogSettingsController(
         }
     }
 
+    function mergeDateAndTime(date, time, defaultDateTime = null) {
+        if (date && time) {
+            return datetimeHelper.mergeDateTime(date, time) +
+                moment.tz(config.defaultTimezone).format('Z');
+        }
+
+        return defaultDateTime;
+    }
+
     // make sure to remove duplicated members
     blog.members = _.uniqBy(blog.members, 'user');
 
@@ -345,13 +354,8 @@ function BlogSettingsController(
             notify.info(gettext('saving blog settings'));
 
             // Set start_date to _created if date and time are empty
-            let startDate = vm.blog._created;
-
-            if (vm.start_date && vm.start_time) {
-                startDate = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time) +
-                    moment.tz(config.defaultTimezone).format('Z');
-            }
-
+            const startDate = mergeDateAndTime(vm.start_date, vm.start_time, vm.blog._created);
+            const endDate = mergeDateAndTime(vm.end_date, vm.end_time);
             const changedBlog = {
                 blog_preferences: vm.blogPreferences,
                 original_creator: vm.original_creator._id,
@@ -366,12 +370,18 @@ function BlogSettingsController(
                 consumers_settings: vm.newBlog.consumers_settings,
             };
 
+            if (endDate) {
+                changedBlog.end_date = endDate;
+            }
+
             angular.extend(vm.newBlog, changedBlog);
+
             delete vm.newBlog._latest_version;
             delete vm.newBlog._current_version;
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
             delete vm.newBlog._type;
+
             doOrAskBeforeIfExceedsPostsLimit($scope).then(() => {
                 blogService.update(vm.blog, vm.newBlog).then((blog) => {
                     vm.isSaved = true;
@@ -588,6 +598,15 @@ function BlogSettingsController(
 
     vm.start_date = splitDate.date;
     vm.start_time = splitDate.time;
+
+    if (vm.newBlog.end_date) {
+        const splitEndDate = datetimeHelper.splitDateTime(
+            vm.newBlog.end_date, config.defaultTimezone);
+
+        vm.end_date = splitEndDate.date;
+        vm.end_time = splitEndDate.time;
+    }
+
     vm.changeTab(angular.isDefined($routeParams.tab) ? $routeParams.tab : 'general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';
     vm.syndication_enabled = vm.newBlog.syndication_enabled;

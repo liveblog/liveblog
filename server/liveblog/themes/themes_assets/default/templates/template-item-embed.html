@@ -23,7 +23,7 @@
         <div class="item--embed__element">
             <blockquote class="twitter-tweet">
                 <p>{{ meta.description }}</p> &mdash; {{ meta.title }}
-                <a href="{{ meta.original_url|decode_uri }}">{{ meta.original_url }}</a>
+                <a href="{{ meta.original_url|decode_uri|fix_x_domain_embed }}">{{ meta.original_url }}</a>
             </blockquote>
         </div>
     </template>

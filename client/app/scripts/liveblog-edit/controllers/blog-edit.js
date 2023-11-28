@@ -723,8 +723,8 @@ export default function BlogEditController(
                     errorCallback(response.data ? response.data._message : undefined);
                     $scope.actionPending = true;
                 };
-                // return a promise of upload which will call the success/error callback
 
+                // return a promise of upload which will call the success/error callback
                 return api.archive.getUrl().then((url) => {
                     upload.start({
                         method: 'POST',

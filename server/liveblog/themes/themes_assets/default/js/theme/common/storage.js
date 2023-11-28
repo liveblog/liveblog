@@ -1,6 +1,8 @@
+const { storageManager } = require('./storage-manager');
+
 class Storage {
     static read(name) {
-        var itemStr = localStorage.getItem(name);
+        var itemStr = storageManager.getItem(name);
 
         // if the item doesn't exist, return null
         if (!itemStr)
@@ -13,7 +15,7 @@ class Storage {
         if (now.getTime() > item.expiry) {
             // If the item is expired, delete the item from storage
             // and return null
-            localStorage.removeItem(name);
+            storageManager.removeItem(name);
             return null;
         }
 
@@ -32,7 +34,7 @@ class Storage {
             expiry: date.getTime(),
         };
 
-        localStorage.setItem(name, JSON.stringify(item));
+        storageManager.setItem(name, JSON.stringify(item));
     }
 }
 

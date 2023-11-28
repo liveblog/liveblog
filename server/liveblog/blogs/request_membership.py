@@ -23,101 +23,117 @@ from superdesk.notification import push_notification
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
-logger = logging.getLogger('superdesk')
+logger = logging.getLogger("superdesk")
 
 
 def notify_the_owner(doc, origin):
     if not get_user():
-        logger.info('there is no logged in user so no membership is allowed')
+        logger.info("there is no logged in user so no membership is allowed")
     else:
-        blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
-        owner = blog.get('original_creator')
+        blog = get_resource_service("blogs").find_one(req=None, _id=doc.get("blog"))
+        owner = blog.get("original_creator")
         add_activity(
-            'liveblog:request', 'one user requested liveblog membership',
+            "liveblog:request",
+            "one user requested liveblog membership",
             resource=None,
             item=blog,
-            item_slugline=blog.get('title'),
-            notify=[owner])
+            item_slugline=blog.get("title"),
+            notify=[owner],
+        )
         send_email_to_owner(doc, owner, origin)
 
 
 def send_email_to_owner(doc, owner, origin):
-    blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
-    prefs_service = get_resource_service('preferences')
+    blog = get_resource_service("blogs").find_one(req=None, _id=doc.get("blog"))
+    prefs_service = get_resource_service("preferences")
 
     if prefs_service.email_notification_is_enabled(user_id=owner):
-        user_doc = get_resource_service('users').find_one(req=None, _id=owner)
+        user_doc = get_resource_service("users").find_one(req=None, _id=owner)
         if user_doc:
-            recipients = [user_doc['email']]
+            recipients = [user_doc["email"]]
         else:
             recipients = None
 
     if recipients:
-        username = g.user.get('display_name') or g.user.get('username')
-        url = '{}/#/liveblog/settings/{}'.format(origin, doc['_id'])
-        title = blog['title']
-        admins = app.config['ADMINS']
-        app_name = app.config['APPLICATION_NAME']
+        username = g.user.get("display_name") or g.user.get("username")
+        url = "{}/#/liveblog/settings/{}".format(origin, doc["_id"])
+        title = blog["title"]
+        admins = app.config["ADMINS"]
+        app_name = app.config["APPLICATION_NAME"]
         subject = render_template("owner_email_subject.txt", app_name=app_name)
-        text_body = render_template("owner_request.txt", app_name=app_name, link=url,
-                                    name_of_user=username, title=title)
-        html_body = render_template("owner_request.html", app_name=app_name, link=url,
-                                    name_of_user=username, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
-                         text_body=text_body, html_body=html_body)
+        text_body = render_template(
+            "owner_request.txt",
+            app_name=app_name,
+            link=url,
+            name_of_user=username,
+            title=title,
+        )
+        html_body = render_template(
+            "owner_request.html",
+            app_name=app_name,
+            link=url,
+            name_of_user=username,
+            title=title,
+        )
+        send_email.delay(
+            subject=subject,
+            sender=admins[0],
+            recipients=recipients,
+            text_body=text_body,
+            html_body=html_body,
+        )
 
 
 request_schema = {
-    'blog': Resource.rel('blogs', True),
-    'original_creator': Resource.rel('users', True),
-    'message': {
-        'type': 'string'
-    }
+    "blog": Resource.rel("blogs", True),
+    "original_creator": Resource.rel("users", True),
+    "message": {"type": "string"},
 }
 
 
 class MembershipResource(Resource):
     schema = request_schema
-    datasource = {
-        'source': 'request_membership',
-        'default_sort': [('_updated', -1)]
-    }
-    resource_methods = ['POST', 'GET']
-    item_methods = ['GET', 'DELETE']
-    privileges = {'POST': 'request_membership', 'DELETE': 'request_membership'}
+    datasource = {"source": "request_membership", "default_sort": [("_updated", -1)]}
+    resource_methods = ["POST", "GET"]
+    item_methods = ["GET", "DELETE"]
+    privileges = {"POST": "request_membership", "DELETE": "request_membership"}
 
 
 class MembershipService(BaseService):
-    notification_key = 'request'
+    notification_key = "request"
 
     def on_create(self, docs):
         for doc in docs:
-            doc['original_creator'] = get_user().get('_id')
+            doc["original_creator"] = get_user().get("_id")
 
-            if self.find_one(req=None, blog=doc['blog'], original_creator=get_user().get('_id')):
-                raise SuperdeskApiError.badRequestError(message='A request has already been sent')
+            if self.find_one(
+                req=None, blog=doc["blog"], original_creator=get_user().get("_id")
+            ):
+                raise SuperdeskApiError.badRequestError(
+                    message="A request has already been sent"
+                )
         super().on_create(docs)
 
     def on_created(self, docs):
         for doc in docs:
-            push_notification(self.notification_key, created=1, request_id=str(doc.get('_id')))
+            push_notification(
+                self.notification_key, created=1, request_id=str(doc.get("_id"))
+            )
             # and members with emails
-            notify_the_owner(doc, app.config['CLIENT_URL'])
+            notify_the_owner(doc, app.config["CLIENT_URL"])
 
 
 class MemberListResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/request_membership'
     schema = request_schema
-    datasource = {
-        'source': 'request_membership'
-    }
-    resource_methods = ['GET']
+    datasource = {"source": "request_membership"}
+    resource_methods = ["GET"]
 
 
 class MemberListService(BaseService):
     def get(self, req, lookup):
-        if lookup.get('blog_id'):
-            lookup['blog'] = ObjectId(lookup['blog_id'])
-            del lookup['blog_id']
+        if lookup.get("blog_id"):
+            lookup["blog"] = ObjectId(lookup["blog_id"])
+            del lookup["blog_id"]
         docs = super().get(req, lookup)
         return docs
