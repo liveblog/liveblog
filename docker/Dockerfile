@@ -1,20 +1,34 @@
 # liveblog/Dockerfile
-FROM python:3.6.15
+FROM ubuntu:20.04
+
+# Avoid prompts from apt and set pyenv env variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYENV_ROOT /root/.pyenv
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
 # Install system packages
 RUN apt update && apt install -y \
   python3 python3-dev python3-pip python3-lxml \
   build-essential libffi-dev git \
-  libtiff5-dev libjpeg62-turbo-dev zlib1g-dev \
+  libtiff5-dev libjpeg8-dev zlib1g-dev \
   libfreetype6-dev liblcms2-dev libwebp-dev \
   curl libfontconfig libssl-dev libbz2-dev \ 
   libncurses5-dev libreadline-dev libsqlite3-dev
 
+# Install pyenv
+RUN curl https://pyenv.run | bash
+
+# Add pyenv to bashrc
+RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+RUN echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+RUN echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+
+# Install Python 3.6.15 and set it as global
+RUN pyenv install 3.6.15 && pyenv global 3.6.15
+
 # Install Node
 RUN apt install -y nodejs npm
-
-# Install grunt-cli
-RUN npm install -g grunt-cli
 
 # Install volta
 RUN curl https://get.volta.sh | bash
@@ -23,17 +37,17 @@ RUN curl https://get.volta.sh | bash
 WORKDIR /app
 
 # Copy the requirements.txt file
-COPY server/docker-requirements.txt /app/server/docker-requirements.txt
-# COPY server/requirements.txt /app/server/requirements.txt
+COPY server/dev-requirements.txt /app/server/dev-requirements.txt
+COPY server/requirements.txt /app/server/requirements.txt
 
 # Install python packages
-RUN pip install -r /app/server/docker-requirements.txt
+RUN pip install -r /app/server/dev-requirements.txt
 
 # Copy the project files
 COPY . /app
 
 # Install client dependencies
-RUN cd /app/client && npm install
+RUN cd /app/client && npm install && npm install -g grunt-cli
 
 # Expose ports
 EXPOSE 5001 9000
