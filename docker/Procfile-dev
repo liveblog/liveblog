@@ -1,3 +1,4 @@
 rest: gunicorn -c gunicorn_config.py wsgi --reload
+wamp: python3 -u ws.py
 work: celery -A worker worker -E --loglevel=info
 beat: celery -A worker beat --pid=

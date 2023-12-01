@@ -2,35 +2,38 @@ services:
   redis:
     container_name: redis
     image: "redis:alpine"
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 6379:6379
     volumes:
       - ../data/redis:/data
+    network_mode: "host"
 
   elasticsearch-1.7.2:
     container_name: elasticsearch
     image: barnybug/elasticsearch:1.7.2
-    ports:
-      - 9200:9200
+    # ports:
+    #   - 9200:9200
     volumes:
       - ../data/elastic:/usr/share/elasticsearch/data
+    network_mode: "host"
 
   mongodb-3.4.23:
     container_name: mongodb
     image: mongo:3.4.23
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
     volumes:
       - ../data/mongodb:/data/db
+    network_mode: "host"
   
   liveblog_dev:
     build:
       context: ../
       dockerfile: docker/Dockerfile
     container_name: liveblog_dev
-    ports:
-      - 5001:5001
-      - 9000:9000
+    # ports:
+    #   - 5001:5001
+    #   - 9000:9000
     volumes:
       - ../server:/app/server
       - ../client:/app/client
@@ -38,3 +41,4 @@ services:
       - redis
       - elasticsearch-1.7.2
       - mongodb-3.4.23
+    network_mode: "host"
