@@ -16,6 +16,7 @@ src/
 env/
 .env
 data/
+data-backup/
 build/
 develop-eggs/
 client/dist/
