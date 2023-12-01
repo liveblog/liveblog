@@ -30,6 +30,9 @@ RUN pyenv install 3.6.15 && pyenv global 3.6.15
 # Install Node
 RUN apt install -y nodejs npm
 
+# Install Grunt
+RUN npm install -g grunt-cli
+
 # Install volta
 RUN curl https://get.volta.sh | bash
 
@@ -47,7 +50,7 @@ RUN pip install -r /app/server/dev-requirements.txt
 COPY . /app
 
 # Install client dependencies
-RUN cd /app/client && npm install && npm install -g grunt-cli
+RUN cd /app/client && npm install
 
 # Expose ports
 EXPOSE 5001 9000

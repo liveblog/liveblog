@@ -14,5 +14,5 @@ if [ ! -f "$INIT_FILE" ]; then
 fi
 
 # Start server and client services
-cd /app/server && honcho -f ../docker/Procfile-dev start &
+# cd /app/server && honcho -f ../docker/Procfile-dev start &
 cd /app/client && grunt --debug-mode=true
