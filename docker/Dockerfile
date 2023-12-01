@@ -5,6 +5,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYENV_ROOT /root/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+ENV C_FORCE_ROOT="true"
 
 # Install system packages
 RUN apt update && apt install -y \
