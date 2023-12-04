@@ -1,4 +1,5 @@
 import handlePlaceholder from './handle-placeholder';
+import InputChangeTracker from './helpers/input-change-tracker';
 
 const AddContentBtns = function() {
     this.top = $('.st-block-controls__top');
@@ -123,7 +124,15 @@ export default function imageBlock(SirTrevor, config) {
             this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
                 this.onRemoteDrop(ev.dataTransfer);
             }, this));
+
+            const editableFields = this.$editor.find('[contenteditable]');
+            const onInputChange = () => this.getOptions().disableSubmit(false);
+
+            editableFields.each(function(ev) {
+                new InputChangeTracker(this, onInputChange);
+            });
         },
+
         // Drag and drop from a remote web page
         onRemoteDrop: function(transferData) {
             // Check for an existing URL

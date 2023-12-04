@@ -1,5 +1,6 @@
 import {guessProvider} from '../liveblog-edit/embed/helpers';
 import {getYoutubeID} from './video-block';
+import InputChangeTracker from './helpers/input-change-tracker';
 import handlePlaceholder from './handle-placeholder';
 
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?';
@@ -176,21 +177,10 @@ export default function embedBlockFactory(SirTrevor, config) {
             var editorParent = self.$editor.next();
             let editableFields = editorParent.find('[contenteditable]');
             let checkboxDesc = editorParent.find('.show-embed-description input[type=checkbox]');
+            const onInputChange = () => this.getOptions().disableSubmit(false);
 
-            editableFields.on('focus', function(ev) {
-                const $this = $(this);
-                const html = $this.html();
-
-                $this.data('before', html);
-            });
-
-            editableFields.on('blur keyup paste input', function(ev) {
-                const $this = $(this);
-
-                if ($this.data('before') !== $this.html()) {
-                    $this.data('before', $this.html());
-                    self.getOptions().disableSubmit(false);
-                }
+            editableFields.each(function(idx) {
+                new InputChangeTracker(this, onInputChange);
             });
 
             // enable publish button and also change html to mark it as modified
