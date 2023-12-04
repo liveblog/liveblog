@@ -126,63 +126,28 @@ You can now access your local setup at http://localhost:9000 (user: admin, passw
 ##### In Live Blog version 3.4 we updated the Superdesk core libraries to a version higher than v1.8. If you plan to use Amazon S3 to store your assets, please check [this information](AMAZON-S3-PUBLISHED-URL.MD))
 
 
-### Liveblog Setup using Docker (outdated)
+### Liveblog Setup using Docker for Ubuntu
 
-- #### Install Docker
+- Install Docker and Docker-Compose:
 
     ```sh
-    $ sudo apt-get install docker.io
+    $ sudo apt update
+    $ sudo apt install apt-transport-https ca-certificates curl software-properties-common
+    $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    $ sudo apt install docker-ce
     ```
+    ```sh
+    $ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    $ sudo chmod +x /usr/local/bin/docker-compose
 
     and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
 
-- #### Create python virtualenv
-
-    ```sh
-    $ sudo apt-get install python-virtualenv
-    $ virtualenv env
-    ```
-
-- #### Install docker-compose
-
-    ```sh
-    $ . env/bin/activate
-    $ pip install -r docker/requirements.txt
-    ```
-
-- #### Running Prebuilt Setup
-    ```sh
-    $ ./scripts/docker-local-demo.sh
-    ```
-
 - #### Running Development Setup
+
     ```sh
     $ cd docker
-    # start the containers
-    $ docker-compose -f docker-compose-dev.yml -p lbdemo up -d
-
-    # continue below once mongodb, elasticsearch and redis are ready to accept connections
-
-    # To initialise data
-    $ docker-compose -p lbdemo -f ./docker-compose-dev.yml run superdesk ./scripts/fig_wrapper.sh bash -c "\
-    python3 manage.py app:initialize_data ;\
-    echo '+++ sample data was prepopulated' ;\
-    python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;\
-    echo '+++ new user has been created' ;\
-    python3 manage.py register_local_themes ;\
-    echo '+++ liveblog: local themes were registered';"
-    ```
-    You can access your local setup at http://localhost:9000 (user: admin, password: admin) once the server is ready
-
-    If you encounter the following error on logging in to liveblog in the server logs
-    ```
-    elasticsearch.exceptions.NotFoundError: TransportError(404, 'IndexMissingException[[liveblog] missing]')
-    ```
-    Run the below commands:
-    ```sh
-    $ docker-compose -p lbdemo -f ./docker-compose-dev.yml run superdesk ./scripts/fig_wrapper.sh bash -c "\
-    curl -X POST elastic:9200/liveblog
-    python3 manage.py app:rebuild_elastic_index --index=liveblog"
+    $ docker-compose up --build
     ```
 
 ### Testing
