@@ -135,12 +135,8 @@ You can now access your local setup at http://localhost:9000 (user: admin, passw
     $ sudo apt install apt-transport-https ca-certificates curl software-properties-common
     $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-    $ sudo apt install docker-ce
+    $ sudo apt install docker-ce docker-compose-plugin
     ```
-    ```sh
-    $ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    $ sudo chmod +x /usr/local/bin/docker-compose
-
     and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
 
 - #### Running Development Setup
