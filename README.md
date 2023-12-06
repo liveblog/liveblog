@@ -107,7 +107,7 @@ Here I'm assuming you are running Ubuntu Linux 20.04.6 LTS
 
 #### Configure the client
 
-- Install dependencies for the client
+- Install dependencies for the client:
 
     ```sh
     $ cd client
@@ -139,12 +139,34 @@ You can now access your local setup at http://localhost:9000 (user: admin, passw
     ```
     and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
 
-- #### Running Development Setup
+- #### Running Development Setup:
 
     ```sh
     $ cd docker
     $ docker-compose up --build
     ```
+
+You can now access your local setup at http://localhost:9000 (user: admin, password: admin)
+
+#### Troubleshooting
+If you encounter the error "Oops! Invalid Username or Password. Please try again.", follow these steps:
+
+- Access the docker image:
+
+    ```sh
+    $ docker exec -it liveblog_dev bash
+    ```
+    
+- Navigate to the server directory and initialize data:
+
+    ```sh
+    $ cd server
+    $ python3 manage.py app:initialize_data;
+    $ python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+    $ python3 manage.py register_local_themes ;
+    ```
+    
+After completing the steps above, try logging into the Liveblog docker setup at http://localhost:9000 to ensure the setup was successful.
 
 ### Testing
 
