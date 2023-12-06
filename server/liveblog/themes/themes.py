@@ -345,7 +345,7 @@ class ThemesService(BaseService):
                         for filename in filenames:
                             files.append(os.path.join(root, filename))
 
-                    yield json.loads(open(file).read()), files
+                    yield json.loads(open(file, encoding='utf-8').read()), files
         else:
             for theme in system_themes:
                 files = []
@@ -443,7 +443,7 @@ class ThemesService(BaseService):
         for style in theme.get("styles", []):
             style_path = self.get_theme_template_filename(theme_name, style)
             if os.path.exists(style_path):
-                with open(style_path) as f:
+                with open(style_path, encoding='utf-8') as f:
                     theme["files"]["styles"][mongoencode(style)] = f.read()
         if theme.get("seoTheme") or theme.get("ampTheme"):
             template_env = self.get_theme_template_env(theme)
