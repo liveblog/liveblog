@@ -3,19 +3,16 @@ services:
     container_name: redis
     image: "redis:alpine"
     volumes:
-      - ../data/redis:/data
-    network_mode: "host"
+      - ../data/docker/redis:/data
 
-  elasticsearch-1.7.2:
-    container_name: elasticsearch
+  elastic:
+    container_name: elastic
     image: barnybug/elasticsearch:1.7.2
     volumes:
-      - ../data/elastic:/usr/share/elasticsearch/data
-    network_mode: "host"
+      - ../data/docker/elastic:/usr/share/elasticsearch/data
 
-  mongodb-3.4.23:
+  mongodb:
     container_name: mongodb
     image: mongo:3.4.23
     volumes:
-      - ../data/mongodb:/data/db
-    network_mode: "host"
+      - ../data/docker/mongodb:/data/db

@@ -6,13 +6,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYENV_ROOT /root/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 ENV C_FORCE_ROOT="true"
-ENV EMBED_PROTOCOL=http://
-ENV LIVEBLOG_DEBUG='True'
-ENV SYNDICATION='True'
-ENV SUBSCRIPTION_LEVEL='network'
-ENV SUPERDESK_URL=http://127.0.0.1:5000/api
-ENV SUPERDESK_CLIENT_URL=http://127.0.0.1:9000
-ENV MONGO_DBNAME=liveblog_dev
 
 # Install system packages
 RUN apt update && apt install -y \
@@ -54,14 +47,13 @@ COPY server/requirements.txt /app/server/requirements.txt
 # Install python packages
 RUN pip install -r /app/server/dev-requirements.txt
 
-# Copy the project files
 COPY . /app
 
 # Install client dependencies
 RUN cd /app/client && npm install
 
 # Expose ports
-EXPOSE 5001 9000
+EXPOSE 5000 9000
 
 # Start server and client
 COPY docker/entrypoint.sh /app/entrypoint.sh

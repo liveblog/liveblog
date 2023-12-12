@@ -1,29 +1,47 @@
+name: liveblog
 services:
-  liveblog_dev:
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
-    container_name: liveblog_dev
-    volumes:
-      - ../server:/app/server
-      - ../client:/app/client
-    depends_on:
-      - redis
-      - elasticsearch-1.7.2
-      - mongodb-3.4.23
-    network_mode: "host"
-      
   redis:
     extends:
       file: docker-compose-services.yml
       service: redis
   
-  elasticsearch-1.7.2:
+  elastic:
     extends:
       file: docker-compose-services.yml
-      service: elasticsearch-1.7.2
+      service: elastic
         
-  mongodb-3.4.23:
+  mongodb:
     extends:
       file: docker-compose-services.yml
-      service: mongodb-3.4.23
+      service: mongodb
+
+  liveblog:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: liveblog
+    depends_on:
+      - redis
+      - elastic
+      - mongodb
+    environment:
+      - EMBED_PROTOCOL=http://
+      - LIVEBLOG_DEBUG='True'
+      - SYNDICATION='True'
+      - SUBSCRIPTION_LEVEL='network'
+      - SUPERDESK_URL=http://127.0.0.1:5000/api
+      - SUPERDESK_CLIENT_URL=http://127.0.0.1:9000
+      - MONGO_DBNAME=liveblog
+      - MONGO_URI=mongodb://mongodb/liveblog
+      - ELASTICSEARCH_URL=http://elastic:9200
+      - ELASTICSEARCH_INDEX=liveblog
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+    links:
+      - redis
+      - elastic
+      - mongodb
+    ports:
+      - 9000:9000
+      - 5100:5100
+      - 5000:5000
