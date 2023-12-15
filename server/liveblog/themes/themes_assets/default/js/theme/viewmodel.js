@@ -18,6 +18,7 @@ var settings = LB.settings;
 var vm = {};
 var latestUpdate;
 var selectedTags = [];
+var selectedAnchorTag;
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -29,6 +30,11 @@ if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
   latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
 } else {
   latestUpdate = new Date().toISOString();
+}
+
+// Check for anchor tag
+if (window.location.hash) {
+  selectedAnchorTag = window.location.hash;
 }
 
 /**
@@ -99,7 +105,8 @@ vm.getPosts = function(opts) {
     notDeleted: opts.notDeleted,
     fromDate: opts.fromDate ? opts.fromDate : false,
     sticky: opts.sticky,
-    tags: opts.tags
+    tags: opts.tags,
+    fromAnchorTag: opts.fromAnchorTag
   });
 
   if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
@@ -265,7 +272,8 @@ vm.init = function() {
   function fetchLatestAndRender() {
     vm.loadPosts({
       fromDate: latestUpdate,
-      tags: selectedTags
+      tags: selectedTags,
+      fromAnchorTag: selectedAnchorTag
     })
     .then(view.renderPosts)
     .then(view.initGdprConsentAndRefreshAds);
@@ -311,6 +319,10 @@ vm.getQuery = function(opts) {
       }
     ]
   };
+
+  if (opts.fromAnchorTag) {
+    console.log("Filtering from anchor tag backwards")
+  }
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[2].range._updated = {
