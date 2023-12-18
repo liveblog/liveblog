@@ -18,7 +18,8 @@ var settings = LB.settings;
 var vm = {};
 var latestUpdate;
 var selectedTags = [];
-var selectedAnchorTag;
+var selectedPostId;
+var selectedPostIdTimestamp;
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -32,9 +33,10 @@ if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
   latestUpdate = new Date().toISOString();
 }
 
-// Check for anchor tag
-if (window.location.hash) {
-  selectedAnchorTag = window.location.hash;
+function getQueryParamValue(paramName) {
+  let currentUrl = window.location.href;
+  let urlObj = new URL(currentUrl);
+  return urlObj.searchParams.get(paramName);
 }
 
 /**
@@ -106,7 +108,6 @@ vm.getPosts = function(opts) {
     fromDate: opts.fromDate ? opts.fromDate : false,
     sticky: opts.sticky,
     tags: opts.tags,
-    fromAnchorTag: opts.fromAnchorTag
   });
 
   if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
@@ -261,6 +262,7 @@ vm.isTimelineEnd = function(api_response) {
   return api_response._meta.total <= itemsInView - extraPosts;
 };
 
+
 /**
  * Set up viewmodel.
  */
@@ -269,11 +271,18 @@ vm.init = function() {
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
 
+  var paramValue = getQueryParamValue("liveblog._id");
+  if(paramValue) {
+    selectedPostId = paramValue.replace("__editorial", "");
+    vm.getSinglePost(selectedPostId).then(x => {
+      selectedPostIdTimestamp = new Date(x._updated).toISOString();
+    });
+  }
+
   function fetchLatestAndRender() {
     vm.loadPosts({
-      fromDate: latestUpdate,
+      fromDate: selectedPostIdTimestamp ? selectedPostIdTimestamp : latestUpdate,
       tags: selectedTags,
-      fromAnchorTag: selectedAnchorTag
     })
     .then(view.renderPosts)
     .then(view.initGdprConsentAndRefreshAds);
@@ -319,10 +328,6 @@ vm.getQuery = function(opts) {
       }
     ]
   };
-
-  if (opts.fromAnchorTag) {
-    console.log("Filtering from anchor tag backwards")
-  }
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[2].range._updated = {
