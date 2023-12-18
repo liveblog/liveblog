@@ -21,6 +21,25 @@ var selectedTags = [];
 var selectedPostId;
 var selectedPostIdTimestamp;
 
+function getQueryParamValue(paramName) {
+  let currentUrl = window.location.href;
+  let urlObj = new URL(currentUrl);
+  return urlObj.searchParams.get(paramName);
+}
+
+vm.getSinglePost = function(id) {
+  var url = `${clientPostsEndpoint}/${id}`;
+  return helpers.getJSON(url);
+};
+
+var paramValue = getQueryParamValue("liveblog._id");
+if (paramValue) {
+  selectedPostId = paramValue.replace("__editorial", "");
+  vm.getSinglePost(selectedPostId).then(x => {
+    selectedPostIdTimestamp = new Date(x._updated).toISOString();
+  });
+} 
+
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
 if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
@@ -31,12 +50,6 @@ if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
   latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
 } else {
   latestUpdate = new Date().toISOString();
-}
-
-function getQueryParamValue(paramName) {
-  let currentUrl = window.location.href;
-  let urlObj = new URL(currentUrl);
-  return urlObj.searchParams.get(paramName);
 }
 
 /**
@@ -142,11 +155,6 @@ vm.getAllPosts = function() {
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath);
-};
-
-vm.getSinglePost = function(id) {
-  var url = `${clientPostsEndpoint}/${id}`;
-  return helpers.getJSON(url);
 };
 
 /**
@@ -270,14 +278,6 @@ vm.init = function() {
   this.settings = settings;
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
-
-  var paramValue = getQueryParamValue("liveblog._id");
-  if(paramValue) {
-    selectedPostId = paramValue.replace("__editorial", "");
-    vm.getSinglePost(selectedPostId).then(x => {
-      selectedPostIdTimestamp = new Date(x._updated).toISOString();
-    });
-  }
 
   function fetchLatestAndRender() {
     vm.loadPosts({
