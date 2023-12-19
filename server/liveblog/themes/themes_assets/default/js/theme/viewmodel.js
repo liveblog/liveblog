@@ -269,21 +269,20 @@ vm.init = function() {
   function fetchLatestAndRender() {
     vm.loadPosts({
       fromDate: latestUpdate,
-      tags: selectedTags,
+      tags: selectedTags
     })
     .then(view.renderPosts)
-    .then(view.initGdprConsentAndRefreshAds);
+    .then(view.initGdprConsentAndRefreshAds)
+    .catch(error => console.log(error))
   }
 
   function fetchFromPermalinkAndRender() {
-    var permalinkTimestamp = new Date(permalink.post._updated).toISOString();
     vm.loadPosts({
-      beforeDate: permalinkTimestamp,
+      beforeDate: latestUpdate,
       tags: selectedTags,
-      notDeleted: true,
     })
     .then(view.renderTimeline)
-    .then(view.initGdprConsentAndRefreshAds);
+    .catch(error => console.log(error));
   }
 
   var isBlogOpen = LB.blog.blog_status === "open";
@@ -291,18 +290,22 @@ vm.init = function() {
 
   if (isBlogOpen) {
     if(permalink._id) {
+      // if permalink exists, get the timestamp and render the post and the posts before it
+      // after which get the latest posts from the same timestamp and render as new updates
       vm.getSinglePost(permalink._id)
       .then(post => {
-        permalink.post = post;
+        latestUpdate = new Date(post._updated).toISOString();
+        return fetchFromPermalinkAndRender()
       })
-      .then(fetchFromPermalinkAndRender)
+      .then(fetchLatestAndRender)
+      .catch(error => console.log(error));
     } else {
       // let's hit backend right away after load and render latest updates
       fetchLatestAndRender();
-
-      // then every 10 seconds
-      setInterval(fetchLatestAndRender, tenSeconds);
     }
+
+    // then every 10 seconds
+    setInterval(fetchLatestAndRender, tenSeconds);
   }
 };
 
@@ -322,8 +325,8 @@ vm.getQuery = function(opts) {
         "filter": {
           "and": [
             {"term": {"sticky": false}},
-            {"term": {"post_status": "open"}}
-            // {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
+            {"term": {"post_status": "open"}},
+            {"range": {"_updated": opts.beforeDate ? { "lte": opts.beforeDate } : {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
       }
@@ -334,16 +337,6 @@ vm.getQuery = function(opts) {
       }
     ]
   };
-
-  if (opts.beforeDate) {
-    query.query.filtered.filter.and.push({
-      "range": {"_updated": {"lte": opts.beforeDate}}
-    });
-  } else {
-    query.query.filtered.filter.and.push({
-      "range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}
-    });
-  }
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[2].range._updated = {
