@@ -7,38 +7,19 @@
 
 var helpers = require('./helpers')
   , view = require('./view');
+const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const commentItemEndpoint = `${apiHost}api/client_items`;
 const clientPostsEndpoint = `${apiHost}api/client_posts`;
 const commentPostEndpoint = `${apiHost}api/client_comments`;
+const permalink = new Permalink();
 
 var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
 var latestUpdate;
 var selectedTags = [];
-var selectedPostId;
-var selectedPostIdTimestamp;
-
-function getQueryParamValue(paramName) {
-  let currentUrl = window.location.href;
-  let urlObj = new URL(currentUrl);
-  return urlObj.searchParams.get(paramName);
-}
-
-vm.getSinglePost = function(id) {
-  var url = `${clientPostsEndpoint}/${id}`;
-  return helpers.getJSON(url);
-};
-
-var paramValue = getQueryParamValue("liveblog._id");
-if (paramValue) {
-  selectedPostId = paramValue.replace("__editorial", "");
-  vm.getSinglePost(selectedPostId).then(x => {
-    selectedPostIdTimestamp = new Date(x._updated).toISOString();
-  });
-} 
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
@@ -121,6 +102,7 @@ vm.getPosts = function(opts) {
     fromDate: opts.fromDate ? opts.fromDate : false,
     sticky: opts.sticky,
     tags: opts.tags,
+    beforeDate: opts.beforeDate ? opts.beforeDate : false
   });
 
   if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
@@ -155,6 +137,11 @@ vm.getAllPosts = function() {
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath);
+};
+
+vm.getSinglePost = function(id) {
+  var url = `${clientPostsEndpoint}/${id}`;
+  return helpers.getJSON(url);
 };
 
 /**
@@ -281,10 +268,21 @@ vm.init = function() {
 
   function fetchLatestAndRender() {
     vm.loadPosts({
-      fromDate: selectedPostIdTimestamp ? selectedPostIdTimestamp : latestUpdate,
+      fromDate: latestUpdate,
       tags: selectedTags,
     })
     .then(view.renderPosts)
+    .then(view.initGdprConsentAndRefreshAds);
+  }
+
+  function fetchFromPermalinkAndRender() {
+    var permalinkTimestamp = new Date(permalink.post._updated).toISOString();
+    vm.loadPosts({
+      beforeDate: permalinkTimestamp,
+      tags: selectedTags,
+      notDeleted: true,
+    })
+    .then(view.renderTimeline)
     .then(view.initGdprConsentAndRefreshAds);
   }
 
@@ -292,11 +290,19 @@ vm.init = function() {
   var tenSeconds = 10 * 1000;
 
   if (isBlogOpen) {
-    // let's hit backend right away after load and render latest updates
-    fetchLatestAndRender();
+    if(permalink._id) {
+      vm.getSinglePost(permalink._id)
+      .then(post => {
+        permalink.post = post;
+      })
+      .then(fetchFromPermalinkAndRender)
+    } else {
+      // let's hit backend right away after load and render latest updates
+      fetchLatestAndRender();
 
-    // then every 10 seconds
-    setInterval(fetchLatestAndRender, tenSeconds);
+      // then every 10 seconds
+      setInterval(fetchLatestAndRender, tenSeconds);
+    }
   }
 };
 
@@ -316,8 +322,8 @@ vm.getQuery = function(opts) {
         "filter": {
           "and": [
             {"term": {"sticky": false}},
-            {"term": {"post_status": "open"}},
-            {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
+            {"term": {"post_status": "open"}}
+            // {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
       }
@@ -328,6 +334,16 @@ vm.getQuery = function(opts) {
       }
     ]
   };
+
+  if (opts.beforeDate) {
+    query.query.filtered.filter.and.push({
+      "range": {"_updated": {"lte": opts.beforeDate}}
+    });
+  } else {
+    query.query.filtered.filter.and.push({
+      "range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}
+    });
+  }
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[2].range._updated = {
@@ -385,7 +401,7 @@ vm.getQuery = function(opts) {
   }
 
   // Remove the range, we want all the results
-  if (!opts.fromDate) {
+  if (!opts.fromDate && !opts.beforeDate) {
     query.query.filtered.filter.and.forEach((rule, index) => {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);

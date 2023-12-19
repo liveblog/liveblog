@@ -84,8 +84,6 @@ function renderSinglePost(post, displayNone) {
 function renderPosts(api_response) {
   var renderedPosts = [] // temporary store
     , posts = api_response._items;
-
-  console.log("New posts", posts);
   
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
