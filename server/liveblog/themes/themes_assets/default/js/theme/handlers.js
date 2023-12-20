@@ -125,7 +125,8 @@ var buttons = {
         .catch(catchError);
     },
     '[data-one-new-update]': showPendings,
-    '[data-new-updates]': showPendings
+    '[data-new-updates]': showPendings,
+    '[data-counted-updates]': showPendings
   },
 
   attach: function() {

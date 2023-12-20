@@ -140,6 +140,9 @@
       <div data-new-updates class="lb-post new-updates mod--displaynone">
         <div>{{ translate("See new updates") }}</div>
       </div>
+      <div data-counted-updates class="lb-post new-updates mod--displaynone">
+        <div><span id="data-counted-updates-length-container"></span>{{ translate(" new updates") }}</div>
+      </div>
     {% if settings.stickyPosition == 'bottom' %}
       <section data-timeline-sticky class="lb-posts list-group sticky{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
         {% for item in api_response.stickyPosts._items %}

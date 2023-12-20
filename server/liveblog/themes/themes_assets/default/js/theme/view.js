@@ -147,17 +147,27 @@ function addPosts(posts, position) {
 
 function checkPending() {
   let pending = document.querySelectorAll("[data-post-id].mod--displaynone"),
-    one = document.querySelector('[data-one-new-update]').classList,
-    updates = document.querySelector('[data-new-updates]').classList;
+    singleSelector = document.querySelector('[data-one-new-update]').classList,
+    multipleSelector = document.querySelector('[data-new-updates]').classList,
+    countedSelector = document.querySelector('[data-counted-updates]').classList;
+
+  const updateToggles = (single, multiple, counted) => {
+    singleSelector.toggle('mod--displaynone', single);
+    multipleSelector.toggle('mod--displaynone', multiple);
+    countedSelector.toggle('mod--displaynone', counted);
+  }
+
   if (pending.length === 1) {
-    one.toggle('mod--displaynone', false);
-    updates.toggle('mod--displaynone', true);
+    updateToggles(false, true, true);
   } else if (pending.length > 1) {
-    one.toggle('mod--displaynone', true);
-    updates.toggle('mod--displaynone', false);
+    if(permalink) {
+      updateToggles(true, true, false);
+      document.getElementById('data-counted-updates-length-container').textContent = pending.length;
+    } else {
+      updateToggles(true, false, true);
+    }
   } else {
-    one.toggle('mod--displaynone', true);
-    updates.toggle('mod--displaynone', true);
+    updateToggles(true, true, true);
   }
 }
 
