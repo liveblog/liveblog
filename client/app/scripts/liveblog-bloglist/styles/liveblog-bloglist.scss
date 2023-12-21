@@ -51,6 +51,13 @@
                         font-style: italic;
                         color: #bcbcbc;
                     }
+                    .description {
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 3; 
+                        text-overflow: ellipsis;
+                    }
                 }
             }
         }
@@ -119,6 +126,10 @@
                         line-height: 15px;
                         color: $gray;
                         overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 3; 
+                        text-overflow: ellipsis;
                     }
                 }
                 .footer {
