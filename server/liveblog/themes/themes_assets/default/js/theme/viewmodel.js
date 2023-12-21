@@ -289,7 +289,7 @@ vm.init = function() {
   var tenSeconds = 10 * 1000;
 
   if (isBlogOpen) {
-    if(permalink._id) {
+    if (permalink._id) {
       // if permalink exists, get the timestamp and render the post and the posts before it
       // after which get the latest posts from the same timestamp and render as new updates
       vm.getSinglePost(permalink._id)

@@ -160,7 +160,7 @@ function checkPending() {
   if (pending.length === 1) {
     updateToggles(false, true, true);
   } else if (pending.length > 1) {
-    if(permalink) {
+    if (permalink) {
       updateToggles(true, true, false);
       document.getElementById('data-counted-updates-length-container').textContent = pending.length;
     } else {
