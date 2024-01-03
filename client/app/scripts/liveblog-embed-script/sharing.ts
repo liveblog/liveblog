@@ -1,7 +1,8 @@
-import modalHtml from './ui/shared-post-modal.html';
+// import modalHtml from './ui/shared-post-modal.html';
 
 let apiHost;
-const modalUrl = 'https://unpkg.com/micromodal@0.4.6/dist/micromodal.min.js';
+let reloaded = false;
+// const modalUrl = 'https://unpkg.com/micromodal@0.4.6/dist/micromodal.min.js';
 
 export enum Message {
     ApiHost = 'api_host',
@@ -11,11 +12,11 @@ export const ReceiveApiHost = (url: string) => {
     apiHost = url;
 };
 
-const modalScriptReady = () => {
-    const MicroModal = (window as any).MicroModal;
-
-    MicroModal.show('lb--shared-post-modal');
-};
+// const modalScriptReady = () => {
+//     const MicroModal = (window as any).MicroModal;
+//
+//     MicroModal.show('lb--shared-post-modal');
+// };
 
 const getBlogID = (url: string) => {
     const regex = /[a-f0-9]{24}/gm;
@@ -28,17 +29,27 @@ const getBlogID = (url: string) => {
     return match[0];
 };
 
-const renderModalPost = (postUrl: string) => {
-    document.body.insertAdjacentHTML('beforeend', modalHtml.replace('__INSERT_IFRAME_URL__', postUrl));
+// const renderModalPost = (postUrl: string) => {
+//     document.body.insertAdjacentHTML('beforeend', modalHtml.replace('__INSERT_IFRAME_URL__', postUrl));
+//
+//     const mScript = document.createElement('script');
+//
+//     mScript.type = 'text/javascript';
+//     mScript.src = modalUrl;
+//     mScript.async = true;
+//     mScript.defer = true;
+//     mScript.onload = modalScriptReady;
+//     document.body.appendChild(mScript);
+// };
 
-    const mScript = document.createElement('script');
 
-    mScript.type = 'text/javascript';
-    mScript.src = modalUrl;
-    mScript.async = true;
-    mScript.defer = true;
-    mScript.onload = modalScriptReady;
-    document.body.appendChild(mScript);
+const renderSharedPost = (postUrl: string) => {
+    const liveblog: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
+
+    if (liveblog && !reloaded) {
+        liveblog.src = postUrl;
+        reloaded = true;
+    }
 };
 
 export const handleSharedPost = (postId: string) => {
@@ -65,7 +76,8 @@ export const handleSharedPost = (postId: string) => {
             if (res.status !== 200) {
                 return;
             }
-            renderModalPost(url);
+            // renderModalPost(url);
+            renderSharedPost(url);
         })
         .catch((err) => console.log(err)); // eslint-disable-line
 };
