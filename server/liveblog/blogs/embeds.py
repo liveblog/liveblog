@@ -381,9 +381,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
 @embed_blueprint.route("/api/embed/shared_post/<blog_id>/<post_id>")
 @cross_origin()
 def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
-    post = get_resource_service("client_posts").find_one(req=None, _id=post_id)
-    if not post or (post and str(post.get("blog")) != blog_id):
-        return "Post not found", 404
+    shared_post = get_resource_service("client_posts").find_one(req=None, _id=post_id)
 
     from liveblog.themes import UnknownTheme
 
@@ -503,11 +501,13 @@ def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
             deleted=is_amp,
             tags=dropdown_tags,
         )
-        post_timestamp = post.get("_updated")
-        for post in posts:
-            if post.get("_updated") and post.get("_updated") > post_timestamp:
-                new_updates_count += 1
-                post["isNewPostSinceSharedPost"] = True
+        
+        if shared_post or (shared_post and str(shared_post.get("blog")) == blog_id):
+            shared_post_timestamp = shared_post.get("_updated")
+            for post in posts:
+                if post.get("_updated") and post.get("_updated") > shared_post_timestamp:
+                    new_updates_count += 1
+                    post["isNewPostSinceSharedPost"] = True
                 
         posts = {
             "_items": posts,
