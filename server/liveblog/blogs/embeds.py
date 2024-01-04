@@ -493,22 +493,22 @@ def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
         # let's get the output channel tags if any
         if output:
             dropdown_tags = output.get("tags", [])
-        
+
         new_updates_count = 0
         posts = blog_instance.posts(
-            limit=page_limit,
-            ordering=ordering,
-            deleted=is_amp,
-            tags=dropdown_tags,
+            limit=page_limit, ordering=ordering, deleted=is_amp, tags=dropdown_tags,
         )
-        
+
         if shared_post or (shared_post and str(shared_post.get("blog")) == blog_id):
             shared_post_timestamp = shared_post.get("_updated")
             for post in posts:
-                if post.get("_updated") and post.get("_updated") > shared_post_timestamp:
+                if (
+                    post.get("_updated")
+                    and post.get("_updated") > shared_post_timestamp
+                ):
                     new_updates_count += 1
                     post["isNewPostSinceSharedPost"] = True
-                
+
         posts = {
             "_items": posts,
             "_meta": {"page": 1, "total": len(posts), "max_results": page_limit},
@@ -527,7 +527,11 @@ def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
         if len(dropdown_tags) == 0:
             dropdown_tags = global_tags
 
-        api_response = {"posts": posts, "stickyPosts": sticky_posts, "newUpdatedCount": new_updates_count}
+        api_response = {
+            "posts": posts,
+            "stickyPosts": sticky_posts,
+            "newUpdatedCount": new_updates_count,
+        }
         embed_env = theme_service.get_theme_template_env(
             theme, loader=CompiledThemeTemplateLoader
         )
@@ -636,7 +640,7 @@ def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
         response_content = parsed_content.prettify()
 
     return response_content
-    
+
     # theme_service = get_resource_service("themes")
     # theme = theme_service.find_one(req=None, name="default")
     # settings = theme_service.get_default_settings(theme)
