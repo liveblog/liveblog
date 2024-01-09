@@ -255,7 +255,10 @@ def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
                 req=None, _id=post_id
             )
             posts = blog_instance.posts(
-                limit=page_limit, ordering=ordering, deleted=is_amp, tags=dropdown_tags,
+                limit=page_limit,
+                ordering=ordering,
+                deleted=is_amp,
+                tags=dropdown_tags,
             )
             if shared_post or (shared_post and str(shared_post.get("blog")) == blog_id):
                 shared_post_timestamp = shared_post.get("_updated")
