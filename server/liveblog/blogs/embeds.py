@@ -454,7 +454,7 @@ def tojson(obj):
 def tostyle(obj):
     if obj:
         styles = []
-        for (key, value) in obj.items():
+        for key, value in obj.items():
             if key.lower() == "background-image":
                 value = "url({})".format(value)
             styles.append("{}: {}".format(key, value))
