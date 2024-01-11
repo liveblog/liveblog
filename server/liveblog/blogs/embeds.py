@@ -247,45 +247,13 @@ def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
         if output:
             dropdown_tags = output.get("tags", [])
 
-        posts = None
-        new_updates_count = 0
-
-        if post_id:
-            shared_post = get_resource_service("client_posts").find_one(
-                req=None, _id=post_id
-            )
-            posts = blog_instance.posts(
-                limit=page_limit,
-                ordering=ordering,
-                deleted=is_amp,
-                tags=dropdown_tags,
-            )
-            if shared_post or (shared_post and str(shared_post.get("blog")) == blog_id):
-                shared_post_timestamp = shared_post.get("_updated")
-                for post in posts:
-                    if (
-                        post.get("_updated")
-                        and post.get("_updated") > shared_post_timestamp
-                    ):
-                        new_updates_count += 1
-                        post["isNewSinceShared"] = True
-
-            posts = {
-                "_items": posts,
-                "_meta": {
-                    "page": Blog.default_page,
-                    "total": len(posts),
-                    "max_results": page_limit,
-                },
-            }
-        else:
-            posts = blog_instance.posts(
-                wrap=True,
-                limit=page_limit,
-                ordering=ordering,
-                deleted=is_amp,
-                tags=dropdown_tags,
-            )
+        posts = blog_instance.posts(
+            wrap=True,
+            limit=page_limit,
+            ordering=ordering,
+            deleted=is_amp,
+            tags=dropdown_tags,
+        )
 
         sticky_posts = blog_instance.posts(
             wrap=True,
@@ -301,8 +269,6 @@ def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
             dropdown_tags = global_tags
 
         api_response = {"posts": posts, "stickyPosts": sticky_posts}
-        if new_updates_count > 0:
-            api_response["newUpdatedCount"] = new_updates_count
         embed_env = theme_service.get_theme_template_env(
             theme, loader=CompiledThemeTemplateLoader
         )
@@ -411,12 +377,6 @@ def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
         response_content = parsed_content.prettify()
 
     return response_content
-
-
-@embed_blueprint.route("/api/embed/shared_post/<blog_id>/<post_id>")
-@cross_origin()
-def embed_shared_post(blog_id, post_id, theme=None, output=None, api_host=None):
-    return embed(blog_id, theme, output, api_host, post_id=post_id)
 
 
 @embed_blueprint.route("/embed/iframe/<blog_id>")

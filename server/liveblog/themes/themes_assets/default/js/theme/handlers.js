@@ -11,6 +11,11 @@ var view = require('./view')
   , helpers = require('./helpers');
 const { permalink } = require('./view');
 
+const Event = Object.freeze({
+    SendUrl: 'permalink_url',
+    UpdateTimeline: 'update_timeline',
+});
+
 /**
  * Contains a mapping of element data-selectors and click handlers
  * buttons.attach {function} - registers handlers found in handlers object
@@ -154,13 +159,22 @@ var buttons = {
       adjustPermalinkStuff();
     }, 500);
 
-    messages.listen('permalink_url', (data) => {
+    messages.listen(Event.SendUrl, (data) => {
       setTimeout(() => {
         adjustPermalinkStuff();
       }, 500);
     });
+    
+    messages.listen(Event.UpdateTimeline, (data) => {
+      updateTimeline(data);
+    });
   }
 };
+
+function updateTimeline(postId) {
+  // Send postId to viewmodel to refresh timeline
+  viewmodel.handleSharedPost(postId);
+}
 
 function adjustPermalinkStuff() {
   view.attachPermalink();

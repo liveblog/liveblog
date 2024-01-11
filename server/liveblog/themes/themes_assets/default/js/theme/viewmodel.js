@@ -19,6 +19,8 @@ var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
 var latestUpdate;
+var pendingPosts;
+var sharedPostTimestamp;
 var selectedTags = [];
 
 // Check if last_created_post and last_updated_post are there.
@@ -258,6 +260,45 @@ vm.isTimelineEnd = function(api_response) {
 };
 
 
+vm.fetchLatestAndRender = function() {
+  vm.loadPosts({
+    fromDate: latestUpdate,
+    tags: selectedTags
+  })
+  .then(view.renderPosts)
+  .then(view.initGdprConsentAndRefreshAds)
+  .catch(error => console.log(error))
+}
+
+vm.fetchFromPermalinkAndRender = function() {
+  vm.loadPosts({
+    beforeDate: sharedPostTimestamp,
+    tags: selectedTags,
+  })
+  .then(response => {
+    response.pendingPosts = pendingPosts;
+    return view.renderTimeline(response);
+  })
+  .then(vm.fetchLatestAndRender)
+  .catch(error => console.log(error))
+}
+
+vm.handleSharedPost = function(postId) {
+  vm.getSinglePost(postId)
+  .then(post => {
+    sharedPostTimestamp = new Date(post._updated).toISOString();
+    vm.loadPosts({
+      fromDate: sharedPostTimestamp,
+      tags: selectedTags
+    })
+    .then(response => {
+      pendingPosts = response._meta.total;
+      return vm.fetchFromPermalinkAndRender();
+    })
+  })
+  .catch(error => console.log(error));
+}
+
 /**
  * Set up viewmodel.
  */
@@ -266,25 +307,6 @@ vm.init = function() {
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
 
-  function fetchLatestAndRender() {
-    vm.loadPosts({
-      fromDate: latestUpdate,
-      tags: selectedTags
-    })
-    .then(view.renderPosts)
-    .then(view.initGdprConsentAndRefreshAds)
-    .catch(error => console.log(error))
-  }
-
-  function fetchFromPermalinkAndRender() {
-    vm.loadPosts({
-      beforeDate: latestUpdate,
-      tags: selectedTags,
-    })
-    .then(view.renderTimeline)
-    .catch(error => console.log(error));
-  }
-
   var isBlogOpen = LB.blog.blog_status === "open";
   var tenSeconds = 10 * 1000;
 
@@ -292,20 +314,14 @@ vm.init = function() {
     if (permalink._id) {
       // if permalink exists, get the timestamp and render the post and the posts before it
       // after which get the latest posts from the same timestamp and render as new updates
-      vm.getSinglePost(permalink._id)
-      .then(post => {
-        latestUpdate = new Date(post._updated).toISOString();
-        return fetchFromPermalinkAndRender()
-      })
-      .then(fetchLatestAndRender)
-      .catch(error => console.log(error));
+      vm.handleSharedPost(permalink._id);
     } else {
       // let's hit backend right away after load and render latest updates
-      fetchLatestAndRender();
+      vm.fetchLatestAndRender();
     }
 
     // then every 10 seconds
-    setInterval(fetchLatestAndRender, tenSeconds);
+    setInterval(vm.fetchLatestAndRender, tenSeconds);
   }
 };
 

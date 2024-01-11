@@ -17,12 +17,12 @@
 <!-- sticky position toggle -->
 {% if item.sticky and settings.stickyPosition == 'top' %}
 <article
-  class="lb-sticky-top-post list-group-item {{ type }} {% if displaynone or item.isNewSinceShared %}mod--displaynone{% endif %}"
+  class="lb-sticky-top-post list-group-item {{ type }} {% if displaynone %}mod--displaynone{% endif %}"
   data-post-id="{{ item._id }}"
   data-post-sticky="{{ item.sticky }}">
   {% else %}
 <article
-  class="lb-post list-group-item show-author-avatar {{ type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone or item.isNewSinceShared %}mod--displaynone{% endif %}"
+  class="lb-post list-group-item show-author-avatar {{ type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone %}mod--displaynone{% endif %}"
   data-post-id="{{ item._id }}"
   data-post-sticky="{{ item.sticky }}">
 

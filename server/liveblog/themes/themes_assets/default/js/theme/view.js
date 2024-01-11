@@ -26,6 +26,7 @@ const els = {
   loadMore: document.querySelector("[data-load-more]")
 };
 
+
 /**
  * Replace the current timeline unconditionally.
  * @typedef {Object} api_response – contains request opts.
@@ -50,7 +51,10 @@ function renderTimeline(api_response) {
 
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   els.timelineNormal.innerHTML = renderedPosts.length ? renderedPosts.join('') : '';
-
+  
+  if(api_response.pendingPosts) {
+    checkPending(api_response.pendingPosts);
+  }
   updateTimestamps();
   loadEmbeds();
   attachSlideshow();
@@ -145,7 +149,7 @@ function addPosts(posts, position) {
   attachShareBox();
 }
 
-function checkPending() {
+function checkPending(pendingPosts = 0) {
   let pending = document.querySelectorAll("[data-post-id].mod--displaynone"),
     singleSelector = document.querySelector('[data-one-new-update]').classList,
     multipleSelector = document.querySelector('[data-new-updates]').classList,
@@ -157,12 +161,14 @@ function checkPending() {
     countedSelector.toggle('mod--displaynone', counted);
   }
 
-  if (pending.length === 1) {
+  let count = pending.length || pendingPosts;
+  
+  if (count === 1) {
     updateToggles(false, true, true);
-  } else if (pending.length > 1) {
+  } else if (count > 1) {
     if (permalink) {
       updateToggles(true, true, false);
-      document.getElementById('data-counted-updates-length-container').textContent = pending.length;
+      document.getElementById('data-counted-updates-length-container').textContent = count;
     } else {
       updateToggles(true, false, true);
     }
