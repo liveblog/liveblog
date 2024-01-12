@@ -11,6 +11,7 @@ const Permalink = require('./permalink');
 const gdprConsent = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 const filters = require('../../misc/filters');
+import * as messages from './common/messages';
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
@@ -52,7 +53,7 @@ function renderTimeline(api_response) {
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   els.timelineNormal.innerHTML = renderedPosts.length ? renderedPosts.join('') : '';
   
-  if(api_response.pendingPosts) {
+  if (api_response.pendingPosts) {
     checkPending(api_response.pendingPosts);
   }
   updateTimestamps();
@@ -88,7 +89,7 @@ function renderSinglePost(post, displayNone) {
 function renderPosts(api_response) {
   var renderedPosts = [] // temporary store
     , posts = api_response._items;
-  
+
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
@@ -451,6 +452,21 @@ function permalinkScroll() {
   return false;
 }
 
+function scrollHeaderIntoView() {
+  const elem = document.querySelector('.header-bar');
+
+  if(elem) {
+    const elemPosition = elem.getBoundingClientRect().top + window.scrollY;
+    const offset = 20;
+    window.scrollTo({
+      top: elemPosition - offset,
+      behavior: 'smooth'
+    });
+  } 
+   
+  messages.send('scroll_header_into_view');
+}
+
 function attachDropdownCloseEvent() {
   document.addEventListener("click", function (evt) {
     const target = evt.target;
@@ -497,5 +513,6 @@ module.exports = {
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
   attachDropdownCloseEvent: attachDropdownCloseEvent,
   loadEmbeds: loadEmbeds,
-  initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds
+  initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds,
+  scrollHeaderIntoView: scrollHeaderIntoView
 };

@@ -279,6 +279,7 @@ vm.fetchFromPermalinkAndRender = function() {
     response.pendingPosts = pendingPosts;
     return view.renderTimeline(response);
   })
+  .then(view.scrollHeaderIntoView)
   .then(vm.fetchLatestAndRender)
   .catch(error => console.log(error))
 }

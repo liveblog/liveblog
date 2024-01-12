@@ -18,7 +18,6 @@ import superdesk
 from bs4 import BeautifulSoup
 from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
-from flask_cors import cross_origin
 from flask import current_app as app
 from flask import json, render_template, request, url_for
 from superdesk import get_resource_service
@@ -135,7 +134,7 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 @embed_blueprint.route("/embed/<blog_id>/<output>", defaults={"theme": None})
 @embed_blueprint.route("/embed/<blog_id>/theme/<theme>", defaults={"output": None})
 @embed_blueprint.route("/embed/<blog_id>/<output>/theme/<theme>/")
-def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
+def embed(blog_id, theme=None, output=None, api_host=None):
     from liveblog.themes import UnknownTheme
 
     # adding import here to avoid circular references
@@ -254,7 +253,6 @@ def embed(blog_id, theme=None, output=None, api_host=None, post_id=None):
             deleted=is_amp,
             tags=dropdown_tags,
         )
-
         sticky_posts = blog_instance.posts(
             wrap=True,
             limit=sticky_limit,

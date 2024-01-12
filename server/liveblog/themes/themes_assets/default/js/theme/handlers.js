@@ -172,7 +172,6 @@ var buttons = {
 };
 
 function updateTimeline(postId) {
-  // Send postId to viewmodel to refresh timeline
   viewmodel.handleSharedPost(postId);
 }
 
