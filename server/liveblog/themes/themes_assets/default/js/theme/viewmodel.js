@@ -271,13 +271,13 @@ vm.fetchLatestAndRender = function() {
 }
 
 vm.fetchFromPermalinkAndRender = function() {
-  console.log("fetchFromPermalinkAndRender called");
   vm.loadPosts({
     beforeDate: sharedPostTimestamp,
     tags: selectedTags,
   })
   .then(response => {
     response.pendingPosts = pendingPosts;
+    latestUpdate = sharedPostTimestamp;
     return view.renderTimeline(response);
   })
   .then(view.scrollHeaderIntoView)
@@ -286,18 +286,15 @@ vm.fetchFromPermalinkAndRender = function() {
 }
 
 vm.handleSharedPost = function(postId) {
-  console.log("handleSharedPost called for postId:", postId);
   vm.getSinglePost(postId)
   .then(post => {
     sharedPostTimestamp = new Date(post._updated).toISOString();
-    console.log("sharedPostTimestamp for postId:", sharedPostTimestamp);
     vm.loadPosts({
       fromDate: sharedPostTimestamp,
       tags: selectedTags
     })
     .then(response => {
       pendingPosts = response._meta.total;
-      console.log("pendingPosts from postId:", pendingPosts);
       return vm.fetchFromPermalinkAndRender();
     })
   })

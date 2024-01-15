@@ -172,7 +172,6 @@ var buttons = {
 };
 
 function updateTimeline(postId) {
-  console.log("Recieved update_timeline from parent with postId:", postId);
   viewmodel.handleSharedPost(postId);
 }
 

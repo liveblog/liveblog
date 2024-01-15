@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 import { messageIframe } from './utils';
 
 let apiHost;
@@ -18,7 +16,6 @@ export const ReceiveApiHost = (url: string) => {
 };
 
 export const scrollHeaderIntoView = () => {
-    console.log("Received scroll_header_into_view from iframe");
     const liveblogEmbed: HTMLIFrameElement = document.querySelector('#liveblog-iframe');
 
     if (liveblogEmbed) {
@@ -40,7 +37,6 @@ export const handleSharedPost = (postId: string) => {
             if (res.status !== 200) {
                 return;
             }
-            console.log("Sending update_timeline to iframe with postId:", postId);
             messageIframe(Event.UpdateTimeline, postId);
         })
         .catch((err) => console.log(err)); // eslint-disable-line
