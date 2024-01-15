@@ -166,6 +166,7 @@ var buttons = {
     });
     
     messages.listen(Event.UpdateTimeline, (data) => {
+      console.log("Recieved update_timeline from parent with postId:", data);
       updateTimeline(data);
     });
   }

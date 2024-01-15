@@ -34,6 +34,7 @@ const els = {
  * @property {Object} requestOpts - API request params.
  */
 function renderTimeline(api_response) {
+  console.log("renderTimeline called with api_response", api_response);
   var renderedPosts = [];
   // for translation macro purposes
   var optionsObj = {i18n: window.LB.i18n};
@@ -464,6 +465,7 @@ function scrollHeaderIntoView() {
     });
   } 
    
+  console.log("Sending scroll_header_into_view to parent");
   messages.send('scroll_header_into_view');
 }
 
