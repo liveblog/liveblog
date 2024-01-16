@@ -100,7 +100,7 @@ function renderPosts(api_response) {
     const elem = document.querySelector(`[data-post-id="${post._id}"]`);
     const isVideoPlaying = Object.values(window.playersState).some(x => x === true);
     const displaynone = api_response.requestOpts.fromDate &&
-                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying) && !elem;
+                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying ) && !elem;
 
     const rendered = renderSinglePost(post, displaynone);
 

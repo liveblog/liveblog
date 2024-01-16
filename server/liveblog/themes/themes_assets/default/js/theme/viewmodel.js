@@ -286,6 +286,7 @@ vm.fetchFromPermalinkAndRender = function() {
 }
 
 vm.handleSharedPost = function(postId) {
+  LB.settings.autoApplyUpdates = false;
   vm.getSinglePost(postId)
   .then(post => {
     sharedPostTimestamp = new Date(post._updated).toISOString();
