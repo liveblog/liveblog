@@ -44,6 +44,7 @@ var showPendings = (e) => {
   let pendings = document.querySelectorAll('[data-post-id].mod--displaynone');
   pendings.forEach((pending) => {
     pending.classList.toggle('mod--displaynone', false);
+    view.reloadScripts(pending);
   });
   view.loadEmbeds();
   view.checkPending();

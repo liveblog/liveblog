@@ -514,5 +514,6 @@ module.exports = {
   attachDropdownCloseEvent: attachDropdownCloseEvent,
   loadEmbeds: loadEmbeds,
   initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds,
-  scrollHeaderIntoView: scrollHeaderIntoView
+  scrollHeaderIntoView: scrollHeaderIntoView,
+  reloadScripts: reloadScripts
 };
