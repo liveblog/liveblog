@@ -261,6 +261,7 @@ vm.isTimelineEnd = function(api_response) {
 
 
 vm.fetchLatestAndRender = function() {
+  console.log("fetchLatestAndRender called");
   vm.loadPosts({
     fromDate: latestUpdate,
     tags: selectedTags
@@ -271,30 +272,38 @@ vm.fetchLatestAndRender = function() {
 }
 
 vm.fetchFromPermalinkAndRender = function() {
+  console.log("fetchFromPermalinkAndRender called");
   vm.loadPosts({
     beforeDate: sharedPostTimestamp,
     tags: selectedTags,
   })
   .then(response => {
     response.pendingPosts = pendingPosts;
-    latestUpdate = sharedPostTimestamp;
     return view.renderTimeline(response);
   })
   .then(view.scrollHeaderIntoView)
+  .then(() => {
+    console.log("Before", latestUpdate, sharedPostTimestamp);
+    latestUpdate = sharedPostTimestamp;
+    console.log("After", latestUpdate, sharedPostTimestamp);
+  })
   .then(vm.fetchLatestAndRender)
   .catch(error => console.log(error))
 }
 
 vm.handleSharedPost = function(postId) {
+  console.log("handleSharedPost called for postId:", postId);
   vm.getSinglePost(postId)
   .then(post => {
     sharedPostTimestamp = new Date(post._updated).toISOString();
+    console.log("sharedPostTimestamp called for postId:", sharedPostTimestamp);
     vm.loadPosts({
       fromDate: sharedPostTimestamp,
       tags: selectedTags
     })
     .then(response => {
       pendingPosts = response._meta.total;
+      console.log("pendingPosts from postId:", pendingPosts);
       return vm.fetchFromPermalinkAndRender();
     })
   })
