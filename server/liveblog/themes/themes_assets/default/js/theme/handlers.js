@@ -45,6 +45,7 @@ var showPendings = (e) => {
   pendings.forEach((pending) => {
     pending.classList.toggle('mod--displaynone', false);
   });
+  view.loadEmbeds();
   view.checkPending();
   view.attachSlideshow();
 };
