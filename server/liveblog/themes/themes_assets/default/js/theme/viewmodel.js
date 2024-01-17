@@ -313,15 +313,15 @@ vm.init = function() {
   var isBlogOpen = LB.blog.blog_status === "open";
   var tenSeconds = 10 * 1000;
 
+  if (permalink._id) {
+    // if permalink exists, even if blog is archived, get the timestamp and render the post and the posts before it
+    // after which get the latest posts from the same timestamp and render as new updates
+    vm.handleSharedPost(permalink._id);
+  }
+
   if (isBlogOpen) {
-    if (permalink._id) {
-      // if permalink exists, get the timestamp and render the post and the posts before it
-      // after which get the latest posts from the same timestamp and render as new updates
-      vm.handleSharedPost(permalink._id);
-    } else {
-      // let's hit backend right away after load and render latest updates
-      vm.fetchLatestAndRender();
-    }
+    // let's hit backend right away after load and render latest updates
+    vm.fetchLatestAndRender();
 
     // then every 10 seconds
     setInterval(vm.fetchLatestAndRender, tenSeconds);

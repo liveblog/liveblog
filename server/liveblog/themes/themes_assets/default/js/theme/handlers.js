@@ -214,6 +214,7 @@ function loadSort(sortBy) {
     tags: viewmodel.getSelectedTags()
   }).then(view.renderTimeline)
     .then(view.displayNewPosts)
+    .then(view.checkPending)
     .then(view.toggleSortBtn(sortBy))
     .then(view.consent.init)
     .then(view.adsManager.refreshAds)
