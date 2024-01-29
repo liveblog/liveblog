@@ -2,12 +2,12 @@ from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
 from superdesk.utc import utcnow
+from superdesk.metadata.item import metadata_schema
 
 from liveblog.common import get_user, update_dates_for
 
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk.filemeta import set_filemeta, get_filemeta
 
 
 class PollsResource(Resource):
@@ -16,15 +16,15 @@ class PollsResource(Resource):
         "elastic_filter": {"term": {"particular_type": "poll"}},
         "default_sort": [("_updated", -1)],
     }
-
     schema = {
         "blog": Resource.rel("blogs", True),
-        "particular_type": {
+        "particular_type": {"type": "string", "allowed": ["poll"], "default": "poll"},
+        "item_type": {"type": "string", "default": "poll"},
+        "group_type": {
             "type": "string",
-            "allowed": ["poll"],
-            "default": "poll",
+            "allowed": ["freetype", "default"],
+            "default": "default",
         },
-        "item_type": {"type": "string"},
         "poll_body": {
             "type": "dict",
             "schema": {
@@ -36,19 +36,19 @@ class PollsResource(Resource):
                         "schema": {
                             "option": {"type": "string"},
                             "votes": {"type": "integer", "default": 0},
-                        }
+                        },
                     },
                 },
                 "active_until": {"type": "datetime"},
-            }
+            },
         },
         "meta": {
             "type": "dict",
             "mapping": {"type": "object", "enabled": False},
             "default": {},
         },
+        "original_creator": metadata_schema["original_creator"],
     }
-    
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
 

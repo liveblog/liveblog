@@ -1,9 +1,8 @@
+import superdesk
 from liveblog.polls.polls import (
     PollsResource,
-    PollsService, 
+    PollsService,
 )
-import superdesk
-from superdesk import get_backend
 
 
 def init_app(app):
