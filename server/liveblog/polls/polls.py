@@ -20,6 +20,7 @@ class PollsResource(Resource):
         "blog": Resource.rel("blogs", True),
         "particular_type": {"type": "string", "allowed": ["poll"], "default": "poll"},
         "item_type": {"type": "string", "default": "poll"},
+        "text": {"type": "string", "default": "Poll placeholder"},
         "group_type": {
             "type": "string",
             "allowed": ["freetype", "default"],
