@@ -1,0 +1,51 @@
+.poll_component {
+    padding: 24px;
+    border: 0.5px solid #EBEBEB;
+    display: flex;
+}
+
+.poll_component_title {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.poll_component_subtitle {
+    font-size: 12px;
+    color: #737373;
+}
+
+.poll_option_add {
+   font-size: 12px;
+   font-weight: 500;
+   color: #8AB6D0; 
+   cursor: pointer;
+}
+
+.poll_flex_box {
+    display: flex;
+}
+
+.poll_row {
+    flex-direction: row;
+}
+
+.poll_column {
+    flex-direction: column;
+}
+
+.poll_gap_4 {
+    gap: 4px
+}
+
+.poll_gap_8 {
+    gap: 8px
+}
+
+.poll_gap_16 {
+    gap: 16px
+}
+
+.poll_reset_button {
+   width: fit-content;
+   align-self: end;
+}
