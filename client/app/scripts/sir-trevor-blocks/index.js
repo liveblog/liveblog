@@ -13,6 +13,7 @@ import _ from 'lodash';
 import sanitizeHtml from 'sanitize-html';
 
 import imageBlock from './image-block';
+import pollBlock from './poll-block.js';
 import videoBlock from './video-block';
 import embedBockFactory from './embed-block';
 import handlePlaceholder from './handle-placeholder';
@@ -199,6 +200,8 @@ angular
         SirTrevor.Blocks.Image = imageBlock(SirTrevor, config);
 
         SirTrevor.Blocks.Video = videoBlock(SirTrevor, config);
+        // Poll Block
+        SirTrevor.Blocks.Poll = pollBlock(SirTrevor, config);
 
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             let htmlContent = escapeUnderscore(data.text);
