@@ -1,17 +1,23 @@
 import React from 'react';
 import './pollComponent.scss';
 
-type PollComponentState = {
+interface IState {
     options: string[];
 }
 
-export class PollComponent extends React.Component<{}, PollComponentState> {
+export default class PollComponentCreate extends React.Component<{}, IState> {
     constructor(props) {
         super(props);
 
         this.state = {
             options: ['Option 1', 'Option 2'],
         };
+    }
+
+    addOption = () => {
+        this.setState((prev) => ({
+            options: [...prev.options, `Option ${prev.options.length + 1}`],
+        }));
     }
 
     render() {
@@ -34,7 +40,7 @@ export class PollComponent extends React.Component<{}, PollComponentState> {
                                 <input key={index} type="text" placeholder={option} />
                             );
                         })}
-                        <p className="poll_option_add">+ Add Option</p>
+                        <p className="poll_option_add" onClick={this.addOption}>+ Add Option</p>
                     </div>
                 </div>
 

@@ -9,6 +9,17 @@
     font-weight: 500;
 }
 
+.poll_component_vote_option {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 0px;
+}
+
+.poll_component_vote_percentage {
+    width: fit-content;
+    align-self: center;
+}
+
 .poll_component_subtitle {
     font-size: 12px;
     color: #737373;
@@ -48,4 +59,23 @@
 .poll_reset_button {
    width: fit-content;
    align-self: end;
+}
+
+.poll_vote_container {
+    width: 100%;
+    align-self: center;
+}
+
+.poll_vote_bg {
+    height: 4px; 
+    width: 100%; 
+    background-color: #D9D8D8;
+    border-radius: 12px;
+}
+
+.poll_vote_fg {
+    height: 4px; 
+    
+    background-color: #5FA8C8; 
+    border-radius: 12px;
 }
