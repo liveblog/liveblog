@@ -1,9 +1,7 @@
-/* eslint-disable */
-// @ts-nocheck
 import React from 'react';
 import './pollComponent.scss';
-import PollComponentCreate from './pollComponentCreate.tsx';
-import PollComponentView from './pollComponentView.tsx';
+import { PollComponentCreate } from './pollComponentCreate';
+import { PollComponentView } from './pollComponentView';
 
 interface IProps {
     item: any;
@@ -21,7 +19,7 @@ export class PollComponent extends React.Component<IProps, IProps> {
     render() {
         const { item } = this.state;
 
-        if(item) {
+        if (item) {
             return <PollComponentView item={item} />;
         }
 
