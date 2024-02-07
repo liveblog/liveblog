@@ -223,10 +223,11 @@ class PostsService(ArchiveService):
         try:
             # include items in the response
             for assoc in self.packageService._get_associations(doc):
-                if assoc.get("residRef"):
-                    item = get_resource_service("archive").find_one(
-                        req=None, _id=assoc["residRef"]
-                    )
+                residRef = assoc.get("residRef")
+                if residRef:
+                    service_name = assoc.get("location", "archive")
+                    item_service = get_resource_service(service_name)
+                    item = item_service.find_one(req=None, _id=residRef)
                     assoc["item"] = item
         except Exception:
             pass
@@ -548,6 +549,12 @@ class PostsService(ArchiveService):
         # Send notifications
         push_notification("posts", deleted=True)
 
+    def validate_embargo(self, item):
+        """
+        Overridden method to skip embargo validation.
+        """
+        pass
+
 
 class PostFlagResource(Resource):
     datasource = {"source": "post_flags"}
@@ -557,10 +564,7 @@ class PostFlagResource(Resource):
         # other types of flag like lock, unlock among others
         # flag_type edit => it's just used to show alert in frontend
         "flag_type": {"type": "string", "allowed": ["edit"], "default": "edit"},
-        "users": {
-            "type": "list",
-            "nullable": True,
-        },
+        "users": {"type": "list", "nullable": True},
         # TTL for the flag, this ensures the flag doesn't stay there forever
         "expireAt": {"type": "datetime"},
     }
@@ -702,6 +706,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         # now let's get this into a form of dictionary
         for item in get_resource_service("archive").find({"_id": {"$in": ids}}):
             items_map[item.get("_id")] = item
+
+        # do the same for polls, if they exists
+        for item in get_resource_service("polls").find({"_id": {"$in": ids}}):
+            items_map[str(item.get("_id"))] = item
 
         return items_map
 

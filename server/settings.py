@@ -186,6 +186,7 @@ INSTALLED_APPS = [
     "liveblog.blogs",
     "liveblog.posts",
     "liveblog.items",
+    "liveblog.polls",
     "liveblog.languages",
     "liveblog.themes",
     "liveblog.client_modules",

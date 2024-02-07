@@ -115,7 +115,6 @@ def blueprint_superdesk_token_auth():
 
 def extract_post_items_data(original_doc):
     """Extract blog post items."""
-    items_service = get_resource_service("items")
     user_service = get_resource_service("users")
     item_type = original_doc.get(ITEM_TYPE, "")
     if item_type != CONTENT_TYPE.COMPOSITE:
@@ -143,7 +142,10 @@ def extract_post_items_data(original_doc):
     for group in original_doc["groups"]:
         if group["id"] == "main":
             for ref in group["refs"]:
-                item = items_service.find_one(req=None, _id=ref["residRef"])
+                service_name = ref.get("location", "items")
+                service = get_resource_service(service_name)
+                item = service.find_one(req=None, _id=ref["residRef"])
+
                 syndicated_creator = user_service.find_one(
                     req=None, _id=item["original_creator"]
                 )
@@ -166,6 +168,13 @@ def extract_post_items_data(original_doc):
                     "syndicated_creator": syndicated_obj,
                     "meta": meta,
                 }
+
+                # Add specific fields based on service used to get item, if necessary
+                # This assumes different origins can indicate specific handling
+                # For example, when handling polls
+                if service_name == "polls":
+                    data["poll_body"] = item.get("poll_body")
+
                 items.append(data)
     return items
 
