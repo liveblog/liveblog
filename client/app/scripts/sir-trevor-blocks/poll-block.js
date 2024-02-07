@@ -1,6 +1,4 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {PollComponent} from '../liveblog-edit/components/polls/pollComponent.tsx';
+import renderPollComponent from '../liveblog-edit/components/polls/pollComponent.tsx';
 
 export default function pollBlock(SirTrevor, config) {
     return SirTrevor.Block.extend({
@@ -13,7 +11,7 @@ export default function pollBlock(SirTrevor, config) {
         onBlockRender: function() {
             const container = this.$('.poll_block_container')[0];
 
-            ReactDOM.render(<PollComponent />, container);
+            renderPollComponent(container, null);
         },
     });
 }
