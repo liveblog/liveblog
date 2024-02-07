@@ -11,6 +11,12 @@ from superdesk.services import BaseService
 
 
 class PollsResource(Resource):
+    """
+    Defines the resource schema for Polls, including its data source, schema,
+    allowed item methods, and privileges. This resource represents polls
+    within the system, providing the necessary configuration for CRUD operations
+    """
+
     datasource = {
         "source": "polls_collection",
         "elastic_filter": {"term": {"particular_type": "poll"}},
@@ -55,6 +61,13 @@ class PollsResource(Resource):
 
 
 class PollsService(BaseService):
+    """
+    Provides service methods for handling the lifecycle events of polls
+    including CRUD operations. It extends from the Superdesk BaseService
+    to include custom logic for polls, such as setting dates, sending notifications
+    regarding changes, and managing versioning.
+    """
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()

@@ -4,6 +4,7 @@ import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import superdesk.users as users_app
 import liveblog.items as items_app
+import liveblog.polls as polls_app
 from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
@@ -42,6 +43,7 @@ class ClientModuleTestCase(TestCase):
             foo.setup_called()
             blogs.init_app(self.app)
             items_app.init_app(self.app)
+            polls_app.init_app(self.app)
             users_app.init_app(self.app)
             client_modules.init_app(self.app)
             self.app.register_blueprint(blog_posts_blueprint)
@@ -357,6 +359,33 @@ class ClientModuleTestCase(TestCase):
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-13T06:48:23+00:00",
             },
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d59"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-09T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
         ]
 
         self.items_ids = self.app.data.insert("items", self.items)
@@ -404,6 +433,13 @@ class ClientModuleTestCase(TestCase):
                                 "guid": "urn:newsml:localhost:2018-04-13T12:18:23.258732:2a4a8c45-aae6-4d7a-8193-04d7de5b133c",
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
+                                "type": "text",
+                            },
+                            {
+                                "guid": "65c32eb35c29be1d62515d59",
+                                "item": self.items[2],
+                                "residRef": self.items_ids[2],
+                                "location": "polls",
                                 "type": "text",
                             },
                         ],

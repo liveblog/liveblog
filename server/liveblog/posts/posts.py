@@ -225,9 +225,7 @@ class PostsService(ArchiveService):
             for assoc in self.packageService._get_associations(doc):
                 residRef = assoc.get("residRef")
                 if residRef:
-                    service_name = (
-                        "polls" if assoc.get("location") == "polls" else "archive"
-                    )
+                    service_name = assoc.get("location", "archive")
                     item_service = get_resource_service(service_name)
                     item = item_service.find_one(req=None, _id=residRef)
                     assoc["item"] = item
