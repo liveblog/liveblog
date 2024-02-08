@@ -18,7 +18,7 @@ class PollsResource(Resource):
     """
 
     datasource = {
-        "source": "polls_collection",
+        "source": "polls",
         "elastic_filter": {"term": {"particular_type": "poll"}},
         "default_sort": [("_updated", -1)],
     }
