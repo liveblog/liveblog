@@ -1,6 +1,6 @@
-import { PollBody } from './poll-component-view';
+import { IPollBody } from './poll-component-view';
 
-export function pollCalculations(pollBody: PollBody): PollBody {
+export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) => {
     const totalVotes = pollBody.answers.reduce((acc, answer) => acc + answer.votes, 0);
     const currentTime = new Date();
     const activeUntilTime = new Date(pollBody.active_until);
@@ -9,17 +9,17 @@ export function pollCalculations(pollBody: PollBody): PollBody {
 
     // To ensure the percentages add up to 100%, perform some maths
     // Using the Percentage Rounding Error Allocation method
-    let rawPercentages = pollBody.answers.map((answer) => ({
+    const rawPercentages = pollBody.answers.map((answer) => ({
         ...answer,
         rawPercentage: totalVotes === 0 ? 0 : (answer.votes / totalVotes) * 100,
     }));
-    let roundedPercentages = rawPercentages.map((answer) => ({
+    const roundedPercentages = rawPercentages.map((answer) => ({
         ...answer,
         percentage: Math.round(answer.rawPercentage),
     }));
-    let totalPercentage = roundedPercentages.reduce((acc, answer) => acc + answer.percentage, 0);
-    let adjustment = 100 - totalPercentage;
-    let sortedByRemainder = [...roundedPercentages].sort((a, b) =>
+    const totalPercentage = roundedPercentages.reduce((acc, answer) => acc + answer.percentage, 0);
+    const adjustment = 100 - totalPercentage;
+    const sortedByRemainder = [...roundedPercentages].sort((a, b) =>
         (b.rawPercentage - Math.floor(b.rawPercentage)) - (a.rawPercentage - Math.floor(a.rawPercentage))
     );
 
@@ -37,4 +37,4 @@ export function pollCalculations(pollBody: PollBody): PollBody {
         daysLeft: daysLeft,
         answers: updatedAnswers,
     };
-}
+};

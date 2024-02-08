@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import './poll-component.scss';
 import { pollCalculations } from './utils';
 
-export interface PollBody {
+export interface IPollBody {
     active_until: string;
-    answers: { option: string; votes: number; percentage?: number }[];
+    answers: Array<{ option: string; votes: number; percentage?: number }>;
     question: string;
     totalVotes?: number;
     daysLeft?: number;
@@ -16,7 +16,7 @@ interface IProps {
 }
 
 export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
-    const [poll, setPoll] = useState<PollBody>(pollCalculations(item.poll_body));
+    const [poll, setPoll] = useState<IPollBody>(pollCalculations(item.poll_body));
 
     useEffect(() => {
         setPoll(pollCalculations(item.poll_body));

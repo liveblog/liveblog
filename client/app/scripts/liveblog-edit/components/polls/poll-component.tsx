@@ -16,7 +16,6 @@ const PollComponent: React.FunctionComponent<IProps> = ({ item }) => {
     return <PollComponentCreate />;
 };
 
-
 export const destroyPollComponent = (element: HTMLDivElement) => {
     ReactDOM.unmountComponentAtNode(element);
 };
