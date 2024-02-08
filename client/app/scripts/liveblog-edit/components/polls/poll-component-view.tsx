@@ -1,7 +1,7 @@
 /* eslint camelcase: "off" */
 import React, { useState, useEffect } from 'react';
 import './poll-component.scss';
-import { handleCalculations } from './utils';
+import { pollCalculations } from './utils';
 
 export interface PollBody {
     active_until: string;
@@ -16,10 +16,10 @@ interface IProps {
 }
 
 export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
-    const [poll, setPoll] = useState<PollBody>(handleCalculations(item.poll_body));
+    const [poll, setPoll] = useState<PollBody>(pollCalculations(item.poll_body));
 
     useEffect(() => {
-        setPoll(handleCalculations(item.poll_body));
+        setPoll(pollCalculations(item.poll_body));
     }, [item]);
 
     return (
