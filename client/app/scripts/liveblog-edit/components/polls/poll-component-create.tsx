@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './pollComponent.scss';
+import './poll-component.scss';
 
 export const PollComponentCreate: React.FunctionComponent<{}> = () => {
     const [options, setOptions] = useState<string[]>(['Option 1', 'Option 2']);

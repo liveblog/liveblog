@@ -1,8 +1,9 @@
 /* eslint camelcase: "off" */
 import React, { useState, useEffect } from 'react';
-import './pollComponent.scss';
+import './poll-component.scss';
+import { handleCalculations } from './utils';
 
-interface PollBody {
+export interface PollBody {
     active_until: string;
     answers: { option: string; votes: number; percentage?: number }[];
     question: string;
@@ -20,27 +21,6 @@ export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => 
     useEffect(() => {
         setPoll(handleCalculations(item.poll_body));
     }, [item]);
-
-    function handleCalculations(poll_body: PollBody): PollBody {
-        const totalVotes = poll_body.answers.reduce((acc, answer) => acc + answer.votes, 0);
-        const currentTime = new Date();
-        const activeUntilTime = new Date(poll_body.active_until);
-        const differenceMs = activeUntilTime.getTime() - currentTime.getTime();
-        const daysLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
-        let updatedAnswers = poll_body.answers.map((answer) => ({
-            ...answer,
-            percentage: totalVotes === 0 ? 0 : Math.ceil((answer.votes / totalVotes) * 100),
-        }));
-
-        updatedAnswers = updatedAnswers.sort((a, b) => b.votes - a.votes);
-
-        return {
-            ...poll_body,
-            totalVotes: totalVotes,
-            daysLeft: daysLeft,
-            answers: updatedAnswers,
-        };
-    }
 
     return (
         <div

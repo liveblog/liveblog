@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './pollComponent.scss';
-import { PollComponentCreate } from './pollComponentCreate';
-import { PollComponentView } from './pollComponentView';
+import './poll-component.scss';
+import { PollComponentCreate } from './poll-component-create';
+import { PollComponentView } from './poll-component-view';
 
 interface IProps {
     item: any;

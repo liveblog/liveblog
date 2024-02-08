@@ -1,4 +1,4 @@
-import renderPollComponent from '../liveblog-edit/components/polls/pollComponent.tsx';
+import renderPollComponent from '../liveblog-edit/components/polls/poll-component.tsx';
 
 export default function pollBlock(SirTrevor, config) {
     return SirTrevor.Block.extend({

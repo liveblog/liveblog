@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { simpleReactDirective } from './react-directives-factory';
 import { DateTimePicker } from '../components/dateTimePicker';
 import { ItemEmbed } from 'liveblog-edit/components/itemEmbed';
-import renderPollComponent, { destroyPollComponent } from '../components/polls/pollComponent';
+import renderPollComponent, { destroyPollComponent } from '../components/polls/poll-component';
 
 export const dateTimePickerDirective = simpleReactDirective(DateTimePicker, ['datetime', 'onChange']);
 
