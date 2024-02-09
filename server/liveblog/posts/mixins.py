@@ -134,9 +134,17 @@ class AuthorsMixin:
             main_item = post_utils.get_main_item(post)
 
             if not original_creator:
-                if main_item.get("item_type") == "comment":
+                item_type = main_item.get("item_type")
+
+                if item_type == "comment":
                     original_creator = {
                         "display_name": main_item.get("commenter"),
+                        "_id": None,
+                    }
+
+                elif item_type == "post_comment":
+                    original_creator = {
+                        "display_name": main_item.get("author_name"),
                         "_id": None,
                     }
 
@@ -155,9 +163,10 @@ class AuthorsMixin:
                 for group in post.get("groups", [])
                 for assoc in group.get("refs", [])
             ]
+
             for ref in items_refs:
                 item = ref.get("item")
-                if item:
+                if item and "original_creator" in item:
                     author_id = str(item["original_creator"])
                     item["original_creator"] = (
                         author_id if is_mobile_app else self.authors_map.get(author_id)

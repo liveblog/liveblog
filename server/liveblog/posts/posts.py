@@ -324,7 +324,6 @@ class PostsService(ArchiveService):
 
     def on_create(self, docs):
         for doc in docs:
-            # check permission
             self.check_post_permission(doc)
             doc["type"] = "composite"
             doc["order"] = self.get_next_order_sequence(doc.get("blog"))
@@ -698,18 +697,22 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         then it hits the database just 1 time and return them as dictionary"""
 
         items_map = {}
-        ids = []
+        ids_by_service = {}
 
         for doc in docs:
-            ids += get_associations_ids(doc)
+            for assoc in self.packageService._get_associations(doc):
+                item_ref_id = assoc.get("residRef")
 
-        # now let's get this into a form of dictionary
-        for item in get_resource_service("archive").find({"_id": {"$in": ids}}):
-            items_map[item.get("_id")] = item
+                if item_ref_id:
+                    service_name = assoc.get("location", "archive")
+                    ids = ids_by_service.get(service_name, [])
+                    ids.append(item_ref_id)
+                    ids_by_service[service_name] = ids
 
-        # do the same for polls, if they exists
-        for item in get_resource_service("polls").find({"_id": {"$in": ids}}):
-            items_map[str(item.get("_id"))] = item
+        # let's get all the items at once and turn it into a dict
+        for service_name, ids in ids_by_service.items():
+            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
+                items_map[str(item.get("_id"))] = item
 
         return items_map
 

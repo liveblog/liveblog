@@ -146,6 +146,10 @@ def extract_post_items_data(original_doc):
                 service = get_resource_service(service_name)
                 item = service.find_one(req=None, _id=ref["residRef"])
 
+                # TODO: consider with the team if comments should be syndicated or not
+                if item.get("item_type") == "post_comment":
+                    continue
+
                 syndicated_creator = user_service.find_one(
                     req=None, _id=item["original_creator"]
                 )
