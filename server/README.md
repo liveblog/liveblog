@@ -79,7 +79,7 @@ $ flake8
 
 ## Running Dev Server
 
-Use honchu to run the app - it will start api server on port `5001` and websocket server on port `5101`.
+Use honcho to run the app - it will start api server on port `5001` and websocket server on port `5101`.
 
 ```sh
 $ honcho start
