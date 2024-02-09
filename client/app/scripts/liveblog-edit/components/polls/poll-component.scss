@@ -25,6 +25,18 @@
     color: #737373;
 }
 
+.poll_option_container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.poll_option_remove_container {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+}
+
 .poll_option_add {
    font-size: 12px;
    font-weight: 500;

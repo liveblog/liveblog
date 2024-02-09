@@ -9,9 +9,11 @@ export default function pollBlock(SirTrevor, config) {
             return '<div class="poll_block_container"></div>';
         },
         onBlockRender: function() {
-            const container = this.$('.poll_block_container')[0];
+            const container = this.$('.poll_block_container');
 
-            renderPollComponent(container, null);
+            renderPollComponent(container[0], null);
+
+            container.closest('.st-block__inner').off('click');
         },
     });
 }
