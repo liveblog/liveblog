@@ -15,7 +15,11 @@ class PostCommentResource(Resource):
         },
         "text": {"type": "string"},
         "is_published": {"type": "boolean", "default": False},
-        "item_type": {"type": "string", "allowed": ["post_comment"]},
+        "item_type": {
+            "type": "string",
+            "allowed": ["post_comment"],
+            "default": "post_comment",
+        },
         "parent_id": Resource.rel("post_comments", nullable=True),
     }
 
@@ -32,4 +36,8 @@ class PostCommentResource(Resource):
 
 
 class PostCommentService(BaseService):
+    """
+    Simple CRUD service handler for post's comments
+    """
+
     pass
