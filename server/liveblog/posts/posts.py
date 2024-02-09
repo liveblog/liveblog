@@ -25,7 +25,7 @@ from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
-from .utils import get_associations, get_associations_ids
+from .utils import get_associations
 
 
 logger = logging.getLogger("superdesk")
