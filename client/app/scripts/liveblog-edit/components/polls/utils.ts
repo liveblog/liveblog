@@ -5,7 +5,8 @@ export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) =
     const currentTime = new Date();
     const activeUntilTime = new Date(pollBody.active_until);
     const differenceMs = activeUntilTime.getTime() - currentTime.getTime();
-    const daysLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
+    const timeLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
+    const timeUnit = timeLeft > 1 ? 'Days' : 'Day';
 
     // To ensure the percentages add up to 100%, perform some maths
     // Using the Percentage Rounding Error Allocation method
@@ -34,7 +35,8 @@ export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) =
     return {
         ...pollBody,
         totalVotes: totalVotes,
-        daysLeft: daysLeft,
+        timeLeft: timeLeft,
+        timeUnit: timeUnit,
         answers: updatedAnswers,
     };
 };
