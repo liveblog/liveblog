@@ -4,7 +4,9 @@ export default function pollBlock(SirTrevor, config) {
     return SirTrevor.Block.extend({
         type: 'poll',
         title: 'Poll',
-        icon_name: 'poll',
+        icon_name: function() {
+            return '<span class="icon-analytics" />';
+        },
         editorHTML: function() {
             return '<div class="poll_block_container"></div>';
         },
