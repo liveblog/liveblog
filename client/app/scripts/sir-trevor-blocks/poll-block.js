@@ -5,13 +5,13 @@ export default function pollBlock(SirTrevor, config) {
         type: 'poll',
         title: 'Poll',
         icon_name: function() {
-            return '<span class="icon-analytics" />';
+            return '<span class="icon-analytics" style="color: #666666" />';
         },
         editorHTML: function() {
-            return '<div class="poll_block_container"></div>';
+            return '<div class="st-required st-poll_block poll-input"></div>';
         },
         onBlockRender: function() {
-            const container = this.$('.poll_block_container');
+            const container = this.$('.st-poll_block');
 
             renderPollComponent(container[0], null);
 
