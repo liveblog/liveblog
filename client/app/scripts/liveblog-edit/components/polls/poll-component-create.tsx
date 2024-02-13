@@ -2,14 +2,34 @@ import React, { useState } from 'react';
 import './poll-component.scss';
 
 export const PollComponentCreate: React.FunctionComponent<{}> = () => {
-    const [options, setOptions] = useState<string[]>(['Option 1', 'Option 2']);
+    const [question, setQuestion] = useState<string>('');
+    const [options, setOptions] = useState<string[]>(['', '']);
+    const [days, setDays] = useState<number>(1);
+    const [hours, setHours] = useState<number>(0);
+    const [minutes, setMinutes] = useState<number>(0);
 
-    const addOption = () => {
-        setOptions((prev) => [...prev, `Option ${prev.length + 1}`]);
+    const addOption = (event) => {
+        event.preventDefault();
+        setOptions((prev) => [...prev, '']);
     };
 
     const removeOption = (indexToRemove) => {
         setOptions((prev) => prev.filter((_, index) => index !== indexToRemove));
+    };
+
+    const updateOption = (indexToUpdate, event) => {
+        const newOption = event.target.value;
+
+        setOptions((prev) => prev.map((option, index) => index === indexToUpdate ? newOption : option));
+    };
+
+    const resetPoll = (event) => {
+        event.preventDefault();
+        setQuestion('');
+        setOptions(['', '']);
+        setDays(1);
+        setHours(0);
+        setMinutes(0);
     };
 
     return (
@@ -18,7 +38,12 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
 
             <div id="poll_question">
                 <p className="poll_component_subtitle">QUESTION:</p>
-                <input type="text" placeholder="Ask A Question..." />
+                <input
+                    type="text"
+                    placeholder="Ask A Question..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                />
             </div>
 
             <div id="poll_options">
@@ -30,8 +55,10 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                                 <input
                                     key={index}
                                     type="text"
-                                    placeholder={option}
+                                    placeholder={`Option ${index + 1}`}
                                     style={{ width: '100%', paddingRight: '30px' }}
+                                    value={option}
+                                    onChange={(e) => updateOption(index, e)}
                                 />
                                 <span
                                     className="poll_option_remove_container"
@@ -42,7 +69,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                             </div>
                         );
                     })}
-                    <p className="poll_option_add" onClick={addOption}>+ Add Option</p>
+                    <button className="poll_option_add_button" onClick={(e) => addOption(e)}>+ Add Option</button>
                 </div>
             </div>
 
@@ -52,23 +79,38 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
 
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">DAYS:</p>
-                        <input type="number" placeholder="1" />
+                        <input
+                            type="number"
+                            min={0}
+                            value={days}
+                            onChange={(e) => setDays(parseInt(e.target.value, 10))}
+                        />
                     </div>
 
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">HOURS:</p>
-                        <input type="number" placeholder="0" />
+                        <input
+                            type="number"
+                            min={0}
+                            value={hours}
+                            onChange={(e) => setHours(parseInt(e.target.value, 10))}
+                        />
                     </div>
 
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">MINUTES:</p>
-                        <input type="number" placeholder="0" />
+                        <input
+                            type="number"
+                            min={0}
+                            value={minutes}
+                            onChange={(e) => setMinutes(parseInt(e.target.value, 10))}
+                        />
                     </div>
 
                 </div>
             </div>
 
-            <button className="btn poll_reset_button">RESET POLL</button>
+            <button className="btn poll_reset_button" onClick={(e) => resetPoll(e)}>RESET POLL</button>
         </div>
     );
 };

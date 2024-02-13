@@ -648,7 +648,7 @@ function EditPostPage() {
     };
 
     self.addOption = function() {
-        element(by.css('.poll_option_add')).click();
+        element(by.css('.poll_option_add_button')).click();
         return self;
     }
     
