@@ -603,6 +603,7 @@ function EditPostPage() {
     self.imageElement = element(by.css('.st-block__editor img'));
     self.errorElement = element(by.css('.st-msg'));
     self.embedElement = element(by.css('.embed-input'));
+    self.pollElement = element(by.css('.poll-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
     // for scorecards
@@ -638,6 +639,42 @@ function EditPostPage() {
 
     self.addEmbed = function() {
         element(by.css('[data-type="embed"]')).click();
+        return self;
+    };
+    
+    self.addPoll = function() {
+        element(by.css('[data-type="poll"]')).click();
+        return self;
+    };
+
+    self.addOption = function() {
+        element(by.css('.poll_option_add_button')).click();
+        return self;
+    }
+    
+    self.removeOption = function() {
+        var removeButtons = element.all(by.css('.poll_option_remove_container'));
+        removeButtons.get(0).click();
+        return self;
+    }
+
+    self.setDays = function(days) {
+        element(by.id('poll_days_input')).sendKeys(days);
+        return self;
+    };
+
+    self.setHours = function(hours) {
+        element(by.id('poll_hours_input')).sendKeys(hours);
+        return self;
+    };
+
+    self.setMinutes = function(minutes) {
+        element(by.id('poll_minutes_input')).sendKeys(minutes);
+        return self;
+    };
+
+    self.resetPoll = function() {
+        element(by.css('.poll_reset_button')).click();
         return self;
     };
 
