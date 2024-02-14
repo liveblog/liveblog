@@ -129,10 +129,11 @@ class Blog(AuthorsMixin):
 
         for post in posts:
             for assoc in get_associations(post):
-                ref_id = assoc.get("residRef", None)
+                ref_id = str(assoc.get("residRef", None))
+                rel_item = related_items.get(ref_id)
 
-                if ref_id:
-                    assoc["item"] = related_items[ref_id]
+                if ref_id and rel_item:
+                    assoc["item"] = rel_item
                     self.fix_item_markup_if_needed(assoc)
 
         # Enrich documents
