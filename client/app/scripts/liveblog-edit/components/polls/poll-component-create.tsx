@@ -80,6 +80,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">DAYS:</p>
                         <input
+                            id="poll_days_input"
                             type="number"
                             min={0}
                             value={days}
@@ -90,6 +91,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">HOURS:</p>
                         <input
+                            id="poll_hours_input"
                             type="number"
                             min={0}
                             value={hours}
@@ -100,6 +102,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                     <div className="poll_flex_box poll_column poll_gap_4">
                         <p className="poll_component_subtitle">MINUTES:</p>
                         <input
+                            id="poll_minutes_input"
                             type="number"
                             min={0}
                             value={minutes}

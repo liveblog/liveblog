@@ -658,6 +658,26 @@ function EditPostPage() {
         return self;
     }
 
+    self.setDays = function(days) {
+        element(by.id('poll_days_input')).sendKeys(days);
+        return self;
+    };
+
+    self.setHours = function(hours) {
+        element(by.id('poll_hours_input')).sendKeys(hours);
+        return self;
+    };
+
+    self.setMinutes = function(minutes) {
+        element(by.id('poll_minutes_input')).sendKeys(minutes);
+        return self;
+    };
+
+    self.resetPoll = function() {
+        element(by.css('.poll_reset_button')).click();
+        return self;
+    };
+
     self.saveDraft = function() {
         element(by.css('[ng-click="saveAsDraft()"]')).click();
         return self;
