@@ -10,6 +10,8 @@ from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
 import liveblog.client_modules as client_modules
 import liveblog.themes as themes
 import liveblog.advertisements as advertisements
+
+from bson import ObjectId
 from unittest.mock import patch
 from superdesk.errors import SuperdeskApiError
 
@@ -26,7 +28,7 @@ class Foo:
 foo = Foo()
 
 
-class ClientModuleTestCase(TestCase):
+class PostsModuleTestCase(TestCase):
     def setUp(self):
         if not foo.setup_call:
             test_config = {
@@ -46,6 +48,7 @@ class ClientModuleTestCase(TestCase):
             self.client = self.app.test_client()
 
         self.posts_service = get_resource_service("posts")
+        self.blog_posts_service = get_resource_service("blog_posts")
 
         self.user_list = [
             {
@@ -72,6 +75,7 @@ class ClientModuleTestCase(TestCase):
                 ]
             }
         }
+
         self.blogs_list = [
             {
                 "_id": "blog_one",
@@ -300,6 +304,25 @@ class ClientModuleTestCase(TestCase):
         ]
 
         self.items_ids = self.app.data.insert("items", self.items)
+        self.archive_ids = self.app.data.insert("archive", self.items)
+
+        self.post_comments = [
+            {
+                "_id": ObjectId("65c69c310f565268cb598807"),
+                "post_id": "urn:newsml:localhost:2018-04-03T11:12:43.187311:ad5e39b1-2fb2-4676-bd2f-425dca184765",
+                "author_name": "John Doe",
+                "text": "Any random comment from myself",
+                "is_published": False,
+                "_updated": "2024-02-09T21:42:09.000Z",
+                "_created": "2024-02-09T21:42:09.000Z",
+                "item_type": "post_comment",
+                "_etag": "680f7656e1ea09eae89bee39d370f9594d9c6e18",
+            }
+        ]
+
+        self.post_comments_ids = self.app.data.insert(
+            "post_comments", self.post_comments
+        )
 
         self.blog_posts = [
             {
@@ -335,15 +358,18 @@ class ClientModuleTestCase(TestCase):
                         "id": "main",
                         "refs": [
                             {
-                                "guid": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
                                 "item": self.items[0],
                                 "residRef": self.items_ids[0],
                                 "type": "text",
                             },
                             {
-                                "guid": "urn:newsml:localhost:2018-04-13T12:18:23.258732:2a4a8c45-aae6-4d7a-8193-04d7de5b133c",
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
+                                "type": "text",
+                            },
+                            {
+                                "residRef": self.post_comments_ids[0],
+                                "location": "post_comments",
                                 "type": "text",
                             },
                         ],
@@ -513,3 +539,20 @@ class ClientModuleTestCase(TestCase):
             },
             blog,
         )
+
+    def test_related_items_map_fetches_resources_correctly(self):
+        """
+        `related_items_map` should fetch from related locations and from
+        archive by default if location attribute is not present
+        """
+
+        with self.app.app_context():
+            related_items = self.blog_posts_service.related_items_map(self.blog_posts)
+
+            assert len(related_items.keys()) == 3
+
+            # default archieve item should be fetched
+            assert self.items[0]["_id"] in related_items
+
+            # item from `post_comment` should be also fetched
+            assert str(self.post_comments[0]["_id"]) in related_items
