@@ -301,7 +301,6 @@ class PostsModuleTestCase(TestCase):
         ]
 
         self.items_ids = self.app.data.insert("items", self.items)
-        self.archive_ids = self.app.data.insert("archive", self.items)
 
         self.post_comments = [
             {
@@ -357,11 +356,13 @@ class PostsModuleTestCase(TestCase):
                             {
                                 "item": self.items[0],
                                 "residRef": self.items_ids[0],
+                                "location": "items",
                                 "type": "text",
                             },
                             {
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
+                                "location": "items",
                                 "type": "text",
                             },
                             {
