@@ -100,6 +100,10 @@ const app = angular.module('liveblog.edit',
             type: 'http',
             backend: {rel: 'items'},
         });
+        apiProvider.api('polls', {
+            type: 'http',
+            backend: {rel: 'polls'},
+        });
         apiProvider.api('archive', {
             type: 'http',
             backend: {rel: 'archive'},

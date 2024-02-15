@@ -13,7 +13,12 @@ export default function pollBlock(SirTrevor, config) {
         onBlockRender: function() {
             const container = this.$('.st-poll_block');
 
-            renderPollComponent(container[0], null);
+            const onFormPopulated = (data) => {
+                this.getOptions().disableSubmit(false);
+                this.setData(data);
+            };
+
+            renderPollComponent(container[0], null, onFormPopulated);
 
             container.closest('.st-block__inner').off('click');
         },

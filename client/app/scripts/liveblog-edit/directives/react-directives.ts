@@ -42,7 +42,7 @@ export const lbItemPoll = () => {
         link: (scope, element) => {
             const mountPoint = $(element).get(0);
 
-            renderPollComponent(mountPoint, scope.item);
+            renderPollComponent(mountPoint, scope.item, null);
 
             scope.$on('$destroy', () => destroyPollComponent(mountPoint));
         },

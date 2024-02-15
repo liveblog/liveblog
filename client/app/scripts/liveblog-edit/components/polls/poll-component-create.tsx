@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './poll-component.scss';
 
-export const PollComponentCreate: React.FunctionComponent<{}> = () => {
+export const PollComponentCreate: React.FunctionComponent<{
+    onFormPopulated: (data: any) => void
+}> = ({ onFormPopulated }) => {
     const [question, setQuestion] = useState<string>('');
     const [options, setOptions] = useState<string[]>(['', '']);
     const [days, setDays] = useState<number>(1);
@@ -31,6 +33,37 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
         setHours(0);
         setMinutes(0);
     };
+
+    const isFormFilled = () => {
+        return question !== '' && options.every((option) => option != '') && (days > 0 || hours > 0 || minutes > 0);
+    };
+
+    const getPollBody = () => {
+        const futureTime = new Date();
+
+        futureTime.setDate(futureTime.getDate() + days);
+        futureTime.setHours(futureTime.getHours() + hours);
+        futureTime.setMinutes(futureTime.getMinutes() + minutes);
+
+        const pollBody = {
+            question: question,
+            answers: options.map((option) => ({
+                option: option,
+                votes: 0,
+            })),
+            active_until: futureTime.toISOString(),
+        };
+
+        return pollBody;
+    };
+
+    useEffect(() => {
+        if (isFormFilled()) {
+            const pollBody = getPollBody();
+
+            onFormPopulated(pollBody);
+        }
+    }, [question, options, days, hours, minutes]);
 
     return (
         <div className="poll_component poll_column poll_gap_16">
@@ -84,7 +117,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                             type="number"
                             min={0}
                             value={days}
-                            onChange={(e) => setDays(parseInt(e.target.value, 10))}
+                            onChange={(e) => setDays(parseInt(e.target.value, 10) || 0)}
                         />
                     </div>
 
@@ -95,7 +128,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                             type="number"
                             min={0}
                             value={hours}
-                            onChange={(e) => setHours(parseInt(e.target.value, 10))}
+                            onChange={(e) => setHours(parseInt(e.target.value, 10) || 0)}
                         />
                     </div>
 
@@ -106,7 +139,7 @@ export const PollComponentCreate: React.FunctionComponent<{}> = () => {
                             type="number"
                             min={0}
                             value={minutes}
-                            onChange={(e) => setMinutes(parseInt(e.target.value, 10))}
+                            onChange={(e) => setMinutes(parseInt(e.target.value, 10) || 0)}
                         />
                     </div>
 

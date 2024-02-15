@@ -307,17 +307,31 @@ const postsService = (api, $q, _userList, session) => {
 
             // save every items
             _.each(items, (itemParam) => {
-                const item = {
-                    blog: blogId,
-                    text: itemParam.text,
-                    meta: itemParam.meta,
-                    group_type: itemParam.group_type,
-                    item_type: itemParam.item_type,
-                    commenter: itemParam.meta && itemParam.meta.commenter,
-                    syndicated_creator: itemParam.syndicated_creator,
-                };
+                switch (itemParam.item_type) {
+                case 'poll': {
+                    const poll = {
+                        blog: blogId,
+                        poll_body: itemParam.poll_body,
+                    };
 
-                dfds.push(api.items.save(item));
+                    dfds.push(api.polls.save(poll));
+                    break;
+                }
+                default: {
+                    const item = {
+                        blog: blogId,
+                        text: itemParam.text,
+                        meta: itemParam.meta,
+                        group_type: itemParam.group_type,
+                        item_type: itemParam.item_type,
+                        commenter: itemParam.meta && itemParam.meta.commenter,
+                        syndicated_creator: itemParam.syndicated_creator,
+                    };
+
+                    dfds.push(api.items.save(item));
+                    break;
+                }
+                }
             });
         }
 
@@ -341,7 +355,14 @@ const postsService = (api, $q, _userList, session) => {
 
                 // update the post reference (links with itemsList)
                 _.each(itemsList, (item) => {
-                    post.groups[1].refs.push({ residRef: item._id });
+                    switch (item.item_type) {
+                    case 'poll':
+                        post.groups[1].refs.push({ residRef: item._id, location: 'polls' });
+                        break;
+                    default:
+                        post.groups[1].refs.push({ residRef: item._id });
+                        break;
+                    }
                 });
             }
 

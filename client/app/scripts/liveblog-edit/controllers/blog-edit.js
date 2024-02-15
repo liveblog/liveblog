@@ -144,6 +144,13 @@ export default function BlogEditController(
                 if (block.type === 'image' && meta === null)
                     return null;
 
+                if (block.type === 'poll') {
+                    return {
+                        poll_body: block.meta,
+                        item_type: block.type,
+                    };
+                }
+
                 return {
                     group_type: 'default',
                     text: block.text
