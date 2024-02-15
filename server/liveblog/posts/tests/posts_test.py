@@ -3,50 +3,40 @@ import flask
 import liveblog.blogs as blogs
 import liveblog.posts as posts
 import superdesk.users as users_app
-from superdesk.tests import TestCase
-from superdesk import get_resource_service
-from liveblog.posts.posts import get_publisher, private_draft_filter
-from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
-import liveblog.client_modules as client_modules
 import liveblog.themes as themes
+import liveblog.client_modules as client_modules_app
 import liveblog.advertisements as advertisements
 
 from bson import ObjectId
 from unittest.mock import patch
+
+from superdesk.tests import TestCase
+from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
-
-
-class Foo:
-    def __init__(self):
-        self.setup_call = False
-
-    def setup_called(self):
-        self.setup_call = True
-        return self.setup_call
-
-
-foo = Foo()
+from liveblog.posts.posts import get_publisher, private_draft_filter
+from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
+from liveblog.common import run_once
 
 
 class PostsModuleTestCase(TestCase):
-    def setUp(self):
-        if not foo.setup_call:
-            test_config = {
-                "LIVEBLOG_DEBUG": True,
-                "EMBED_PROTOCOL": "http://",
-                "CORS_ENABLED": False,
-                "DEBUG": False,
-            }
-            self.app.config.update(test_config)
-            foo.setup_called()
-            blogs.init_app(self.app)
-            posts.init_app(self.app)
-            client_modules.init_app(self.app)
-            users_app.init_app(self.app)
-            themes.init_app(self.app)
-            advertisements.init_app(self.app)
-            self.client = self.app.test_client()
+    @run_once
+    def setup_test_case(self):
+        test_config = {
+            "LIVEBLOG_DEBUG": True,
+            "EMBED_PROTOCOL": "http://",
+            "CORS_ENABLED": False,
+            "DEBUG": False,
+        }
+        self.app.config.update(test_config)
 
+        init_apps = [blogs, posts, client_modules_app, users_app, themes, advertisements]
+        for lb_app in init_apps:
+            lb_app.init_app(self.app)
+
+        self.client = self.app.test_client()
+
+    def setUp(self):
+        self.setup_test_case()
         self.posts_service = get_resource_service("posts")
         self.blog_posts_service = get_resource_service("blog_posts")
 
