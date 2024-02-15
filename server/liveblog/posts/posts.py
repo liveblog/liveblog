@@ -675,7 +675,7 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)
-        related_items = self._related_items_map(docs)
+        related_items = self.related_items_map(docs)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
@@ -692,9 +692,14 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
         return docs
 
-    def _related_items_map(self, docs):
-        """It receives an array of posts and extracts the associations' ID
-        then it hits the database just 1 time and return them as dictionary"""
+    def related_items_map(self, docs):
+        """
+        It receives an array of posts and extracts the associations' ID
+        then it hits the database just 1 time per resource and return them as dictionary.
+
+        It should fetch the items from the respective resource service according to the
+        location attribute. Otherwise, it should fetch from `archive` resource by default
+        """
 
         items_map = {}
         ids_by_service = {}

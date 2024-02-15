@@ -125,7 +125,7 @@ class Blog(AuthorsMixin):
         results = results.skip(skip).limit(limit).sort(order_by, sort)
 
         posts = [x for x in results if "groups" in x]
-        related_items = self._posts_service._related_items_map(posts)
+        related_items = self._posts_service.related_items_map(posts)
 
         for post in posts:
             for assoc in get_associations(post):
