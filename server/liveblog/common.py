@@ -79,7 +79,8 @@ def run_once(func):
     """
 
     def wrapper(*args, **kwargs):
-        if not hasattr(wrapper, 'has_run'):
+        if not hasattr(wrapper, "has_run"):
             wrapper.has_run = True
             return func(*args, **kwargs)
+
     return wrapper

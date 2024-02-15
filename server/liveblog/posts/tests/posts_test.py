@@ -29,7 +29,14 @@ class PostsModuleTestCase(TestCase):
         }
         self.app.config.update(test_config)
 
-        init_apps = [blogs, posts, client_modules_app, users_app, themes, advertisements]
+        init_apps = [
+            blogs,
+            posts,
+            client_modules_app,
+            users_app,
+            themes,
+            advertisements,
+        ]
         for lb_app in init_apps:
             lb_app.init_app(self.app)
 

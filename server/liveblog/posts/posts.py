@@ -616,11 +616,15 @@ class PostFlagService(BaseService):
         users = []
         if "users" in flag:
             for userId in flag["users"]:
-                users.append(get_resource_service("users").find_one(req=None, _id=userId))
+                users.append(
+                    get_resource_service("users").find_one(req=None, _id=userId)
+                )
             flag["users"] = users
 
         # so this we have _links available for other methods in frontend
-        build_custom_hateoas(PostFlagService.custom_hateoas, flag, location="post_flags")
+        build_custom_hateoas(
+            PostFlagService.custom_hateoas, flag, location="post_flags"
+        )
 
     def on_created(self, docs):
         for doc in docs:
