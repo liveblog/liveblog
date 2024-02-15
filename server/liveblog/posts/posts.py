@@ -577,20 +577,6 @@ class PostFlagResource(Resource):
     }
 
 
-def complete_flag_info(flag):
-    if not flag:
-        return
-
-    users = []
-    if "users" in flag:
-        for userId in flag["users"]:
-            users.append(get_resource_service("users").find_one(req=None, _id=userId))
-        flag["users"] = users
-
-    # so this we have _links available for other methods in frontend
-    build_custom_hateoas(PostFlagService.custom_hateoas, flag, location="post_flags")
-
-
 class PostFlagService(BaseService):
     custom_hateoas = {"self": {"title": "Post Flag", "href": "/{location}/{_id}"}}
 
@@ -619,9 +605,26 @@ class PostFlagService(BaseService):
 
         return super().create(docs, **kwargs)
 
+    def complete_flag_info(self, flag):
+        """
+        Appends additional required information to flag registry like users data
+        and hateoas data
+        """
+        if not flag:
+            return
+
+        users = []
+        if "users" in flag:
+            for userId in flag["users"]:
+                users.append(get_resource_service("users").find_one(req=None, _id=userId))
+            flag["users"] = users
+
+        # so this we have _links available for other methods in frontend
+        build_custom_hateoas(PostFlagService.custom_hateoas, flag, location="post_flags")
+
     def on_created(self, docs):
         for doc in docs:
-            complete_flag_info(doc)
+            self.complete_flag_info(doc)
 
         # send notifications
         push_notification("posts:updateFlag", flags=docs)
@@ -642,7 +645,7 @@ class PostFlagService(BaseService):
         else:
             super().delete(lookup)
 
-        complete_flag_info(flag)
+        self.complete_flag_info(flag)
         self.delete_notify(flag, update=update)
 
         return flag
