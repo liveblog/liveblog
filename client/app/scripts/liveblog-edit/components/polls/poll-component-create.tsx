@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './poll-component.scss';
 
-export const PollComponentCreate: React.FunctionComponent<{
+interface IProps {
+    item: any;
     onFormPopulated: (data: any) => void
-}> = ({ onFormPopulated }) => {
+}
+
+export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onFormPopulated }) => {
     const [question, setQuestion] = useState<string>('');
     const [options, setOptions] = useState<string[]>(['', '']);
     const [days, setDays] = useState<number>(1);
@@ -64,6 +67,15 @@ export const PollComponentCreate: React.FunctionComponent<{
             onFormPopulated(pollBody);
         }
     }, [question, options, days, hours, minutes]);
+
+    useEffect(() => {
+        const pollBody = item.poll_body;
+
+        setQuestion(pollBody.question);
+        setOptions(pollBody.answers.map((answer) => {
+            return answer.option;
+        }));
+    }, [item]);
 
     return (
         <div className="poll_component poll_column poll_gap_16">

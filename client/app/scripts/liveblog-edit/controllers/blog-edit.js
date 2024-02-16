@@ -209,7 +209,7 @@ export default function BlogEditController(
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
-        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment'];
+        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment', 'poll'];
 
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;

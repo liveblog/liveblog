@@ -1,5 +1,6 @@
 /* eslint camelcase: "off" */
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import './poll-component.scss';
 import { pollCalculations } from './utils';
 
@@ -16,7 +17,7 @@ interface IProps {
     item: any;
 }
 
-export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
+const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
     const [poll, setPoll] = useState<IPollBody>(pollCalculations(item.poll_body));
 
     useEffect(() => {
@@ -61,3 +62,14 @@ export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => 
         </div>
     );
 };
+
+
+export const destroyPollComponentView = (element: HTMLDivElement) => {
+    ReactDOM.unmountComponentAtNode(element);
+};
+
+const renderPollComponentView = (element: HTMLDivElement, item: any) => {
+    ReactDOM.render(<PollComponentView item={item} />, element);
+};
+
+export default renderPollComponentView;

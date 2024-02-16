@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { simpleReactDirective } from './react-directives-factory';
 import { DateTimePicker } from '../components/dateTimePicker';
 import { ItemEmbed } from 'liveblog-edit/components/itemEmbed';
-import renderPollComponent, { destroyPollComponent } from '../components/polls/poll-component';
+import renderPollComponentView, { destroyPollComponentView } from '../components/polls/poll-component-view';
 
 export const dateTimePickerDirective = simpleReactDirective(DateTimePicker, ['datetime', 'onChange']);
 
@@ -42,9 +42,9 @@ export const lbItemPoll = () => {
         link: (scope, element) => {
             const mountPoint = $(element).get(0);
 
-            renderPollComponent(mountPoint, scope.item, null);
+            renderPollComponentView(mountPoint, scope.item);
 
-            scope.$on('$destroy', () => destroyPollComponent(mountPoint));
+            scope.$on('$destroy', () => destroyPollComponentView(mountPoint));
         },
     };
 };
