@@ -4,6 +4,7 @@ import { simpleReactDirective } from './react-directives-factory';
 import { DateTimePicker } from '../components/dateTimePicker';
 import { ItemEmbed } from 'liveblog-edit/components/itemEmbed';
 import renderPollComponentView, { destroyPollComponentView } from '../components/polls/poll-component-view';
+import _ from 'lodash';
 
 export const dateTimePickerDirective = simpleReactDirective(DateTimePicker, ['datetime', 'onChange']);
 
@@ -39,12 +40,21 @@ export const lbItemPoll = () => {
             item: '=',
         },
 
-        link: (scope, element) => {
+        link: (scope, element, attrs) => {
             const mountPoint = $(element).get(0);
+            const renderPoll = () => {
+                renderPollComponentView(mountPoint, scope.item);
+            };
 
-            renderPollComponentView(mountPoint, scope.item);
+            renderPoll();
 
             scope.$on('$destroy', () => destroyPollComponentView(mountPoint));
+
+            scope.$watch(attrs.item, (next, original) => {
+                if (!_.isEqual(next.poll_body, original.poll_body)) {
+                    renderPoll();
+                }
+            });
         },
     };
 };

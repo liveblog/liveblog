@@ -63,7 +63,6 @@ const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
     );
 };
 
-
 export const destroyPollComponentView = (element: HTMLDivElement) => {
     ReactDOM.unmountComponentAtNode(element);
 };

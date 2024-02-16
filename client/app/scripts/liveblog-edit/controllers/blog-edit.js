@@ -146,7 +146,11 @@ export default function BlogEditController(
 
                 if (block.type === 'poll') {
                     return {
-                        poll_body: block.meta,
+                        poll_body: {
+                            question: meta.question,
+                            answers: meta.answers,
+                            active_until: meta.active_until,
+                        },
                         item_type: block.type,
                     };
                 }

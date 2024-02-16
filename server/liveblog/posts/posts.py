@@ -420,12 +420,34 @@ class PostsService(ArchiveService):
             content_diff = True
         else:
             for index, val in enumerate(updates["groups"][1]["refs"]):
-                item = get_resource_service("archive").find_one(
-                    req=None, _id=val["residRef"]
-                )
-                if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
-                    content_diff = True
-                    break
+                service_name = val.get("location", "archive")
+                service = get_resource_service(service_name)
+                item = service.find_one(req=None, _id=val["residRef"])
+                item_type = item.get("item_type")
+
+                if item_type == "poll":
+                    item_poll_body = item.get("poll_body", {})
+                    original_poll_body = original["groups"][1]["refs"][index]["item"].get("poll_body", {})
+
+                    if item_poll_body.get("question") != original_poll_body.get("question"):
+                        content_diff = True
+                        break
+
+                    item_options = item_poll_body.get("answers", [])
+                    original_options = original_poll_body.get("answers", [])
+
+                    if len(item_options) != len(original_options):
+                        content_diff = True
+                        break
+                    else:
+                        for item_option, original_option in zip(item_options, original_options):
+                            if item_option.get("option") != original_option.get("option"):
+                                content_diff = True
+                                break
+                else :
+                    if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
+                        content_diff = True
+                        break
         if content_diff:
             updates["content_updated_date"] = utcnow()
 

@@ -6,39 +6,50 @@ interface IProps {
     onFormPopulated: (data: any) => void
 }
 
+interface Answers {
+    option: string;
+    votes: number;
+}
+
 export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onFormPopulated }) => {
     const [question, setQuestion] = useState<string>('');
-    const [options, setOptions] = useState<string[]>(['', '']);
+    const [answers, setAnswers] = useState<Answers[]>([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
     const [days, setDays] = useState<number>(1);
     const [hours, setHours] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
 
-    const addOption = (event) => {
+    const addAnswer = (event) => {
         event.preventDefault();
-        setOptions((prev) => [...prev, '']);
+        setAnswers((prev) => [...prev, { option: '', votes: 0 }]);
     };
 
-    const removeOption = (indexToRemove) => {
-        setOptions((prev) => prev.filter((_, index) => index !== indexToRemove));
+    const removeAnswer = (indexToRemove) => {
+        setAnswers((prev) => prev.filter((_, index) => index !== indexToRemove));
     };
 
-    const updateOption = (indexToUpdate, event) => {
-        const newOption = event.target.value;
+    const updateAnswer = (indexToUpdate, event) => {
+        const newAnswer = event.target.value;
 
-        setOptions((prev) => prev.map((option, index) => index === indexToUpdate ? newOption : option));
+        setAnswers((prev) => {
+            return prev.map((answer, index) => {
+                return index === indexToUpdate ? { ...answer, option: newAnswer } : answer;
+            });
+        });
     };
 
     const resetPoll = (event) => {
         event.preventDefault();
         setQuestion('');
-        setOptions(['', '']);
+        setAnswers([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
         setDays(1);
         setHours(0);
         setMinutes(0);
     };
 
     const isFormFilled = () => {
-        return question !== '' && options.every((option) => option != '') && (days > 0 || hours > 0 || minutes > 0);
+        return question !== ''
+            && answers.length >= 2 && answers.every((answer) => answer.option != '')
+            && (days > 0 || hours > 0 || minutes > 0);
     };
 
     const getPollBody = () => {
@@ -50,10 +61,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
         const pollBody = {
             question: question,
-            answers: options.map((option) => ({
-                option: option,
-                votes: 0,
-            })),
+            answers: answers,
             active_until: futureTime.toISOString(),
         };
 
@@ -66,15 +74,15 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
             onFormPopulated(pollBody);
         }
-    }, [question, options, days, hours, minutes]);
+    }, [question, answers, days, hours, minutes]);
 
     useEffect(() => {
-        const pollBody = item.poll_body;
+        if (item.poll_body) {
+            const pollBody = item.poll_body;
 
-        setQuestion(pollBody.question);
-        setOptions(pollBody.answers.map((answer) => {
-            return answer.option;
-        }));
+            setQuestion(pollBody.question);
+            setAnswers(pollBody.answers);
+        }
     }, [item]);
 
     return (
@@ -94,7 +102,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
             <div id="poll_options">
                 <p className="poll_component_subtitle">ANSWERS:</p>
                 <div className="poll_flex_box poll_column poll_gap_8">
-                    {options.map((option, index) => {
+                    {answers.map((answer, index) => {
                         return (
                             <div key={index} className="poll_option_container">
                                 <input
@@ -102,19 +110,19 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                                     type="text"
                                     placeholder={`Option ${index + 1}`}
                                     style={{ width: '100%', paddingRight: '30px' }}
-                                    value={option}
-                                    onChange={(e) => updateOption(index, e)}
+                                    value={answer.option}
+                                    onChange={(e) => updateAnswer(index, e)}
                                 />
                                 <span
                                     className="poll_option_remove_container"
-                                    onClick={() => removeOption(index)}
+                                    onClick={() => removeAnswer(index)}
                                 >
                                     <span className="icon-close-small" />
                                 </span>
                             </div>
                         );
                     })}
-                    <button className="poll_option_add_button" onClick={(e) => addOption(e)}>+ Add Option</button>
+                    <button className="poll_option_add_button" onClick={(e) => addAnswer(e)}>+ Add Option</button>
                 </div>
             </div>
 
