@@ -3,17 +3,17 @@ import './poll-component.scss';
 
 interface IProps {
     item: any;
-    onFormPopulated: (data: any) => void
+    onFormPopulated: (data: any) => void;
 }
 
-interface Answers {
+interface IAnswers {
     option: string;
     votes: number;
 }
 
 export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onFormPopulated }) => {
     const [question, setQuestion] = useState<string>('');
-    const [answers, setAnswers] = useState<Answers[]>([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
+    const [answers, setAnswers] = useState<IAnswers[]>([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
     const [days, setDays] = useState<number>(1);
     const [hours, setHours] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
@@ -48,7 +48,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
     const isFormFilled = () => {
         return question !== ''
-            && answers.length >= 2 && answers.every((answer) => answer.option != '')
+            && answers.length >= 2 && answers.every((answer) => answer.option !== '')
             && (days > 0 || hours > 0 || minutes > 0);
     };
 

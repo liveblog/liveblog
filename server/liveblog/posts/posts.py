@@ -427,9 +427,13 @@ class PostsService(ArchiveService):
 
                 if item_type == "poll":
                     item_poll_body = item.get("poll_body", {})
-                    original_poll_body = original["groups"][1]["refs"][index]["item"].get("poll_body", {})
+                    original_poll_body = original["groups"][1]["refs"][index][
+                        "item"
+                    ].get("poll_body", {})
 
-                    if item_poll_body.get("question") != original_poll_body.get("question"):
+                    if item_poll_body.get("question") != original_poll_body.get(
+                        "question"
+                    ):
                         content_diff = True
                         break
 
@@ -440,12 +444,19 @@ class PostsService(ArchiveService):
                         content_diff = True
                         break
                     else:
-                        for item_option, original_option in zip(item_options, original_options):
-                            if item_option.get("option") != original_option.get("option"):
+                        for item_option, original_option in zip(
+                            item_options, original_options
+                        ):
+                            if item_option.get("option") != original_option.get(
+                                "option"
+                            ):
                                 content_diff = True
                                 break
-                else :
-                    if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
+                else:
+                    if (
+                        item["text"]
+                        != original["groups"][1]["refs"][index]["item"]["text"]
+                    ):
                         content_diff = True
                         break
         if content_diff:
