@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 import postTpl from 'scripts/liveblog-edit/views/post.ng1';
 
 lbPost.$inject = [
@@ -142,9 +140,10 @@ export default function lbPost(notify, gettext, postsService, modal,
                     let msg = gettext('Are you sure you want to delete the post?');
 
                     if (scope.isPollAttached(post)) {
-                        msg += '<br />It contains a poll with important data that will be permanently lost if you proceed.';
+                        msg += `<br />It contains a poll with important data that will be 
+                            permanently lost if you proceed.`;
                     }
-                    
+
                     if (scope.isYoutubeAttached(post)) {
                         msg += '<br/>This will NOT remove the video from YouTube\'s account.';
                     }
