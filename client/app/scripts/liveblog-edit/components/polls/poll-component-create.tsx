@@ -18,6 +18,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
     const [days, setDays] = useState<number>(1);
     const [hours, setHours] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
+    const [disableUpdate, setDisableUpdate] = useState<boolean>(false);
 
     const addAnswer = (event) => {
         event.preventDefault();
@@ -79,6 +80,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
     useEffect(() => {
         if (item.poll_body) {
+            setDisableUpdate(true);
             const pollBody = item.poll_body;
             const timeLeft = timeLeftCalculation(pollBody.active_until);
 
@@ -101,6 +103,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                     placeholder="Ask A Question..."
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
+                    disabled={disableUpdate}
                 />
             </div>
 
@@ -117,17 +120,22 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                                     style={{ width: '100%', paddingRight: '30px' }}
                                     value={answer.option}
                                     onChange={(e) => updateAnswer(index, e)}
+                                    disabled={disableUpdate}
                                 />
-                                <span
-                                    className="poll_option_remove_container"
-                                    onClick={() => removeAnswer(index)}
-                                >
-                                    <span className="icon-close-small" />
-                                </span>
+                                {!disableUpdate && (
+                                    <span
+                                        className="poll_option_remove_container"
+                                        onClick={() => removeAnswer(index)}
+                                    >
+                                        <span className="icon-close-small" />
+                                    </span>
+                                )}
                             </div>
                         );
                     })}
-                    <button className="poll_option_add_button" onClick={(e) => addAnswer(e)}>+ Add Option</button>
+                    {!disableUpdate && (
+                        <button className="poll_option_add_button" onClick={(e) => addAnswer(e)}>+ Add Option</button>
+                    )}
                 </div>
             </div>
 
@@ -171,7 +179,9 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                 </div>
             </div>
 
-            <button className="btn poll_reset_button" onClick={(e) => resetPoll(e)}>RESET POLL</button>
+            {!disableUpdate && (
+                <button className="btn poll_reset_button" onClick={(e) => resetPoll(e)}>RESET POLL</button>
+            )}
         </div>
     );
 };
