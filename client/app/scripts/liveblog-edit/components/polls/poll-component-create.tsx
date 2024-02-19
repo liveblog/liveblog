@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { timeLeftCalculation } from './utils';
 import './poll-component.scss';
 
 interface IProps {
@@ -79,9 +80,13 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
     useEffect(() => {
         if (item.poll_body) {
             const pollBody = item.poll_body;
+            const timeLeft = timeLeftCalculation(pollBody.active_until);
 
             setQuestion(pollBody.question);
             setAnswers(pollBody.answers);
+            setDays(timeLeft.days);
+            setHours(timeLeft.hours);
+            setMinutes(timeLeft.minutes);
         }
     }, [item]);
 

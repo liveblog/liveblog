@@ -47,3 +47,19 @@ export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) =
         answers: updatedAnswers,
     };
 };
+
+export const timeLeftCalculation: (activeUntil: string) => {
+    days: number;
+    hours: number;
+    minutes: number;
+} = (activeUntil) => {
+    const currentTime = new Date();
+    const activeUntilTime = new Date(activeUntil);
+    const differenceMs = activeUntilTime.getTime() - currentTime.getTime();
+
+    const days = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((differenceMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return { days, hours, minutes };
+};
