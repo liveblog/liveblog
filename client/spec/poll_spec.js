@@ -41,6 +41,18 @@ describe('Poll functionality', function() {
           expect(minutes).toEqual('030');
     });
 
+    it('can limit hours to 24 and minutes to 60 in poll block', function() {
+          var editor = blogs.openBlog(0).editor
+                              .addTop()
+                              .addPoll()
+                              .setHours(50)
+                              .setMinutes(100);
+          var hours = element(by.id('poll_hours_input')).getAttribute('value');
+          var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
+          expect(hours).toEqual('24');
+          expect(minutes).toEqual('60');
+    });
+
     it('can reset the poll block', function() {
           var editor = blogs.openBlog(0).editor
                               .addTop()
