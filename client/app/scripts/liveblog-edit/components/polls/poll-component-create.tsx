@@ -143,36 +143,46 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                 <p className="poll_component_title">Poll length:</p>
                 <div className="poll_flex_box poll_row poll_gap_8">
 
-                    <div className="poll_flex_box poll_column poll_gap_4">
+                    <div className="poll_flex_box poll_column poll_gap_4" style={{ width: '100%' }}>
                         <p className="poll_component_subtitle">DAYS:</p>
                         <input
                             id="poll_days_input"
                             type="number"
                             min={0}
                             value={days}
-                            onChange={(e) => setDays(parseInt(e.target.value, 10) || 0)}
+                            onChange={(e) => setDays(parseInt(e.target.value, 10) || 1)}
                         />
                     </div>
 
-                    <div className="poll_flex_box poll_column poll_gap_4">
+                    <div className="poll_flex_box poll_column poll_gap_4" style={{ width: '100%' }}>
                         <p className="poll_component_subtitle">HOURS:</p>
                         <input
                             id="poll_hours_input"
                             type="number"
                             min={0}
+                            max={24}
                             value={hours}
-                            onChange={(e) => setHours(parseInt(e.target.value, 10) || 0)}
+                            onChange={(e) => {
+                                const value = Math.min(Math.max(parseInt(e.target.value, 10) || 0, 0), 24);
+
+                                setHours(value);
+                            }}
                         />
                     </div>
 
-                    <div className="poll_flex_box poll_column poll_gap_4">
+                    <div className="poll_flex_box poll_column poll_gap_4" style={{ width: '100%' }}>
                         <p className="poll_component_subtitle">MINUTES:</p>
                         <input
                             id="poll_minutes_input"
                             type="number"
                             min={0}
+                            max={60}
                             value={minutes}
-                            onChange={(e) => setMinutes(parseInt(e.target.value, 10) || 0)}
+                            onChange={(e) => {
+                                const value = Math.min(Math.max(parseInt(e.target.value, 10) || 0, 0), 60);
+
+                                setMinutes(value);
+                            }}
                         />
                     </div>
 
