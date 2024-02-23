@@ -5,7 +5,7 @@ import { PollComponentCreate } from './poll-component-create';
 
 interface IProps {
     item: any;
-    onFormPopulated?: (data: any) => void;
+    onFormPopulated: (data: any) => void;
 }
 
 const PollComponent: React.FunctionComponent<IProps> = ({ item, onFormPopulated }) => {
@@ -16,8 +16,7 @@ export const destroyPollComponent = (element: HTMLDivElement) => {
     ReactDOM.unmountComponentAtNode(element);
 };
 
-const renderPollComponent = (
-    element: HTMLDivElement, item: any, onFormPopulated?: () => void) => {
+const renderPollComponent = (element: HTMLDivElement, item: any, onFormPopulated: () => void) => {
     ReactDOM.render(<PollComponent item={item} onFormPopulated={onFormPopulated} />, element);
 };
 

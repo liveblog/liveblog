@@ -19,6 +19,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
     const [hours, setHours] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
     const [disableUpdate, setDisableUpdate] = useState<boolean>(false);
+    const [timeElapsed, setTimeElapsed] = useState<boolean>(false);
 
     const addAnswer = (event) => {
         event.preventDefault();
@@ -71,7 +72,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
     };
 
     useEffect(() => {
-        if (isFormFilled()) {
+        if (isFormFilled() || timeElapsed) {
             const pollBody = getPollBody();
 
             onFormPopulated(pollBody);
@@ -84,11 +85,15 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
             const pollBody = item.poll_body;
             const timeLeft = timeLeftCalculation(pollBody.active_until);
 
+            if (timeLeft.days <= 0 && timeLeft.hours <= 0 && timeLeft.minutes <= 0) {
+                setTimeElapsed(true);
+            }
+
             setQuestion(pollBody.question);
             setAnswers(pollBody.answers);
-            setDays(timeLeft.days);
-            setHours(timeLeft.hours);
-            setMinutes(timeLeft.minutes);
+            setDays(timeLeft.days <= 0 ? 0 : timeLeft.days);
+            setHours(timeLeft.hours <= 0 ? 0 : timeLeft.hours);
+            setMinutes(timeLeft.minutes <= 0 ? 0 : timeLeft.minutes);
         }
     }, [item]);
 
@@ -151,6 +156,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                             min={0}
                             value={days}
                             onChange={(e) => setDays(parseInt(e.target.value, 10) || 1)}
+                            disabled={timeElapsed}
                         />
                     </div>
 
@@ -167,6 +173,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
                                 setHours(value);
                             }}
+                            disabled={timeElapsed}
                         />
                     </div>
 
@@ -183,11 +190,16 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
                                 setMinutes(value);
                             }}
+                            disabled={timeElapsed}
                         />
                     </div>
 
                 </div>
             </div>
+
+            {timeElapsed && (
+                <p className="poll_component_subtitle">Note: The poll time elapsed so it cannot be updated.</p>
+            )}
 
             {!disableUpdate && (
                 <button className="btn poll_reset_button" onClick={(e) => resetPoll(e)}>RESET POLL</button>
