@@ -151,3 +151,39 @@ def get_main_item(post):
         )
 
     return main_item
+
+
+def check_content_diff(updates, original):
+    """
+    Checks if there are any content differences between the original and updated
+    objects
+    """
+    content_diff = False
+
+    if not updates.get("groups", False):
+        return content_diff
+
+    if len(original["groups"][1]["refs"]) != len(updates["groups"][1]["refs"]):
+        return True
+
+    for index, item_ref in enumerate(updates["groups"][1]["refs"]):
+        service_name = item_ref.get("location", "archive")
+        service = get_resource_service(service_name)
+        item = service.find_one(req=None, _id=item_ref["residRef"])
+        item_type = item.get("item_type")
+
+        if item_type == "poll":
+            original_poll_body = original["groups"][1]["refs"][index]["item"].get("poll_body", {})
+            item_poll_body = item.get("poll_body", {})
+
+            original_active_until = original_poll_body.get("active_until")
+            item_active_until = item_poll_body.get("active_until")
+
+            if original_active_until and item_active_until:
+                if original_active_until != item_active_until:
+                    return True
+        else:
+            if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
+                return True
+
+    return content_diff

@@ -295,7 +295,7 @@ const postsService = (api, $q, _userList, session) => {
 
     const savePost = (blogId, postToUpdate, itemsParam: any[], post: any = {}) => {
         let items = itemsParam;
-        const dfds = [];
+        const savePromises = [];
 
         post.post_status = post.post_status || _.result(postToUpdate, 'post_status') || 'open';
 
@@ -314,7 +314,7 @@ const postsService = (api, $q, _userList, session) => {
                         poll_body: itemParam.poll_body,
                     };
 
-                    dfds.push(api.polls.save(poll));
+                    savePromises.push(api.polls.save(poll));
                     break;
                 }
                 default: {
@@ -328,7 +328,7 @@ const postsService = (api, $q, _userList, session) => {
                         syndicated_creator: itemParam.syndicated_creator,
                     };
 
-                    dfds.push(api.items.save(item));
+                    savePromises.push(api.items.save(item));
                     break;
                 }
                 }
@@ -336,8 +336,8 @@ const postsService = (api, $q, _userList, session) => {
         }
 
         // save the post
-        return $q.all(dfds).then((itemsList) => {
-            if (dfds.length > 0) {
+        return $q.all(savePromises).then((itemsList) => {
+            if (savePromises.length > 0) {
                 angular.extend(post, {
                     blog: blogId,
                     groups: [

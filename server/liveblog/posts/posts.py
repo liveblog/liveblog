@@ -25,7 +25,7 @@ from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
-from .utils import get_associations, get_associations_ids
+from .utils import get_associations, get_associations_ids, check_content_diff
 
 
 logger = logging.getLogger("superdesk")
@@ -413,52 +413,7 @@ class PostsService(ArchiveService):
             check_comment_length(item["text"])
 
         # check if updates `content` is different than the original.
-        content_diff = False
-        if not updates.get("groups", False):
-            content_diff = False
-        elif len(original["groups"][1]["refs"]) != len(updates["groups"][1]["refs"]):
-            content_diff = True
-        else:
-            for index, val in enumerate(updates["groups"][1]["refs"]):
-                service_name = val.get("location", "archive")
-                service = get_resource_service(service_name)
-                item = service.find_one(req=None, _id=val["residRef"])
-                item_type = item.get("item_type")
-
-                if item_type == "poll":
-                    item_poll_body = item.get("poll_body", {})
-                    original_poll_body = original["groups"][1]["refs"][index][
-                        "item"
-                    ].get("poll_body", {})
-
-                    if item_poll_body.get("question") != original_poll_body.get(
-                        "question"
-                    ):
-                        content_diff = True
-                        break
-
-                    item_options = item_poll_body.get("answers", [])
-                    original_options = original_poll_body.get("answers", [])
-
-                    if len(item_options) != len(original_options):
-                        content_diff = True
-                        break
-                    else:
-                        for item_option, original_option in zip(
-                            item_options, original_options
-                        ):
-                            if item_option.get("option") != original_option.get(
-                                "option"
-                            ):
-                                content_diff = True
-                                break
-                else:
-                    if (
-                        item["text"]
-                        != original["groups"][1]["refs"][index]["item"]["text"]
-                    ):
-                        content_diff = True
-                        break
+        content_diff = check_content_diff(updates, original)
         if content_diff:
             updates["content_updated_date"] = utcnow()
 
