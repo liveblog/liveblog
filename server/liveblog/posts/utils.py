@@ -173,7 +173,9 @@ def check_content_diff(updates, original):
         item_type = item.get("item_type")
 
         if item_type == "poll":
-            original_poll_body = original["groups"][1]["refs"][index]["item"].get("poll_body", {})
+            original_poll_body = original["groups"][1]["refs"][index]["item"].get(
+                "poll_body", {}
+            )
             item_poll_body = item.get("poll_body", {})
 
             original_active_until = original_poll_body.get("active_until")
