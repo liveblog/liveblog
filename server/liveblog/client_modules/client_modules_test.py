@@ -224,6 +224,38 @@ class ClientModuleTestCase(TestCase):
         # Create blogs
         self.blogs_ids = self.app.data.insert("blogs", self.blogs_list)
 
+        self.polls = [
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d59"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-09T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+        ]
+
+        self.polls_ids = self.app.data.insert("polls", self.polls)
+
         self.items = [
             {
                 "_created": "2018-04-03T05:42:43+00:00",
@@ -359,33 +391,7 @@ class ClientModuleTestCase(TestCase):
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-13T06:48:23+00:00",
             },
-            {
-                "_created": "2024-02-07T07:18:11+00:00",
-                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
-                "_id": ObjectId("65c32eb35c29be1d62515d59"),
-                "_links": {
-                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
-                },
-                "_status": "OK",
-                "_updated": "2024-02-07T07:18:11+00:00",
-                "blog": self.blogs_ids[0],
-                "firstcreated": "2024-02-07T07:18:11+00:00",
-                "group_type": "default",
-                "item_type": "poll",
-                "meta": {},
-                "original_creator": self.user_ids[0],
-                "particular_type": "poll",
-                "poll_body": {
-                    "active_until": "2024-02-09T23:59:59+00:00",
-                    "question": "Do you think Liveblog is the best ?",
-                    "answers": [
-                        {"option": "Yes", "votes": 0},
-                        {"option": "No", "votes": 0},
-                    ],
-                },
-                "text": "Sample poll",
-                "versioncreated": "2024-02-07T07:18:11+00:00",
-            },
+            self.polls[0],
         ]
 
         self.items_ids = self.app.data.insert("items", self.items)

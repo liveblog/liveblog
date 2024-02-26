@@ -67,6 +67,8 @@
   <div class="items-container">
   {% if type == "comment" %}
     {% include "template-post-comment.html" %}
+  {% elif type == "post_comment" %}
+    <!-- TODO: complete rendering -->
   {% else %}
     {% if item and item.groups and item.groups[1] and item.groups[1].refs and (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
