@@ -25,7 +25,7 @@ from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
-from .utils import get_associations, get_associations_ids, check_content_diff
+from .utils import get_associations, check_content_diff
 
 
 logger = logging.getLogger("superdesk")
@@ -324,7 +324,6 @@ class PostsService(ArchiveService):
 
     def on_create(self, docs):
         for doc in docs:
-            # check permission
             self.check_post_permission(doc)
             doc["type"] = "composite"
             doc["order"] = self.get_next_order_sequence(doc.get("blog"))
@@ -566,20 +565,6 @@ class PostFlagResource(Resource):
     }
 
 
-def complete_flag_info(flag):
-    if not flag:
-        return
-
-    users = []
-    if "users" in flag:
-        for userId in flag["users"]:
-            users.append(get_resource_service("users").find_one(req=None, _id=userId))
-        flag["users"] = users
-
-    # so this we have _links available for other methods in frontend
-    build_custom_hateoas(PostFlagService.custom_hateoas, flag, location="post_flags")
-
-
 class PostFlagService(BaseService):
     custom_hateoas = {"self": {"title": "Post Flag", "href": "/{location}/{_id}"}}
 
@@ -608,9 +593,30 @@ class PostFlagService(BaseService):
 
         return super().create(docs, **kwargs)
 
+    def complete_flag_info(self, flag):
+        """
+        Appends additional required information to flag registry like users data
+        and hateoas data
+        """
+        if not flag:
+            return
+
+        users = []
+        if "users" in flag:
+            for userId in flag["users"]:
+                users.append(
+                    get_resource_service("users").find_one(req=None, _id=userId)
+                )
+            flag["users"] = users
+
+        # so this we have _links available for other methods in frontend
+        build_custom_hateoas(
+            PostFlagService.custom_hateoas, flag, location="post_flags"
+        )
+
     def on_created(self, docs):
         for doc in docs:
-            complete_flag_info(doc)
+            self.complete_flag_info(doc)
 
         # send notifications
         push_notification("posts:updateFlag", flags=docs)
@@ -631,7 +637,7 @@ class PostFlagService(BaseService):
         else:
             super().delete(lookup)
 
-        complete_flag_info(flag)
+        self.complete_flag_info(flag)
         self.delete_notify(flag, update=update)
 
         return flag
@@ -664,7 +670,7 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)
-        related_items = self._related_items_map(docs)
+        related_items = self.related_items_map(docs)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
@@ -681,23 +687,32 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
         return docs
 
-    def _related_items_map(self, docs):
-        """It receives an array of posts and extracts the associations' ID
-        then it hits the database just 1 time and return them as dictionary"""
+    def related_items_map(self, docs):
+        """
+        It receives an array of posts and extracts the associations' ID
+        then it hits the database just 1 time per resource and return them as dictionary.
+
+        It should fetch the items from the respective resource service according to the
+        location attribute. Otherwise, it should fetch from `archive` resource by default
+        """
 
         items_map = {}
-        ids = []
+        ids_by_service = {}
 
         for doc in docs:
-            ids += get_associations_ids(doc)
+            for assoc in self.packageService._get_associations(doc):
+                item_ref_id = assoc.get("residRef")
 
-        # now let's get this into a form of dictionary
-        for item in get_resource_service("archive").find({"_id": {"$in": ids}}):
-            items_map[item.get("_id")] = item
+                if item_ref_id:
+                    service_name = assoc.get("location", "archive")
+                    ids = ids_by_service.get(service_name, [])
+                    ids.append(item_ref_id)
+                    ids_by_service[service_name] = ids
 
-        # do the same for polls, if they exists
-        for item in get_resource_service("polls").find({"_id": {"$in": ids}}):
-            items_map[str(item.get("_id"))] = item
+        # let's get all the items at once and turn it into a dict
+        for service_name, ids in ids_by_service.items():
+            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
+                items_map[str(item.get("_id"))] = item
 
         return items_map
 
