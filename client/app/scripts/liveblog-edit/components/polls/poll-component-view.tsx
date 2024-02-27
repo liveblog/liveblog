@@ -9,8 +9,8 @@ export interface IPollBody {
     answers: Array<{ option: string; votes: number; percentage?: number }>;
     question: string;
     totalVotes?: number;
-    timeLeft?: number;
-    timeUnit?: string;
+    timeLeft?: string;
+    elapsed?: boolean;
 }
 
 interface IProps {
@@ -53,8 +53,8 @@ const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
             <div className="poll_flex_box poll_row poll_gap_8">
                 <p className="poll_component_subtitle">Total Votes: {poll.totalVotes}</p>
                 <p className="poll_component_subtitle">&bull;</p>
-                {poll.timeLeft > 0 ? (
-                    <p className="poll_component_subtitle">{poll.timeLeft} {poll.timeUnit} Left</p>
+                {!poll.elapsed ? (
+                    <p className="poll_component_subtitle">Ends {poll.timeLeft}</p>
                 ) : (
                     <p className="poll_component_subtitle">Poll Closed</p>
                 )}

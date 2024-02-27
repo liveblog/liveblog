@@ -36,7 +36,7 @@ describe('Poll functionality', function() {
           var days = element(by.id('poll_days_input')).getAttribute('value');
           var hours = element(by.id('poll_hours_input')).getAttribute('value');
           var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
-          expect(days).toEqual('12');
+          expect(days).toEqual('02');
           expect(hours).toEqual('03');
           expect(minutes).toEqual('030');
     });
@@ -66,7 +66,7 @@ describe('Poll functionality', function() {
           var hours = element(by.id('poll_hours_input')).getAttribute('value');
           var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
           var optionsCount = element.all(by.css('.poll_option_container input[type="text"]')).count();
-          expect(days).toEqual('1');
+          expect(days).toEqual('0');
           expect(hours).toEqual('0');
           expect(minutes).toEqual('0');
           expect(optionsCount).toEqual(2);

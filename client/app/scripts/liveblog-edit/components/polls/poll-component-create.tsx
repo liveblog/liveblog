@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { timeLeftCalculation } from './utils';
 import './poll-component.scss';
+import moment from 'moment';
 
 interface IProps {
     item: any;
@@ -15,7 +16,7 @@ interface IAnswers {
 export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onFormPopulated }) => {
     const [question, setQuestion] = useState<string>('');
     const [answers, setAnswers] = useState<IAnswers[]>([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
-    const [days, setDays] = useState<number>(1);
+    const [days, setDays] = useState<number>(0);
     const [hours, setHours] = useState<number>(0);
     const [minutes, setMinutes] = useState<number>(0);
     const [disableUpdate, setDisableUpdate] = useState<boolean>(false);
@@ -44,7 +45,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
         event.preventDefault();
         setQuestion('');
         setAnswers([{ option: '', votes: 0 }, { option: '', votes: 0 }]);
-        setDays(1);
+        setDays(0);
         setHours(0);
         setMinutes(0);
     };
@@ -56,12 +57,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
     };
 
     const getPollBody = () => {
-        const futureTime = new Date();
-
-        futureTime.setDate(futureTime.getDate() + days);
-        futureTime.setHours(futureTime.getHours() + hours);
-        futureTime.setMinutes(futureTime.getMinutes() + minutes);
-
+        const futureTime = moment().add({ days: days, hours: hours, minutes: minutes });
         const pollBody = {
             question: question,
             answers: answers,
@@ -99,7 +95,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
 
     return (
         <div className="poll_component poll_column poll_gap_16">
-            <p className="poll_component_title">Create poll</p>
+            <p className="poll_component_title">{!disableUpdate ? 'Create' : 'Edit'} poll</p>
 
             <div id="poll_question">
                 <p className="poll_component_subtitle">QUESTION:</p>
@@ -155,7 +151,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
                             type="number"
                             min={0}
                             value={days}
-                            onChange={(e) => setDays(parseInt(e.target.value, 10) || 1)}
+                            onChange={(e) => setDays(parseInt(e.target.value, 10) || 0)}
                             disabled={timeElapsed}
                         />
                     </div>

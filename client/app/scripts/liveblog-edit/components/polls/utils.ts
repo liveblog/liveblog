@@ -1,12 +1,12 @@
 import { IPollBody } from './poll-component-view';
+import moment from 'moment';
 
 export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) => {
     const totalVotes = pollBody.answers.reduce((acc, answer) => acc + answer.votes, 0);
-    const currentTime = new Date();
-    const activeUntilTime = new Date(pollBody.active_until);
-    const differenceMs = activeUntilTime.getTime() - currentTime.getTime();
-    const timeLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
-    const timeUnit = timeLeft > 1 ? 'Days' : 'Day';
+    const currentTime = moment();
+    const activeUntilTime = moment(pollBody.active_until);
+    const elapsed = activeUntilTime.isBefore(currentTime);
+    const timeLeft = activeUntilTime.fromNow();
 
     let updatedAnswers = pollBody.answers.map((answer) => ({
         ...answer,
@@ -42,9 +42,9 @@ export const pollCalculations: (pollBody: IPollBody) => IPollBody = (pollBody) =
     return {
         ...pollBody,
         totalVotes: totalVotes,
-        timeLeft: timeLeft,
-        timeUnit: timeUnit,
         answers: updatedAnswers,
+        timeLeft: timeLeft,
+        elapsed: elapsed,
     };
 };
 
@@ -53,13 +53,13 @@ export const timeLeftCalculation: (activeUntil: string) => {
     hours: number;
     minutes: number;
 } = (activeUntil) => {
-    const currentTime = new Date();
-    const activeUntilTime = new Date(activeUntil);
-    const differenceMs = activeUntilTime.getTime() - currentTime.getTime();
+    const currentTime = moment();
+    const activeUntilTime = moment(activeUntil);
+    const duration = moment.duration(activeUntilTime.diff(currentTime));
 
-    const days = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((differenceMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((differenceMs % (1000 * 60 * 60)) / (1000 * 60));
+    const days = Math.floor(duration.asDays());
+    const hours = Math.floor(duration.asHours() % 24);
+    const minutes = Math.floor(duration.asMinutes() % 60);
 
     return { days, hours, minutes };
 };
