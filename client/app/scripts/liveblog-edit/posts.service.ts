@@ -197,7 +197,7 @@ const postsService = (api, $q, _userList, session) => {
             angular.extend(post, {
                 multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
-                mainItem: post.groups[1].refs[0],
+                mainItem: post.groups[1].refs[0] || { item: {} },
                 items: post.groups[1].refs,
             });
 
@@ -314,7 +314,14 @@ const postsService = (api, $q, _userList, session) => {
                         poll_body: itemParam.poll_body,
                     };
 
-                    savePromises.push(api.polls.save(poll));
+                    if (angular.isDefined(itemParam.idToUpdate)) {
+                        api.polls.getById(itemParam.idToUpdate).then((pollToUpdate) => {
+                            savePromises.push(api.polls.save(pollToUpdate, poll));
+                        });
+                    } else {
+                        savePromises.push(api.polls.save(poll));
+                    }
+
                     break;
                 }
                 default: {
@@ -380,9 +387,45 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const removePost = (post) => {
-        const deleted = { deleted: true };
+        const removeParams = { deleted: true };
 
-        return savePost(post.blog, post, [], deleted);
+        const items = post.groups[1].refs;
+        const deletePromises = [];
+
+        _.each(items, (item) => {
+            switch (item.item.item_type) {
+            case 'poll': {
+                api.polls.getById(item.residRef).then((pollToDelete) => {
+                    deletePromises.push(api.polls.remove(pollToDelete));
+                });
+                break;
+            }
+            default: {
+                api.items.getById(item.residRef).then((itemToDelete) => {
+                    deletePromises.push(api.items.remove(itemToDelete));
+                });
+                break;
+            }
+            }
+        });
+
+        return $q.all(deletePromises).then(() => {
+            angular.extend(removeParams, {
+                groups: [
+                    {
+                        id: 'root',
+                        refs: [{ idRef: 'main' }],
+                        role: 'grpRole:NEP',
+                    }, {
+                        id: 'main',
+                        refs: [],
+                        role: 'grpRole:Main',
+                    },
+                ],
+            });
+
+            return api.posts.save(post, removeParams);
+        });
     };
 
     const flagPost = (postId) => {
