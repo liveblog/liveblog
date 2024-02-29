@@ -569,6 +569,5 @@ def _get_converted_item(item):
         converted["renditions"] = item["meta"]["media"]["renditions"]
     elif item_type == "poll":
         converted["poll_body"] = item["poll_body"]
-        converted["_etag"] = item["_etag"]
 
     return converted
