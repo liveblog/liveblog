@@ -315,9 +315,11 @@ const postsService = (api, $q, _userList, session) => {
                     };
 
                     if (angular.isDefined(itemParam.idToUpdate)) {
-                        api.polls.getById(itemParam.idToUpdate).then((pollToUpdate) => {
-                            savePromises.push(api.polls.save(pollToUpdate, poll));
-                        });
+                        savePromises.push(
+                            api.polls.getById(itemParam.idToUpdate).then((pollToUpdate) => {
+                                return api.polls.save(pollToUpdate, poll);
+                            })
+                        );
                     } else {
                         savePromises.push(api.polls.save(poll));
                     }
@@ -395,15 +397,19 @@ const postsService = (api, $q, _userList, session) => {
         _.each(items, (item) => {
             switch (item.item.item_type) {
             case 'poll': {
-                api.polls.getById(item.residRef).then((pollToDelete) => {
-                    deletePromises.push(api.polls.remove(pollToDelete));
-                });
+                deletePromises.push(
+                    api.polls.getById(item.residRef).then((pollToDelete) => {
+                        return api.polls.remove(pollToDelete);
+                    })
+                );
                 break;
             }
             default: {
-                api.items.getById(item.residRef).then((itemToDelete) => {
-                    deletePromises.push(api.items.remove(itemToDelete));
-                });
+                deletePromises.push(
+                    api.items.getById(item.residRef).then((itemToDelete) => {
+                        return api.items.remove(itemToDelete);
+                    })
+                );
                 break;
             }
             }
