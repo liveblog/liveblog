@@ -151,7 +151,7 @@ export default function BlogEditController(
                             answers: meta.pollBody.answers,
                             active_until: meta.pollBody.active_until,
                         },
-                        idToUpdate: meta.idToUpdate,
+                        id_to_update: meta.id_to_update,
                         item_type: block.type,
                     };
                 }

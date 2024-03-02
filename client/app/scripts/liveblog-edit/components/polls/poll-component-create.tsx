@@ -64,7 +64,7 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
             active_until: futureTime.toISOString(),
         };
 
-        return { idToUpdate: item && item._id, pollBody: pollBody };
+        return { id_to_update: item && item._id, pollBody: pollBody };
     };
 
     useEffect(() => {

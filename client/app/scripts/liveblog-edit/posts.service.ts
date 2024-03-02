@@ -314,9 +314,9 @@ const postsService = (api, $q, _userList, session) => {
                         poll_body: itemParam.poll_body,
                     };
 
-                    if (angular.isDefined(itemParam.idToUpdate)) {
+                    if (angular.isDefined(itemParam.id_to_update)) {
                         savePromises.push(
-                            api.polls.getById(itemParam.idToUpdate).then((pollToUpdate) => {
+                            api.polls.getById(itemParam.id_to_update).then((pollToUpdate) => {
                                 return api.polls.save(pollToUpdate, poll);
                             })
                         );
