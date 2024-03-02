@@ -636,37 +636,65 @@ class PostsModuleTestCase(TestCase):
         assert check_content_diff(updates, original)
 
     def test_check_content_diff_items(self):
-        updates = {"groups": [{}, {"refs": [
-            {
-                "residRef": self.items_ids[1],
-                "type": "text",
-            },
-        ]}]}
-        original = {"groups": [{}, {"refs": [
-            {
-                "item": self.items[0],
-                "residRef": self.items_ids[0],
-                "type": "text",
-            },
-        ]}]}
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.items_ids[1],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.items[0],
+                            "residRef": self.items_ids[0],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
         assert check_content_diff(updates, original)
         assert not check_content_diff(original, original)
 
     def test_check_content_diff_polls(self):
-        updates = {"groups": [{}, {"refs": [
-            {
-                "residRef": self.polls_ids[1],
-                "location": "polls",
-                "type": "poll",
-            },
-        ]}]}
-        original = {"groups": [{}, {"refs": [
-            {
-                "item": self.polls[0],
-                "residRef": self.polls_ids[0],
-                "location": "polls",
-                "type": "text",
-            },
-        ]}]}
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.polls_ids[1],
+                            "location": "polls",
+                            "type": "poll",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.polls[0],
+                            "residRef": self.polls_ids[0],
+                            "location": "polls",
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
         assert check_content_diff(updates, original)
         assert not check_content_diff(original, original)
