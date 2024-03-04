@@ -1,0 +1,45 @@
+{% set pollId = ref.item._id %}
+{% set poll = ref.item.poll_body %}
+
+<style>
+  .custom-poll-radio + label::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 50%;
+    border: 2px solid #737373;
+    vertical-align: middle;
+  }
+
+  .custom-poll-radio:checked + label::before {
+    border-color: #5EA8C9;
+    background-color: #5EA8C9; 
+  }
+  
+  .custom-poll-radio:checked + label {
+    color: #5EA8C9;
+  }
+</style>
+
+<div style="padding: 12px; border: 0.5px solid #EBEBEB; display: flex; width: 75%; background-color: #FBFAFB; flex-direction: column; gap: 8px;">
+  <p style="font-size: 16px; font-weight: bold;">{{ poll.question }}</p>
+  <form style="display: flex; flex-direction: column; gap: 8px;">
+    {% for answer in poll.answers %}
+      <div style="display: flex; flex-direction: row; gap: 8px; align-items: center">
+        <input type="radio" class="custom-poll-radio" id="{{ pollId }}-answer-{{ loop.index0 }}" name="{{ pollId }}-selected" value="{{ loop.index0 }}" style="opacity: 0; position: absolute;">
+        <label for="{{ pollId }}-answer-{{ loop.index0 }}" style="margin-top: 4px; position: relative; padding-left: 4px;">{{ answer.option }}</label>
+      </div>
+    {% endfor %}
+
+    <div style="margin-top: 8px; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-direction: row; gap: 8px; align-items: center">
+          <p style="font-size: 12px; color: #737373;">Total Votes: <span id="total-votes-{{ pollId }}"></span></p>
+          <p style="font-size: 12px; color: #737373;">&bull;</p>
+          <p style="font-size: 12px; color: #737373;">Ends in <span id="vote-end-{{ pollId }}"></span></p>
+        </div>
+        <button style="margin: 0; width: fit-content; align-self: end; color: white; background-color: #5EA8C9; border-radius: 6px; padding: 10px;" type="submit">VOTE</button>
+    </div>
+  </form>
+</div>
