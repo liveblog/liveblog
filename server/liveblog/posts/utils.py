@@ -75,6 +75,8 @@ def calculate_post_type(post, items=None):
                 post_items_type = "{}-{}".format(
                     post_items_type, items[0]["meta"]["provider_name"].lower()
                 )
+        elif first_item_type == "poll":
+            post_items_type = "poll"
 
     elif items_length == 2 and not all(
         [item["item_type"] == "embed" for item in items]
@@ -97,6 +99,11 @@ def calculate_post_type(post, items=None):
                 post_items_type = "{}-{}".format(
                     post_items_type, items[0]["meta"]["provider_name"].lower()
                 )
+        elif (
+            items[0].get("item_type", "").lower() == "poll"
+            and items[1].get("item_type", "").lower() == "text"
+        ):
+            post_items_type = "poll"
 
     elif items_length > 1:
         for k, g in groupby(items, key=lambda i: i["item_type"]):
