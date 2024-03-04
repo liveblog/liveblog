@@ -366,7 +366,7 @@ const postsService = (api, $q, _userList, session) => {
                 _.each(itemsList, (item) => {
                     switch (item.item_type) {
                     case 'poll':
-                        post.groups[1].refs.push({ residRef: item._id, location: 'polls' });
+                        post.groups[1].refs.push({ residRef: item._id, location: 'polls', type: 'poll' });
                         break;
                     default:
                         post.groups[1].refs.push({ residRef: item._id });
