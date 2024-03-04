@@ -1,0 +1,13 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+<script>
+  function getTotalVotes(poll, elementId) {
+    let totalVotes = poll.answers.reduce((acc, ans) => acc + ans.votes, 0);
+    document.getElementById(elementId).innerText = totalVotes;
+  }
+
+  function getTimeLeft(poll, elementId) {
+    let timeLeft = moment(poll.active_until).fromNow();
+    document.getElementById(elementId).innerText = timeLeft;
+  }
+</script>

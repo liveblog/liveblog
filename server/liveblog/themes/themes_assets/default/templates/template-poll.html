@@ -37,9 +37,14 @@
         <div style="display: flex; flex-direction: row; gap: 8px; align-items: center">
           <p style="font-size: 12px; color: #737373;">Total Votes: <span id="total-votes-{{ pollId }}"></span></p>
           <p style="font-size: 12px; color: #737373;">&bull;</p>
-          <p style="font-size: 12px; color: #737373;">Ends in <span id="vote-end-{{ pollId }}"></span></p>
+          <p style="font-size: 12px; color: #737373;">Ends <span id="vote-end-{{ pollId }}"></span></p>
         </div>
         <button style="margin: 0; width: fit-content; align-self: end; color: white; background-color: #5EA8C9; border-radius: 6px; padding: 10px;" type="submit">VOTE</button>
     </div>
   </form>
 </div>
+
+<script>
+  getTotalVotes({{ poll | tojson }}, 'total-votes-{{ pollId }}');
+  getTimeLeft({{ poll | tojson }}, 'vote-end-{{ pollId }}');
+</script>

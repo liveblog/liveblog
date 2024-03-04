@@ -91,6 +91,13 @@ class Blog(AuthorsMixin):
             original_text = doc["item"].get("text")
             doc["item"]["text"] = self.check_html_markup(original_text)
 
+    def change_poll_time_to_str_if_needed(self, doc):
+        # TODO : Using location for now but change to use item type later
+        if doc.get("location") == "polls":
+            doc["item"]["poll_body"]["active_until"] = doc["item"]["poll_body"][
+                "active_until"
+            ].isoformat()
+
     def posts(self, **kwargs):
         """
         Builds a query with the given parameters and hit mongodb to retrive the data
@@ -135,6 +142,7 @@ class Blog(AuthorsMixin):
                 if ref_id and rel_item:
                     assoc["item"] = rel_item
                     self.fix_item_markup_if_needed(assoc)
+                    self.change_poll_time_to_str_if_needed(assoc)
 
         # Enrich documents
         self.complete_posts_info(posts)
