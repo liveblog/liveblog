@@ -1,5 +1,6 @@
 /* eslint camelcase: "off" */
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import './poll-component.scss';
 import { pollCalculations } from './utils';
 
@@ -8,15 +9,15 @@ export interface IPollBody {
     answers: Array<{ option: string; votes: number; percentage?: number }>;
     question: string;
     totalVotes?: number;
-    timeLeft?: number;
-    timeUnit?: string;
+    timeLeft?: string;
+    elapsed?: boolean;
 }
 
 interface IProps {
     item: any;
 }
 
-export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
+const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => {
     const [poll, setPoll] = useState<IPollBody>(pollCalculations(item.poll_body));
 
     useEffect(() => {
@@ -52,8 +53,8 @@ export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => 
             <div className="poll_flex_box poll_row poll_gap_8">
                 <p className="poll_component_subtitle">Total Votes: {poll.totalVotes}</p>
                 <p className="poll_component_subtitle">&bull;</p>
-                {poll.timeLeft > 0 ? (
-                    <p className="poll_component_subtitle">{poll.timeLeft} {poll.timeUnit} Left</p>
+                {!poll.elapsed ? (
+                    <p className="poll_component_subtitle">Ends {poll.timeLeft}</p>
                 ) : (
                     <p className="poll_component_subtitle">Poll Closed</p>
                 )}
@@ -61,3 +62,13 @@ export const PollComponentView: React.FunctionComponent<IProps> = ({ item }) => 
         </div>
     );
 };
+
+export const destroyPollComponentView = (element: HTMLDivElement) => {
+    ReactDOM.unmountComponentAtNode(element);
+};
+
+const renderPollComponentView = (element: HTMLDivElement, item: any) => {
+    ReactDOM.render(<PollComponentView item={item} />, element);
+};
+
+export default renderPollComponentView;

@@ -1,6 +1,8 @@
 import flask
 
 import liveblog.blogs as blogs
+import liveblog.items as items
+import liveblog.polls as polls
 import liveblog.posts as posts
 import superdesk.users as users_app
 import liveblog.themes as themes
@@ -15,6 +17,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import get_publisher, private_draft_filter
 from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
+from liveblog.posts.utils import check_content_diff
 from liveblog.common import run_once
 
 
@@ -36,6 +39,8 @@ class PostsModuleTestCase(TestCase):
             users_app,
             themes,
             advertisements,
+            polls,
+            items,
         ]
         for lb_app in init_apps:
             lb_app.init_app(self.app)
@@ -163,6 +168,66 @@ class PostsModuleTestCase(TestCase):
         ]
         # Create blogs
         self.blogs_ids = self.app.data.insert("client_blogs", self.blogs_list)
+
+        self.polls = [
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d59"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-09T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d60"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d60", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-10T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+        ]
+
+        self.polls_ids = self.app.data.insert("polls", self.polls)
+
         self.items = [
             {
                 "_created": "2018-04-03T05:42:43+00:00",
@@ -356,19 +421,24 @@ class PostsModuleTestCase(TestCase):
                             {
                                 "item": self.items[0],
                                 "residRef": self.items_ids[0],
-                                "location": "items",
                                 "type": "text",
                             },
                             {
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
-                                "location": "items",
                                 "type": "text",
                             },
                             {
+                                "item": self.post_comments[0],
                                 "residRef": self.post_comments_ids[0],
                                 "location": "post_comments",
                                 "type": "text",
+                            },
+                            {
+                                "item": self.polls[0],
+                                "residRef": self.polls_ids[0],
+                                "location": "polls",
+                                "type": "poll",
                             },
                         ],
                         "role": "grpRole:Main",
@@ -547,10 +617,84 @@ class PostsModuleTestCase(TestCase):
         with self.app.app_context():
             related_items = self.blog_posts_service.related_items_map(self.blog_posts)
 
-            assert len(related_items.keys()) == 3
+            assert len(related_items.keys()) == 4
 
             # default archieve item should be fetched
             assert self.items[0]["_id"] in related_items
 
             # item from `post_comment` should be also fetched
             assert str(self.post_comments[0]["_id"]) in related_items
+
+    def test_check_content_diff_missing_groups(self):
+        updates = {}
+        original = self.blog_posts[0]
+        assert not check_content_diff(updates, original)
+
+    def test_check_content_diff_refs_length(self):
+        updates = {"groups": [{}, {"refs": []}]}
+        original = self.blog_posts[0]
+        assert check_content_diff(updates, original)
+
+    def test_check_content_diff_items(self):
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.items_ids[1],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.items[0],
+                            "residRef": self.items_ids[0],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        assert check_content_diff(updates, original)
+        assert not check_content_diff(original, original)
+
+    def test_check_content_diff_polls(self):
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.polls_ids[1],
+                            "location": "polls",
+                            "type": "poll",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.polls[0],
+                            "residRef": self.polls_ids[0],
+                            "location": "polls",
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        assert check_content_diff(updates, original)
+        assert not check_content_diff(original, original)

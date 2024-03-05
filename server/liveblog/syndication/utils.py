@@ -147,39 +147,40 @@ def extract_post_items_data(original_doc):
                 item = service.find_one(req=None, _id=ref["residRef"])
 
                 # TODO: consider with the team if comments should be syndicated or not
-                if item.get("item_type") == "post_comment":
-                    continue
+                if item is not None:
+                    if item.get("item_type") == "post_comment":
+                        continue
 
-                syndicated_creator = user_service.find_one(
-                    req=None, _id=item["original_creator"]
-                )
-                syndicated_obj = None
-                if syndicated_creator:
-                    syndicated_obj = {
-                        k: v
-                        for k, v in syndicated_creator.items()
-                        if k in needed_fields
+                    syndicated_creator = user_service.find_one(
+                        req=None, _id=item["original_creator"]
+                    )
+                    syndicated_obj = None
+                    if syndicated_creator:
+                        syndicated_obj = {
+                            k: v
+                            for k, v in syndicated_creator.items()
+                            if k in needed_fields
+                        }
+                    text = item.get("text")
+                    item_type = item.get("item_type")
+                    group_type = item.get("group_type")
+                    meta = item.get("meta", {})
+                    data = {
+                        "text": text,
+                        "item_type": item_type,
+                        "group_type": group_type,
+                        "commenter": item.get("commenter"),
+                        "syndicated_creator": syndicated_obj,
+                        "meta": meta,
                     }
-                text = item.get("text")
-                item_type = item.get("item_type")
-                group_type = item.get("group_type")
-                meta = item.get("meta", {})
-                data = {
-                    "text": text,
-                    "item_type": item_type,
-                    "group_type": group_type,
-                    "commenter": item.get("commenter"),
-                    "syndicated_creator": syndicated_obj,
-                    "meta": meta,
-                }
 
-                # Add specific fields based on service used to get item, if necessary
-                # This assumes different origins can indicate specific handling
-                # For example, when handling polls
-                if service_name == "polls":
-                    data["poll_body"] = item.get("poll_body")
+                    # Add specific fields based on service used to get item, if necessary
+                    # This assumes different origins can indicate specific handling
+                    # For example, when handling polls
+                    if service_name == "polls":
+                        data["poll_body"] = item.get("poll_body")
 
-                items.append(data)
+                    items.append(data)
     return items
 
 
