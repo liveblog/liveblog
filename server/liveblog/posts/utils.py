@@ -70,33 +70,24 @@ def calculate_post_type(post, items=None):
             post_items_type = "advertisement"
 
         elif first_item_type == "embed":
-            post_items_type = "embed"
-            if "provider_name" in items[0]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[0]["meta"]["provider_name"].lower()
-                )
+            post_items_type = get_embed_type(items[0])
+        elif first_item_type == "poll":
+            post_items_type = "poll"
 
     elif items_length == 2 and not all(
         [item["item_type"] == "embed" for item in items]
     ):
-        if (
-            items[1].get("item_type", "").lower() == "embed"
-            and items[0].get("item_type", "").lower() == "text"
+        item0_type = items[0].get("item_type", "").lower()
+        item1_type = items[1].get("item_type", "").lower()
+
+        if item1_type == "embed" and item0_type == "text":
+            post_items_type = get_embed_type(items[1])
+        elif item0_type == "embed" and item1_type == "text":
+            post_items_type = get_embed_type(items[0])
+        elif (item0_type == "poll" and item1_type == "text") or (
+            item1_type == "poll" and item0_type == "text"
         ):
-            post_items_type = "embed"
-            if "provider_name" in items[1]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[1]["meta"]["provider_name"].lower()
-                )
-        elif (
-            items[0].get("item_type", "").lower() == "embed"
-            and items[1].get("item_type", "").lower() == "text"
-        ):
-            post_items_type = "embed"
-            if "provider_name" in items[0]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[0]["meta"]["provider_name"].lower()
-                )
+            post_items_type = "poll"
 
     elif items_length > 1:
         for k, g in groupby(items, key=lambda i: i["item_type"]):
@@ -107,6 +98,15 @@ def calculate_post_type(post, items=None):
     post["post_items_type"] = post_items_type
 
     return post
+
+
+def get_embed_type(item):
+    post_items_type = "embed"
+    if "provider_name" in item["meta"]:
+        post_items_type = "{}-{}".format(
+            post_items_type, item["meta"]["provider_name"].lower()
+        )
+    return post_items_type
 
 
 def attach_syndication(post):

@@ -30,6 +30,7 @@ from liveblog.posts.posts import (
     BlogPostsResource,
 )
 from liveblog.items.items import ItemsResource, ItemsService
+from liveblog.polls.polls import PollsResource, PollsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
@@ -188,6 +189,24 @@ class ClientItemsService(ItemsService):
         for doc in docs:
             check_comment_length(doc["text"])
         super().on_create(docs)
+
+
+class ClientPollsResource(PollsResource):
+    datasource = {
+        "source": "polls",
+        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "default_sort": [("order", -1)],
+    }
+    public_methods = ["GET", "PATCH"]
+    public_item_methods = ["GET", "PATCH"]
+    item_methods = ["GET", "PATCH"]
+    resource_methods = ["GET"]
+    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    schema.update(PollsResource.schema)
+
+
+class ClientPollsService(PollsService):
+    pass
 
 
 class ClientCommentsResource(PostsResource):
@@ -548,5 +567,7 @@ def _get_converted_item(item):
         meta["credit"] = item["meta"]["credit"]
         converted["meta"] = meta
         converted["renditions"] = item["meta"]["media"]["renditions"]
+    elif item_type == "poll":
+        converted["poll_body"] = item["poll_body"]
 
     return converted
