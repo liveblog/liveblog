@@ -36,9 +36,21 @@ describe('Poll functionality', function() {
           var days = element(by.id('poll_days_input')).getAttribute('value');
           var hours = element(by.id('poll_hours_input')).getAttribute('value');
           var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
-          expect(days).toEqual('12');
+          expect(days).toEqual('02');
           expect(hours).toEqual('03');
           expect(minutes).toEqual('030');
+    });
+
+    it('can limit hours to 24 and minutes to 60 in poll block', function() {
+          var editor = blogs.openBlog(0).editor
+                              .addTop()
+                              .addPoll()
+                              .setHours(50)
+                              .setMinutes(100);
+          var hours = element(by.id('poll_hours_input')).getAttribute('value');
+          var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
+          expect(hours).toEqual('24');
+          expect(minutes).toEqual('60');
     });
 
     it('can reset the poll block', function() {
@@ -54,7 +66,7 @@ describe('Poll functionality', function() {
           var hours = element(by.id('poll_hours_input')).getAttribute('value');
           var minutes = element(by.id('poll_minutes_input')).getAttribute('value');
           var optionsCount = element.all(by.css('.poll_option_container input[type="text"]')).count();
-          expect(days).toEqual('1');
+          expect(days).toEqual('0');
           expect(hours).toEqual('0');
           expect(minutes).toEqual('0');
           expect(optionsCount).toEqual(2);

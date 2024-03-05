@@ -12,10 +12,21 @@ export default function pollBlock(SirTrevor, config) {
         },
         onBlockRender: function() {
             const container = this.$('.st-poll_block');
+            const onFormPopulated = (data) => {
+                this.getOptions().disableSubmit(false);
+                this.setData(data);
+            };
+            let data = this.getData();
 
-            renderPollComponent(container[0], null);
+            renderPollComponent(container[0], data, onFormPopulated);
 
             container.closest('.st-block__inner').off('click');
+        },
+        loadData: function(data) {
+            this.setData(data);
+        },
+        focus: function() {
+            this.$('.poll-input').focus();
         },
     });
 }
