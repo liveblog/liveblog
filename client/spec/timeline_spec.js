@@ -55,6 +55,8 @@ describe('timeline', function() {
         var blog = blogs.openBlog(3);
         blog.timeline.startMoving(1);
         blog.timeline.moveTo(0);
+        browser.waitForAngular();
+        browser.refresh();
         blog.timeline.expectPost(0, posts[1][0]);
     });
     it('can\'t reorder a single post on the timeline', function() {

@@ -17,6 +17,8 @@ describe('timeline deletions', function() {
             blog.timeline.remove(0)
                             .waitForModal()
                             .okModal();
+            browser.waitForAngular();
+            browser.refresh();
             blog.timeline.all().then(function(newPosts) {
                 expect(posts.length).not.toEqual(newPosts.length);
             });

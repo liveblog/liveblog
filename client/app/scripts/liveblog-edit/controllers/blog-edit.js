@@ -144,6 +144,18 @@ export default function BlogEditController(
                 if (block.type === 'image' && meta === null)
                     return null;
 
+                if (block.type === 'poll') {
+                    return {
+                        poll_body: {
+                            question: meta.pollBody.question,
+                            answers: meta.pollBody.answers,
+                            active_until: meta.pollBody.active_until,
+                        },
+                        id_to_update: meta.id_to_update,
+                        item_type: block.type,
+                    };
+                }
+
                 return {
                     group_type: 'default',
                     text: block.text
@@ -202,7 +214,7 @@ export default function BlogEditController(
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
-        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment'];
+        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment', 'poll'];
 
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;

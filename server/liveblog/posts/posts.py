@@ -25,7 +25,7 @@ from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
-from .utils import get_associations
+from .utils import get_associations, check_content_diff
 
 
 logger = logging.getLogger("superdesk")
@@ -412,19 +412,7 @@ class PostsService(ArchiveService):
             check_comment_length(item["text"])
 
         # check if updates `content` is different than the original.
-        content_diff = False
-        if not updates.get("groups", False):
-            content_diff = False
-        elif len(original["groups"][1]["refs"]) != len(updates["groups"][1]["refs"]):
-            content_diff = True
-        else:
-            for index, val in enumerate(updates["groups"][1]["refs"]):
-                item = get_resource_service("archive").find_one(
-                    req=None, _id=val["residRef"]
-                )
-                if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
-                    content_diff = True
-                    break
+        content_diff = check_content_diff(updates, original)
         if content_diff:
             updates["content_updated_date"] = utcnow()
 
