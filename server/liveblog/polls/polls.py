@@ -27,6 +27,7 @@ class PollsResource(Resource):
         "particular_type": {"type": "string", "allowed": ["poll"], "default": "poll"},
         "item_type": {"type": "string", "default": "poll"},
         "text": {"type": "string", "default": "Poll placeholder"},
+        "type": {"type": "string", "default": "poll"},
         "group_type": {
             "type": "string",
             "allowed": ["freetype", "default"],
