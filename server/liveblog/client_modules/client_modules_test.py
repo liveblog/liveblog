@@ -519,6 +519,32 @@ class ClientModuleTestCase(TestCase):
         post_items_type = doc.get("post_items_type")
         self.assertIsNone(post_items_type, True)
 
+    def test_post_type_poll(self):
+        doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
+        self.blog_posts[0]["groups"][1] = {
+            "id": "main",
+            "refs": [
+                {
+                    "guid": "65c32eb35c29be1d62515d59",
+                    "item": self.items[2],
+                    "residRef": self.items_ids[2],
+                    "location": "polls",
+                    "type": "text",
+                },
+                {
+                    "guid": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
+                    "item": self.items[0],
+                    "residRef": self.items_ids[0],
+                    "type": "text",
+                },
+            ],
+            "role": "grpRole:Main",
+        }
+        post_utils.calculate_post_type(self.blog_posts[0])
+        post_items_type = doc.get("post_items_type")
+        self.assertIsNotNone(post_items_type, True)
+        self.assertEqual(post_items_type, "poll")
+
     def test_b_get_blog_posts(self):
         blog_id = str(self.blogs_ids[0])
         result = self.client.get(
