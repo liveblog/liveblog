@@ -6,8 +6,16 @@
     document.getElementById(elementId).innerText = totalVotes;
   }
 
-  function getTimeLeft(poll, elementId) {
-    let timeLeft = moment(poll.active_until).fromNow();
-    document.getElementById(elementId).innerText = timeLeft;
+  function getTimeLeft(poll, elementId, buttonId) {
+    let now = moment();
+    let activeUntil = moment(poll.active_until);
+    let timeLeft = activeUntil.fromNow();
+
+    if (activeUntil.isBefore(now)) {
+      document.getElementById(elementId).innerText = "Poll closed";
+      document.getElementById(buttonId).style.display = "none";
+    } else {
+      document.getElementById(elementId).innerText = "Ends " + timeLeft;
+    }
   }
 </script>
