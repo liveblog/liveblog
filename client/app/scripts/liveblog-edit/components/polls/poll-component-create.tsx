@@ -60,7 +60,9 @@ export const PollComponentCreate: React.FunctionComponent<IProps> = ({ item, onF
         const futureTime = moment().add({ days: days, hours: hours, minutes: minutes });
         const pollBody = {
             question: question,
-            answers: answers,
+            answers: answers.map((ans) => {
+                return { option: ans.option, votes: ans.votes };
+            }),
             active_until: futureTime.toISOString(),
         };
 

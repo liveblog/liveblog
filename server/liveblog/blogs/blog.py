@@ -8,6 +8,7 @@ from lxml.html.html5parser import fragments_fromstring, HTMLParser
 from superdesk.utc import utcnow
 from superdesk import get_resource_service
 
+from liveblog.polls.polls import poll_calculations
 from liveblog.posts.mixins import AuthorsMixin
 from liveblog.posts.utils import get_associations
 
@@ -94,6 +95,7 @@ class Blog(AuthorsMixin):
             doc["item"]["poll_body"]["active_until"] = doc["item"]["poll_body"][
                 "active_until"
             ].isoformat()
+            doc["item"]["poll_body"] = poll_calculations(doc["item"]["poll_body"])
 
     def posts(self, **kwargs):
         """

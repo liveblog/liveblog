@@ -1,0 +1,19 @@
+  .custom-poll-radio + label::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 50%;
+    border: 2px solid #737373;
+    vertical-align: middle;
+  }
+
+  .custom-poll-radio:checked + label::before {
+    border-color: #5EA8C8;
+    background-color: #5EA8C8; 
+  }
+  
+  .custom-poll-radio:checked + label {
+    color: #5EA8C8;
+  }

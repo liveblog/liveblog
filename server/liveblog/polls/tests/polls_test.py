@@ -1,6 +1,7 @@
 from bson import ObjectId
 from superdesk import get_resource_service
 from superdesk.tests import TestCase
+from liveblog.polls.polls import poll_calculations
 import datetime
 import flask
 import liveblog.polls as polls
@@ -27,8 +28,8 @@ class PollsTest(TestCase):
                 "poll_body": {
                     "question": "Do you think Liveblog is the best ?",
                     "answers": [
-                        {"option": "Yes", "votes": 0},
-                        {"option": "No", "votes": 0},
+                        {"option": "Yes", "votes": 57},
+                        {"option": "No", "votes": 30},
                     ],
                     "active_until": datetime.datetime(2024, 2, 12, 12, 40, 44),
                 },
@@ -74,3 +75,8 @@ class PollsTest(TestCase):
             response_poll_body.get("active_until"),
             self.poll_doc[0]["poll_body"]["active_until"],
         )
+
+    def test_poll_calculations(self):
+        result = poll_calculations(self.poll_doc[0]["poll_body"])
+        self.assertEqual(result["answers"][0]["percentage"], 66)
+        self.assertEqual(result["answers"][1]["percentage"], 34)

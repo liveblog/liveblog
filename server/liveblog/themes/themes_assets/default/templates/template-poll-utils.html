@@ -1,12 +1,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 <script>
-  function getTotalVotes(poll, elementId) {
+  function getTotalVotes(poll, pollId) {
+    let elementId = `total-votes-${pollId}`;
     let totalVotes = poll.answers.reduce((acc, ans) => acc + ans.votes, 0);
     document.getElementById(elementId).innerText = totalVotes;
   }
 
-  function getTimeLeft(poll, elementId, buttonId) {
+  function getTimeLeft(poll, pollId) {
+    let elementId = `vote-end-${pollId}`;
+    let buttonId = `vote-button-${pollId}`;
+    let pollOpenId = `poll-open-${pollId}`;
+    let pollClosedId = `poll-closed-${pollId}`;
+    
     let now = moment();
     let activeUntil = moment(poll.active_until);
     let timeLeft = activeUntil.fromNow();
@@ -14,8 +20,11 @@
     if (activeUntil.isBefore(now)) {
       document.getElementById(elementId).innerText = "Poll closed";
       document.getElementById(buttonId).style.display = "none";
+      document.getElementById(pollOpenId).style.display = "none";
+      document.getElementById(pollClosedId).style.display = "block";
     } else {
       document.getElementById(elementId).innerText = "Ends " + timeLeft;
+      document.getElementById(pollOpenId).style.display = "block";
     }
   }
 </script>

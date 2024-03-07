@@ -30,7 +30,7 @@ from liveblog.posts.posts import (
     BlogPostsResource,
 )
 from liveblog.items.items import ItemsResource, ItemsService
-from liveblog.polls.polls import PollsResource, PollsService
+from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
@@ -568,6 +568,6 @@ def _get_converted_item(item):
         converted["meta"] = meta
         converted["renditions"] = item["meta"]["media"]["renditions"]
     elif item_type == "poll":
-        converted["poll_body"] = item["poll_body"]
+        converted["poll_body"] = poll_calculations(item["poll_body"])
 
     return converted
