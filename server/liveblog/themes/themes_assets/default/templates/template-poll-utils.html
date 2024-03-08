@@ -21,10 +21,10 @@
       document.getElementById(elementId).innerText = "Poll closed";
       document.getElementById(buttonId).style.display = "none";
       document.getElementById(pollOpenId).style.display = "none";
-      document.getElementById(pollClosedId).style.display = "block";
+      document.getElementById(pollClosedId).style.display = "flex";
     } else {
       document.getElementById(elementId).innerText = "Ends " + timeLeft;
-      document.getElementById(pollOpenId).style.display = "block";
+      document.getElementById(pollOpenId).style.display = "flex";
     }
   }
 </script>

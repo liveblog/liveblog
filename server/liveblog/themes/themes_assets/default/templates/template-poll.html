@@ -1,51 +1,50 @@
 {% set pollId = ref.item._id %}
 {% set poll = ref.item.poll_body %}
 
-<div style="padding: 12px; border: 0.5px solid #EBEBEB; display: flex; width: 75%; background-color: #FBFAFB; flex-direction: column; gap: 8px;">
-  <p style="font-size: 16px; font-weight: bold;">{{ poll.question }}</p>
-  <form>
-    <div style="display: flex; flex-direction: column; gap: 8px;">
+<div class="lb-poll_container">
+  <p class="lb-poll_question">{{ poll.question }}</p>
+    <form class="lb-poll_form">
 
       <!-- When the poll is open -->
-      <div id="poll-open-{{ pollId }}" style="display: none">
+      <div id="poll-open-{{ pollId }}" class="lb-poll_options_container">
         {% for answer in poll.answers %}
-          <div style="display: flex; flex-direction: row; gap: 8px; align-items: center">
-            <input type="radio" class="custom-poll-radio" id="{{ pollId }}-answer-{{ loop.index0 }}" name="{{ pollId }}-selected" value="{{ loop.index0 }}" style="opacity: 0; position: absolute;">
-            <label for="{{ pollId }}-answer-{{ loop.index0 }}" style="margin-top: 4px; position: relative; padding-left: 4px;">{{ answer.option }}</label>
+          <div class="lb-poll_open_option">
+            <input type="radio" class="lb-poll_custom_radio" id="{{ pollId }}-answer-{{ loop.index0 }}" name="{{ pollId }}-selected" value="{{ loop.index0 }}">
+            <label for="{{ pollId }}-answer-{{ loop.index0 }}" class="lb_poll_custom_label">{{ answer.option }}</label>
           </div>
         {% endfor %}
       </div>
       
       <!-- When the poll is closed -->
-      <div id="poll-closed-{{ pollId }}" style="display: none">
+      <div id="poll-closed-{{ pollId }}" class="lb-poll_options_container">
         {% for answer in poll.answers %}
-            <div style="display: flex; flex-direction: column;">
-                <p style="font-size: 14px; font-weight: bold; margin-bottom: 0px;">{{ answer.option }}</p>
-                <div style="display: flex; flex-direction: row; gap: 8px; margin-top: -8px">
-                    <div style="width: 100%; align-self: center;">
-                        <div style="height: 4px; width: 100%; background-color: #D9D8D8; border-radius: 12px;">
-                          <div style="height: 4px; background-color: #5FA8C8; border-radius: 12px; width: {{ answer.percentage }}%;"></div>
+            <div class="lb-poll_closed_option">
+                <p class="lb-poll_answer">{{ answer.option }}</p>
+                <div class="lb-poll_closed_result">
+                    <div class="lb-poll_closed_bar">
+                        <div class="lb-poll_closed_bar_bg">
+                          <div class="lb-poll_closed_bar_fg" style="width: {{ answer.percentage }}%;"></div>
                         </div>
                     </div>
-                    <div style="font-size: 14px; color: #737373; width: fit-content; align-self: center;">
+                    <p class="lb-poll_percentage">
                         {{ answer.percentage }}%
-                    </div>
+                    </p>
                 </div>
-                <p style="font-size: 12px; color: #737373; margin-top: -8px">Votes: {{ answer.votes }}</p>
+                <p class="lb-poll_subtitle">Votes: {{ answer.votes }}</p>
             </div>
         {% endfor %}
       </div>
 
-      <div style="margin-top: 8px; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-          <div style="display: flex; flex-direction: row; gap: 8px; align-items: center">
-            <p style="font-size: 12px; color: #737373;">Total Votes: <span id="total-votes-{{ pollId }}"></span></p>
-            <p style="font-size: 12px; color: #737373;">&bull;</p>
-            <p style="font-size: 12px; color: #737373;"><span id="vote-end-{{ pollId }}"></span></p>
+      <div class="lb-poll_footer">
+          <div class="lb-poll_footer_summary">
+            <p class="lb-poll_subtitle">Total Votes: <span id="total-votes-{{ pollId }}"></span></p>
+            <p class="lb-poll_subtitle">&bull;</p>
+            <p class="lb-poll_subtitle"><span id="vote-end-{{ pollId }}"></span></p>
           </div>
-          <button id="vote-button-{{ pollId }}" style="font-size: 14px; margin: 0; width: fit-content; align-self: baseline; color: white; background-color: #5EA8C9; border-radius: 6px; padding: 10px;" type="submit">VOTE</button>
+          <button id="vote-button-{{ pollId }}" class="lb-poll_vote_btn" type="submit">VOTE</button>
       </div>
-    </div>
-  </form>
+      
+    </form>
 </div>
 
 <script>
