@@ -78,6 +78,43 @@ function post(url, data) {
 
 }
 
+function get(url) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', url);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send();
+  });
+}
+
+
+function patch(url, data, etag) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PATCH', url);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("If-Match", etag);
+
+    xhr.onload = function() {
+      if (xhr.status === 200) { // Typically, a successful PATCH request returns a 200 status code
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send(JSON.stringify(data));
+  });
+}
 /**
  * Simple function to convert plain text to html
  * @param {string} strHTML - plain html to be converted to DOM Nodes
@@ -118,6 +155,8 @@ module.exports = {
   getElems: getElems,
   getJSON: getJSON,
   post: post,
+  get: get,
+  patch: patch,
   convertTimestamp: convertTimestamp,
   fragmentFromString: fragmentFromString,
   range: range
