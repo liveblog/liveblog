@@ -61,7 +61,7 @@ function persistVote(selectedPoll, selectedOption) {
 /**
  * Checks for existing votes in local storage and updates the UI accordingly by
  * hiding the vote button for polls that have already been voted on and
- * selecting the users option for a visual cue.
+ * selecting the readers option for a visual cue.
  */
 function checkExistingVotes() {
   const pollsData = Storage.read(POLLS_KEY) || {};
