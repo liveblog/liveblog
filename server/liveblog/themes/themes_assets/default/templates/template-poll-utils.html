@@ -1,5 +1,3 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
 <script>
   function getTotalVotes(poll, pollId) {
     let elementId = `total-votes-${pollId}`;
@@ -13,18 +11,20 @@
     let pollOpenId = `poll-open-${pollId}`;
     let pollClosedId = `poll-closed-${pollId}`;
     
-    let now = moment();
-    let activeUntil = moment(poll.active_until);
-    let timeLeft = activeUntil.fromNow();
+    if(typeof window.moment === 'function') {
+      let now = window.moment();
+      let activeUntil = window.moment(poll.active_until);
+      let timeLeft = activeUntil.fromNow();
 
-    if (activeUntil.isBefore(now)) {
-      document.getElementById(elementId).innerText = "Poll closed";
-      document.getElementById(buttonId).style.display = "none";
-      document.getElementById(pollOpenId).style.display = "none";
-      document.getElementById(pollClosedId).style.display = "flex";
-    } else {
-      document.getElementById(elementId).innerText = "Ends " + timeLeft;
-      document.getElementById(pollOpenId).style.display = "flex";
+      if (activeUntil.isBefore(now)) {
+        document.getElementById(elementId).innerText = "Poll closed";
+        document.getElementById(buttonId).style.display = "none";
+        document.getElementById(pollOpenId).style.display = "none";
+        document.getElementById(pollClosedId).style.display = "flex";
+      } else {
+        document.getElementById(elementId).innerText = "Ends " + timeLeft;
+        document.getElementById(pollOpenId).style.display = "flex";
+      }
     }
   }
 </script>

@@ -13,6 +13,7 @@ const handlers = require('./handlers'),
   adsManager = require('./ads-manager'),
   gdpr = require('./gdpr');
 
+window.moment = require('moment');
 require('iframe-resizer/js/iframeResizer.contentWindow.min.js');
 module.exports = {
   /**
