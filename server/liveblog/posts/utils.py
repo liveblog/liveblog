@@ -68,7 +68,6 @@ def calculate_post_type(post, items=None):
 
         if first_item_type.startswith("advertisement"):
             post_items_type = "advertisement"
-
         elif first_item_type == "embed":
             post_items_type = get_embed_type(items[0])
         elif first_item_type == "poll":

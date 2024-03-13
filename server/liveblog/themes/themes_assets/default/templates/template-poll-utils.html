@@ -1,0 +1,30 @@
+<script>
+  function getTotalVotes(poll, pollId) {
+    let elementId = `total-votes-${pollId}`;
+    let totalVotes = poll.answers.reduce((acc, ans) => acc + ans.votes, 0);
+    document.getElementById(elementId).innerText = totalVotes;
+  }
+
+  function getTimeLeft(poll, pollId) {
+    let elementId = `vote-end-${pollId}`;
+    let buttonId = `vote-button-${pollId}`;
+    let pollOpenId = `poll-open-${pollId}`;
+    let pollClosedId = `poll-closed-${pollId}`;
+    
+    if(typeof window.moment === 'function') {
+      let now = window.moment();
+      let activeUntil = window.moment(poll.active_until);
+      let timeLeft = activeUntil.fromNow();
+
+      if (activeUntil.isBefore(now)) {
+        document.getElementById(elementId).innerText = "Poll closed";
+        document.getElementById(buttonId).style.display = "none";
+        document.getElementById(pollOpenId).style.display = "none";
+        document.getElementById(pollClosedId).style.display = "flex";
+      } else {
+        document.getElementById(elementId).innerText = "Ends " + timeLeft;
+        document.getElementById(pollOpenId).style.display = "flex";
+      }
+    }
+  }
+</script>

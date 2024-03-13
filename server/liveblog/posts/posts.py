@@ -20,6 +20,7 @@ from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length, get_user
+from liveblog.polls.polls import poll_calculations
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
@@ -678,6 +679,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                 ref_id = assoc.get("residRef", None)
                 if ref_id:
                     assoc["item"] = related_items[ref_id]
+                    if assoc.get("type") == "poll":
+                        assoc["item"]["poll_body"] = poll_calculations(
+                            assoc["item"]["poll_body"]
+                        )
 
             self.extract_author_ids(doc)
 

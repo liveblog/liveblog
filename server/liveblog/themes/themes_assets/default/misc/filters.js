@@ -100,6 +100,15 @@ const decodeUri = (url) => {
   return decodeURIComponent(url);
 }
 
+/**
+ * Converts a JavaScript object to a JSON string.
+ * @param  {Object} obj The object to be converted to JSON.
+ * @return {string} JSON string representation of the object.
+ */
+const tojson = (obj) => {
+  return JSON.stringify(obj);
+}
+
 const fixXDomainEmbed = (url) => {
   /*
   This will replace the x.com domain with twitter.com as X's embedding library
@@ -108,4 +117,4 @@ const fixXDomainEmbed = (url) => {
   return url.replace('x.com', 'twitter.com');
 }
 
-module.exports = { ampifyFilter, addtenFilter, decodeUri, fixXDomainEmbed };
+module.exports = { ampifyFilter, addtenFilter, decodeUri, fixXDomainEmbed, tojson };

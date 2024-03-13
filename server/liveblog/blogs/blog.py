@@ -1,5 +1,6 @@
 import pymongo
 from bson.objectid import ObjectId
+from datetime import datetime, timedelta
 from eve.utils import date_to_str
 
 from html5lib.html5parser import ParseError
@@ -8,6 +9,7 @@ from lxml.html.html5parser import fragments_fromstring, HTMLParser
 from superdesk.utc import utcnow
 from superdesk import get_resource_service
 
+from liveblog.polls.polls import poll_calculations
 from liveblog.posts.mixins import AuthorsMixin
 from liveblog.posts.utils import get_associations
 
@@ -90,6 +92,18 @@ class Blog(AuthorsMixin):
         if doc.get("type") == "text":
             original_text = doc["item"].get("text")
             doc["item"]["text"] = self.check_html_markup(original_text)
+        elif doc.get("type") == "poll":
+            poll_body = doc["item"]["poll_body"]
+            active_until = poll_body.get("active_until")
+
+            if active_until is not None:
+                poll_body["active_until"] = active_until.isoformat()
+            else:
+                # Set default active_until to 1 hour from now
+                default_active_until = datetime.now() + timedelta(hours=1)
+                poll_body["active_until"] = default_active_until.isoformat()
+
+            doc["item"]["poll_body"] = poll_calculations(poll_body)
 
     def posts(self, **kwargs):
         """

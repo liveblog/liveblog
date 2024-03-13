@@ -27,6 +27,7 @@ class PollsResource(Resource):
         "particular_type": {"type": "string", "allowed": ["poll"], "default": "poll"},
         "item_type": {"type": "string", "default": "poll"},
         "text": {"type": "string", "default": "Poll placeholder"},
+        "type": {"type": "string", "default": "poll"},
         "group_type": {
             "type": "string",
             "allowed": ["freetype", "default"],
@@ -98,3 +99,61 @@ class PollsService(BaseService):
     def on_deleted(self, doc):
         super().on_deleted(doc)
         push_notification("polls", deleted=1)
+
+
+def poll_calculations(poll):
+    """
+    Calculate and adjust the percentage of votes for each answer in a poll to
+    ensure they sum up to 100%
+    """
+    total_votes = sum(answer["votes"] for answer in poll["answers"])
+
+    updated_answers = [
+        {
+            **answer,
+            "percentage": (
+                0 if total_votes == 0 else round((answer["votes"] / total_votes) * 100)
+            ),
+        }
+        for answer in poll["answers"]
+    ]
+
+    if total_votes > 0:
+        # Percentage Rounding Error Allocation method
+        raw_percentages = [
+            {
+                **answer,
+                "raw_percentage": (
+                    0 if total_votes == 0 else (answer["votes"] / total_votes) * 100
+                ),
+            }
+            for answer in poll["answers"]
+        ]
+        rounded_percentages = [
+            {**answer, "percentage": round(answer["raw_percentage"])}
+            for answer in raw_percentages
+        ]
+        total_percentage = sum(answer["percentage"] for answer in rounded_percentages)
+        adjustment = 100 - total_percentage
+        sorted_by_remainder = sorted(
+            rounded_percentages,
+            key=lambda answer: answer["raw_percentage"] - int(answer["raw_percentage"]),
+            reverse=True,
+        )
+
+        for i in range(abs(adjustment)):
+            sorted_by_remainder[i % len(sorted_by_remainder)]["percentage"] += int(
+                adjustment / abs(adjustment)
+            )
+
+        updated_answers = [
+            {
+                "option": answer["option"],
+                "votes": answer["votes"],
+                "percentage": answer["percentage"],
+            }
+            for answer in sorted_by_remainder
+        ]
+
+    updated_answers.sort(key=lambda answer: answer["votes"], reverse=True)
+    return {**poll, "answers": updated_answers}
