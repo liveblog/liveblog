@@ -315,11 +315,13 @@ const postsService = (api, $q, _userList, session) => {
                     };
 
                     if (angular.isDefined(itemParam.id_to_update)) {
-                        savePromises.push(
-                            api.polls.getById(itemParam.id_to_update).then((pollToUpdate) => {
-                                return api.polls.save(pollToUpdate, poll);
-                            })
-                        );
+                        const pollPromise = api.polls.getById(itemParam.id_to_update).then((pollToUpdate) => {
+                            // Update the poll answers from editor since they new votes could have been added
+                            // since initial poll creation or subsequent updates
+                            poll.poll_body.answers = pollToUpdate.poll_body.answers;
+                            return api.polls.save(pollToUpdate, poll);
+                        })
+                        savePromises.push(pollPromise);
                     } else {
                         savePromises.push(api.polls.save(poll));
                     }
