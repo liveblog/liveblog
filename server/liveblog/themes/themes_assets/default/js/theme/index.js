@@ -14,6 +14,7 @@ const handlers = require('./handlers'),
   gdpr = require('./gdpr'),
   polls = require('./polls');
 
+window.moment = require('moment');
 require('iframe-resizer/js/iframeResizer.contentWindow.min.js');
 module.exports = {
   /**
