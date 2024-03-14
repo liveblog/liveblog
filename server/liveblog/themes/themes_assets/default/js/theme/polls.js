@@ -94,4 +94,5 @@ module.exports = {
         });
         checkExistingVotes();
     },
+    checkExistingVotes: checkExistingVotes,
 };

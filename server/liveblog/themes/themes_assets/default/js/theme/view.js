@@ -11,6 +11,7 @@ const Permalink = require('./permalink');
 const gdprConsent = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 const filters = require('../../misc/filters');
+const polls = require('./polls');
 import * as messages from './common/messages';
 
 const nunjucksEnv = new nunjucks.Environment();
@@ -221,6 +222,12 @@ function updatePost(post, rendered) {
       var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
       FB.XFBML.parse(embedContainer);
     }, 500);
+  }
+
+  // If post updated is a poll, check existing votes to see if user has already voted
+  // and apply UI changes accordingly
+  if (post.post_items_type === 'poll') {
+    polls.checkExistingVotes();
   }
 
   return true;
