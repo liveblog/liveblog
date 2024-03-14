@@ -105,7 +105,7 @@ function patch(url, data, etag) {
     xhr.setRequestHeader("If-Match", etag);
 
     xhr.onload = function() {
-      if (xhr.status === 200) { // Typically, a successful PATCH request returns a 200 status code
+      if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText));
       } else {
         reject(xhr.responseText);

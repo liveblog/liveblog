@@ -321,7 +321,8 @@ const postsService = (api, $q, _userList, session) => {
                             // new votes since the initial creation or inbetween subsequent updates.
                             poll.poll_body.answers = pollToUpdate.poll_body.answers;
                             return api.polls.save(pollToUpdate, poll);
-                        })
+                        });
+
                         savePromises.push(pollPromise);
                     } else {
                         savePromises.push(api.polls.save(poll));
