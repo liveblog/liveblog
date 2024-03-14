@@ -76,9 +76,14 @@ function checkExistingVotes() {
         voteButton.style.display = "none";
         selectedOptionInput.checked = true;
       } else {
-        console.warn(`Elements for poll ID ${pollId} not found.`);
+        // If they don't exist, they might have been removed by poll editor
+        // So remove them from the local storage
+        delete blogPolls[pollId];
       }
-    })
+    });
+
+    pollsData[blogId] = blogPolls;
+    Storage.write(POLLS_KEY, pollsData, POLLS_EXPIRY_DAYS);
   }
 }
 
