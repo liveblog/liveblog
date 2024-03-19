@@ -229,6 +229,8 @@ class PostsService(ArchiveService):
                     service_name = assoc.get("location", "archive")
                     item_service = get_resource_service(service_name)
                     item = item_service.find_one(req=None, _id=residRef)
+                    if item.get("type") == "poll":
+                        item["poll_body"] = poll_calculations(item["poll_body"])
                     assoc["item"] = item
         except Exception:
             pass

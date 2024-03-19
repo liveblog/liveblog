@@ -1,7 +1,7 @@
 {% set pollId = ref.item._id %}
 {% set poll = ref.item.poll_body %}
 
-<div class="lb-poll_container">
+<div id="poll-container-{{ pollId }}" class="lb-poll_container">
   <p class="lb-poll_question">{{ poll.question }}</p>
     <form class="lb-poll_form" onsubmit="placeVote(event, this)">
 

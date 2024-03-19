@@ -1,7 +1,7 @@
 'use strict';
 
 import {Storage} from './common/storage';
-var helpers = require('./helpers');
+const helpers = require('./helpers');
 
 const POLLS_KEY = '__lb_polls_data__';
 const POLLS_EXPIRY_DAYS = 365;
@@ -13,16 +13,21 @@ const blogId = LB.blog._id;
  * Updates the UI with the new total votes and switches to the poll closed view
  */
 function updatePollUI(totalVotes, selectedPoll) {
-  const totalVotesElem = document.getElementById(`total-votes-${selectedPoll}`);
-  const pollOpenElem = document.getElementById(`poll-open-${selectedPoll}`);
-  const pollClosedElem = document.getElementById(`poll-closed-${selectedPoll}`);
-  const buttonElem = document.getElementById(`vote-button-${selectedPoll}`);
+  const pollElem = document.getElementById(`poll-container-${selectedPoll}`);
 
-  if (totalVotesElem && pollOpenElem && pollClosedElem) {
-    totalVotesElem.innerText = totalVotes;
-    pollOpenElem.style.display = "none";
-    buttonElem.style.display = "none";
-    pollClosedElem.style.display = "flex";
+  if (pollElem) {
+    const postId = pollElem.closest('[data-post-id]').getAttribute('data-post-id');
+    const postEndpoint = `${apiHost}api/client_posts/${postId}`;
+
+    helpers.get(postEndpoint)
+      .then((post) => {
+        var view = require('./view');
+        const rendered = view.renderSinglePost(post, false);
+        
+        if (!view.updatePost(post, rendered)) {
+          console.warn("Failed to update post");
+        }
+      });
   }
 }
 

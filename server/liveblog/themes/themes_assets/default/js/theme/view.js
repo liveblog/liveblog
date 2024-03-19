@@ -531,5 +531,7 @@ module.exports = {
   loadEmbeds: loadEmbeds,
   initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds,
   scrollHeaderIntoView: scrollHeaderIntoView,
-  reloadScripts: reloadScripts
+  reloadScripts: reloadScripts,
+  renderSinglePost: renderSinglePost,
+  updatePost: updatePost,
 };
