@@ -12,7 +12,7 @@ const blogId = LB.blog._id;
 /**
  * Updates the UI with the new total votes and switches to the poll closed view
  */
-function updatePollUI(totalVotes, selectedPoll) {
+function updatePollUI(selectedPoll) {
   const pollElem = document.getElementById(`poll-container-${selectedPoll}`);
 
   if (pollElem) {
@@ -46,8 +46,7 @@ function placeVote(event) {
 
       helpers.patch(pollEndpoint, data, etag)
         .then((updatedPoll) => {
-          let totalVotes = updatedPoll.poll_body.answers.reduce((acc, ans) => acc + ans.votes, 0);
-          updatePollUI(totalVotes, selectedPoll);
+          updatePollUI(selectedPoll);
           persistVote(selectedPoll, selectedOption);
       });
     });
