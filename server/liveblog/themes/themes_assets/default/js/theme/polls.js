@@ -10,16 +10,18 @@ const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const blogId = LB.blog._id;
 
 /**
- * Updates the UI with the new total votes and hides the vote button.
+ * Updates the UI with the new total votes and switches to the poll closed view
  */
 function updatePollUI(totalVotes, selectedPoll) {
-  const totalVotesUpdatedId = `total-votes-updated-${selectedPoll}`;
-  const totalVotesId = `total-votes-${selectedPoll}`;
-  const voteButtonId = `vote-button-${selectedPoll}`;
+  const totalVotesElem = document.getElementById(`total-votes-${selectedPoll}`);
+  const pollOpenElem = document.getElementById(`poll-open-${selectedPoll}`);
+  const pollClosedElem = document.getElementById(`poll-closed-${selectedPoll}`);
 
-  document.getElementById(totalVotesUpdatedId).innerText = totalVotes;
-  document.getElementById(totalVotesId).style.display = "none";
-  document.getElementById(voteButtonId).style.display = "none";
+  if (totalVotesElem && pollOpenElem && pollClosedElem) {
+    totalVotesElem.innerText = totalVotes;
+    pollOpenElem.style.display = "none";
+    pollClosedElem.style.display = "flex";
+  }
 }
 
 /**
@@ -59,9 +61,7 @@ function persistVote(selectedPoll, selectedOption) {
 }
 
 /**
- * Checks for existing votes in local storage and updates the UI accordingly by
- * hiding the vote button for polls that have already been voted on and
- * selecting the readers option for a visual cue.
+ * Checks for existing votes in local storage and updates the UI accordingly
  */
 function checkExistingVotes() {
   const pollsData = Storage.read(POLLS_KEY) || {};
@@ -69,17 +69,15 @@ function checkExistingVotes() {
 
   if(blogPolls) {
     Object.entries(blogPolls).forEach(([pollId, selectedOption]) => {
-      const voteButton = document.getElementById(`vote-button-${pollId}`);
-      const selectedOptionInput = document.getElementById(`${pollId}-answer-${selectedOption}`);
+      const pollOpenElem = document.getElementById(`poll-open-${pollId}`);
+      const pollClosedElem = document.getElementById(`poll-closed-${pollId}`);
+      const buttonElem = document.getElementById(`vote-button-${pollId}`);
 
-      if (voteButton && selectedOptionInput) {
-        voteButton.style.display = "none";
-        selectedOptionInput.checked = true;
-      } else {
-        // If they don't exist, they might have been removed by poll editor
-        // So remove them from the local storage
-        delete blogPolls[pollId];
-      }
+      if (pollOpenElem && pollClosedElem && buttonElem) {
+        pollOpenElem.style.display = "none";
+        buttonElem.style.display = "none";
+        pollClosedElem.style.display = "flex";
+      } 
     });
 
     pollsData[blogId] = blogPolls;

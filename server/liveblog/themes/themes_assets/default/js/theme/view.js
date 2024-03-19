@@ -63,6 +63,7 @@ function renderTimeline(api_response) {
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+  polls.checkExistingVotes();
 }
 
 /**
