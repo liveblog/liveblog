@@ -16,10 +16,12 @@ function updatePollUI(totalVotes, selectedPoll) {
   const totalVotesElem = document.getElementById(`total-votes-${selectedPoll}`);
   const pollOpenElem = document.getElementById(`poll-open-${selectedPoll}`);
   const pollClosedElem = document.getElementById(`poll-closed-${selectedPoll}`);
+  const buttonElem = document.getElementById(`vote-button-${selectedPoll}`);
 
   if (totalVotesElem && pollOpenElem && pollClosedElem) {
     totalVotesElem.innerText = totalVotes;
     pollOpenElem.style.display = "none";
+    buttonElem.style.display = "none";
     pollClosedElem.style.display = "flex";
   }
 }

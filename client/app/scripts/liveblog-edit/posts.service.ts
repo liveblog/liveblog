@@ -317,8 +317,8 @@ const postsService = (api, $q, _userList, session) => {
                     if (angular.isDefined(itemParam.id_to_update)) {
                         const pollPromise = api.polls.getById(itemParam.id_to_update).then((pollToUpdate) => {
                             // Retrieving the poll is necessary in order to update the poll data from the editor
-                            // which could be outdates in terms of number of votes. This is because there could be
-                            // new votes since the initial creation or inbetween subsequent updates.
+                            // which could be outdated in terms of number of votes. This is because there could be
+                            // new votes since the initial creation or in between subsequent updates.
                             poll.poll_body.answers = pollToUpdate.poll_body.answers;
                             return api.polls.save(pollToUpdate, poll);
                         });
