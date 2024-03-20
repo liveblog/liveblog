@@ -32,7 +32,7 @@ from .utils import (
     can_delete_blog,
 )
 
-logger = logging.getLogger("superdesk")
+logger = logging.getLogger("liveblog")
 
 
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
@@ -102,78 +102,71 @@ def delete_embed(blog, theme=None, output=None):
         )
 
 
-def _publish_blog_embed_on_s3(
-    blog_or_id, theme=None, output=None, safe=True, save=True
-):
-    # TODO: replace blog_or_id with just blog to reduce hitting the db server with extra queries
+def get_theme_for_publish(blog, output=None):
+    """
+    Gets the right theme to be used for embed publishing. If an output (channel)
+    is provided, then if would try to get the theme assigned the output.
+    If the output has no theme, then it would use the blog's theme.
+    """
+    blog_preferences = blog.get("blog_preferences", {})
+    theme = blog_preferences.get("theme")
+
+    if output:
+        theme = output.get("theme", theme)
+
+    return theme
+
+
+def internal_publish_blog_embed_on_s3(blog, output=None, safe=True, save=True):
+    """
+    Publishes blog (or output channel) embed to AWS S3 storage if enabled.
+
+    Returns:
+    - tuple: A tuple containing the public URL and updated public URLs of the blog.
+    """
+
+    blog_id = blog.get("_id")
+    output_id = str(output.get("_id")) if output else None
+    theme = get_theme_for_publish(blog, output)
 
     blogs = get_resource_service("client_blogs")
-    if isinstance(blog_or_id, (str, ObjectId)):
-        blog_id = blog_or_id
-        blog = blogs.find_one(req=None, _id=blog_or_id)
-        if not blog:
-            return
-    else:
-        blog = blog_or_id
-        blog_id = blog["_id"]
-
-    blog_preferences = blog.get("blog_preferences", {})
-    blog_theme = blog_preferences.get("theme")
-
-    output_id = None
-    if output:
-        output_id = str(output.get("_id"))
-
-        # compile a theme if there is an `output`.
-        if output.get("theme"):
-            theme = output.get("theme", blog_theme)
-
     server_url = app.config["SERVER_NAME"]
-    protocol = app.config["EMBED_PROTOCOL"]
 
-    if blog_theme:
+    try:
+        api_host = f"//{server_url}/"
+        public_url = publish_embed(blog_id, theme, output, api_host=api_host)
+    except MediaStorageUnsupportedForBlogPublishing as e:
+        if not safe:
+            raise e
+
+        logger.error('Media storage not supported for blog "{}"'.format(blog_id))
+        public_url = build_blog_public_url(app, blog_id, theme, output_id)
+
+    public_urls = blog.get("public_urls", {"output": {}, "theme": {}})
+    updates = {"public_urls": public_urls}
+
+    if output_id:
+        public_urls["output"][output_id] = public_url
+    else:
+        public_urls["theme"][theme] = public_url
+        updates["public_url"] = public_url
+
+    push_notification("blog", published=1, blog_id=blog_id, **updates)
+
+    if save:
         try:
-            api_host = "//{}/".format(server_url)
-            public_url = publish_embed(blog_id, theme, output, api_host=api_host)
+            blogs.system_update(blog_id, updates, blog)
+        except DataLayer.OriginalChangedError:
+            blog = blogs.find_one(req=None, _id=blog_id)
+            blogs.system_update(blog_id, updates, blog)
+        except SuperdeskApiError:
+            logger.warning('api error: unable to update blog "{}"'.format(blog_id))
 
-        except MediaStorageUnsupportedForBlogPublishing as e:
-            if not safe:
-                raise e
-
-            logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
-
-            output_str = output_id if output_id else ""
-            theme_str = "/theme/{}".format(theme) if theme else ""
-            public_url = "{}{}/embed/{}/{}{}".format(
-                protocol, server_url, blog_id, output_str, theme_str
-            )
-
-        public_urls = blog.get("public_urls", {"output": {}, "theme": {}})
-        updates = {"public_urls": public_urls}
-
-        if (output_id and theme) or output_id:
-            public_urls["output"][output_id] = public_url
-        elif theme:
-            public_urls["theme"][theme] = public_url
-        else:
-            updates["public_url"] = public_url
-
-        if save:
-            try:
-                try:
-                    blogs.system_update(blog_id, updates, blog)
-                except DataLayer.OriginalChangedError:
-                    blog = blogs.find_one(req=None, _id=blog_id)
-                    blogs.system_update(blog_id, updates, blog)
-            except SuperdeskApiError:
-                logger.warning('api error: unable to update blog "{}"'.format(blog_id))
-
-        push_notification("blog", published=1, blog_id=blog_id, **updates)
-        return public_url, public_urls
+    return public_url, public_urls
 
 
 @celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
+def publish_blog_embed_on_s3(blog_or_id, output=None, safe=True, save=True):
     blog_id, blog = get_blog(blog_or_id)
     if not blog:
         logger.warning(
@@ -190,7 +183,7 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
     )
 
     try:
-        return _publish_blog_embed_on_s3(blog_or_id, theme, output, safe, save)
+        return internal_publish_blog_embed_on_s3(blog, output, safe, save)
     except (Exception, SoftTimeLimitExceeded):
         logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
     finally:

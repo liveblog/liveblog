@@ -592,7 +592,7 @@ class ThemesService(BaseService):
         for output in outputs:
             publish_blog_embed_on_s3.apply_async(
                 args=[output.get("blog")],
-                kwargs={"theme": output.get("theme", None), "output": output},
+                kwargs={"output": output},
                 countdown=countdown,
             )
             countdown += step
