@@ -67,16 +67,21 @@
             if (iframe.getAttribute(SET_FLAG)) return;
 
             var videoUrl = iframe.src;
-            var autoplayUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'autoplay=1';
+            var autoplayUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'autoplay=1&mute=1';
             iframe.src = autoplayUrl;
-            
+
+            var allowAttr = iframe.getAttribute('allow');
+            if (allowAttr) {
+                if (!allowAttr.includes('autoplay')) {
+                    iframe.setAttribute('allow', allowAttr + ' autoplay');
+                }
+            } else {
+                iframe.setAttribute('allow', 'autoplay');
+            }
 
             new YT.Player(iframe, {
                 events: {
-                    'onReady': function (event) { 
-                        event.target.playVideo();
-                        iframe.setAttribute(SET_FLAG, 1); 
-                    },
+                    'onReady': function () { iframe.setAttribute(SET_FLAG, 1); },
                     'onStateChange': function(event) {
                         var playerId = event.target.a.id;
                         var isPlaying = event.data === YT.PlayerState.PLAYING;
