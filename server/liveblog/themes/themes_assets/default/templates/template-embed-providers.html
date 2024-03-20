@@ -66,9 +66,17 @@
         iframes.forEach(function (iframe) {
             if (iframe.getAttribute(SET_FLAG)) return;
 
+            var videoUrl = iframe.src;
+            var autoplayUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'autoplay=1';
+            iframe.src = autoplayUrl;
+            
+
             new YT.Player(iframe, {
                 events: {
-                    'onReady': function () { iframe.setAttribute(SET_FLAG, 1); },
+                    'onReady': function (event) { 
+                        event.target.playVideo();
+                        iframe.setAttribute(SET_FLAG, 1); 
+                    },
                     'onStateChange': function(event) {
                         var playerId = event.target.a.id;
                         var isPlaying = event.data === YT.PlayerState.PLAYING;
