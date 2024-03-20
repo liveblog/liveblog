@@ -75,7 +75,9 @@ def update_post_blog_embed(post):
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
 
     try:
-        publish_blog_embeds_on_s3(blog_id, save=(blog.get('public_url') is None), safe=True)
+        publish_blog_embeds_on_s3(
+            blog_id, save=(blog.get("public_url") is None), safe=True
+        )
     except (Exception, SoftTimeLimitExceeded):
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
