@@ -24,6 +24,7 @@ from .app_settings import (
 from .embeds import embed, render_bloglist_embed
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 from .utils import (
+    build_blog_public_url,
     check_media_storage,
     get_blog_path,
     get_bloglist_path,
