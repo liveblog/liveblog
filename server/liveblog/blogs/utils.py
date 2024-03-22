@@ -155,7 +155,7 @@ def can_delete_blog(blog):
     return True
 
 
-def build_blog_public_url(app, blog_id, theme, output_id=None):
+def build_blog_public_url(app, blog_id, theme=None, output_id=None):
     """
     Creates the public url for a given blog. If `output_id` is provided
     it will compile the url using the given theme
