@@ -570,34 +570,59 @@ class ThemesService(BaseService):
         return response
 
     def publish_related_blogs(self, theme):
-        from liveblog.blogs.tasks import publish_blog_embed_on_s3
+        """
+        Publishes related blogs and outputs based on a given theme.
 
-        blogs = get_resource_service("blogs").find(
-            {"blog_preferences.theme": theme.get("name")}
-        )
-        outputs = get_resource_service("outputs").find({"theme": theme.get("name")})
-        countdown = 1
-        step = STEPS.get("default")
-        if theme.get("seoTheme"):
-            step = STEPS.get("seoTheme")
-        if theme.get("ampTheme"):
-            step = STEPS.get("ampTheme")
+        This function retrieves blogs and outputs that match the specified theme and schedules them for publishing.
+        Blogs and outputs are scheduled separately with an incremental countdown to manage the timing of
+        their publishing.
 
-        for blog in blogs:
-            publish_blog_embed_on_s3.apply_async(
-                args=[blog.get("_id")], countdown=countdown
-            )
-            countdown += step
+        Parameters:
+        - theme (dict): A dictionary representing the theme
 
-        for output in outputs:
-            publish_blog_embed_on_s3.apply_async(
-                args=[output.get("blog")],
-                kwargs={"output": output},
-                countdown=countdown,
-            )
-            countdown += step
+        Returns:
+        - list: A list of blog dictionaries that match the specified theme.
+        """
+
+        blogs_service = get_resource_service("blogs")
+        outputs_service = get_resource_service("outputs")
+        blogs = blogs_service.find({"blog_preferences.theme": theme.get("name")})
+        outputs = outputs_service.find({"theme": theme.get("name")})
+
+        step = self._get_publishing_step(theme)
+
+        self._schedule_items(blogs, step, is_blog=True)
+        self._schedule_items(outputs, step, is_blog=False)
 
         return blogs
+
+    def _get_publishing_step(self, theme):
+        """
+        Determines the publishing step based on theme settings.
+        """
+        for key in ["seoTheme", "ampTheme"]:
+            if theme.get(key):
+                return STEPS.get(key)
+        return STEPS.get("default")
+
+    def _schedule_items(self, items, step, is_blog):
+        """Schedules publishing for given items."""
+        from liveblog.blogs.tasks import publish_blog_embed_on_s3
+
+        countdown = 1
+
+        for item in items:
+            args = [item.get("_id")]
+            kwargs = {}
+
+            if not is_blog:
+                args = [item.get("blog")]
+                kwargs = {"output": item}
+
+            publish_blog_embed_on_s3.apply_async(
+                args=args, kwargs=kwargs, countdown=countdown
+            )
+            countdown += step
 
     def check_themes_limit(self, docs=[]):
         subscription = SUBSCRIPTION_LEVEL
