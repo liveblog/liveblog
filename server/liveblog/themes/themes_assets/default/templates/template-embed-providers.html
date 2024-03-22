@@ -71,13 +71,9 @@
             iframe.src = autoplayUrl;
 
             var allowAttr = iframe.getAttribute('allow');
-            if (allowAttr) {
-                if (!allowAttr.includes('autoplay')) {
-                    iframe.setAttribute('allow', allowAttr + ' autoplay');
-                }
-            } else {
-                iframe.setAttribute('allow', 'autoplay');
-            }
+            iframe.setAttribute('allow', 'autoplay');
+            if (allowAttr && !allowAttr.includes('autoplay'))
+                iframe.setAttribute('allow', allowAttr + ' autoplay');
 
             new YT.Player(iframe, {
                 events: {
