@@ -241,7 +241,7 @@ class ClientModuleTest(TestCase):
     def test_b_set_embed_metadata(self, mock_logger):
         self.item_meta_doc["meta"]["original_url"] = None
         self.items_service.set_embed_metadata(self.item_meta_doc)
-        self.assertTrue(mock_logger.warning.called)
+        self.assertTrue(mock_logger.info.called)
 
     def test_c_item_on_create(self):
         flask.g.user = get_resource_service("users").find_one(
