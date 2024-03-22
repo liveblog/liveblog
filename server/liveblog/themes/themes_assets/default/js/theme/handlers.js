@@ -8,7 +8,8 @@ import * as messages from './common/messages';
 
 var view = require('./view')
   , viewmodel = require('./viewmodel')
-  , helpers = require('./helpers');
+  , helpers = require('./helpers')
+  , polls = require('./polls');
 const { permalink } = require('./view');
 
 const Event = Object.freeze({
@@ -49,6 +50,7 @@ var showPendings = (e) => {
   view.loadEmbeds();
   view.checkPending();
   view.attachSlideshow();
+  polls.checkExistingVotes();
 };
 
 var isOrderChanged = (order) => {
@@ -219,6 +221,7 @@ function loadSort(sortBy) {
     .then(view.consent.init)
     .then(view.adsManager.refreshAds)
     .then(view.loadEmbeds)
+    .then(polls.checkExistingVotes)
     .catch(catchError);
 }
 
