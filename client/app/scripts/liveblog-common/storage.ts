@@ -2,7 +2,6 @@ export default class LBStorage {
     static read(name: string) {
         const itemStr = localStorage.getItem(name);
 
-        // tslint:disable-next-line:curly
         if (!itemStr)
             return null;
 
