@@ -1,4 +1,3 @@
-
 /**
  * This file is part of Superdesk.
  *
@@ -168,6 +167,10 @@ const app = angular.module('liveblog.edit',
 
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
+
+                // Trigger a click event on the '.st-block-controls__top' element to activate the
+                // block controls immediately when the editor is rendered
+                $('.st-block-controls__top').click();
             },
             blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment', 'Poll', 'Video'],
             // render a default block when the editor is loaded
