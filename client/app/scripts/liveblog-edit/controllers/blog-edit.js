@@ -24,6 +24,7 @@ import {
     ALLOW_PICK_MULTI_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EventNames,
 } from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
@@ -128,6 +129,12 @@ export default function BlogEditController(
 
     // start listening for unread posts.
     unreadPostsService.startListening(blog);
+
+    // clear embed error listener
+    // blogService.stopListeningToEmbedErrors();
+
+    // start listening for embed errors
+    blogService.listenToEmbedErrors(blog);
 
     // return the list of items from the editor
     function getItemsFromEditor() {
@@ -301,14 +308,14 @@ export default function BlogEditController(
 
     $scope.enableEditor = true;
 
-    $scope.$on('removing_timeline_post', (event, data) => {
+    $scope.$on(EventNames.RemoveTimelinePost, (event, data) => {
         // if we try to remove a post that is currentry being edited, reset the editor
         if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
             cleanEditor();
         }
     });
 
-    $scope.$on('posts', (event, data) => {
+    $scope.$on(EventNames.Posts, (event, data) => {
         const edited = $scope.currentPost && data.posts.find((post) => post._id === $scope.currentPost._id);
 
         if (edited) {
