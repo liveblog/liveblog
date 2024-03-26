@@ -48,7 +48,6 @@ import 'superdesk-core/scripts/core/privileges';
 import 'superdesk-core/scripts/core/notification';
 import 'superdesk-core/scripts/core/itemList';
 import 'superdesk-core/scripts/core/menu';
-import 'superdesk-core/scripts/core/notify';
 import 'superdesk-core/scripts/core/ui';
 import 'superdesk-core/scripts/core/upload';
 import 'superdesk-core/scripts/core/lang';
@@ -89,6 +88,7 @@ import 'liveblog-analytics';
 import 'liveblog-advertising';
 
 import 'liveblog-security.service';
+import 'liveblog-common/notify';
 
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
@@ -114,7 +114,6 @@ const sdCore = angular.module('superdesk.core', [
     'superdesk.core.datetime',
     'superdesk.core.elastic',
     'superdesk.core.error',
-    'superdesk.core.notify',
     'superdesk.core.ui',
     'superdesk.core.upload',
     'superdesk.core.menu',
@@ -195,14 +194,15 @@ liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locati
 
 liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
     function($rootScope, $timeout, notify, gettext, session) {
-        var alertTimeout;
+        let alertTimeout;
+        let notificationId;
 
         $rootScope.$on('disconnected', (event) => {
             $timeout.cancel(alertTimeout);
             if (session && session.sessionId) {
                 alertTimeout = $timeout(() => {
-                    notify.pop();
-                    notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
+                    notificationId = notify.error(
+                        gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
                 }, 100);
             }
         });
@@ -211,7 +211,7 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
             if (alertTimeout) {
                 $timeout.cancel(alertTimeout);
                 alertTimeout = $timeout(() => {
-                    notify.pop();
+                    notify.removeById(notificationId);
                     notify.success(gettext('Connected to Notification Server!'));
                 }, 100);
             }
@@ -223,9 +223,9 @@ const body = angular.element('body');
 body.ready(() => {
     /**
      * @ngdoc module
-     * @name superdesk-client
-     * @packageName superdesk-client
-     * @description The root superdesk module.
+     * @name liveblog-client
+     * @packageName liveblog-client
+     * @description The root liveblog module.
      */
     angular.bootstrap(body, [
         'superdesk.config',
