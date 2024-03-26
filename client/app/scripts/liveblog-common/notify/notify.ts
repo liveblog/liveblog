@@ -1,7 +1,7 @@
 import type { ITimeoutService, IScope } from 'angular';
 import notifyTemplate from 'scripts/liveblog-common/notify/views/notify.ng1';
 
-interface Message {
+interface IMessage {
     id: string;
     type: string;
     msg: string;
@@ -10,7 +10,7 @@ interface Message {
 
 class NotifyService {
     private $timeout: ITimeoutService;
-    private gettext: Function;
+    private gettext: (string) => string;
 
     private savingMessageId: string | null = null;
     private ttls: { [key: string]: number } = {
@@ -20,9 +20,9 @@ class NotifyService {
         error: 8000,
     };
 
-    public messages: Message[] = [];
+    messages: IMessage[] = [];
 
-    constructor($timeout: ITimeoutService, gettext: Function) {
+    constructor($timeout: ITimeoutService, gettext: (string) => string) {
         this.$timeout = $timeout;
         this.gettext = gettext;
     }
@@ -36,8 +36,9 @@ class NotifyService {
         // prevent adding the same message more than once
         const existingMsg = this.messages.find((message) => message.msg === msg);
 
-        if (existingMsg)
+        if (existingMsg) {
             return existingMsg.id;
+        }
 
         const id = this.generateId();
         const expiry = ttl ?? this.ttls[type];
@@ -53,7 +54,7 @@ class NotifyService {
         return id;
     }
 
-    public removeById = (id: string) => {
+    removeById = (id: string) => {
         const index = this.messages.findIndex((message) => message.id === id);
 
         if (index !== -1) {
@@ -61,27 +62,27 @@ class NotifyService {
         }
     }
 
-    public info = (text: string, ttl?: number, options: object = {}) => {
+    info = (text: string, ttl?: number, options: object = {}) => {
         return this.addMessageGeneric('info', text, ttl, options);
     }
 
-    public success = (text: string, ttl?: number, options: object = {}) => {
+    success = (text: string, ttl?: number, options: object = {}) => {
         return this.addMessageGeneric('success', text, ttl, options);
     }
 
-    public warning = (text: string, ttl?: number, options: object = {}) => {
+    warning = (text: string, ttl?: number, options: object = {}) => {
         return this.addMessageGeneric('warning', text, ttl, options);
     }
 
-    public error = (text: string, ttl?: number, options: object = {}) => {
+    error = (text: string, ttl?: number, options: object = {}) => {
         return this.addMessageGeneric('error', text, ttl, options);
     }
 
-    public startSaving = () => {
+    startSaving = () => {
         this.savingMessageId = this.addMessageGeneric('info', this.gettext('Saving...'));
     }
 
-    public stopSaving = () => {
+    stopSaving = () => {
         if (this.savingMessageId) {
             this.removeById(this.savingMessageId);
             this.savingMessageId = null;
@@ -91,11 +92,11 @@ class NotifyService {
 
 angular.module('superdesk.core.notify', ['superdesk.core.translate'])
     .service('notify', ['$timeout', 'gettext', NotifyService])
-    .directive('sdNotify', ['notify', function(notify: NotifyService) {
+    .directive('sdNotify', ['notify', (notify: NotifyService) => {
         return {
             scope: true,
             templateUrl: notifyTemplate,
-            link: function(scope: IScope | any) {
+            link: (scope: IScope | any) => {
                 scope.messages = notify.messages;
                 scope.notify = notify;
             },
