@@ -17,6 +17,7 @@ import './../unread.posts.service';
 import {DELETED_STATE} from '../../liveblog-bloglist/controllers/constants';
 
 import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.ng1';
+import {EventNames} from 'liveblog-common/constants';
 
 
 BlogSettingsController.$inject = [
@@ -96,7 +97,7 @@ function BlogSettingsController(
                     angular.forEach(filteredPosts, (post) => {
                         postsService.savePost(post.blog, post, [], deleted)
                             .then((message) => {
-                                $rootScope.$broadcast('removing_timeline_post', {post: post});
+                                $rootScope.$broadcast(EventNames.RemoveTimelinePost, {post: post});
                                 notify.info(gettext('Wait! Deleting old posts'));
                             }, () => {
                                 notify.error(gettext('Something went wrong'));

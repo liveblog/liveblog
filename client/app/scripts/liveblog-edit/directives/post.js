@@ -1,3 +1,4 @@
+import {EventNames} from 'liveblog-common/constants';
 import postTpl from 'scripts/liveblog-edit/views/post.ng1';
 
 lbPost.$inject = [
@@ -97,7 +98,7 @@ export default function lbPost(notify, gettext, postsService, modal,
                         .then((message) => {
                             notify.info(gettext('Removing post...'));
                             scope.removePostFromList(post);
-                            $rootScope.$broadcast('removing_timeline_post', {post: post});
+                            $rootScope.$broadcast(EventNames.RemoveTimelinePost, {post: post});
                         }, () => {
                             notify.error(gettext('Something went wrong'));
                         });
