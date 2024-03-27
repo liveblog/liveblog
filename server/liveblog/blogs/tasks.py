@@ -9,7 +9,6 @@ import superdesk
 from bson import ObjectId
 from eve.io.base import DataLayer
 from flask import current_app as app
-from jinja2 import TemplateNotFound
 from celery.exceptions import SoftTimeLimitExceeded
 from superdesk import get_resource_service
 from superdesk.celery_app import celery

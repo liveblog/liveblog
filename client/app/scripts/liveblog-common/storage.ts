@@ -2,8 +2,9 @@ export default class LBStorage {
     static read(name: string) {
         const itemStr = localStorage.getItem(name);
 
-        if (!itemStr)
+        if (!itemStr) {
             return null;
+        }
 
         const item = JSON.parse(itemStr);
         const now = new Date();
