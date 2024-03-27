@@ -1,11 +1,11 @@
 /**
- * This file is part of Superdesk.
+ * This file is part of Liveblog.
  *
- * Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+ * Copyright 2013 - 2024 Sourcefabric z.u. and contributors.
  *
  * For the full copyright and license information, please see the
  * AUTHORS and LICENSE files distributed with this source code, or
- * at https://www.sourcefabric.org/superdesk/license
+ * at https://github.com/liveblog/liveblog/blob/master/LICENSE
  */
 
 import angular from 'angular';
@@ -417,14 +417,18 @@ export default function BlogEditController(
             published_date: $scope.currentPostPublishedDate,
         };
 
+        notify.startSaving(gettext('Saving post...'));
+
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
             .then((post) => {
+                notify.stopSaving();
                 notify.info(gettext('Post saved'));
                 cleanEditor();
 
                 $scope.selectedPostType = 'Default';
                 $scope.actionPending = false;
             }, () => {
+                notify.stopSaving();
                 notify.error(gettext('Something went wrong. Please try again later'));
                 $scope.actionPending = false;
             });
@@ -661,7 +665,6 @@ export default function BlogEditController(
                     });
                 }
 
-                notify.info(gettext('Saving post'));
                 savingPost(blog);
                 blog.total_posts += 1;
 

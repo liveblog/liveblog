@@ -86,10 +86,10 @@ export default function blogService(api, $q, $rootScope, config, notify) {
                 return;
 
             const errorMessage = `There has been an error while generating the embed for the
-                current blog. You can try switching to another theme. Please contact the Support Team
+                current blog. Please try with another theme and contact our Support Team
                 and provide this error: "${eventData.error}"`;
 
-            notify.error(errorMessage, 60000);
+            notify.error(errorMessage, 30000);
             Storage.write(storeKey, '1', expiry);
         }
     }
