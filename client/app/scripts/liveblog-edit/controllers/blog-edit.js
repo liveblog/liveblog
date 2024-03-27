@@ -131,7 +131,7 @@ export default function BlogEditController(
     unreadPostsService.startListening(blog);
 
     // clear embed error listener
-    // blogService.stopListeningToEmbedErrors();
+    blogService.stopListeningToEmbedErrors();
 
     // start listening for embed errors
     blogService.listenToEmbedErrors(blog);
