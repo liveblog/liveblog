@@ -4,7 +4,7 @@ export const YOUTUBE_PRIVACY_STATUS = 'youtube_privacy_status';
 export const EMBED_HEIGHT_RESPONSIVE_DEFAULT = 'embed_height_responsive_default';
 
 export enum EventNames {
-    Connected = 'Connected',
+    Connected = 'connected',
     Disconnected = 'disconnected',
     EmbedGenerationError = 'embed_generation_error',
     RemoveTimelinePost = 'removing_timeline_post',

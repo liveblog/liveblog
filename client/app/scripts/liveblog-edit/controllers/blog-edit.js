@@ -419,14 +419,12 @@ export default function BlogEditController(
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
             .then((post) => {
-                notify.pop();
                 notify.info(gettext('Post saved'));
-
                 cleanEditor();
+
                 $scope.selectedPostType = 'Default';
                 $scope.actionPending = false;
             }, () => {
-                notify.pop();
                 notify.error(gettext('Something went wrong. Please try again later'));
                 $scope.actionPending = false;
             });
@@ -620,14 +618,12 @@ export default function BlogEditController(
                     $scope.highlight
                 )
                 .then((post) => {
-                    notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, () => {
-                    notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
@@ -638,14 +634,12 @@ export default function BlogEditController(
             postsService
                 .saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky, $scope.highlight)
                 .then((post) => {
-                    notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, () => {
-                    notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
@@ -809,7 +803,6 @@ export default function BlogEditController(
                             currentUrl: window.location.href,
                         },
                     }).then((response) => {
-                        notify.pop();
                         notify.info(gettext('Saved credentials. Redirecting...'));
                         // redirect to google verification screen
                         window.location.replace(response.data);
