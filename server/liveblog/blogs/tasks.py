@@ -87,8 +87,6 @@ def notify_about_embed_generation_error(err_msg, blog_id, theme_name):
         theme_name=theme_name,
     )
 
-    return
-
 
 def delete_embed(blog, theme=None, output=None):
     """
