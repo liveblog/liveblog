@@ -24,6 +24,7 @@ import {
     ALLOW_PICK_MULTI_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EventNames,
 } from '../../liveblog-common/constants';
 
 BlogEditController.$inject = [
@@ -301,7 +302,7 @@ export default function BlogEditController(
 
     $scope.enableEditor = true;
 
-    $scope.$on('removing_timeline_post', (event, data) => {
+    $scope.$on(EventNames.RemoveTimelinePost, (event, data) => {
         // if we try to remove a post that is currentry being edited, reset the editor
         if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
             cleanEditor();
@@ -412,14 +413,12 @@ export default function BlogEditController(
 
         postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
             .then((post) => {
-                notify.pop();
                 notify.info(gettext('Post saved'));
-
                 cleanEditor();
+
                 $scope.selectedPostType = 'Default';
                 $scope.actionPending = false;
             }, () => {
-                notify.pop();
                 notify.error(gettext('Something went wrong. Please try again later'));
                 $scope.actionPending = false;
             });
@@ -613,14 +612,12 @@ export default function BlogEditController(
                     $scope.highlight
                 )
                 .then((post) => {
-                    notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, () => {
-                    notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
@@ -631,14 +628,12 @@ export default function BlogEditController(
             postsService
                 .saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky, $scope.highlight)
                 .then((post) => {
-                    notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanUpFlag();
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, () => {
-                    notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
@@ -802,7 +797,6 @@ export default function BlogEditController(
                             currentUrl: window.location.href,
                         },
                     }).then((response) => {
-                        notify.pop();
                         notify.info(gettext('Saved credentials. Redirecting...'));
                         // redirect to google verification screen
                         window.location.replace(response.data);

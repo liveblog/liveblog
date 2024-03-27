@@ -35,7 +35,6 @@ export default function copyToClipboard(notify) {
                         selection.removeAllRanges();
                     }
 
-                    notify.pop();
                     notify.success('Selection successfully copied to clipboard');
                 }
             };

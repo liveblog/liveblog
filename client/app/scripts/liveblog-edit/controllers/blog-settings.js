@@ -17,6 +17,7 @@ import './../unread.posts.service';
 import {DELETED_STATE} from '../../liveblog-bloglist/controllers/constants';
 
 import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.ng1';
+import {EventNames} from 'liveblog-common/constants';
 
 
 BlogSettingsController.$inject = [
@@ -94,14 +95,13 @@ function BlogSettingsController(
                     let filteredPosts = posts._items.slice(Math.max(posts._items.length - count));
 
                     angular.forEach(filteredPosts, (post) => {
-                        postsService.savePost(post.blog, post, [], deleted).then((message) => {
-                            $rootScope.$broadcast('removing_timeline_post', {post: post});
-                            notify.pop();
-                            notify.info(gettext('Wait! Deleting old posts'));
-                        }, () => {
-                            notify.pop();
-                            notify.error(gettext('Something went wrong'));
-                        });
+                        postsService.savePost(post.blog, post, [], deleted)
+                            .then((message) => {
+                                $rootScope.$broadcast(EventNames.RemoveTimelinePost, {post: post});
+                                notify.info(gettext('Wait! Deleting old posts'));
+                            }, () => {
+                                notify.error(gettext('Something went wrong'));
+                            });
                     });
                 });
         }
@@ -398,14 +398,12 @@ function BlogSettingsController(
                                     api('request_membership')
                                         .remove(item)
                                         .then(null, () => {
-                                            notify.pop();
                                             notify.error(gettext('Something went wrong'));
                                             deferred.reject();
                                         });
                                 });
                         });
                     }
-                    notify.pop();
                     notify.info(gettext('blog settings saved'));
                     vm.setFormsPristine();
                     deferred.resolve();
@@ -442,18 +440,16 @@ function BlogSettingsController(
             delete newBlog.firstcreated;
             newBlog.original_creator = blog.original_creator._id;
 
-            blogService.update(blog, newBlog).then((resp) => {
-                notify.pop();
-                notify.info(gettext('The blog will be deleted'));
-                $location.path('/liveblog');
-            }, () => {
-                notify.pop();
-                notify.error(gettext('Something went wrong'));
-                $location.path('/liveblog/edit/' + blog._id);
-            });
+            blogService.update(blog, newBlog)
+                .then((resp) => {
+                    notify.info(gettext('The blog will be deleted'));
+                    $location.path('/liveblog');
+                }, () => {
+                    notify.error(gettext('Something went wrong'));
+                    $location.path('/liveblog/edit/' + blog._id);
+                });
         },
         close: function() {
-            // return to blog edit page
             $location.path('/liveblog/edit/' + vm.blog._id);
         },
         buildOwner: function(userID) {

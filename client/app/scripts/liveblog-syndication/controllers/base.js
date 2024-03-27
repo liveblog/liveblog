@@ -31,7 +31,6 @@ export default function baseController($scope, api, notify, $route) {
                     $scope[$scope.endPoint] = data;
                 })
                 .catch((err) => {
-                    notify.pop();
                     notify.error(gettext('Fatal error!'));
                 });
         });

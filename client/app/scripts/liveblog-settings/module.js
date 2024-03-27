@@ -65,8 +65,8 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
     };
 
     $scope.saveSettings = function() {
-        notify.pop();
-        notify.info(gettext('Saving settings'));
+        const notificationId = notify.info(gettext('Saving settings'));
+
         let patch = {};
         const reqArr = [];
 
@@ -80,14 +80,15 @@ function LiveblogSettingsController($scope, api, $location, notify, gettext, $q)
             reqArr.push(api('global_preferences').save(item, patch));
         });
 
-        $q.all(reqArr).then(() => {
-            notify.pop();
-            notify.info(gettext('Settings saved successfully'));
-            $scope.settingsForm.$setPristine();
-        }, () => {
-            notify.pop();
-            notify.error(gettext('Saving settings failed. Please try again later'));
-        });
+        $q.all(reqArr)
+            .then(() => {
+                notify.removeById(notificationId);
+                notify.info(gettext('Settings saved successfully'));
+                $scope.settingsForm.$setPristine();
+            }, () => {
+                notify.removeById(notificationId);
+                notify.error(gettext('Saving settings failed. Please try again later'));
+            });
     };
 
     $scope.close = function() {

@@ -71,7 +71,6 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
                 apiQuery.then((result) => {
                     var successMsg = gettext('Producer saved.');
 
-                    notify.pop();
                     notify.success(successMsg);
 
                     scope.onsave({producer: result});
@@ -96,7 +95,6 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
                             });
                         }
 
-                        notify.pop();
                         notify.error(errorMsg);
                     });
             };
