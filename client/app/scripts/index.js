@@ -90,6 +90,8 @@ import 'liveblog-advertising';
 import 'liveblog-security.service';
 import 'liveblog-common/notify';
 
+import {EventNames} from './liveblog-common/constants';
+
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
 
@@ -197,7 +199,7 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
         let alertTimeout;
         let notificationId;
 
-        $rootScope.$on('disconnected', (event) => {
+        $rootScope.$on(EventNames.Disconnected, (event) => {
             $timeout.cancel(alertTimeout);
             if (session && session.sessionId) {
                 alertTimeout = $timeout(() => {
@@ -206,7 +208,8 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
                 }, 100);
             }
         });
-        $rootScope.$on('connected', (event) => {
+
+        $rootScope.$on(EventNames.Connected, (event) => {
             // only show the 'connected' message if there was a disconnect event
             if (alertTimeout) {
                 $timeout.cancel(alertTimeout);

@@ -78,8 +78,8 @@ class NotifyService {
         return this.addMessageGeneric('error', text, ttl, options);
     }
 
-    startSaving = () => {
-        this.savingMessageId = this.addMessageGeneric('info', this.gettext('Saving...'));
+    startSaving = (saveMsg: string) => {
+        this.savingMessageId = this.addMessageGeneric('info', saveMsg ?? this.gettext('Saving...'));
     }
 
     stopSaving = () => {
