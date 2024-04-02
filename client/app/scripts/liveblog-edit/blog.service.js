@@ -70,7 +70,7 @@ export default function blogService(api, $q, $rootScope, config, notify) {
     /**
      * This function is triggered when a embed generation error is notified via web socket message.
      * It makes sure that the notification is shown only once every 3 hours approximately by storing
-     * a key in local storage and checking if should show the error again or not. The intention
+     * a key in local storage and checking if it should show the error again or not. The intention
      * is to avoid annoying the user too often but still letting them know about a problem with their
      * embed generation.
      * @param {AngularEvent} e
