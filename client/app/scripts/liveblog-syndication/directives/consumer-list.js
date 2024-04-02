@@ -31,7 +31,6 @@ export default function consumerList(api, notify, modal, $http, config) {
                     })
                     .catch((err) => {
                         if (err.data && err.data._message) {
-                            notify.pop();
                             notify.error(err.data._message);
                         }
                     });
@@ -46,15 +45,11 @@ export default function consumerList(api, notify, modal, $http, config) {
                     'the API key?'))
                     .then(() => api.save('consumers', consumer, {api_key: ''}))
                     .then((result) => {
-                        notify.pop();
                         notify.success(gettext('api key updated.'));
                     })
                     .catch((err) => {
                         if (err) {
-                            const msg = err.data._error.message || 'Fatal error';
-
-                            notify.pop();
-                            notify.error(msg);
+                            notify.error(err.data._error.message || 'Fatal error');
                         }
                     });
             };
@@ -81,8 +76,6 @@ export default function consumerList(api, notify, modal, $http, config) {
                             consumer.webhook_enabled = data.consumer.webhook_enabled;
 
                             scope.$apply(() => {
-                                notify.pop();
-
                                 if (consumer.webhook_enabled) {
                                     notify.success(gettext(`${consumer.name} is online`));
                                 } else {
