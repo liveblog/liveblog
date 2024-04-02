@@ -126,7 +126,7 @@ class ItemsService(ArchiveService):
         """
         original_url = doc["meta"].get("original_url")
         if not original_url:
-            logger.warning(
+            logger.info(
                 'Unable to find original_url in item "{}" meta.'.format(doc["_id"])
             )
             return
