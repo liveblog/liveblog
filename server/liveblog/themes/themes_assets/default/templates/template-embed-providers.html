@@ -64,24 +64,29 @@
         var iframes = document.querySelectorAll("iframe[src^='https://www.youtube.com']");
 
         iframes.forEach(function (iframe) {
-            if (iframe.getAttribute(SET_FLAG)) return;
+            if (iframe.getAttribute(SET_FLAG) && !window.playersState[iframe.id].isPlaying) return;
 
-            var videoUrl = iframe.src;
-            var autoplayUrl = videoUrl + (videoUrl.includes('?') ? '&' : '?') + 'autoplay=1&mute=1';
-            iframe.src = autoplayUrl;
-
-            var allowAttr = iframe.getAttribute('allow');
-            iframe.setAttribute('allow', 'autoplay');
-            if (allowAttr && !allowAttr.includes('autoplay'))
-                iframe.setAttribute('allow', allowAttr + ' autoplay');
+            const { origin, pathname, search } = new URL(iframe.src);
+            const queryParams = new URLSearchParams(search);
+            queryParams.set('enablejsapi', '1');
+            queryParams.set('origin', window.location.origin);
+            iframe.src = `${origin}${pathname}?${queryParams}`;
 
             new YT.Player(iframe, {
                 events: {
-                    'onReady': function () { iframe.setAttribute(SET_FLAG, 1); },
+                    'onReady': function (event) { 
+                        var player = event.target;
+                        var isPlaying = window.playersState[iframe.id];
+
+                        if (isPlaying) {
+                            player.playVideo();
+                        }
+                        
+                        iframe.setAttribute(SET_FLAG, 1); 
+                    },
                     'onStateChange': function(event) {
-                        var playerId = event.target.a.id;
                         var isPlaying = event.data === YT.PlayerState.PLAYING;
-                        playerStateUpdate(playerId, isPlaying);
+                        playerStateUpdate(iframe.id, isPlaying);
                     }
                 }
             });
