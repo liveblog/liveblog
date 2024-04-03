@@ -25,7 +25,6 @@ export default function ingestPanel(
         },
         link: function(scope) {
             const handleError = function() {
-                notify.pop();
                 notify.error(gettext(`
                     An error has occurred.
                     Please verify your API key.

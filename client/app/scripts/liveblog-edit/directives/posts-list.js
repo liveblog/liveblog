@@ -92,14 +92,14 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             },
             updatePostOrder: function(post, order) {
                 self.hideAllPosts = true;
-                postsService.savePost(post.blog, post, undefined, {order: order}).then(() => {
-                    self.keepHighlighted = order;
-                    self.clearReorder();
-                }, () => {
-                    self.hideAllPosts = false;
-                    notify.pop();
-                    notify.error(gettext('Something went wrong. Please reload and try again later'));
-                });
+                postsService.savePost(post.blog, post, undefined, {order: order})
+                    .then(() => {
+                        self.keepHighlighted = order;
+                        self.clearReorder();
+                    }, () => {
+                        self.hideAllPosts = false;
+                        notify.error(gettext('Something went wrong. Please reload and try again later'));
+                    });
             },
             removePostFromList: function(post) {
                 self.pagesManager.removePost(post);
@@ -176,7 +176,6 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             return false;
 
         if (eventParams.scheduled_done) {
-            notify.pop();
             notify.info(gettext('Scheduled post has been published'));
         }
 
@@ -192,7 +191,6 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
                 refreshInstagramEmbeds();
 
                 if (eventParams.deleted === true) {
-                    notify.pop();
                     notify.info(gettext('Post removed'));
                 }
 

@@ -248,7 +248,6 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                         url: url.replace('/themes', '/theme-redeploy/' + theme.name),
                         method: 'GET',
                     }).then(() => {
-                        notify.pop();
                         notify.info(gettext('Theme redeployed.'));
                     });
                 });
@@ -260,13 +259,11 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                         .global_preferences
                         .save(self.globalTheme, {key: 'theme', value: theme.name})
                         .then((data) => {
-                            notify.pop();
                             notify.info(gettext('Default theme saved'));
                             self.globalTheme = data;
                         });
                 } else {
                     api.global_preferences.save({key: 'theme', value: theme.name}).then((data) => {
-                        notify.pop();
                         notify.info(gettext('Default theme saved'));
                         self.globalTheme = data;
                     });
@@ -276,13 +273,11 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 modal.confirm(gettext('Are you sure you want to remove this theme?'))
                     .then(() => api.themes.remove(angular.copy(theme)))
                     .then((message) => {
-                        notify.pop();
                         notify.info(gettext('Theme "' + theme.label + '" removed.'));
                         loadThemes();
                     })
                     .catch((error) => {
                         if (error) {
-                            notify.pop();
                             notify.error('An error occured. ' + error.data.error);
                             loadThemes();
                         }
@@ -293,7 +288,6 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 self.selectedBlog = angular.copy(blog);
             },
             save: function() {
-                notify.pop();
                 notify.info(gettext('Saving changes'));
             },
             close: function() {
@@ -301,22 +295,23 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 $location.path('/liveblog/');
             },
             uploadThemeFile: function(e) {
-                notify.pop();
                 // show longer lasting message when uploading the theme, as on some situations it may take some time
-                notify.info(gettext('Uploading the theme, please wait...'), 120000);
+                const notificationId = notify.info(gettext('Uploading the theme, please wait...'), 120000);
+
                 api.themes.getUrl().then((url) => {
-                    upload.start({
-                        method: 'POST',
-                        url: url.replace('/themes', '/theme-upload'),
-                        data: {media: e.files[0]},
-                    })
+                    upload
+                        .start({
+                            method: 'POST',
+                            url: url.replace('/themes', '/theme-upload'),
+                            data: {media: e.files[0]},
+                        })
                         .then((response) => {
                             loadThemes().then(() => {
-                                notify.pop();
+                                notify.removeById(notificationId);
                                 notify.info(gettext('Theme uploaded and added'));
                             });
                         }, (error) => {
-                            notify.pop();
+                            notify.removeById(notificationId);
                             notify.error(error.data._message || error.data._error);
                         });
                 });
