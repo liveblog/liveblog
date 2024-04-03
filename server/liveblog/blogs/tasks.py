@@ -2,6 +2,7 @@ import copy
 import io
 import logging
 import os
+import sys
 import magic
 import superdesk
 
@@ -37,17 +38,28 @@ logger = logging.getLogger("liveblog")
 
 
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
-    # Get html using embed() blueprint.
+    """
+    Generates the html for the embed file using the `embed` function.
+    If the embed fails to generate with a `TemplateNotFound` exception
+    it will send a push notification so the user can be notified.
+    """
     try:
         html = embed(blog_id, theme, output, api_host)
     except SuperdeskApiError as e:
         # Themes are not registered yet.
-        logger.warning(e.message)
-        return
+        return logger.warning(e.message)
+    except Exception as e:
+        exc_info = sys.exc_info()
+        logger.exception(
+            f"Failed embed generation with theme `{theme}`. Error: {e}",
+            exc_info=exc_info,
+        )
+        return notify_about_embed_generation_error(str(e), blog_id, theme)
 
     check_media_storage()
     output_id = output["_id"] if output else None
     file_path = get_blog_path(blog_id, theme, output_id)
+
     # update the embed file
     file_id = app.media.put(
         io.BytesIO(bytes(html, "utf-8")),
@@ -56,10 +68,24 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
         version=False,
         check_exists=False,
     )
+
     logger.info(
         'Embed file "{}" for blog "{}" uploaded to s3'.format(file_path, blog_id)
     )
     return superdesk.upload.url_for_media(file_id)
+
+
+def notify_about_embed_generation_error(err_msg, blog_id, theme_name):
+    theme_service = get_resource_service("themes")
+    theme = theme_service.find_one(req=None, name=theme_name)
+    theme_name = theme.get("label", theme_name)
+
+    push_notification(
+        "embed_generation_error",
+        error=err_msg,
+        blog_id=blog_id,
+        theme_name=theme_name,
+    )
 
 
 def delete_embed(blog, theme=None, output=None):

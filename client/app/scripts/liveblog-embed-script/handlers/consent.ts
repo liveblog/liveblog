@@ -1,4 +1,4 @@
-import LBStorage from '../storage';
+import LBStorage from '../../liveblog-common/storage';
 import { messageIframe } from '../utils';
 
 const CONSENT_KEY = '__lb_consent_key__';
