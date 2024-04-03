@@ -17,7 +17,7 @@
   {% set sortTime = item.published_date | addten %}
 {% endif %}
 
-{% if type != "poll" %}
+{% if type != "poll" or item.groups[1].refs | length > 1 %}
 <article
 id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}"
 data-update-time="{{ item._updated | date('X') }}"
@@ -119,6 +119,8 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
           {% include "template-item-scorecard.html" %}
         {% elif ref.item.item_type == "comment" %}
           {% include "template-item-comment.html" %}
+        {% elif ref.item.item_type == "poll" %}
+          <div></div>
         {% else %}
         <article>{{ ref.item.text | safe }}</article>
         {% endif %}
