@@ -326,12 +326,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
             {"id": "root", "role": "grpRole:NEP", "refs": [{"idRef": "main"}]},
             {"id": "main", "role": "grpRole:Main", "refs": item_refs},
         ],
-        "lb_highlight": producer_post["lb_highlight"]
-        if "lb_highlight" in producer_post.keys()
-        else False,
-        "sticky": producer_post["sticky"]
-        if "sticky" in producer_post.keys()
-        else False,
+        "lb_highlight": producer_post.get("lb_highlight", False),
+        "sticky": producer_post.get("sticky", False),
         "syndication_in": in_syndication["_id"],
         "particular_type": "post",
         "post_status": post_status,
@@ -350,16 +346,18 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
 
 
 def validate_secure_url(value):
-    """Check if url is secure (https or whitelist)"""
+    """
+    Check if url is secure (https or whitelisted)
+    """
     parsed = urllib.parse.urlparse(value)
-    # TODO: add whitelist app settings.
+
     try:
         netloc = parsed.netloc.split(":")[0]
     except IndexError:
         netloc = parsed.netloc
-    if netloc in ("localhost", "127.0.0.1") or netloc.endswith(".local"):
-        return True
-    if parsed.scheme != "https":
-        return False
-    else:
-        return True
+
+    return (
+        parsed.scheme == "https"
+        or netloc in ("localhost", "127.0.0.1")
+        or netloc.endswith(".local")
+    )

@@ -440,7 +440,7 @@ class PostsService(ArchiveService):
             if not updates.get("content_updated_date", False):
                 updates["content_updated_date"] = updates["published_date"]
 
-            # assure that the item info is keept if is needed.
+            # assure that the item info is kept if is needed.
             if (
                 original.get("post_status") == "submitted"
                 and original.get("original_creator", False)
