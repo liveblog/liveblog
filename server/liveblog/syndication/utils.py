@@ -113,16 +113,11 @@ def blueprint_superdesk_token_auth():
         return abort(401, "Authorization failed.")
 
 
-def extract_post_items_data(original_doc):
-    """Extract blog post items."""
-    user_service = get_resource_service("users")
-    item_type = original_doc.get(ITEM_TYPE, "")
-    if item_type != CONTENT_TYPE.COMPOSITE:
-        raise NotImplementedError(
-            'Post item_type "{}" not supported.'.format(item_type)
-        )
+def extract_creator_data(doc):
+    """
+    Extracts creator's necessary data from doc to send together with syndicated items
+    """
 
-    items = []
     needed_fields = (
         "avatar",
         "avatar_renditions",
@@ -139,48 +134,64 @@ def extract_post_items_data(original_doc):
         "_updated",
     )
 
+    users_service = get_resource_service("users")
+    original_creator = users_service.find_one(req=None, _id=doc["original_creator"])
+
+    if not original_creator:
+        return None
+
+    creator_data = {}
+    for key in needed_fields:
+        if key in original_creator:
+            creator_data[key] = original_creator.get(key)
+
+    return creator_data
+
+
+def extract_post_items_data(original_doc):
+    """Extract blog post items."""
+
+    item_type = original_doc.get(ITEM_TYPE, "")
+    if item_type != CONTENT_TYPE.COMPOSITE:
+        raise NotImplementedError(
+            'Post item_type "{}" not supported.'.format(item_type)
+        )
+
+    items = []
     for group in original_doc["groups"]:
         if group["id"] == "main":
             for ref in group["refs"]:
                 service_name = ref.get("location", "items")
                 service = get_resource_service(service_name)
+
                 item = service.find_one(req=None, _id=ref["residRef"])
+                if item is None:
+                    continue
 
                 # TODO: consider with the team if comments should be syndicated or not
-                if item is not None:
-                    if item.get("item_type") == "post_comment":
-                        continue
+                if item.get("item_type") == "post_comment":
+                    continue
 
-                    syndicated_creator = user_service.find_one(
-                        req=None, _id=item["original_creator"]
-                    )
-                    syndicated_obj = None
-                    if syndicated_creator:
-                        syndicated_obj = {
-                            k: v
-                            for k, v in syndicated_creator.items()
-                            if k in needed_fields
-                        }
-                    text = item.get("text")
-                    item_type = item.get("item_type")
-                    group_type = item.get("group_type")
-                    meta = item.get("meta", {})
-                    data = {
-                        "text": text,
-                        "item_type": item_type,
-                        "group_type": group_type,
-                        "commenter": item.get("commenter"),
-                        "syndicated_creator": syndicated_obj,
-                        "meta": meta,
-                    }
+                text = item.get("text")
+                item_type = item.get("item_type")
+                group_type = item.get("group_type")
+                meta = item.get("meta", {})
+                data = {
+                    "text": text,
+                    "item_type": item_type,
+                    "group_type": group_type,
+                    "commenter": item.get("commenter"),
+                    "syndicated_creator": extract_creator_data(item),
+                    "meta": meta,
+                }
 
-                    # Add specific fields based on service used to get item, if necessary
-                    # This assumes different origins can indicate specific handling
-                    # For example, when handling polls
-                    if service_name == "polls":
-                        data["poll_body"] = item.get("poll_body")
+                # Add specific fields based on service used to get item, if necessary
+                # This assumes different origins can indicate specific handling
+                # For example, when handling polls
+                if service_name == "polls":
+                    data["poll_body"] = item.get("poll_body")
 
-                    items.append(data)
+                items.append(data)
     return items
 
 
@@ -267,7 +278,10 @@ def extract_producer_post_data(post, fields=None):
             "blog",
             "tags",
         )
-    return {key: post.get(key) for key in fields}
+    post_data = {key: post.get(key) for key in fields}
+    post_data["syndicated_creator"] = extract_creator_data(post)
+
+    return post_data
 
 
 def get_post_creator(post):
