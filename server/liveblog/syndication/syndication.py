@@ -1,6 +1,7 @@
 import logging
 
 from bson import ObjectId
+from flask.views import MethodView
 from flask import current_app as app
 from flask import Blueprint, abort, request
 from flask_cors import CORS
@@ -236,93 +237,129 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route(
-    "/api/syndication/webhook", methods=["GET", "POST", "PUT", "DELETE"]
-)
-def syndication_webhook():
-    in_service = get_resource_service("syndication_in")
-    blog_token = request.headers.get("Authorization")
-    # assume if there is no blog token that a get request is just checking for a response from the webhook
-    if not blog_token and request.method == "GET":
+class SyndicationWebhook(MethodView):
+    """
+    A Flask view handling syndication webhook requests for a blog.
+
+    Supports GET, POST, PUT, and DELETE HTTP methods to manage blog posts
+    in the context of syndication. This includes verifying blog syndication status,
+    creating new posts, updating existing posts, and handling deleted posts.
+    """
+
+    def _initialize_services(self):
+        self.blog_service = get_resource_service("client_blogs")
+        self.posts_service = get_resource_service("posts")
+        self.in_service = get_resource_service("syndication_in")
+
+    def dispatch_request(self, *args, **kwargs):
+        """
+        Overrides the default dispatch to perform initial validation.
+
+        Checks the blog token, verifies the syndication status and blog existence,
+        and ensures the blog is open for updates. If any validation fails, an appropriate
+        error response is returned. Otherwise, it proceeds with the request handling.
+
+        Returns:
+            Flask response object: An API response or error response.
+        """
+        # no blog_token but GET request, it means checking for webhook's response
+        blog_token = request.headers.get("Authorization")
+        if not blog_token and request.method == "GET":
+            return api_response({}, 200)
+
+        self._initialize_services()
+
+        self.in_syndication = self.in_service.find_one(blog_token=blog_token, req=None)
+        if not self.in_syndication:
+            return api_error("Blog is not being syndicated", 406)
+
+        self.blog = self.blog_service.find_one(
+            req=None, _id=self.in_syndication["blog_id"]
+        )
+        if not self.blog:
+            return api_error("Blog not found", 404)
+
+        if self.blog.get("blog_status") != "open":
+            return api_error(
+                "Updates should not be sent for a blog which is not open", 409
+            )
+
+        # ensure necessary data is in the request
+        self.request_data = data = request.get_json(silent=True) or {}
+        if not all(key in data for key in ("items", "post")):
+            return api_error("Bad Request", 400)
+
+        return super(SyndicationWebhook, self).dispatch_request(*args, **kwargs)
+
+    def _notify(self, post, **kwargs):
+        notification_data = {"posts": [post]}
+        notification_data.update(kwargs)
+        push_notification("posts", **notification_data)
+
+    def _get_producer_data(self):
+        return self.request_data["items"], self.request_data["post"]
+
+    def get(self):
         return api_response({}, 200)
 
-    in_syndication = in_service.find_one(blog_token=blog_token, req=None)
-    if in_syndication is None:
-        return api_error("Blog is not being syndicated", 406)
-
-    blog_service = get_resource_service("client_blogs")
-    blog = blog_service.find_one(req=None, _id=in_syndication["blog_id"])
-    if blog is None:
-        return api_error("Blog not found", 404)
-
-    if blog["blog_status"] != "open":
-        return api_error("Updates should not be sent for a blog which is not open", 409)
-
-    data = request.get_json()
-    try:
-        items, producer_post = data["items"], data["post"]
-    except KeyError:
-        return api_error("Bad Request", 400)
-
-    logger.info(
-        "Webhook Request - method: {} items: {} post: {}".format(
-            request.method, items, producer_post
+    def post(self):
+        items, producer_post = self._get_producer_data()
+        producer_post_id = get_producer_post_id(
+            self.in_syndication, producer_post["_id"]
         )
-    )
-    posts_service = get_resource_service("posts")
-    producer_post_id = get_producer_post_id(in_syndication, producer_post["_id"])
-    post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
+        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
 
-    post_id = None
-    publisher = None
-    if post:
-        post_id = str(post["_id"])
-        publisher = get_post_creator(post)
+        if post:
+            return api_error("Post already exist", 409)
 
-    if publisher:
-        return api_error(
-            'Post "{}" cannot be updated: already updated by "{}"'.format(
-                post_id, publisher
-            ),
-            409,
+        new_post = create_syndicated_blog_post(
+            producer_post, items, self.in_syndication
+        )
+        new_post_id = self.posts_service.post([new_post])[0]
+
+        self._notify(new_post, created=True)
+
+        return api_response({"post_id": str(new_post_id)}, 201)
+
+    def put(self):
+        items, producer_post = self._get_producer_data()
+        producer_post_id = get_producer_post_id(
+            self.in_syndication, producer_post["_id"]
+        )
+        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
+
+        if not post:
+            return api_error("Post does not exist", 404)
+
+        post_id = post["_id"]
+        update_post = create_syndicated_blog_post(
+            producer_post, items, self.in_syndication
         )
 
-    if request.method == "GET":
-        return api_response({}, 200)
-    elif request.method in ("POST", "PUT"):
-        new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
+        self.posts_service.patch(post_id, update_post)
+        self._notify(update_post, updated=True)
 
-        def _notify(**kwargs):
-            dicc = {"posts": [new_post]}
-            dicc.update(kwargs)
-            push_notification("posts", **dicc)
+        return api_response({"post_id": post["_id"]}, 200)
 
-        if request.method == "POST":
-            # Create post
-            if post:
-                # Post may have been previously deleted
-                if post.get("deleted"):
-                    posts_service.update(post_id, new_post, post)
-                    _notify(updated=True)
-                    return api_response({"post_id": post_id}, 200)
-                else:
-                    return api_error("Post already exist", 409)
+    def delete(self):
+        producer_post = self._get_producer_data()[1]
+        producer_post_id = get_producer_post_id(
+            self.in_syndication, producer_post["_id"]
+        )
+        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
+        post_id = post["_id"]
 
-            new_post_id = posts_service.post([new_post])[0]
-            _notify(created=True)
-            return api_response({"post_id": str(new_post_id)}, 201)
-        else:
-            # Update post
-            if not post:
-                return api_error("Post does not exist", 404)
-
-            posts_service.patch(post_id, new_post)
-            _notify(updated=True)
-            return api_response({"post_id": post_id}, 200)
-    else:
-        # Delete post
-        posts_service.patch(post_id, {"deleted": True})
+        self.posts_service.delete(lookup={"_id": post_id})
+        # self.posts_service.patch(post_id, {"deleted": True})
         return api_response({"post_id": post_id}, 200)
+
+
+syndication_view = SyndicationWebhook.as_view("syndication_webhook")
+syndication_blueprint.add_url_rule(
+    "/api/syndication/webhook",
+    view_func=syndication_view,
+    methods=["GET", "POST", "PUT", "DELETE"],
+)
 
 
 def _syndication_blueprint_auth():
