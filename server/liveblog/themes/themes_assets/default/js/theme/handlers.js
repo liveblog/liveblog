@@ -222,6 +222,9 @@ function loadSort(sortBy) {
     .then(view.adsManager.refreshAds)
     .then(view.loadEmbeds)
     .then(polls.checkExistingVotes)
+    .then(() => {
+      onYouTubeIframeAPIReady();
+    })
     .catch(catchError);
 }
 
