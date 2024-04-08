@@ -316,6 +316,7 @@ class SyndicationWebhook(MethodView):
         new_post = create_syndicated_blog_post(
             producer_post, items, self.in_syndication
         )
+        new_post["syndicated_creator"] = producer_post.get("syndicated_creator")
         new_post_id = self.posts_service.post([new_post])[0]
 
         self._notify(new_post, created=True)
