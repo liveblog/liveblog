@@ -140,6 +140,11 @@ class PostsResource(ArchiveResource):
                 "mapping": {"type": "object", "enabled": False},
             },
             "content_updated_date": {"type": "datetime"},
+            "syndicated_creator": {
+                "type": "dict",
+                "nullable": True,
+                "mapping": {"type": "object", "enabled": False},
+            },
             "syndication_in": Resource.rel(
                 "syndication_in", embeddable=True, required=False, nullable=True
             ),
@@ -149,6 +154,7 @@ class PostsResource(ArchiveResource):
             ),
         }
     )
+
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
     mongo_indexes = {
         "_created_1": ([("_created", 1)]),

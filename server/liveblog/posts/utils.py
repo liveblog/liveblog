@@ -119,10 +119,10 @@ def attach_syndication(post):
         )
 
 
-def get_main_item(post):
+def get_first_item(post):
     """
     It gets the first related item of a post. If the post is syndicated then
-    it will return the syndicated item instead as the main item
+    it will return the syndicated item instead as the first one
     """
     is_syndicated = post.get("syndication_in")
     main_item = {}
