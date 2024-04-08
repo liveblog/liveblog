@@ -504,7 +504,7 @@ class PostsService(ArchiveService):
 
             if updates.get("post_status") == "open":
                 if original["post_status"] in ("submitted", "draft", "comment"):
-                    # Post has been published as contribution, then published.
+                    # Post has been saved as contribution/draft, then published.
                     # Syndication will be sent with 'created' action.
                     out_service.send_syndication_post(doc, action="created")
                 else:

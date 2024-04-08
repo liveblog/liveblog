@@ -11,7 +11,7 @@ from apps.archive.archive import (
     ArchiveVersionsResource,
 )
 from superdesk.services import BaseService
-from superdesk.filemeta import set_filemeta, get_filemeta
+from superdesk.filemeta import set_filemeta
 from werkzeug.datastructures import FileStorage
 from flask import Blueprint, request, make_response
 from flask_cors import CORS

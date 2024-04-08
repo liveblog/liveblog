@@ -21,7 +21,6 @@ from .utils import (
     cast_to_object_id,
     create_syndicated_blog_post,
     generate_api_key,
-    get_post_creator,
     get_producer_post_id,
     extract_post_items_data,
 )
@@ -297,17 +296,19 @@ class SyndicationWebhook(MethodView):
         push_notification("posts", **notification_data)
 
     def _get_producer_data(self):
-        return self.request_data["items"], self.request_data["post"]
+        items, producer_post = self.request_data["items"], self.request_data["post"]
+        producer_post_id = get_producer_post_id(
+            self.in_syndication, producer_post["_id"]
+        )
+        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
+
+        return items, producer_post, post
 
     def get(self):
         return api_response({}, 200)
 
     def post(self):
-        items, producer_post = self._get_producer_data()
-        producer_post_id = get_producer_post_id(
-            self.in_syndication, producer_post["_id"]
-        )
-        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
+        items, producer_post, post = self._get_producer_data()
 
         if post:
             return api_error("Post already exist", 409)
@@ -322,12 +323,7 @@ class SyndicationWebhook(MethodView):
         return api_response({"post_id": str(new_post_id)}, 201)
 
     def put(self):
-        items, producer_post = self._get_producer_data()
-        producer_post_id = get_producer_post_id(
-            self.in_syndication, producer_post["_id"]
-        )
-        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
-
+        items, producer_post, post = self._get_producer_data()
         if not post:
             return api_error("Post does not exist", 404)
 
@@ -342,15 +338,15 @@ class SyndicationWebhook(MethodView):
         return api_response({"post_id": post["_id"]}, 200)
 
     def delete(self):
-        producer_post = self._get_producer_data()[1]
-        producer_post_id = get_producer_post_id(
-            self.in_syndication, producer_post["_id"]
-        )
-        post = self.posts_service.find_one(req=None, producer_post_id=producer_post_id)
-        post_id = post["_id"]
+        post = self._get_producer_data()[2]
+        if not post:
+            return api_response("Post not found. Nothing to delete", 200)
 
-        self.posts_service.delete(lookup={"_id": post_id})
+        post_id = post["_id"]
         # self.posts_service.patch(post_id, {"deleted": True})
+        self.posts_service.delete(lookup={"_id": post_id})
+        self._notify(post, deleted=True, syndicated=True)
+
         return api_response({"post_id": post_id}, 200)
 
 
