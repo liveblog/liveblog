@@ -149,6 +149,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             },
         });
         $scope.lbPostsInstance = self;
+
         // retrieve first page
         self.fetchNewPage()
             // retrieve updates when event is received
@@ -160,40 +161,66 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             });
     }
 
-    // This function is responsible for updating the timeline,
-    // the contribution, the draft and the comment panel on incoming
-    // new post as well unpublished posts
+    /**
+     * This function is responsible for updating the timeline,
+     * the contribution, the draft and the comment panel on incoming
+     * new post as well unpublished posts
+     */
     const handleNotification = (eventParams, $element, $scope) => {
         const listInstance = $scope.lbPostsInstance;
+        const posts = eventParams.posts || [];
+
+        if (isNotMainTimelineNorCommentsWithFirstPostSyndicated($element, $scope, eventParams))
+            return false;
+
+        if (isNotMainTimelineWithStagesDefined($element, eventParams))
+            return false;
+
+        // Notify for scheduled post
+        notifyScheduledPostPublished(eventParams);
+
+        // Only update if posts belong to the same blog
+        updateIfPostsBelongToSameBlog(posts, $scope, listInstance, eventParams);
+    };
+
+    // check if it's neither the main timeline nor a comments panel with the first post syndicated
+    const isNotMainTimelineNorCommentsWithFirstPostSyndicated = ($element, $scope, eventParams) => {
         const isMainTimeline = $element.hasClass('timeline-posts-list');
         const isPanelOfComments = $scope.lbPostsStatus === 'comment';
         const isFirstPostSyndicated = eventParams.posts && _.has(eventParams.posts[0], 'syndication_in');
 
-        if (!isMainTimeline && !isPanelOfComments && isFirstPostSyndicated)
-            return false;
+        return !isMainTimeline && !isPanelOfComments && isFirstPostSyndicated;
+    };
 
-        if (!isMainTimeline && angular.isDefined(eventParams.stages))
-            return false;
+    const isNotMainTimelineWithStagesDefined = ($element, eventParams) => {
+        const isMainTimeline = $element.hasClass('timeline-posts-list');
 
+        return !isMainTimeline && angular.isDefined(eventParams.stages);
+    };
+
+    const notifyScheduledPostPublished = (eventParams) => {
         if (eventParams.scheduled_done) {
             notify.info(gettext('Scheduled post has been published'));
         }
+    };
 
-        // only update if posts belong to same blog
-        const posts = eventParams.posts || [];
+    // Check if posts belong to the same blog and update accordingly
+    const updateIfPostsBelongToSameBlog = (posts, $scope, listInstance, eventParams) => {
+        if (posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
+            // if post was removed and was a syndicated one
+            if (eventParams.deleted && eventParams.syndicated) {
+                listInstance.pagesManager.removePost(posts[0]);
+                return notify.info(gettext('Syndicated post removed by the producer'));
+            }
 
-        if (posts && posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
-            const applyUpdatesToPostList = true;
             const maxPublishedDate = getMaxPublishedDate(posts, eventParams.updated);
 
             listInstance.isLoading = true;
-            listInstance.pagesManager.retrieveUpdate(applyUpdatesToPostList, maxPublishedDate).then(() => {
+            listInstance.pagesManager.retrieveUpdate(true, maxPublishedDate).then(() => {
                 refreshInstagramEmbeds();
-
                 if (eventParams.deleted === true) {
                     notify.info(gettext('Post removed'));
                 }
-
                 listInstance.isLoading = false;
             });
         }
