@@ -8,16 +8,23 @@
       <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
     {% elif settings.showAuthor %}
       <div class="lb-author__name">
-      {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+      {% if post.syndicated_creator and settings.showSyndicatedAuthor %}
+        {{ post.syndicated_creator.display_name }}
+      {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+        {# keep this elif condition for legacy compatibility for now #}
         {{ mainItem.syndicated_creator.display_name }}
       {% elif post.original_creator %}
         {{ post.original_creator[settings.authorNameFormat] }}
       {% elif post.publisher %}
         {{ post.publisher.display_name }}
       {% endif %}
+
       {% if post.syndication_in and not settings.showSyndicatedAuthor %}
-        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ post.syndication_in.producer_blog_title }}</span>
+        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">
+          {{ post.syndication_in.producer_blog_title }}
+        </span>
       {% endif %}
+
       </div>
       {% if type == 'comment' %}
         <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
