@@ -1,1 +1,3 @@
-{}
+{
+  "integrationFolder": "./spec/cypress/integration/"
+}
