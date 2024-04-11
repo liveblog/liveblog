@@ -1,4 +1,4 @@
-{% if item.post_items_type != "advertisement" %}
+{% if post.post_items_type != "advertisement" %}
 <!-- author plus avatar -->
 <div class="lb-author {% if settings.authorPosition == "bottom"  %}lb-author--bottom{% endif %}">
     {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
@@ -10,13 +10,13 @@
       <div class="lb-author__name">
       {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         {{ mainItem.syndicated_creator.display_name }}
-      {% elif item.original_creator %}
-        {{ item.original_creator[settings.authorNameFormat] }}
-      {% elif item.publisher %}
-        {{ item.publisher.display_name }}
+      {% elif post.original_creator %}
+        {{ post.original_creator[settings.authorNameFormat] }}
+      {% elif post.publisher %}
+        {{ post.publisher.display_name }}
       {% endif %}
-      {% if item.syndication_in and not settings.showSyndicatedAuthor %}
-        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+      {% if post.syndication_in and not settings.showSyndicatedAuthor %}
+        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ post.syndication_in.producer_blog_title }}</span>
       {% endif %}
       </div>
       {% if type == 'comment' %}
@@ -25,10 +25,10 @@
       {% if settings.showAuthorAvatar and type != 'comment' %}
         {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
-        {% elif item.original_creator and item.original_creator.picture_url %}
-        <img class="lb-author__avatar" src="{{ item.original_creator.picture_url }}" />
-        {% elif item.publisher and item.publisher.picture_url %}
-        <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
+        {% elif post.original_creator and post.original_creator.picture_url %}
+        <img class="lb-author__avatar" src="{{ post.original_creator.picture_url }}" />
+        {% elif post.publisher and post.publisher.picture_url %}
+        <img class="lb-author__avatar" src="{{ post.publisher.picture_url }}" />
         {% else %}
         <div class="lb-author__avatar"></div>
         {% endif %}

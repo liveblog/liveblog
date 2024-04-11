@@ -28,8 +28,8 @@
   {% if settings.stickyPosition == 'top'%}
     <div class="timeline-top timeline-top--loaded">
       <section data-timeline-sticky class="lb-posts list-group{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
-        {% for item in api_response.stickyPosts._items %}
-          {% if not item.deleted %}
+        {% for post in api_response.stickyPosts._items %}
+          {% if not post.deleted %}
             {% include "template-post.html" %}
           {% endif %}
         {% endfor %}
@@ -151,8 +151,8 @@
       </div>
     {% if settings.stickyPosition == 'bottom' %}
       <section data-timeline-sticky class="lb-posts list-group sticky{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
-        {% for item in api_response.stickyPosts._items %}
-          {% if not item.deleted %}
+        {% for post in api_response.stickyPosts._items %}
+          {% if not post.deleted %}
             {% include "template-post.html" %}
           {% endif %}
         {% endfor %}
@@ -163,8 +163,8 @@
       </div>
       <section data-timeline-normal class="lb-posts list-group normal">
         {% if api_response.posts._items|length > 0 %}
-            {% for item in api_response.posts._items %}
-              {% if not item.deleted %}
+            {% for post in api_response.posts._items %}
+              {% if not post.deleted %}
                 {% include "template-post.html" %}
               {% endif %}
             {% endfor %}
