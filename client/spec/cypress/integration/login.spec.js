@@ -1,16 +1,25 @@
-const Login = require('./../node_modules/superdesk-core/spec/helpers/pages').login;
-const waitForSuperdesk = require('./../node_modules/superdesk-core/spec/helpers/utils').waitForSuperdesk;
+// const Login = require('./../../../node_modules/superdesk-core/spec/helpers/pages').login;
+// const waitForSuperdesk = require('./../../../node_modules/superdesk-core/spec/helpers/utils').waitForSuperdesk;
 
 describe('login', () => {
     let modal;
 
+    // beforeEach(() => {
+    //     modal = new Login();
+    // });
+    //
+    // it('form renders modal on load', () => {
+    //     expect(modal.btn.isDisplayed()).toBe(true);
+    // });
+
     beforeEach(() => {
-        modal = new Login();
+        cy.visit('/'); 
     });
 
     it('form renders modal on load', () => {
-        expect(modal.btn.isDisplayed()).toBe(true);
+        cy.get('#login-btn').should('be.visible');
     });
+
 
     // it('user can log in', () => {
     //     modal.login('admin', 'admin');

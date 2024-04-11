@@ -12,7 +12,8 @@
     "lint": "npm run eslint && npm run tslint",
     "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION",
     "e2e": "./node_modules/.bin/protractor protractor-conf.js",
-    "cypress:open": "./node_modules/.bin/cypress open"
+    "cy:open": "./node_modules/.bin/cypress open",
+    "cy:run": "./node_modules/.bin/cypress run"
   },
   "licenses": [
     {
