@@ -11,7 +11,9 @@
     "tslint": "tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
     "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION",
-    "e2e": "./node_modules/.bin/protractor protractor-conf.js"
+    "e2e": "./node_modules/.bin/protractor protractor-conf.js",
+    "cy:open": "./node_modules/.bin/cypress open",
+    "cy:run": "./node_modules/.bin/cypress run"
   },
   "licenses": [
     {
@@ -32,6 +34,7 @@
     "btoa": "1.1.2",
     "classnames": "2.2.5",
     "css-loader": "0.28.7",
+    "cypress": "6.9.1",
     "eslint": "^6.7.2",
     "eslint-plugin-angular": "3.1.1",
     "eslint-plugin-react": "^7.5.1",
