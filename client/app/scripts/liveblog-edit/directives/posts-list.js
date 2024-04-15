@@ -170,7 +170,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
         const listInstance = $scope.lbPostsInstance;
         const posts = eventParams.posts || [];
 
-        if (isNotMainTimelineNorCommentsWithFirstPostSyndicated($element, $scope, eventParams))
+        if (shouldExcludeFromUpdates($element, $scope, eventParams))
             return false;
 
         if (isNotMainTimelineWithStagesDefined($element, eventParams))
@@ -183,8 +183,13 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
         updateIfPostsBelongToSameBlog(posts, $scope, listInstance, eventParams);
     };
 
-    // check if it's neither the main timeline nor a comments panel with the first post syndicated
-    const isNotMainTimelineNorCommentsWithFirstPostSyndicated = ($element, $scope, eventParams) => {
+    /**
+     * Determines if the element should be updated based on:
+     * 1. If it not the main timeline
+     * 2. It is not a comments panel
+     * 3. If the first post is syndicated
+     */
+    const shouldExcludeFromUpdates = ($element, $scope, eventParams) => {
         const isMainTimeline = $element.hasClass('timeline-posts-list');
         const isPanelOfComments = $scope.lbPostsStatus === 'comment';
         const isFirstPostSyndicated = eventParams.posts && _.has(eventParams.posts[0], 'syndication_in');

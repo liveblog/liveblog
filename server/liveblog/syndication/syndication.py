@@ -288,7 +288,7 @@ class SyndicationWebhook(MethodView):
         if not all(key in data for key in ("items", "post")):
             return api_error("Bad Request", 400)
 
-        return super(SyndicationWebhook, self).dispatch_request(*args, **kwargs)
+        return super().dispatch_request(*args, **kwargs)
 
     def _notify(self, post, **kwargs):
         notification_data = {"posts": [post]}
