@@ -1,4 +1,4 @@
-{% if item.post_items_type != "advertisement" %}
+{% if post.post_items_type != "advertisement" %}
     <div class="lb-post-actions {% if settings.authorPosition == 'bottom'  %}lb-post-actions--top{% endif %}">
 
         {% if settings.showSharingButtons %}
@@ -8,36 +8,36 @@
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
                     data-link-base="//www.facebook.com/sharer.php?u="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
                     data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
                     data-link-base="//wa.me/?text="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_whatsapp.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_whatsapp.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
                     data-link-base="//telegram.me/share/url?url="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_telegram.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_telegram.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item share_viber-hidden-desktop"
                     data-link-base="viber://forward?text="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_viber.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_viber.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
                     data-link-base="//twitter.com/intent/tweet?text="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
                     </a>
                     <a class="lb-post-shareBox__item"
                     onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
                     data-link-base="mailto:?to=&subject=Liveblog&body="
-                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
+                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_email.svg"/>
                     </a>
                     <span> | </span>
                 </div>
@@ -47,7 +47,7 @@
         {% if settings.showPermalinkButton %}
             <!-- permalink -->
             <div class="lb-post-permalink">
-                <a id="{{ item._id }}" target="_blank">
+                <a id="{{ post._id }}" target="_blank">
                     <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
                 </a>
             </div>

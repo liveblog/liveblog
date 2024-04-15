@@ -1,7 +1,7 @@
 import json
 import logging
 from liveblog.posts.utils import (
-    get_main_item,
+    get_first_item,
     get_first_item_of_type,
     get_related_items,
 )
@@ -63,11 +63,11 @@ def generate_blogupdate(blog, post, theme_settings):
         BlogPosting: A BlogPosting object representing the blog post.
     """
 
-    main_post_item = get_main_item(post)
-    if not main_post_item:
+    first_post_item = get_first_item(post)
+    if not first_post_item:
         return None
 
-    author = get_post_author(post, main_post_item, theme_settings)
+    author = get_post_author(post, first_post_item, theme_settings)
     blog_posting = BlogPosting.from_blog_post(post, author)
     blog_posting.set_post_url(theme_settings, blog)
 
@@ -88,7 +88,7 @@ def generate_blogupdate(blog, post, theme_settings):
     return blog_posting
 
 
-def get_post_author(post, main_post_item, theme_settings):
+def get_post_author(post, first_post_item, theme_settings):
     """
     Returns the author of a blog post.
 
@@ -98,7 +98,7 @@ def get_post_author(post, main_post_item, theme_settings):
 
     Args:
         post (dict): A dictionary representing the blog post.
-        main_post_item (dict): A dictionary representing the main post item.
+        first_post_item (dict): A dictionary representing the first post item.
         theme_settings (dict): A dictionary representing the theme settings.
 
     Returns:
@@ -108,7 +108,7 @@ def get_post_author(post, main_post_item, theme_settings):
     is_syndicated = post.get("syndication_in", False)
 
     if is_syndicated and show_syndicated_author:
-        syndicated_creator = main_post_item.get("syndicated_creator", {})
+        syndicated_creator = first_post_item.get("syndicated_creator", {})
         return Author(syndicated_creator.get("display_name"))
 
     original_creator = post.get("original_creator")
@@ -116,7 +116,7 @@ def get_post_author(post, main_post_item, theme_settings):
         author_name_format = theme_settings.get("authorNameFormat", "display_name")
         return Author(original_creator.get(author_name_format))
 
-    publisher = main_post_item.get("publisher")
+    publisher = first_post_item.get("publisher")
     if publisher:
         return Author(publisher.get("display_name"))
 

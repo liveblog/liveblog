@@ -11,7 +11,7 @@ from apps.archive.archive import (
     ArchiveVersionsResource,
 )
 from superdesk.services import BaseService
-from superdesk.filemeta import set_filemeta, get_filemeta
+from superdesk.filemeta import set_filemeta
 from werkzeug.datastructures import FileStorage
 from flask import Blueprint, request, make_response
 from flask_cors import CORS
@@ -147,20 +147,16 @@ class ItemsService(ArchiveService):
 
     def on_create(self, docs):
         super().on_create(docs)
+
         for doc in docs:
             update_dates_for(doc)
             doc["original_creator"] = str(get_user().get("_id"))
-            if doc.get("item_type"):
-                if doc["item_type"] == "embed":
-                    metadata = doc["meta"]
-                    set_filemeta(doc, metadata)
-                    if get_filemeta(doc, "version"):
-                        metadata["version"] = str(metadata.get("version"))
-                    if get_filemeta(doc, "width"):
-                        metadata["width"] = str(metadata.get("width"))
-                    if get_filemeta(doc, "height"):
-                        metadata["height"] = str(metadata.get("height"))
-                    self.set_embed_metadata(doc)
+
+            is_item_embed_type = doc.get("item_type") == "embed"
+            if is_item_embed_type:
+                set_filemeta(doc, doc["meta"])
+                self.set_embed_metadata(doc)
+
         return doc
 
     def on_created(self, docs):

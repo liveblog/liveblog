@@ -140,6 +140,11 @@ class PostsResource(ArchiveResource):
                 "mapping": {"type": "object", "enabled": False},
             },
             "content_updated_date": {"type": "datetime"},
+            "syndicated_creator": {
+                "type": "dict",
+                "nullable": True,
+                "mapping": {"type": "object", "enabled": False},
+            },
             "syndication_in": Resource.rel(
                 "syndication_in", embeddable=True, required=False, nullable=True
             ),
@@ -149,6 +154,7 @@ class PostsResource(ArchiveResource):
             ),
         }
     )
+
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
     mongo_indexes = {
         "_created_1": ([("_created", 1)]),
@@ -440,7 +446,7 @@ class PostsService(ArchiveService):
             if not updates.get("content_updated_date", False):
                 updates["content_updated_date"] = updates["published_date"]
 
-            # assure that the item info is keept if is needed.
+            # assure that the item info is kept if is needed.
             if (
                 original.get("post_status") == "submitted"
                 and original.get("original_creator", False)
@@ -504,7 +510,7 @@ class PostsService(ArchiveService):
 
             if updates.get("post_status") == "open":
                 if original["post_status"] in ("submitted", "draft", "comment"):
-                    # Post has been published as contribution, then published.
+                    # Post has been saved as contribution/draft, then published.
                     # Syndication will be sent with 'created' action.
                     out_service.send_syndication_post(doc, action="created")
                 else:

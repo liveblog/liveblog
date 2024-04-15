@@ -43,7 +43,7 @@ function renderTimeline(api_response) {
   api_response._items.forEach((post) => {
     renderedPosts.push(
       nunjucks.env.render('template-post.html', {
-        item: post,
+        post: post,
         options: optionsObj,
         settings: window.LB.settings,
         assets_root: window.LB.assets_root
@@ -54,7 +54,7 @@ function renderTimeline(api_response) {
 
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   els.timelineNormal.innerHTML = renderedPosts.length ? renderedPosts.join('') : '';
-  
+
   if (api_response.pendingPosts) {
     checkPending(api_response.pendingPosts);
   }
@@ -74,7 +74,7 @@ function renderTimeline(api_response) {
 function renderSinglePost(post, displayNone) {
   return nunjucks.env.render(
     'template-post.html', {
-      item: post,
+      post: post,
       settings: window.LB.settings,
       options: {i18n: window.LB.i18n},
       assets_root: window.LB.assets_root,
@@ -166,7 +166,7 @@ function checkPending(pendingPosts = 0) {
   }
 
   let count = pending.length || pendingPosts;
-  
+
   if (count === 1) {
     updateToggles(false, true, true);
   } else if (count > 1) {
@@ -380,7 +380,7 @@ function updateTimestamps() {
   elements.forEach((elem) => {
       reloadScripts(elem)
   });
-  
+
   return null;
 }
 
@@ -478,8 +478,8 @@ function scrollHeaderIntoView() {
       top: elemPosition - offset,
       behavior: 'smooth'
     });
-  } 
-   
+  }
+
   messages.send('scroll_header_into_view');
 }
 
