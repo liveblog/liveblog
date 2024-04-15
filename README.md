@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.85.0*
+*Version 3.90.0-rc1*
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
@@ -30,7 +30,7 @@ Here I'm assuming you are running Ubuntu Linux 20.04.6 LTS
     $ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     $ sudo chmod +x /usr/local/bin/docker-compose
     ```
-    
+
 - Install python3 and other required tools:
 
     ```sh
@@ -39,16 +39,16 @@ Here I'm assuming you are running Ubuntu Linux 20.04.6 LTS
     build-essential libffi-dev git \
     libtiff5-dev libjpeg8-dev zlib1g-dev \
     libfreetype6-dev liblcms2-dev libwebp-dev \
-    curl libfontconfig libssl-dev libbz2-dev \ 
+    curl libfontconfig libssl-dev libbz2-dev \
     libncurses5-dev libreadline-dev libsqlite3-dev
     ```
-    
+
 - Install pyenv for Python environment management since we make use of Python 3.6.15:
 
     ```sh
     $ curl https://pyenv.run | bash
     ```
-    
+
 - Install Python 3.6.15 using pyenv:
 
     ```sh
