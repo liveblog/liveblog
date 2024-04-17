@@ -1,24 +1,48 @@
 {
     "settings": {
-        "uni": {
-            "max_active_blogs": 1,
-            "max_blog_members": 2,
-            "max_themes": 3
-        },
         "one-time-event": {
-            "max_active_blogs": 1,
-            "max_blog_members": 2,
-            "max_themes": 3
+            "features": {
+                "syndication": false,
+                "marketplace": false
+            },
+            "limits": {
+                "blogs": 1,
+                "themes": 1,
+                "blog_members": 2
+            }
+        },
+        "uni": {
+            "features": {
+                "syndication": true,
+                "marketplace": false
+            },
+            "limits": {
+                "blogs": 1,
+                "themes": 2,
+                "blog_members": 3
+            }
         },
         "solo": {
-            "max_active_blogs": 1,
-            "max_blog_members": 2,
-            "max_themes": 3
+            "features": {
+                "syndication": true,
+                "marketplace": false
+            },
+            "limits": {
+                "blogs": 1,
+                "themes": 1,
+                "blog_members": 1
+            }
         },
         "team": {
-            "max_active_blogs": 3,
-            "max_blog_members": 4,
-            "max_themes": 6
+            "features": {
+                "syndication": true,
+                "marketplace": true
+            },
+            "limits": {
+                "blogs": 3,
+                "themes": 6,
+                "blog_members": 5
+            }
         },
         "network": 1
     }

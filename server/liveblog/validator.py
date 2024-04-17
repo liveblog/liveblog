@@ -93,32 +93,47 @@ class LiveblogValidator(SuperdeskValidator):
     def _validate_settings(self, settings):
         errors = []
         required_schema = {
-            "max_active_blogs": {"type": "integer", "min": 1, "required": True},
-            "max_blog_members": {"type": "integer", "min": 1, "required": True},
-            "max_themes": {"type": "integer", "min": 1, "required": True},
+            "features": {
+                "syndication": {"type": bool, "required": True},
+                "marketplace": {"type": bool, "required": True},
+            },
+            "limits": {
+                "blogs": {"type": int, "min": 1, "required": True},
+                "themes": {"type": int, "min": 1, "required": True},
+                "blog_members": {"type": int, "min": 1, "required": True},
+            },
         }
 
-        for key, value in settings.items():
+        for key, config in settings.items():
             if key == "network":
                 # Special case for 'network' plan
-                if not isinstance(value, int) or value < 1:
+                if not isinstance(config, int) or config < 1:
                     errors.append(
                         f"The value for '{key}' must be an integer and at least 1."
                     )
             else:
                 # General case for other plans
-                if not isinstance(value, dict):
-                    errors.append(f"The value for '{key}' must be a dictionary.")
-                else:
-                    for field, attrs in required_schema.items():
-                        if field not in value:
-                            errors.append(f"Missing '{field}' in settings for '{key}'.")
-                        elif (
-                            not isinstance(value[field], int)
-                            or value[field] < attrs["min"]
-                        ):
-                            errors.append(
-                                f"The '{field}' for '{key}' must be an integer and at least {attrs['min']}."
-                            )
+                for section, section_config in required_schema.items():
+                    if section not in config:
+                        errors.append(f"Missing '{section}' in settings for '{key}'.")
+                    else:
+                        for field, field_attrs in section_config.items():
+                            if field not in config[section]:
+                                errors.append(
+                                    f"Missing '{field}' in '{section}' for '{key}'."
+                                )
+                            else:
+                                field_value = config[section][field]
+                                if not isinstance(field_value, field_attrs["type"]):
+                                    errors.append(
+                                        f"The '{field}' in '{section}' for '{key}' must be a {field_attrs['type']}."
+                                    )
+                                if (
+                                    field_attrs["type"] == int
+                                    and field_value < field_attrs["min"]
+                                ):
+                                    errors.append(
+                                        f"The '{field}' in '{section}' for '{key}' must be at least {field_attrs['min']}."
+                                    )
 
         return errors

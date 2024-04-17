@@ -38,7 +38,7 @@ class InstanceSettingsService(BaseService):
                 errors = validator._validate_settings(doc["settings"])
                 if errors:
                     abort(
-                        422,
+                        400,
                         description="Validation errors for config occurred: "
                         + ", ".join(errors),
                     )
@@ -59,10 +59,8 @@ class InstanceSettingsService(BaseService):
     def create(self, docs, **kwargs):
         existing_config = self.get_existing_config()
         if existing_config:
-            abort(
-                422,
-                description="Existing config updated. No new config created",
-            )
+            abort(422, description="No new config created. Existing config updated.")
+
         return super().create(docs, **kwargs)
 
     def get_existing_config(self):
