@@ -1,0 +1,25 @@
+{
+    "settings": {
+        "uni": {
+            "max_active_blogs": 1,
+            "max_blog_members": 2,
+            "max_themes": 3
+        },
+        "one-time-event": {
+            "max_active_blogs": 1,
+            "max_blog_members": 2,
+            "max_themes": 3
+        },
+        "solo": {
+            "max_active_blogs": 1,
+            "max_blog_members": 2,
+            "max_themes": 3
+        },
+        "team": {
+            "max_active_blogs": 3,
+            "max_blog_members": 4,
+            "max_themes": 6
+        },
+        "network": 1
+    }
+}

@@ -89,3 +89,36 @@ class LiveblogValidator(SuperdeskValidator):
                             response.status_code
                         ),
                     )
+
+    def _validate_settings(self, settings):
+        errors = []
+        required_schema = {
+            "max_active_blogs": {"type": "integer", "min": 1, "required": True},
+            "max_blog_members": {"type": "integer", "min": 1, "required": True},
+            "max_themes": {"type": "integer", "min": 1, "required": True},
+        }
+
+        for key, value in settings.items():
+            if key == "network":
+                # Special case for 'network' plan
+                if not isinstance(value, int) or value < 1:
+                    errors.append(
+                        f"The value for '{key}' must be an integer and at least 1."
+                    )
+            else:
+                # General case for other plans
+                if not isinstance(value, dict):
+                    errors.append(f"The value for '{key}' must be a dictionary.")
+                else:
+                    for field, attrs in required_schema.items():
+                        if field not in value:
+                            errors.append(f"Missing '{field}' in settings for '{key}'.")
+                        elif (
+                            not isinstance(value[field], int)
+                            or value[field] < attrs["min"]
+                        ):
+                            errors.append(
+                                f"The '{field}' for '{key}' must be an integer and at least {attrs['min']}."
+                            )
+
+        return errors
