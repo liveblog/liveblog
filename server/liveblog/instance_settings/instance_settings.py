@@ -23,8 +23,7 @@ class InstanceSettingsResource(Resource):
         }
     }
 
-    item_methods = ["GET"]
-    privileges = {"GET": "posts", "POST": "posts"}
+    privileges = {"GET": "instance_settings", "POST": "instance_settings"}
 
 
 class InstanceSettingsService(BaseService):
