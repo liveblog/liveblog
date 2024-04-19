@@ -105,35 +105,27 @@ class LiveblogValidator(SuperdeskValidator):
         }
 
         for key, config in settings.items():
-            if key == "network":
-                # Special case for 'network' plan
-                if not isinstance(config, int) or config < 1:
-                    errors.append(
-                        f"The value for '{key}' must be an integer and at least 1."
-                    )
-            else:
-                # General case for other plans
-                for section, section_config in required_schema.items():
-                    if section not in config:
-                        errors.append(f"Missing '{section}' in settings for '{key}'.")
-                    else:
-                        for field, field_attrs in section_config.items():
-                            if field not in config[section]:
+            for section, section_config in required_schema.items():
+                if section not in config:
+                    errors.append(f"Missing '{section}' in settings for '{key}'.")
+                else:
+                    for field, field_attrs in section_config.items():
+                        if field not in config[section]:
+                            errors.append(
+                                f"Missing '{field}' in '{section}' for '{key}'."
+                            )
+                        else:
+                            field_value = config[section][field]
+                            if not isinstance(field_value, field_attrs["type"]):
                                 errors.append(
-                                    f"Missing '{field}' in '{section}' for '{key}'."
+                                    f"The '{field}' in '{section}' for '{key}' must be a {field_attrs['type']}."
                                 )
-                            else:
-                                field_value = config[section][field]
-                                if not isinstance(field_value, field_attrs["type"]):
-                                    errors.append(
-                                        f"The '{field}' in '{section}' for '{key}' must be a {field_attrs['type']}."
-                                    )
-                                if (
-                                    field_attrs["type"] == int
-                                    and field_value < field_attrs["min"]
-                                ):
-                                    errors.append(
-                                        f"The '{field}' in '{section}' for '{key}' must be at least {field_attrs['min']}."
-                                    )
+                            if (
+                                field_attrs["type"] == int
+                                and field_value < field_attrs["min"]
+                            ):
+                                errors.append(
+                                    f"The '{field}' in '{section}' for '{key}' must be at least {field_attrs['min']}."
+                                )
 
         return errors
