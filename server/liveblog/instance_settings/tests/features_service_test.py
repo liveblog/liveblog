@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from ..features_service import FeaturesService
 
-# Constants for the tests
+
 SUBSCRIPTION_LEVEL = "basic"
 SUBSCRIPTION_LEVEL_NETWORK = "network"
 
