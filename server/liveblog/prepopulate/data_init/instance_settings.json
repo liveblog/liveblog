@@ -1,48 +1,50 @@
-{
-    "settings": {
-        "one-time-event": {
-            "features": {
-                "syndication": false,
-                "marketplace": false
+[
+    {
+        "settings": {
+            "one-time-event": {
+                "features": {
+                    "syndication": false,
+                    "marketplace": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 2
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 1,
-                "blog_members": 2
-            }
-        },
-        "uni": {
-            "features": {
-                "syndication": true,
-                "marketplace": false
+            "uni": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 2,
+                    "blog_members": 3
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 2,
-                "blog_members": 3
-            }
-        },
-        "solo": {
-            "features": {
-                "syndication": true,
-                "marketplace": false
+            "solo": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 1
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 1,
-                "blog_members": 1
-            }
-        },
-        "team": {
-            "features": {
-                "syndication": true,
-                "marketplace": true
-            },
-            "limits": {
-                "blogs": 3,
-                "themes": 6,
-                "blog_members": 5
+            "team": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": true
+                },
+                "limits": {
+                    "blogs": 3,
+                    "themes": 6,
+                    "blog_members": 5
+                }
             }
         }
     }
-}
+]
