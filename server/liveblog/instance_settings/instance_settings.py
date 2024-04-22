@@ -1,12 +1,15 @@
 import logging
-from liveblog.validator import LiveblogValidator
-from superdesk import get_resource_service
+from flask import abort, Blueprint, current_app as app
+from flask_cors import CORS
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from flask import abort
+from liveblog.validator import LiveblogValidator
+from liveblog.utils.api import api_response
 
-instance_settings_key = "instance_settings"
 logger = logging.getLogger(__name__)
+instance_settings_key = "instance_settings"
+instance_settings_blueprint = Blueprint(instance_settings_key, __name__)
+CORS(instance_settings_blueprint)
 
 
 class InstanceSettingsResource(Resource):
@@ -23,7 +26,7 @@ class InstanceSettingsResource(Resource):
         }
     }
 
-    privileges = {"GET": "instance_settings", "POST": "instance_settings"}
+    privileges = {"GET": instance_settings_key, "POST": instance_settings_key}
 
 
 class InstanceSettingsService(BaseService):
@@ -46,7 +49,7 @@ class InstanceSettingsService(BaseService):
                     updated_settings = self.merge_configs(
                         existing_config.get("settings", {}), doc["settings"]
                     )
-                    get_resource_service(instance_settings_key).update(
+                    self.update(
                         id=existing_config["_id"],
                         updates={"settings": updated_settings},
                         original=existing_config,
@@ -67,9 +70,7 @@ class InstanceSettingsService(BaseService):
         Check if any config exists at all. This assumes the singleton pattern where there
         exists only one config at a time
         """
-        existing_configs = list(
-            get_resource_service(instance_settings_key).get(req=None, lookup={})
-        )
+        existing_configs = list(self.get(req=None, lookup={}))
         return existing_configs[0] if existing_configs else None
 
     def merge_configs(self, original, new):
@@ -83,3 +84,17 @@ class InstanceSettingsService(BaseService):
             elif isinstance(original[key], dict) and isinstance(value, dict):
                 original[key] = self.merge_configs(original[key], value)
         return original
+
+
+@instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])
+def get_instance_settings():
+    """
+    Returns the instance settings for the current subscription level
+    """
+    subscription_level = app.features.current_sub_level()
+    all_settings = app.features.get_settings()
+
+    current_settings = all_settings.get(subscription_level, {})
+    current_settings["isNetworkSubscription"] = app.features.is_network_subscription()
+
+    return api_response(current_settings, 200)
