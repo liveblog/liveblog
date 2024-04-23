@@ -51,6 +51,7 @@ const app = angular.module('liveblog.edit',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security',
+        'liveblog.features',
         'liveblog.freetypes',
         'liveblog.edit.components.inactivityModal',
     ])

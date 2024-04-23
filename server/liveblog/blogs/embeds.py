@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; -*-
 #
-# This file is part of Superdesk.
+# This file is part of Liveblog.
 #
-# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
+# Copyright 2013 - 2024 Sourcefabric z.u. and contributors.
 #
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
-# at https://www.sourcefabric.org/superdesk/license
+# at https://github.com/liveblog/liveblog/blob/master/LICENSE
 
 import copy
 import json
@@ -298,11 +298,12 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         else api_host
     )
     api_host = api_host.replace("http://", app.config.get("EMBED_PROTOCOL"))
+    theme_styles_enabled = app.features.is_enabled("theme_styles")
 
     scope = {
         "blog": blog,
         "settings": theme_settings,
-        "styles_settings": generate_theme_styles(theme),
+        "styles_settings": generate_theme_styles(theme) if theme_styles_enabled else "",
         "fonts_url": google_fonts_url(theme),
         "assets": assets,
         "api_host": api_host,

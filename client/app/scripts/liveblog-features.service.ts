@@ -30,22 +30,11 @@ class FeaturesService {
     }
 
     /**
-     * Gets the settings from cache or loads them if not already loaded.
-     */
-    private async getSettings(): Promise<ISettings> {
-        if (!this.settings) {
-            await this.loadSettings();
-        }
-
-        return this.settings!;
-    }
-
-    /**
      * Determines if a specific feature is enabled based on the current settings.
      * If the "network" subscription is active, all features are considered enabled.
      */
-    isEnabled = async(featureName: string) => {
-        const settings = await this.getSettings();
+    isEnabled = (featureName: string) => {
+        const settings = this.settings;
 
         if (settings.isNetworkSubscription)
             return true;

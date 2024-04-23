@@ -102,9 +102,8 @@ def generate_theme_styles(theme):
     """
 
     support_styles_settings = theme.get("supportStylesSettings", False)
-    is_solo_subscription = "solo" in SUBSCRIPTION_LEVEL
 
-    if not support_styles_settings or is_solo_subscription:
+    if not support_styles_settings:
         return ""
 
     options_groups = theme.get("styleOptions", {})

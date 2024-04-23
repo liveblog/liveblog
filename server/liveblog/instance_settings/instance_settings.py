@@ -18,7 +18,7 @@ class InstanceSettingsResource(Resource):
     The instance settings are stored as a JSON object in the settings field.
     """
 
-    datasource = {"source": instance_settings_key}
+    datasource = {"source": instance_settings_key, "search_backend": "elastic"}
     schema = {
         "settings": {
             "type": "dict",
