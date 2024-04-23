@@ -3,7 +3,8 @@
         "one-time-event": {
             "features": {
                 "syndication": false,
-                "marketplace": false
+                "marketplace": false,
+                "theme_styles": false
             },
             "limits": {
                 "blogs": 1,
@@ -14,7 +15,8 @@
         "uni": {
             "features": {
                 "syndication": true,
-                "marketplace": false
+                "marketplace": false,
+                "theme_styles": false
             },
             "limits": {
                 "blogs": 1,
@@ -25,7 +27,8 @@
         "solo": {
             "features": {
                 "syndication": true,
-                "marketplace": false
+                "marketplace": false,
+                "theme_styles": false
             },
             "limits": {
                 "blogs": 1,
@@ -36,7 +39,8 @@
         "team": {
             "features": {
                 "syndication": true,
-                "marketplace": true
+                "marketplace": true,
+                "theme_styles": true
             },
             "limits": {
                 "blogs": 3,
