@@ -16,6 +16,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         'session',
         'upload',
         'privileges',
+        'featuresService',
     ];
     function LiveblogThemesController(
         _,
@@ -31,7 +32,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         notify,
         session,
         upload,
-        privileges
+        privileges,
+        featuresService
     ) {
         const self = this;
         /**
@@ -170,7 +172,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             themeBlogsModal: false,
             // this is used to when a blog is selected.
             selectedBlog: false,
-            isSolo: () => config.subscriptionLevel === 'solo',
+            isAllowedCustomThemes: () => featuresService.isEnabled('custom_themes'),
             // loading indicatior for the first timeload.
             loading: true,
             setNotificationCookie: function(cookieName, cookieValue) {
@@ -358,7 +360,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         loadThemes();
     }
 
-    return angular.module('liveblog.themes', [])
+    return angular.module('liveblog.themes', ['liveblog.features'])
         .config(['superdeskProvider', function(superdesk) {
             superdesk
                 .activity('/themes/', {
