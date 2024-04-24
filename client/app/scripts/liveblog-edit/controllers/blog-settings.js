@@ -37,6 +37,7 @@ BlogSettingsController.$inject = [
     '$rootScope',
     '$routeParams',
     'postsService',
+    'featuresService',
 ];
 
 function BlogSettingsController(
@@ -56,7 +57,8 @@ function BlogSettingsController(
     superdesk,
     $rootScope,
     $routeParams,
-    postsService
+    postsService,
+    featuresService
 ) {
     // set view's model
     /* eslint consistent-this: ["error", "vm"]*/
@@ -126,7 +128,7 @@ function BlogSettingsController(
             config.subscriptionLevel,
         blog: blog,
         newBlog: angular.copy(blog),
-        deactivateTheme: config.subscriptionLevel === 'solo',
+        isThemeSelectorEnabled: featuresService.isEnabled('change_blog_theme'),
         blogPreferences: angular.copy(blog.blog_preferences),
         consumersSettings: angular.copy(blog.consumers_settings),
         availableLanguages: [],

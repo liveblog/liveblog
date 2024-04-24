@@ -29,7 +29,8 @@
                 "syndication": true,
                 "marketplace": false,
                 "theme_styles": false,
-                "custom_themes": false
+                "custom_themes": false,
+                "change_blog_theme": false
             },
             "limits": {
                 "blogs": 1,
@@ -43,7 +44,8 @@
                 "syndication": true,
                 "marketplace": true,
                 "theme_styles": true,
-                "custom_themes": true
+                "custom_themes": true,
+                "change_blog_theme": true
             },
             "limits": {
                 "blogs": 3,
