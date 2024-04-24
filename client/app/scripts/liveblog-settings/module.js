@@ -72,7 +72,7 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             link: function(scope, element, attrs, ngModel) {
                 var editor = ace.edit(element[0]);
 
-                editor.setTheme('ace/theme/github');
+                editor.setTheme('ace/theme/chrome');
                 editor.session.setMode('ace/mode/json');
                 editor.setFontSize(14);
 
