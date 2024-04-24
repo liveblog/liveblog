@@ -219,13 +219,11 @@ const configServer = (grunt) => ({
 });
 
 const configApp = (grunt) => ({
-    // editor configuration
     editor: {
         // if true, the editor will not have a toolbar
         disableEditorToolbar: grunt.option('disableEditorToolbar')
     },
 
-    // default timezone for the app
     defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
 
     // model date and time formats
@@ -244,24 +242,8 @@ const configApp = (grunt) => ({
     isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
 
     debug: grunt.option('debug-mode') || false,
+
     embed_protocol: process.env.EMBED_PROTOCOL || "https://",
-    iframely: {
-        key: grunt.option('iframely-key') || process.env.IFRAMELY_KEY || ''
-    },
-    facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
-    syndication: process.env.SYNDICATION || false,
-    marketplace: process.env.MARKETPLACE || false,
-    themeCreationRestrictions: {team: 5},
-    excludedTheme: 'angular',
-    assignableUsers: {
-        solo: 2,
-        team: 4
-    },
-    subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
-    blogCreationRestrictions: {
-        solo: 1,
-        team: 3
-    },
 
     // override language translations
     langOverride: {},
