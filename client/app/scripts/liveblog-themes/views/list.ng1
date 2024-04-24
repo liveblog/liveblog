@@ -5,7 +5,7 @@
             action="#"
             method="post"
             enctype="multipart/form-data"
-            ng-if="!self.hasReachedThemesLimit()">
+            ng-if="self.isCustomThemesFeatureEnabled() && !self.hasReachedThemesLimit()">
             <label class="navbtn sd-create-btn" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
                 <i class="svg-icon-plus"></i>
                 <span class="circle"></span>
@@ -18,7 +18,7 @@
         </form>
 
         <button
-            ng-if="self.hasReachedThemesLimit()"
+            ng-if="self.isCustomThemesFeatureEnabled() && self.hasReachedThemesLimit()"
             class="navbtn sd-create-btn"
             ng-click="self.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
             <i class="svg-icon-plus"></i>
@@ -32,7 +32,7 @@
     <div class="list-container">
         <div ng-if="!self.getNotificationCookie('notification1')">
             <div
-                ng-if="!self.isAllowedCustomThemes()"
+                ng-if="self.isCustomThemesFeatureEnabled()"
                 class="alert alert-info alert--margin-left"
                 role="alert"
             >
@@ -42,7 +42,7 @@
         </div>
         <div ng-if="!self.getNotificationCookie('notification2')">
             <div
-                ng-if="!self.isAllowedCustomThemes()"
+                ng-if="self.isCustomThemesFeatureEnabled()"
                 class="alert alert-error alert--margin-left"
                 role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="self.setNotificationCookie('notification2','AMP_theme')"><i class="icon-close-small"></i></button>
@@ -77,8 +77,8 @@
                                         {{ ::theme.author.name }}
                                     </div>
                                 </dd>
-                                <dt ng-if="!self.isAllowedCustomThemes()">{{ ::'Sources' | translate }}:</dt>
-                                <dd ng-if="!self.isAllowedCustomThemes() && theme.repository.url | githubUrlFromGit">
+                                <dt ng-if="self.isCustomThemesFeatureEnabled()">{{ ::'Sources' | translate }}:</dt>
+                                <dd ng-if="self.isCustomThemesFeatureEnabled() && theme.repository.url | githubUrlFromGit">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
                                        ng-if="theme.repository.url"
@@ -87,7 +87,7 @@
                                        ng-if="theme.repository.url"
                                        target="_blank">Github</a>
                                 </dd>
-                                <dd ng-if="!self.isAllowedCustomThemes() && theme.repository.url | stashUrlFromGit">
+                                <dd ng-if="self.isCustomThemesFeatureEnabled() && theme.repository.url | stashUrlFromGit">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | stashUrlFromGit}}/archive?format=zip"
                                        ng-if="theme.repository.url"

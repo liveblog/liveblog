@@ -600,15 +600,10 @@ class ThemesService(BaseService):
         return blogs
 
     def check_themes_limit(self, docs=[]):
-        subscription = SUBSCRIPTION_LEVEL
+        current_themes_count = self.find({}).count() + len(docs)
 
-        if subscription in SUBSCRIPTION_MAX_THEMES:
-            all = self.find({})
-
-            if all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]:
-                raise SuperdeskApiError.forbiddenError(
-                    message="Cannot add another theme."
-                )
+        if app.features.is_limit_reached("custom_thems", current_themes_count):
+            raise SuperdeskApiError.forbiddenError(message="Cannot add another theme.")
 
     def on_create(self, docs):
         self.check_themes_limit(docs)
