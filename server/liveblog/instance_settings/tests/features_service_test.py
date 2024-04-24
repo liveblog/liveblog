@@ -84,3 +84,60 @@ def test_is_enabled_with_feature_on(service):
     service._settings = {"basic": {"features": {"feature_x": True}}}
     service.current_sub_level = MagicMock(return_value=SUBSCRIPTION_LEVEL)
     assert service.is_enabled("feature_x") is True
+
+
+def test_get_settings_for_with_existing_key(service):
+    "Should return limits for the 'basic' subscription level."
+
+    service.get_settings = MagicMock(
+        return_value={
+            "basic": {"limits": {"feature_x": 10}, "features": {"feature_y": True}}
+        }
+    )
+    service.current_sub_level = MagicMock(return_value="basic")
+    limits = service._get_settings_for("limits")
+    assert limits == {"feature_x": 10}
+
+
+def test_get_settings_for_with_nonexistent_key(service):
+    "Should return an empty dictionary for a nonexistent key."
+
+    service.get_settings = MagicMock(
+        return_value={"basic": {"features": {"feature_y": True}}}
+    )
+    service.current_sub_level = MagicMock(return_value="basic")
+    limits = service._get_settings_for("limits")
+    assert limits == {}
+
+
+def test_is_limit_reached_under_network_subscription(service):
+    """Test that limits are ignored under network subscription."""
+    service.is_network_subscription = MagicMock(return_value=True)
+
+    assert service.is_limit_reached("feature_x", 100) is False
+
+
+def test_is_limit_reached_below_limit(service):
+    "Should return False when usage is below the limit."
+
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={"feature_x": 10})
+
+    assert service.is_limit_reached("feature_x", 5) is False
+
+
+def test_is_limit_reached_above_limit(service):
+    "Should return True when usage exceeds the limit."
+
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={"feature_x": 10})
+    assert service.is_limit_reached("feature_x", 15) is True
+
+
+def test_is_limit_reached_no_limit_set(service):
+    "Should return False when no limit is set."
+
+    service.is_network_subion = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={})
+
+    assert service.is_limit_reached("feature_x", 5) is False

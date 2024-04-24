@@ -73,8 +73,35 @@ class FeaturesService:
         if self.is_network_subscription():
             return True
 
-        settings = self.get_settings()
-        subscription_level = self.current_sub_level()
-        features = settings.get(subscription_level, {}).get("features", {})
+        features = self._get_settings_for("features")
 
         return features.get(feature_name, False)
+
+    def is_limit_reached(self, feature_name, current_usage):
+        """
+        Checks if the limit for a specific feature has been reached.
+
+        Args:
+            feature_name (str): The name of the feature to check the limit.
+
+        Returns:
+            bool: True if the limit has been reached, False otherwise.
+        """
+
+        if self.is_network_subscription():
+            return False
+
+        limits = self._get_settings_for("limits")
+        subscription_limit = limits.get(feature_name, 0)
+
+        return current_usage >= subscription_limit
+
+    def _get_settings_for(self, settings_key):
+        """
+        Simple function to retrieve the settings for a given key from instance settings
+        """
+
+        settings = self.get_settings()
+        subscription_level = self.current_sub_level()
+
+        return settings.get(subscription_level, {}).get(settings_key, {})

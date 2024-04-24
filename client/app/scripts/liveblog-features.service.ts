@@ -41,6 +41,21 @@ class FeaturesService {
 
         return settings?.features[featureName] ?? false;
     }
+
+    /**
+     * Determines if the limit for a specific feature has been reached.
+     * If the "network" subscription plan is active, there are no limits.
+     */
+    isLimitReached = (featureName: string, currentUsage: number) => {
+        const settings = this.settings;
+
+        if (settings.isNetworkSubscription)
+            return false;
+
+        const subscriptionLimit = settings?.limits[featureName] ?? 0;
+
+        return currentUsage >= subscriptionLimit;
+    }
 }
 
 
