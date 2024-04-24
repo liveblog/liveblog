@@ -1,100 +1,11 @@
+/* global ace */
+
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
+import instanceTpl from 'scripts/liveblog-settings/views/instance-settings.ng1';
+import LiveblogSettingsController from './controllers/general-settings.js';
+import LiveblogInstanceSettingsController from './controllers/instance-settings.js';
 import {renderTagsManager} from './components/tagsManager';
 import {lbSettingsView} from './directives/lbSettingsView';
-import {
-    TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS,
-    EMBED_HEIGHT_RESPONSIVE_DEFAULT,
-} from 'scripts/liveblog-common/constants';
-
-LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
-function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
-    // prep the settings
-    $scope.settingsForm = null;
-    $scope.liveblogSettings = {
-        language: {},
-        theme: {},
-        global_tags: [],
-        allow_multiple_tag_selection: {value: true}, // multiple tags select is enabled by default
-        youtube_privacy_status: {value: 'unlisted'},
-        embed_height_responsive_default: {value: true},
-    };
-
-    $scope.privacyStatuses = [
-        {value: 'private', label: 'Private'},
-        {value: 'public', label: 'Public'},
-        {value: 'unlisted', label: 'Unlisted'},
-    ];
-
-    // settings allowed keys
-    const allowedKeys = [
-        'language',
-        'theme',
-        TAGS,
-        ALLOW_PICK_MULTI_TAGS,
-        YOUTUBE_PRIVACY_STATUS,
-        EMBED_HEIGHT_RESPONSIVE_DEFAULT,
-    ];
-
-    api.languages.query().then((data) => {
-        $scope.languages = data._items;
-    });
-
-    api.themes.query().then((data) => {
-        // filter theme with label (without label are `generic` from inheritance)
-        $scope.themes = data._items.filter((theme) => angular.isDefined(theme.label));
-    });
-
-    $scope.settingsLoading = true;
-
-    api.global_preferences.query().then((data) => {
-        _.forEach(data._items, (setting) => {
-            $scope.liveblogSettings[setting.key] = setting;
-        });
-
-        $scope.settingsLoading = false;
-    });
-
-    $scope.setFormRef = function(childScope) {
-        $scope.settingsForm = childScope.settingsForm;
-    };
-
-    $scope.onTagsChange = function(tags) {
-        $scope.liveblogSettings.global_tags.value = tags;
-        $scope.settingsForm.$setDirty();
-        $scope.$apply();
-    };
-
-    $scope.saveSettings = function() {
-        notify.pop();
-        notify.info(gettext('Saving settings'));
-        let patch = {};
-        const reqArr = [];
-
-        _.forEach($scope.liveblogSettings, (item, key) => {
-            if (!_.includes(allowedKeys, key)) return;
-
-            patch = {
-                key: key,
-                value: item.value,
-            };
-            reqArr.push(api('global_preferences').save(item, patch));
-        });
-
-        $q.all(reqArr).then(() => {
-            notify.pop();
-            notify.info(gettext('Settings saved successfully'));
-            $scope.settingsForm.$setPristine();
-        }, () => {
-            notify.pop();
-            notify.error(gettext('Saving settings failed. Please try again later'));
-        });
-    };
-
-    $scope.close = function() {
-        // return to blog list page
-        $location.path('/liveblog/');
-    };
-}
 
 const liveblogSettings = angular.module('liveblog.settings', [])
     .config(['superdeskProvider', function(superdesk) {
@@ -115,6 +26,14 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 category: superdesk.MENU_SETTINGS,
                 liveblogSetting: true,
                 privileges: {global_preferences: 1},
+            })
+            .activity('/settings/instance-settings', {
+                label: gettext('Instance Settings'),
+                controller: LiveblogInstanceSettingsController,
+                templateUrl: instanceTpl,
+                category: superdesk.MENU_SETTINGS,
+                liveblogSetting: true,
+                privileges: {instance_settings: 1},
             });
     }])
     .config(['apiProvider', function(apiProvider) {
@@ -130,6 +49,10 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             type: 'http',
             backend: {rel: 'global_preferences'},
         });
+        apiProvider.api('instance_settings', {
+            type: 'http',
+            backend: {rel: 'instance_settings'},
+        });
     }])
     .directive('renderTagsComponent', [function() {
         return {
@@ -139,6 +62,38 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             },
             link: function(scope, element) {
                 renderTagsManager($(element).get(0), scope.tags, scope.onTagsChange);
+            },
+        };
+    }])
+    .directive('aceEditor', [function() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, element, attrs, ngModel) {
+                var editor = ace.edit(element[0]);
+
+                editor.setTheme('ace/theme/github');
+                editor.session.setMode('ace/mode/json');
+                editor.setFontSize(14);
+
+                editor.on('change', () => {
+                    const value = editor.getSession().getValue();
+
+                    scope.$evalAsync(() => {
+                        ngModel.$setViewValue(value);
+                    });
+                });
+
+                ngModel.$render = () => {
+                    let formattedJson = ngModel.$viewValue || '{}';
+
+                    try {
+                        formattedJson = JSON.stringify(JSON.parse(formattedJson), null, 4);
+                    } catch (error) {
+                        console.error('Invalid JSON', error);
+                    }
+                    editor.getSession().setValue(formattedJson);
+                };
             },
         };
     }])
