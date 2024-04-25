@@ -1,62 +1,64 @@
-{
-    "settings": {
-        "one-time-event": {
-            "features": {
-                "syndication": false,
-                "marketplace": false,
-                "theme_styles": false
+[
+    {
+        "settings": {
+            "one-time-event": {
+                "features": {
+                    "syndication": false,
+                    "marketplace": false,
+                    "theme_styles": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 2
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 1,
-                "blog_members": 2
-            }
-        },
-        "uni": {
-            "features": {
-                "syndication": true,
-                "marketplace": false,
-                "theme_styles": false
+            "uni": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false,
+                    "theme_styles": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 2,
+                    "blog_members": 3
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 2,
-                "blog_members": 3
-            }
-        },
-        "solo": {
-            "features": {
-                "syndication": true,
-                "marketplace": false,
-                "theme_styles": false,
-                "custom_themes": false,
-                "change_blog_theme": false,
-                "freetypes_manager": false,
-                "archived_blogs_available": false
+            "solo": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false,
+                    "theme_styles": false,
+                    "custom_themes": false,
+                    "change_blog_theme": false,
+                    "freetypes_manager": false,
+                    "archived_blogs_available": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 1,
+                    "custom_themes": 0
+                }
             },
-            "limits": {
-                "blogs": 1,
-                "themes": 1,
-                "blog_members": 1,
-                "custom_themes": 0
-            }
-        },
-        "team": {
-            "features": {
-                "syndication": true,
-                "marketplace": true,
-                "theme_styles": true,
-                "custom_themes": true,
-                "change_blog_theme": true,
-                "freetypes_manager": true,
-                "archived_blogs_available": true
-            },
-            "limits": {
-                "blogs": 3,
-                "themes": 6,
-                "blog_members": 5,
-                "custom_themes": 5
+            "team": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": true,
+                    "theme_styles": true,
+                    "custom_themes": true,
+                    "change_blog_theme": true,
+                    "freetypes_manager": true,
+                    "archived_blogs_available": true
+                },
+                "limits": {
+                    "blogs": 3,
+                    "themes": 6,
+                    "blog_members": 5,
+                    "custom_themes": 5
+                }
             }
         }
     }
-}
+]
