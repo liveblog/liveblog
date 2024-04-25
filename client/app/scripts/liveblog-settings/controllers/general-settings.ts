@@ -1,7 +1,8 @@
+import _ from 'lodash';
 import {
     TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
-} from 'scripts/liveblog-common/constants';
+} from './../../liveblog-common/constants';
 
 LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
 export default function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
@@ -11,15 +12,15 @@ export default function LiveblogSettingsController($scope, api, $location, notif
         language: {},
         theme: {},
         global_tags: [],
-        allow_multiple_tag_selection: {value: true}, // multiple tags select is enabled by default
-        youtube_privacy_status: {value: 'unlisted'},
-        embed_height_responsive_default: {value: true},
+        allow_multiple_tag_selection: { value: true }, // multiple tags select is enabled by default
+        youtube_privacy_status: { value: 'unlisted' },
+        embed_height_responsive_default: { value: true },
     };
 
     $scope.privacyStatuses = [
-        {value: 'private', label: 'Private'},
-        {value: 'public', label: 'Public'},
-        {value: 'unlisted', label: 'Unlisted'},
+        { value: 'private', label: 'Private' },
+        { value: 'public', label: 'Public' },
+        { value: 'unlisted', label: 'Unlisted' },
     ];
 
     // settings allowed keys

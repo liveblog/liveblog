@@ -29,8 +29,8 @@ export default function LiveblogInstanceSettingsController($scope, api, $locatio
         notify.pop();
         notify.info(gettext('Saving instance settings'));
 
-        api.instance_settings.save({settings: updatedSettings})
-            .then((response) => {
+        api.instance_settings.save({ settings: updatedSettings })
+            .then(() => {
                 /* noop */
             })
             .catch((error) => {

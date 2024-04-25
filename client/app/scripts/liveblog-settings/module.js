@@ -2,8 +2,8 @@
 
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
 import instanceTpl from 'scripts/liveblog-settings/views/instance-settings.ng1';
-import LiveblogSettingsController from './controllers/general-settings.js';
-import LiveblogInstanceSettingsController from './controllers/instance-settings.js';
+import LiveblogSettingsController from './controllers/general-settings.ts';
+import LiveblogInstanceSettingsController from './controllers/instance-settings.ts';
 import {renderTagsManager} from './components/tagsManager';
 import {lbSettingsView} from './directives/lbSettingsView';
 
