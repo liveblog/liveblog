@@ -30,7 +30,8 @@
                 "marketplace": false,
                 "theme_styles": false,
                 "custom_themes": false,
-                "change_blog_theme": false
+                "change_blog_theme": false,
+                "freetypes_manager": false
             },
             "limits": {
                 "blogs": 1,
@@ -45,7 +46,8 @@
                 "marketplace": true,
                 "theme_styles": true,
                 "custom_themes": true,
-                "change_blog_theme": true
+                "change_blog_theme": true,
+                "freetypes_manager": true
             },
             "limits": {
                 "blogs": 3,
