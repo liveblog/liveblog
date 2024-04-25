@@ -437,13 +437,7 @@ export default function BlogListController(
         });
     };
 
-    $scope.hasReachedMembersLimit = function() {
-        if (!_.has(config.assignableUsers, config.subscriptionLevel)) {
-            return false;
-        }
-
-        return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
-    };
+    $scope.hasReachedMembersLimit = () => featuresService.isLimitReached('blog_members', $scope.blogMembers.length);
 
     // Set grid or list view
     $scope.setBlogsView = function(blogsView) {

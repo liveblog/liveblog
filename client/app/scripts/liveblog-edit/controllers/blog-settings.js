@@ -338,13 +338,7 @@ function BlogSettingsController(
             vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
             vm.acceptedMembers.push(user);
         },
-        hasReachedMembersLimit: function() {
-            if (!_.has(config.assignableUsers, config.subscriptionLevel)) {
-                return false;
-            }
-
-            return vm.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
-        },
+        hasReachedMembersLimit: () => featuresService.isLimitReached('blog_members', vm.blogMembers.length),
         removeMember: function(user) {
             vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
         },
