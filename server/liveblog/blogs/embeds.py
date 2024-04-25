@@ -327,9 +327,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     embed_template = "embed_amp.html" if is_amp else "embed.html"
 
     blog_archived = blog["blog_status"] == "closed"
-    solo_subscription = "solo" in SUBSCRIPTION_LEVEL
-
-    if blog_archived and solo_subscription:
+    if blog_archived and not app.features.is_enabled("archived_blogs_available"):
         scope["template"] = render_template("blog-unavailable.html", **scope)
         scope["assets"]["scripts"] = []
 

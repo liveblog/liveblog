@@ -31,7 +31,8 @@
                 "theme_styles": false,
                 "custom_themes": false,
                 "change_blog_theme": false,
-                "freetypes_manager": false
+                "freetypes_manager": false,
+                "archived_blogs_available": false
             },
             "limits": {
                 "blogs": 1,
@@ -47,7 +48,8 @@
                 "theme_styles": true,
                 "custom_themes": true,
                 "change_blog_theme": true,
-                "freetypes_manager": true
+                "freetypes_manager": true,
+                "archived_blogs_available": true
             },
             "limits": {
                 "blogs": 3,

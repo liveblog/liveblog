@@ -215,9 +215,9 @@ class BlogService(BaseService):
         if blog_status == "closed":
             self._on_deactivate(original["_id"])
 
-            # if SOLO subscription level, let's update embeds to show
-            # warning message that blog is not available anymore
-            if "solo" in SUBSCRIPTION_LEVEL:
+            # archived blogs are only available if the subscription plan allows it
+            # otherwise let's update the embed to show the "not available" message
+            if not app.features.is_enabled("archived_blogs_available"):
                 publish_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
 
         # we mark the time to later remove it with celery beat if status is deleted
