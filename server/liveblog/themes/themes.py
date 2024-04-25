@@ -31,12 +31,7 @@ from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 from liveblog.utils.api import api_error
 
-from settings import (
-    COMPILED_TEMPLATES_PATH,
-    UPLOAD_THEMES_DIRECTORY,
-    SUBSCRIPTION_LEVEL,
-    SUBSCRIPTION_MAX_THEMES,
-)
+from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
 from .template.filters import (

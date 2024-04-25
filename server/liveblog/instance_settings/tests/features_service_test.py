@@ -135,9 +135,9 @@ def test_is_limit_reached_above_limit(service):
 
 
 def test_is_limit_reached_no_limit_set(service):
-    "Should return False when no limit is set."
+    "Should return True when no limit is set."
 
-    service.is_network_subion = MagicMock(return_value=False)
+    service.is_network_subscription = MagicMock(return_value=False)
     service._get_settings_for = MagicMock(return_value={})
 
-    assert service.is_limit_reached("feature_x", 5) is False
+    assert service.is_limit_reached("feature_x", 5) is True

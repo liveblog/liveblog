@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 angular.module('liveblog.security', ['liveblog.features'])
     .service('blogSecurityService',
         [
@@ -9,7 +7,6 @@ angular.module('liveblog.security', ['liveblog.features'])
             'blogService',
             '$location',
             'privileges',
-            'config',
             'api',
             'featuresService',
             function(
@@ -19,7 +16,6 @@ angular.module('liveblog.security', ['liveblog.features'])
                 blogService,
                 $location,
                 privileges,
-                config,
                 api,
                 featuresService
             ) {

@@ -1,12 +1,17 @@
+from unittest.mock import MagicMock
+
 import liveblog.themes as themeapp
 import liveblog.blogs as blogapp
 import liveblog.core as global_preferences
-from superdesk.tests import TestCase
-from bson import ObjectId
-from superdesk import get_resource_service
 import liveblog.blogs.embeds as embeds
-from liveblog.blogs.embeds import embed_blueprint
 import liveblog.client_modules as client_modules_app
+
+from bson import ObjectId
+from superdesk.tests import TestCase
+from superdesk import get_resource_service
+
+from liveblog.blogs.embeds import embed_blueprint
+from liveblog.instance_settings.features_service import FeaturesService
 
 from .mock_settings.default_seo_theme import default_seo_theme
 from .mock_settings.classic_theme import classic_theme
@@ -23,6 +28,18 @@ class Foo:
 
 
 foo = Foo()
+
+
+def db_service_mock():
+    """Mock database service with a method to simulate database config retrieval."""
+    db_service = MagicMock()
+    db_service.get_existing_config = MagicMock()
+    return db_service
+
+
+def service(app, db_service):
+    """Instance of the FeaturesService with mocked dependencies."""
+    return FeaturesService(app, db_service)
 
 
 class ThemeSettingsTestCase(TestCase):
@@ -43,6 +60,8 @@ class ThemeSettingsTestCase(TestCase):
             client_modules_app.init_app(self.app)
             self.app.register_blueprint(embed_blueprint)
             self.client = self.app.test_client()
+
+            self.app.features = FeaturesService(self.app, db_service_mock())
 
         self.themeservice = get_resource_service("themes")
 

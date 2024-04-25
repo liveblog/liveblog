@@ -1,6 +1,3 @@
-from settings import SUBSCRIPTION_LEVEL
-
-
 def get_setting_value(
     settings, group_name, property_name, default_value=None, linked_to_group=None
 ):

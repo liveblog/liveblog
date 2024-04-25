@@ -31,7 +31,7 @@ from liveblog.blogposting_schema.utils import generate_liveblog_posting_schema
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 from .embeds_utils import generate_theme_styles, google_fonts_url
-from settings import TRIGGER_HOOK_URLS, SUBSCRIPTION_LEVEL, ACTIVATE_WATERMARK
+from settings import TRIGGER_HOOK_URLS, ACTIVATE_WATERMARK
 
 logger = logging.getLogger("superdesk")
 embed_blueprint = superdesk.Blueprint(
