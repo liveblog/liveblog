@@ -597,7 +597,7 @@ class ThemesService(BaseService):
     def check_themes_limit(self, docs=[]):
         current_themes_count = self.find({}).count() + len(docs)
 
-        if app.features.is_limit_reached("custom_thems", current_themes_count):
+        if app.features.is_limit_reached("custom_themes", current_themes_count):
             raise SuperdeskApiError.forbiddenError(message="Cannot add another theme.")
 
     def on_create(self, docs):
