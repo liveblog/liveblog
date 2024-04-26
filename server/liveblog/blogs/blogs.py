@@ -213,12 +213,8 @@ class BlogService(BaseService):
 
         # If archiving a blog, remove any syndication in records
         if blog_status == "closed":
-            self._on_deactivate(original["_id"])
-
-            # archived blogs are only available if the subscription plan allows it
-            # otherwise let's update the embed to show the "not available" message
-            if not app.features.is_enabled("archived_blogs_available"):
-                publish_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
+            self.stop_blog_syndication(original["_id"])
+            self.make_embed_unavailable_if_needed(original)
 
         # we mark the time to later remove it with celery beat if status is deleted
         # use this below for local devel purposes
@@ -289,7 +285,7 @@ class BlogService(BaseService):
         lookup = {"blog_id": blog_id}
         syndication_out.delete_action(lookup)
 
-        self._on_deactivate(blog_id)
+        self.stop_blog_syndication(blog_id)
 
         # Send notifications.
         push_notification("blogs", deleted=1)
@@ -307,8 +303,22 @@ class BlogService(BaseService):
                     message="Cannot add another active blog."
                 )
 
-    def _on_deactivate(self, blog_id):
-        # Stop syndication when archiving or deleting a blog
+    def make_embed_unavailable_if_needed(self, blog):
+        """
+        Triggers the publishing of the blog's embed which will render an 'not available'
+        message if the subscription plan is limited and the blog is archived or deleted.
+        """
+        if app.config.get("SUPERDESK_TESTING"):
+            return
+
+        if not app.features.is_enabled("archived_blogs_available"):
+            publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+
+    def stop_blog_syndication(self, blog_id):
+        """
+        Stop syndication when archiving or deleting a blog
+        """
+
         syndication_in_service = get_resource_service("syndication_in")
         syndication_ins = syndication_in_service.find({"blog_id": blog_id})
         producers = get_resource_service("producers")
