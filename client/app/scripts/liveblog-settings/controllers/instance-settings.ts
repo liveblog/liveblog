@@ -1,18 +1,10 @@
-LiveblogInstanceSettingsController.$inject = [
-    '$scope',
-    'api',
-    '$location',
-    'notify',
-    'gettext',
-];
-
-export default function LiveblogInstanceSettingsController(
+const LiveblogInstanceSettingsController = (
     $scope,
     api,
     $location,
     notify,
     gettext
-) {
+) => {
     $scope.instanceForm = null;
     $scope.instanceSettings = {
         settings: '{}', // has to be string in order to avoid json parsing error
@@ -61,5 +53,14 @@ export default function LiveblogInstanceSettingsController(
     $scope.close = () => {
         $location.path('/liveblog/');
     };
-}
+};
 
+LiveblogInstanceSettingsController.$inject = [
+    '$scope',
+    'api',
+    '$location',
+    'notify',
+    'gettext',
+];
+
+export default LiveblogInstanceSettingsController;

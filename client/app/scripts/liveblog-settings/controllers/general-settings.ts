@@ -4,9 +4,7 @@ import {
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
 } from './../../liveblog-common/constants';
 
-LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
-export default function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
-    // prep the settings
+const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q) => {
     $scope.settingsForm = null;
     $scope.liveblogSettings = {
         language: {},
@@ -52,24 +50,26 @@ export default function LiveblogSettingsController($scope, api, $location, notif
         $scope.settingsLoading = false;
     });
 
-    $scope.setFormRef = function(childScope) {
+    $scope.setFormRef = (childScope) => {
         $scope.settingsForm = childScope.settingsForm;
     };
 
-    $scope.onTagsChange = function(tags) {
+    $scope.onTagsChange = (tags) => {
         $scope.liveblogSettings.global_tags.value = tags;
         $scope.settingsForm.$setDirty();
         $scope.$apply();
     };
 
-    $scope.saveSettings = function() {
+    $scope.saveSettings = () => {
         notify.pop();
         notify.info(gettext('Saving settings'));
         let patch = {};
         const reqArr = [];
 
         _.forEach($scope.liveblogSettings, (item, key) => {
-            if (!_.includes(allowedKeys, key)) return;
+            if (!_.includes(allowedKeys, key)) {
+                return;
+            }
 
             patch = {
                 key: key,
@@ -88,9 +88,12 @@ export default function LiveblogSettingsController($scope, api, $location, notif
         });
     };
 
-    $scope.close = function() {
+    $scope.close = () => {
         // return to blog list page
         $location.path('/liveblog/');
     };
-}
+};
 
+LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
+
+export default LiveblogSettingsController;
