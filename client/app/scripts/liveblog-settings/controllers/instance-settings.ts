@@ -1,5 +1,18 @@
-LiveblogInstanceSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext'];
-export default function LiveblogInstanceSettingsController($scope, api, $location, notify, gettext) {
+LiveblogInstanceSettingsController.$inject = [
+    '$scope',
+    'api',
+    '$location',
+    'notify',
+    'gettext',
+];
+
+export default function LiveblogInstanceSettingsController(
+    $scope,
+    api,
+    $location,
+    notify,
+    gettext
+) {
     $scope.instanceForm = null;
     $scope.instanceSettings = {
         settings: '{}', // has to be string in order to avoid json parsing error
@@ -12,11 +25,11 @@ export default function LiveblogInstanceSettingsController($scope, api, $locatio
         $scope.settingsLoading = false;
     });
 
-    $scope.setFormRef = function(childScope) {
+    $scope.setFormRef = (childScope) => {
         $scope.instanceForm = childScope.instanceForm;
     };
 
-    $scope.saveInstanceSettings = function() {
+    $scope.saveInstanceSettings = () => {
         let updatedSettings = $scope.instanceSettings.settings;
 
         try {
@@ -45,7 +58,7 @@ export default function LiveblogInstanceSettingsController($scope, api, $locatio
             });
     };
 
-    $scope.close = function() {
+    $scope.close = () => {
         $location.path('/liveblog/');
     };
 }
