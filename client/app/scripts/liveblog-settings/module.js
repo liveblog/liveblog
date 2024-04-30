@@ -32,7 +32,7 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 controller: LiveblogInstanceSettingsController,
                 templateUrl: instanceTpl,
                 category: superdesk.MENU_SETTINGS,
-                privileges: {instance_settings: 1},
+                privileges: {global_preferences: 1},
                 liveblogSetting: true,
                 liveblogSupportTools: true,
             });

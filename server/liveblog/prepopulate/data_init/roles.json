@@ -42,14 +42,5 @@
             "freetypes_read": 1,
             "freetypes_update": 1
         }
-    },
-    {
-        "_id": "01dd8d20ea9c412d86276b87",
-        "description": "Instance Admin can manage the instance settings",
-        "name": "Instance Admin",
-        "privileges": {
-            "instance_settings": 1,
-            "global_preferences": 1
-        }
     }
 ]
