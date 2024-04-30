@@ -2,7 +2,7 @@ LiveblogInstanceSettingsController.$inject = ['$scope', 'api', '$location', 'not
 export default function LiveblogInstanceSettingsController($scope, api, $location, notify, gettext) {
     $scope.instanceForm = null;
     $scope.instanceSettings = {
-        settings: {},
+        settings: '{}', // has to be string in order to avoid json parsing error
     };
 
     $scope.settingsLoading = true;
