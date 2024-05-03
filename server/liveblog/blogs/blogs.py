@@ -28,8 +28,6 @@ from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
 from settings import (
-    SUBSCRIPTION_LEVEL,
-    SUBSCRIPTION_MAX_ACTIVE_BLOGS,
     DAYS_REMOVE_DELETED_BLOGS,
     TRIGGER_HOOK_URLS,
 )
@@ -294,14 +292,13 @@ class BlogService(BaseService):
         return "{}/#/liveblog/edit/{}".format(app.config["CLIENT_URL"], blog_id)
 
     def _check_max_active(self, increment):
-        subscription = SUBSCRIPTION_LEVEL
-        if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
-            active = self.find({"blog_status": "open"})
-            logger.info("active.count() %s " % active.count())
-            if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
-                raise SuperdeskApiError.forbiddenError(
-                    message="Cannot add another active blog."
-                )
+        active = self.find({"blog_status": "open"})
+        current_blogs = active.count() + increment
+
+        if app.features.is_limit_reached("blogs", current_blogs):
+            raise SuperdeskApiError.forbiddenError(
+                message="Cannot add another active blog."
+            )
 
     def make_embed_unavailable_if_needed(self, blog):
         """
