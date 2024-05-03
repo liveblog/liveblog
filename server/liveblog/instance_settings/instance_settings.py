@@ -1,15 +1,36 @@
+import flask
 import logging
-from flask import abort, Blueprint, current_app as app
+
+from bson import ObjectId
+from cerberus import Validator
 from flask_cors import CORS
+from flask import Blueprint, current_app as app
+
 from superdesk.resource import Resource
+from superdesk.errors import SuperdeskApiError
 from superdesk.services import BaseService
-from liveblog.validator import LiveblogValidator
 from liveblog.utils.api import api_response
 
 logger = logging.getLogger(__name__)
 instance_settings_key = "instance_settings"
 instance_settings_blueprint = Blueprint(instance_settings_key, __name__)
 CORS(instance_settings_blueprint)
+
+
+INSTANCE_SETTINGS_SCHEMA = {
+    "settings": {
+        "type": "dict",
+        "valueschema": {
+            "type": "dict",
+            "allow_unknown": True,
+            "schema": {
+                "features": {"required": True, "type": "dict"},
+                "limits": {"required": True, "type": "dict"},
+            },
+        },
+        "allow_unknown": True,
+    }
+}
 
 
 class InstanceSettingsResource(Resource):
@@ -19,71 +40,95 @@ class InstanceSettingsResource(Resource):
     """
 
     datasource = {"source": instance_settings_key, "search_backend": "elastic"}
-    schema = {
-        "settings": {
-            "type": "dict",
-            "allow_unknown": True,
-        }
-    }
+    schema = INSTANCE_SETTINGS_SCHEMA.copy()
 
     privileges = {"GET": instance_settings_key, "POST": instance_settings_key}
 
+    item_methods = ["GET", "PATCH", "PUT", "DELETE"]
+    RESOURCE_METHODS = ["GET", "POST", "PATCH"]
+
 
 class InstanceSettingsService(BaseService):
-    def on_create(self, docs):
-        validator = LiveblogValidator()
-        existing_config = self.get_existing_config()
+    def is_user_authorized(self):
+        """
+        Checks if the user is allowed to execute actions over instance settings
+        """
+        if not getattr(flask.g, "user", None):
+            return False
 
-        for doc in docs:
-            if "settings" in doc:
-                # Validate the configuration to have the required fields
-                errors = validator._validate_settings(doc["settings"])
-                if errors:
-                    abort(
-                        400,
-                        description="Validation errors for config occurred: "
-                        + ", ".join(errors),
-                    )
-                if existing_config:
-                    # If there is an existing config, merge the configs
-                    updated_settings = self.merge_configs(
-                        existing_config.get("settings", {}), doc["settings"]
-                    )
-                    self.update(
-                        id=existing_config["_id"],
-                        updates={"settings": updated_settings},
-                        original=existing_config,
-                    )
-
-        if existing_config is None:
-            return super().on_create(docs)
+        return flask.g.user.get("is_support", False)
 
     def create(self, docs, **kwargs):
-        existing_config = self.get_existing_config()
-        if existing_config:
-            abort(422, description="No new config created. Existing config updated.")
+        if not self.is_user_authorized():
+            raise SuperdeskApiError.forbiddenError(
+                message="You do not have permissions to execute this action."
+            )
 
-        return super().create(docs, **kwargs)
+        doc = docs[0] if len(docs) > 0 else None
+        if not doc:
+            raise SuperdeskApiError.badRequestError(
+                message="Please provide the settings"
+            )
+
+        self.validate_payload(doc["settings"])
+        existing_config = self.get_existing_config()
+
+        if existing_config:
+            self.patch(ObjectId(existing_config["_id"]), dict(settings=doc["settings"]))
+            return [existing_config["_id"]]
+        else:
+            return super().create(docs, **kwargs)
+
+    def on_created(self, docs):
+        app.features.load_settings()
+        return super().on_created(docs)
+
+    def on_updated(self, updates, original):
+        app.features.load_settings()
+        return super().on_updated(updates, original)
+
+    def validate_payload(self, settings):
+        """
+        This validates the incoming settings against the defined resource schema
+        using Cerberus validation mechanism
+        """
+        validator = Validator(INSTANCE_SETTINGS_SCHEMA)
+        if not validator.validate({"settings": settings}):
+            errors = validator.errors["settings"]
+
+            raise SuperdeskApiError.badRequestError(
+                message=f"Settings validation errors: {self.format_errors(errors)}",
+            )
+
+    def format_errors(self, errors, key_path=""):
+        """
+        Recursively formats validation errors into a human-readable string.
+        Returns: Formatted string describing the errors.
+        """
+
+        if isinstance(errors, dict):
+            messages = []
+            for key, value in errors.items():
+                new_key_path = f"{key_path}.{key}" if key_path else key
+
+                if isinstance(value, dict):
+                    messages.append(self.format_errors(value, new_key_path))
+                else:
+                    messages.append(f"'{new_key_path}' {value}")
+
+            return " ".join(messages)
+        else:
+            return f"'{key_path}' {errors}"
 
     def get_existing_config(self):
         """
         Check if any config exists at all. This assumes the singleton pattern where there
         exists only one config at a time
         """
-        existing_configs = list(self.get(req=None, lookup={}))
-        return existing_configs[0] if existing_configs else None
-
-    def merge_configs(self, original, new):
-        """
-        This function merges the new configuration into the original configuration but does not overwrite existing keys.
-        It adds new keys to the original configuration only if they do not exist.
-        """
-        for key, value in new.items():
-            if key not in original:
-                original[key] = value
-            elif isinstance(original[key], dict) and isinstance(value, dict):
-                original[key] = self.merge_configs(original[key], value)
-        return original
+        try:
+            return self.get(req=None, lookup={})[0]
+        except IndexError:
+            return None
 
 
 @instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])

@@ -14,6 +14,7 @@ const LiveblogInstanceSettingsController = (
 
     api.instance_settings.query().then((data) => {
         $scope.instanceSettings.settings = JSON.stringify(data._items[0].settings);
+
         $scope.settingsLoading = false;
     });
 
@@ -36,17 +37,15 @@ const LiveblogInstanceSettingsController = (
 
         api.instance_settings.save({ settings: updatedSettings })
             .then(() => {
-                /* noop */
+                notify.pop();
+                notify.info(gettext('Instance settings saved successfully.'));
+                $scope.instanceForm.$setPristine();
             })
-            .catch((error) => {
-                if (error.status === 422) {
-                    notify.pop();
-                    notify.info(gettext('Success. Existing instance settings config updated.'));
-                    $scope.instanceForm.$setPristine();
-                } else {
-                    notify.pop();
-                    notify.error(gettext('Saving instance settings failed. Please try again later'));
-                }
+            .catch(({ data }) => {
+                const errMsg = data?._issues?.settings || data?._message;
+
+                notify.pop();
+                notify.error(errMsg, 10000);
             });
     };
 
