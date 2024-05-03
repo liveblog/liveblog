@@ -744,8 +744,8 @@ function EditPostPage() {
             author: randomString(10)
         };
         self.textElement.sendKeys(data.body);
-        self.addQuote(data);
-        
+        self.addTop()
+            .addQuote(data);
         return data;
     };
 

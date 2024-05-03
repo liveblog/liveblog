@@ -18,6 +18,7 @@ describe('editor embed:', function() {
     if (process.env.IFRAMELY_KEY) {
         it('add a youtube iframe in the editor', function() {
             var editor = blogs.openBlog(0).editor
+                                .addTop()
                                 .addEmbed();
             // write a youtube url
             editor.embedElement.sendKeys(youtube_url);

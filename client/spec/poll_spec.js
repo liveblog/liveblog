@@ -10,6 +10,7 @@ describe('Poll functionality', function() {
 
     it('can add option in poll block', function() {
           var editor = blogs.openBlog(0).editor
+                              .addTop()
                               .addPoll()
                               .addOption();
           var optionsCount = element.all(by.css('.poll_option_container input[type="text"]')).count();
@@ -18,6 +19,7 @@ describe('Poll functionality', function() {
   
     it('can remove option in poll block', function() {
           var editor = blogs.openBlog(0).editor
+                              .addTop()
                               .addPoll()
                               .removeOption();
           var optionsCount = element.all(by.css('.poll_option_container input[type="text"]')).count();
@@ -26,6 +28,7 @@ describe('Poll functionality', function() {
   
     it('can set days, hours, and minutes in poll block', function() {
           var editor = blogs.openBlog(0).editor
+                              .addTop()
                               .addPoll()
                               .setDays(2)
                               .setHours(3)
@@ -40,6 +43,7 @@ describe('Poll functionality', function() {
 
     it('can limit hours to 24 and minutes to 60 in poll block', function() {
           var editor = blogs.openBlog(0).editor
+                              .addTop()
                               .addPoll()
                               .setHours(50)
                               .setMinutes(100);
@@ -51,6 +55,7 @@ describe('Poll functionality', function() {
 
     it('can reset the poll block', function() {
           var editor = blogs.openBlog(0).editor
+                              .addTop()
                               .addPoll()
                               .setDays(2)
                               .setHours(3)

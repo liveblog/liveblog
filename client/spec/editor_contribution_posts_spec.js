@@ -69,8 +69,8 @@ describe('Contributions Posts', function() {
             var draft = contributions.get(0);
             contributions.edit(draft);
             var editor = blog.openEditor();
-            expect(editor.quoteElement.getText()).toEqual(contrib.quote);
-            editor.textElement.clear().sendKeys('update');
+            expect(editor.textElement.getText()).toEqual(contrib.body);
+            editor.quoteElement.clear().sendKeys('update');
             editor.saveContribution();
             blog.openContributions().expectPost(0, 'update');
             expect(contributions.all().count()).toBe(1);

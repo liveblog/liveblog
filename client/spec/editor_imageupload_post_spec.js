@@ -13,6 +13,7 @@ describe('editor image upload:', function() {
 
     it('upload an image and show it in the editor', function() {
         var editor = blogs.openBlog(0).editor
+                            .addTop()
                             .addImage();
 
         editor.fileElement.sendKeys(rootDir + '/app/images/superdesk-icon-large.png');
