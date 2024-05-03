@@ -13,7 +13,7 @@ const LiveblogInstanceSettingsController = (
     $scope.settingsLoading = true;
 
     api.instance_settings.query().then((data) => {
-        $scope.instanceSettings.settings = JSON.stringify(data._items[0].settings);
+        $scope.instanceSettings.settings = JSON.stringify(data._items[0]?.settings ?? '{}');
 
         $scope.settingsLoading = false;
     });

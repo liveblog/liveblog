@@ -128,7 +128,7 @@ class InstanceSettingsService(BaseService):
         try:
             return self.get(req=None, lookup={})[0]
         except IndexError:
-            return None
+            return {}
 
 
 @instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])
