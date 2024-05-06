@@ -24,7 +24,7 @@ class AccessAuthService(DbAuthService):
             [(AGENT_MODILE_IOS in user_agent), (AGENT_MOBILE_ANDROID in user_agent)]
         )
 
-        if not app.features.is_enabled("mobile-app") and is_mobile_agent:
+        if not app.features.is_enabled("mobile_app") and is_mobile_agent:
             raise SuperdeskApiError.forbiddenError(
                 message="Liveblog mobile can not access on this subscription"
             )
