@@ -1,31 +1,7 @@
 [
     {
         "settings": {
-            "one-time-event": {
-                "features": {
-                    "syndication": false,
-                    "marketplace": false,
-                    "theme_styles": false
-                },
-                "limits": {
-                    "blogs": 1,
-                    "themes": 1,
-                    "blog_members": 2
-                }
-            },
-            "uni": {
-                "features": {
-                    "syndication": true,
-                    "marketplace": false,
-                    "theme_styles": false
-                },
-                "limits": {
-                    "blogs": 1,
-                    "themes": 2,
-                    "blog_members": 3
-                }
-            },
-            "solo": {
+            "liveblog-go": {
                 "features": {
                     "syndication": true,
                     "marketplace": false,
@@ -34,7 +10,43 @@
                     "change_blog_theme": false,
                     "freetypes_manager": false,
                     "archived_blogs_available": false,
-                    "mobile-app": false
+                    "mobile_app": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 1,
+                    "custom_themes": 0
+                }
+            },
+            "uni": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false,
+                    "theme_styles": false,
+                    "custom_themes": false,
+                    "change_blog_theme": false,
+                    "freetypes_manager": false,
+                    "archived_blogs_available": false,
+                    "mobile_app": false
+                },
+                "limits": {
+                    "blogs": 2,
+                    "themes": 1,
+                    "blog_members": 1,
+                    "custom_themes": 0
+                }
+            },
+            "solo-mobile": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false,
+                    "theme_styles": false,
+                    "custom_themes": false,
+                    "change_blog_theme": false,
+                    "freetypes_manager": false,
+                    "archived_blogs_available": false,
+                    "mobile_app": true
                 },
                 "limits": {
                     "blogs": 1,
@@ -52,7 +64,7 @@
                     "change_blog_theme": true,
                     "freetypes_manager": true,
                     "archived_blogs_available": true,
-                    "mobile-app": true
+                    "mobile_app": true
                 },
                 "limits": {
                     "blogs": 3,
