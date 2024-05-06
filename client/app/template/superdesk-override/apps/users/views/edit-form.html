@@ -150,7 +150,7 @@
                             name="user_role"
                             id="user_role"
                             required
-                            ng-options="role._id as role.name for role in roles | filter: {name: '!Instance Admin'}">
+                            ng-options="role._id as role.name for role in roles">
                     </select>
                     <div class="sd-line-input__message" ng-show="userForm.user_role.$error.required" translate>This field is required.</div>
                 </div>

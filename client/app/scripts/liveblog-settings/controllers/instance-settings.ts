@@ -1,22 +1,28 @@
-LiveblogInstanceSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext'];
-export default function LiveblogInstanceSettingsController($scope, api, $location, notify, gettext) {
+const LiveblogInstanceSettingsController = (
+    $scope,
+    api,
+    $location,
+    notify,
+    gettext
+) => {
     $scope.instanceForm = null;
     $scope.instanceSettings = {
-        settings: {},
+        settings: '{}', // has to be string in order to avoid json parsing error
     };
 
     $scope.settingsLoading = true;
 
     api.instance_settings.query().then((data) => {
-        $scope.instanceSettings.settings = JSON.stringify(data._items[0].settings);
+        $scope.instanceSettings.settings = JSON.stringify(data._items[0]?.settings ?? '{}');
+
         $scope.settingsLoading = false;
     });
 
-    $scope.setFormRef = function(childScope) {
+    $scope.setFormRef = (childScope) => {
         $scope.instanceForm = childScope.instanceForm;
     };
 
-    $scope.saveInstanceSettings = function() {
+    $scope.saveInstanceSettings = () => {
         let updatedSettings = $scope.instanceSettings.settings;
 
         try {
@@ -31,22 +37,29 @@ export default function LiveblogInstanceSettingsController($scope, api, $locatio
 
         api.instance_settings.save({ settings: updatedSettings })
             .then(() => {
-                /* noop */
+                notify.pop();
+                notify.info(gettext('Instance settings saved successfully.'));
+                $scope.instanceForm.$setPristine();
             })
-            .catch((error) => {
-                if (error.status === 422) {
-                    notify.pop();
-                    notify.info(gettext('Success. Existing instance settings config updated.'));
-                    $scope.instanceForm.$setPristine();
-                } else {
-                    notify.pop();
-                    notify.error(gettext('Saving instance settings failed. Please try again later'));
-                }
+            .catch(({ data }) => {
+                const errMsg = data?._issues?.settings || data?._message;
+
+                notify.pop();
+                notify.error(errMsg, 10000);
             });
     };
 
-    $scope.close = function() {
+    $scope.close = () => {
         $location.path('/liveblog/');
     };
-}
+};
 
+LiveblogInstanceSettingsController.$inject = [
+    '$scope',
+    'api',
+    '$location',
+    'notify',
+    'gettext',
+];
+
+export default LiveblogInstanceSettingsController;
