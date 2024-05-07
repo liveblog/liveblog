@@ -59,7 +59,8 @@ class InstanceSettingsService(BaseService):
         return flask.g.user.get("is_support", False)
 
     def create(self, docs, **kwargs):
-        if not self.is_user_authorized():
+        # skip permissions if it's comming from initialize_data command
+        if not app.is_initialize_data and not self.is_user_authorized():
             raise SuperdeskApiError.forbiddenError(
                 message="You do not have permissions to execute this action."
             )
