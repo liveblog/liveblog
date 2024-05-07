@@ -37,6 +37,24 @@
                     "custom_themes": 0
                 }
             },
+            "solo": {
+                "features": {
+                    "syndication": true,
+                    "marketplace": false,
+                    "theme_styles": false,
+                    "custom_themes": false,
+                    "change_blog_theme": false,
+                    "freetypes_manager": false,
+                    "archived_blogs_available": false,
+                    "mobile_app": false
+                },
+                "limits": {
+                    "blogs": 1,
+                    "themes": 1,
+                    "blog_members": 1,
+                    "custom_themes": 0
+                }
+            },
             "solo-mobile": {
                 "features": {
                     "syndication": true,
