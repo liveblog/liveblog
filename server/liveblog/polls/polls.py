@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
@@ -56,6 +57,7 @@ class PollsResource(Resource):
             "default": {},
         },
         "original_creator": metadata_schema["original_creator"],
+        "syndicated_creator": {"type": "dict"},
     }
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
@@ -157,3 +159,23 @@ def poll_calculations(poll):
 
     updated_answers.sort(key=lambda answer: answer["votes"], reverse=True)
     return {**poll, "answers": updated_answers}
+
+
+class BlogPollsResource(Resource):
+    url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/polls'
+    schema = PollsResource.schema
+    datasource = {
+        "source": "polls",
+        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "default_sort": [("_updated", -1)],
+    }
+    resource_methods = ["GET"]
+    privileges = {"GET": "posts"}
+
+
+class BlogPollsService(BaseService):
+    def get(self, req, lookup):
+        if lookup.get("blog_id"):
+            lookup["blog"] = ObjectId(lookup["blog_id"])
+            del lookup["blog_id"]
+        return super().get(req, lookup)
