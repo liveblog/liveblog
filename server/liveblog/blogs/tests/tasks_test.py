@@ -8,7 +8,6 @@ from liveblog.blogs.tasks import (
 
 
 class TestPublishBlogEmbedsOnS3(TestCase):
-
     @patch("liveblog.blogs.tasks.publish_blog_embed_on_s3")
     @patch("liveblog.blogs.tasks.get_blog")
     @patch("liveblog.blogs.tasks.get_resource_service")
