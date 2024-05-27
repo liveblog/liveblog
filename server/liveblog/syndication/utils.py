@@ -326,18 +326,23 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
             post_items.append(item)
 
     item_refs = []
+    services = {
+        "items": ("blog_items", post_items),
+        "polls": ("polls", post_polls),
+    }
 
-    if post_items:
-        item_service = get_resource_service("blog_items")
-        item_ids = item_service.post(post_items)
-        item_refs.extend({"residRef": str(item_id)} for item_id in item_ids)
-
-    if post_polls:
-        poll_service = get_resource_service("blog_polls")
-        poll_ids = poll_service.post(post_polls)
-        item_refs.extend(
-            {"residRef": str(poll_id), "location": "polls"} for poll_id in poll_ids
-        )
+    for service_key, (service_name, items_list) in services.items():
+        if items_list:
+            service = get_resource_service(service_name)
+            item_ids = service.post(items_list)
+            item_refs.extend(
+                (
+                    {"residRef": str(item_id), "location": service_key}
+                    if service_key == "polls"
+                    else {"residRef": str(item_id)}
+                )
+                for item_id in item_ids
+            )
 
     auto_publish = in_syndication.get("auto_publish", False)
     if auto_publish:
