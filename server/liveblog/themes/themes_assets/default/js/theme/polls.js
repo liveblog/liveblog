@@ -42,8 +42,14 @@ function placeVote(event) {
     .then((poll) => {
       const etag = poll._etag;
       let data = { "poll_body": { "answers" : poll.poll_body.answers }};
-      data.poll_body.answers[selectedOption].votes += 1; 
-
+      
+      for (let answer of data.poll_body.answers) {
+        if (answer.option === selectedOption) {
+          answer.votes += 1;
+          break; 
+        }
+      }
+      
       helpers.patch(pollEndpoint, data, etag)
         .then((updatedPoll) => {
           updatePollUI(selectedPoll);

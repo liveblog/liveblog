@@ -97,7 +97,8 @@ class Blog(AuthorsMixin):
             active_until = poll_body.get("active_until")
 
             if active_until is not None:
-                poll_body["active_until"] = active_until.isoformat()
+                if not isinstance(active_until, str):
+                    poll_body["active_until"] = active_until.isoformat()
             else:
                 # Set default active_until to 1 hour from now
                 default_active_until = datetime.now() + timedelta(hours=1)

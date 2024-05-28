@@ -1,4 +1,6 @@
-export default function notificationsCount() {
+notificationsCount.$inject = ['$routeParams'];
+
+export default function notificationsCount($routeParams) {
     return {
         template: '<span ' +
             'class="label label-info circle small notification-counter" ' +
@@ -8,11 +10,13 @@ export default function notificationsCount() {
             const ingestPanels = ['ingest', 'incoming-syndication'];
 
             scope.count = 0;
+            scope.blogId = $routeParams._id;
 
             scope.$on('posts', (e, data) => {
                 if (data.posts
                 && data.posts[0].syndication_in
                 && data.posts[0].auto_publish !== true
+                && data.posts[0].blog == scope.blogId
                 && _.has(data, 'created')
                 && ingestPanels.indexOf(scope.panelState) === -1) {
                     scope.$apply(() => {

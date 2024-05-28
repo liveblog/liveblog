@@ -56,6 +56,7 @@ class PollsResource(Resource):
             "default": {},
         },
         "original_creator": metadata_schema["original_creator"],
+        "syndicated_creator": {"type": "dict"},
     }
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
