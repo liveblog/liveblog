@@ -135,7 +135,7 @@ def extract_creator_data(doc):
     )
 
     users_service = get_resource_service("users")
-    original_creator = users_service.find_one(req=None, _id=doc["original_creator"])
+    original_creator = users_service.find_one(req=None, _id=doc.get("original_creator"))
 
     if not original_creator:
         return None
@@ -304,6 +304,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """
 
     post_items = []
+    post_polls = []
 
     for item in items:
         if item["item_type"] == "image":
@@ -318,14 +319,30 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 continue
 
         item["blog"] = in_syndication["blog_id"]
-        post_items.append(item)
 
-    items_service = get_resource_service("blog_items")
-    item_ids = items_service.post(post_items)
+        if item["item_type"] == "poll":
+            post_polls.append(item)
+        else:
+            post_items.append(item)
+
     item_refs = []
+    services = {
+        "items": ("blog_items", post_items),
+        "polls": ("polls", post_polls),
+    }
 
-    for i, item_id in enumerate(item_ids):
-        item_refs.append({"residRef": str(item_id)})
+    for service_key, (service_name, items_list) in services.items():
+        if items_list:
+            service = get_resource_service(service_name)
+            item_ids = service.post(items_list)
+            item_refs.extend(
+                (
+                    {"residRef": str(item_id), "location": service_key}
+                    if service_key == "polls"
+                    else {"residRef": str(item_id)}
+                )
+                for item_id in item_ids
+            )
 
     auto_publish = in_syndication.get("auto_publish", False)
     if auto_publish:
