@@ -1,9 +1,23 @@
 <script>
+    function reloadInstagramScript() {
+        console.log("reloadInstagramScript called")
+        const script = document.getElementById('instagram-script');
+        if (script) {
+            console.log("script found")
+            const newScript = script.cloneNode(true);
+            script.remove();
+            document.body.appendChild(newScript);
+        }
+    }
+    
     function processInstagram() {
         try{
             instgrm.Embeds.process();
             console.log('processing instagram embeds');
-        } catch(err) {console.log('instgrm script not loaded')}
+        } catch(err) {
+            console.log('instgrm script not loaded, retrying again', err)
+            setTimeout(reloadInstagramScript, 1000);
+        }
     }
 
     function processTwitter() {
@@ -32,7 +46,7 @@
 </script>
 
 <template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
-<script async defer src="https://www.instagram.com/embed.js" onload="processInstagram()"></script>
+<script id="instagram-script" async defer src="https://www.instagram.com/embed.js" onload="processInstagram()"></script>
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
