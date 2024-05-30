@@ -1,6 +1,6 @@
 {
   "name": "liveblog-simple-theme",
-  "version": "0.2.21",
+  "version": "0.2.23",
   "description": "Liveblog SEO Simple Theme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,10 +9,13 @@
   "license": "AGPL-3.0",
   "main": "index.js",
   "dependencies": {
-    "liveblog-default-theme": "^3.6.48"
+    "liveblog-default-theme": "3.6.73"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/liveblog/liveblog/tree/devel/server/liveblog/themes/themes_assets/simple"
+  },
+  "volta": {
+    "node": "10.24.1"
   }
 }
