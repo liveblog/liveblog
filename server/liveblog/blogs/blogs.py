@@ -254,7 +254,7 @@ class BlogService(BaseService):
             theme_name = updates["blog_preferences"].get("theme")
             if theme_name:
                 publish_blog_embeds_on_s3.apply_async(
-                    args=[blog], kwargs={"save": False}, countdown=2
+                    args=[blog], kwargs={"save": True}, countdown=2
                 )
 
         members = updates.get("members", {})

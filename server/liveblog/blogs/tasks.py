@@ -219,6 +219,22 @@ def publish_blog_embed_on_s3(blog_or_id, output=None, safe=True, save=True):
 
 @celery.task(soft_time_limit=1800)
 def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=False):
+    """
+    Publishes blog embeds to AWS S3 storage and updates the blog's public URLs.
+
+    Parameters:
+    - blog_or_id: Identifier or instance of the blog to be published.
+    - safe: If True, suppresses exceptions related to media storage support.
+    - save: If True, updates the blog's public URLs in the database after publishing.
+    - subtask_save: If True, allows subtasks to update the blog's public URLs.
+
+    Logic:
+    - The main task initializes with save=True and subtask_save=False.
+    - When the main task calls the subtask to publish each output embed, it passes subtask_save=False to the subtask.
+    - This prevents subtasks from updating the blog's public URLs, avoiding redundant updates.
+    - After all subtasks complete, the main task performs the update using the save parameter.
+    - Therefore, subtask_save ensures that only the main task updates the blog's public URLs, avoiding redundant database operations.
+    """
     blogs = get_resource_service("client_blogs")
     blog_id, blog = get_blog(blog_or_id)
     if not blog:
