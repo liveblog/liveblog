@@ -1,6 +1,6 @@
 {
   "name": "liveblog-default-theme",
-  "version": "3.6.70",
+  "version": "3.6.73",
   "description": "Liveblog 3 SEO theme",
   "author": "Paul Solbach <psolbach@dpa-newslab.com>, Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>, Helmy Giacoman <helmy.giacoman@sourcefabric.org>",
   "license": "AGPL-3.0",
@@ -9,7 +9,7 @@
     "build": "gulp"
   },
   "dependencies": {
-    "amphtml-validator": "^1.0.20",
+    "amphtml-validator": "1.0.35",
     "babel-eslint": "10.1.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
