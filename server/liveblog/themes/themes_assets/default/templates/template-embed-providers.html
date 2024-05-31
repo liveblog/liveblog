@@ -32,7 +32,7 @@
 </script>
 
 <template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
-<script async defer src="https://platform.instagram.com/en_US/embeds.js" onload="processInstagram()"></script>
+<script async defer src="https://www.instagram.com/embed.js" onload="processInstagram()"></script>
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
@@ -40,7 +40,22 @@
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
-<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script>
+    function loadFacebookEmbedScript() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://connect.facebook.net/en_US/sdk.js';
+            script.async = true;
+            script.onload = () => resolve('FB embed script loaded successfully');
+            script.onerror = () => reject(new Error('Failed to load FB embed script'));
+            document.head.appendChild(script);
+        });
+    }
+
+    setTimeout(() => {
+        loadFacebookEmbedScript().then(() => {console.log('FB loaded')});
+    }, 1000);
+</script>
 </template>
 
 <template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
