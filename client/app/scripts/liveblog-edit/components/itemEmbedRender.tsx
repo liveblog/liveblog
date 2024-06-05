@@ -30,6 +30,8 @@ export const ItemEmbedRender: React.FunctionComponent<IProps> = (props) => {
                     // @ts-ignore:next-line
                     style={{ maxWidth: 550 }}
                     width="100%"
+                    retryDelay={1000}
+                    debug={true}
                 />
                 <ItemEmbedInfo {...props} original_url={props.url} />
             </>
