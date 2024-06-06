@@ -37,7 +37,10 @@ dictionary:
 __entities__ = OrderedDict(
     [
         ("global_preferences", ("global_preferences.json", ["key"], False)),
-        ("instance_settings", ("instance_settings.json", ["settings"], True)),
+        # No index created for instance_settings due to complexity and variability of nested fields,
+        # which can cause issues with MongoDB's index size limits. Using wildcards for indexes can be
+        # implemented later with an update of the mongo version
+        ("instance_settings", ("instance_settings.json", [], True)),
         ("roles", ("roles.json", ["name"], True)),
         ("users", ("users.json", [], False)),
         ("stages", ("stages.json", ["desk"], False)),
