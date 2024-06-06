@@ -37,7 +37,26 @@ dictionary:
 __entities__ = OrderedDict(
     [
         ("global_preferences", ("global_preferences.json", ["key"], False)),
-        ("instance_settings", ("instance_settings.json", ["settings"], True)),
+        (
+            "instance_settings",
+            (
+                "instance_settings.json",
+                [
+                    [
+                        ("settings.liveblog-go", pymongo.ASCENDING),
+                        {"sparse": True},
+                    ],
+                    [("settings.uni", pymongo.ASCENDING), {"sparse": True}],
+                    [("settings.solo", pymongo.ASCENDING), {"sparse": True}],
+                    [
+                        ("settings.solo-mobile", pymongo.ASCENDING),
+                        {"sparse": True},
+                    ],
+                    [("settings.team", pymongo.ASCENDING), {"sparse": True}],
+                ],
+                True,
+            ),
+        ),
         ("roles", ("roles.json", ["name"], True)),
         ("users", ("users.json", [], False)),
         ("stages", ("stages.json", ["desk"], False)),
