@@ -118,7 +118,7 @@
                                 <label for="inputTheme" class="control-label" translate>Theme</label>
                                 <div class="form-input">
                                     <select
-                                      ng-disabled="settings.deactivateTheme"
+                                      ng-disabled="!settings.isThemeSelectorEnabled"
                                       ng-model="settings.selectedTheme"
                                       ng-change="settings.blogPreferences.theme = settings.selectedTheme.name"
                                       ng-options="theme as theme.label for theme in settings.availableThemes track by theme.name"

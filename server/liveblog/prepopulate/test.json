@@ -1,2072 +1,2299 @@
 [
-{
-    "resource": "roles",
-    "id_name": "-id Editor role-",
-    "data": {
-        "description": "Editor can control and publish content to the liveblog and invite people to contribute",
-        "name": "Editor",
-        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1, "request_membership": 1}
-    }
-},
-{
-    "resource": "roles",
-    "id_name": "-id Contributor role-",
-    "data": {
-        "description": "Contributor can submit post to be approved by the Editor",
-        "name": "Contributor",
-        "privileges": {"submit_post": 1, "posts": 1, "archive": 1, "request_membership": 1}
-    }
-},
-{
-    "resource": "users",
-    "data": {
-        "username": "admin",
-        "first_name": "Edwin",
-        "last_name": "the admin",
-        "password": "admin",
-        "user_type": "administrator",
-        "email": "abc@other.com",
-        "sign_off": "abc",
-        "needs_activation": false
+    {
+        "resource": "roles",
+        "id_name": "-id Editor role-",
+        "data": {
+            "description": "Editor can control and publish content to the liveblog and invite people to contribute",
+            "name": "Editor",
+            "privileges": {
+                "blogs": 1,
+                "publish_post": 1,
+                "users": 1,
+                "posts": 1,
+                "archive": 1,
+                "submit_post": 1,
+                "request_membership": 1
+            }
+        }
     },
-    "id_name": "-id admin-"
-},
-{
-    "resource": "users",
-    "data": {
+    {
+        "resource": "roles",
+        "id_name": "-id Contributor role-",
+        "data": {
+            "description": "Contributor can submit post to be approved by the Editor",
+            "name": "Contributor",
+            "privileges": {
+                "submit_post": 1,
+                "posts": 1,
+                "archive": 1,
+                "request_membership": 1
+            }
+        }
+    },
+    {
+        "resource": "users",
+        "data": {
+            "username": "admin",
+            "first_name": "Edwin",
+            "last_name": "the admin",
+            "password": "admin",
+            "user_type": "administrator",
+            "email": "abc@other.com",
+            "sign_off": "abc",
+            "needs_activation": false
+        },
+        "id_name": "-id admin-"
+    },
+    {
+        "resource": "users",
+        "data": {
+            "username": "editor",
+            "first_name": "Victor",
+            "last_name": "the Editor",
+            "role": "-id Editor role-",
+            "user_type": "administrator",
+            "password": "editor",
+            "email": "editor@other.com",
+            "sign_off": "eo",
+            "needs_activation": false
+        }
+    },
+    {
+        "resource": "users",
+        "data": {
+            "username": "contributor",
+            "first_name": "Gregor",
+            "last_name": "the contributor",
+            "role": "-id Contributor role-",
+            "user_type": "user",
+            "password": "contributor",
+            "email": "contributor@other.com",
+            "sign_off": "co",
+            "needs_activation": false
+        },
+        "id_name": "-id contributor-"
+    },
+    {
+        "resource": "global_preferences",
+        "data": {
+            "key": "language",
+            "value": "en"
+        }
+    },
+    {
+        "resource": "global_preferences",
+        "data": {
+            "key": "theme",
+            "value": "classic"
+        }
+    },
+    {
+        "resource": "languages",
+        "id_name": "-id language de-",
+        "data": {
+            "language_code": "de",
+            "name": "Deutch"
+        }
+    },
+    {
+        "resource": "languages",
+        "id_name": "-id language en-",
+        "data": {
+            "language_code": "en",
+            "name": "English"
+        }
+    },
+    {
+        "resource": "instance_settings",
+        "data": {
+            "settings": {
+                "solo": {
+                    "features": {
+                        "syndication": true,
+                        "marketplace": false,
+                        "theme_styles": false,
+                        "custom_themes": false,
+                        "change_blog_theme": false,
+                        "freetypes_manager": false,
+                        "archived_blogs_available": false
+                    },
+                    "limits": {
+                        "blogs": 1,
+                        "themes": 1,
+                        "blog_members": 1,
+                        "custom_themes": 0
+                    }
+                },
+                "team": {
+                    "features": {
+                        "syndication": true,
+                        "marketplace": true,
+                        "theme_styles": true,
+                        "custom_themes": true,
+                        "change_blog_theme": true,
+                        "freetypes_manager": true,
+                        "archived_blogs_available": true
+                    },
+                    "limits": {
+                        "blogs": 3,
+                        "themes": 6,
+                        "blog_members": 5,
+                        "custom_themes": 5
+                    }
+                }
+            }
+        }
+    },
+    {
+        "resource": "themes",
+        "data": {
+            "name": "forest",
+            "label": "forest"
+        }
+    },
+    {
+        "resource": "themes",
+        "data": {
+            "label": "Angular Based Theme",
+            "name": "angular",
+            "abstract": true,
+            "version": "1.1.0",
+            "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+            "license": "AGPL-3.0",
+            "scripts": [
+                "//code.jquery.com/jquery-1.11.3.min.js",
+                "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
+                "//code.angularjs.org/1.4.2/angular-resource.js",
+                "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
+                "vendors/lodash.min.js",
+                "liveblog-embed/main.js",
+                "liveblog-embed/resources.service.js",
+                "liveblog-embed/pages-manager.service.js",
+                "liveblog-embed/permalink.service.js",
+                "liveblog-embed/directives.js",
+                "liveblog-embed/filters.js"
+            ],
+            "options": [
+                {
+                    "name": "postsPerPage",
+                    "label": "Number of posts per page",
+                    "type": "number",
+                    "default": 20,
+                    "help": "Set the number of posts you want to see at the initialization"
+                },
+                {
+                    "name": "permalinkDelimiter",
+                    "label": "Permalin Delimiter",
+                    "type": "select",
+                    "options": [
+                        {
+                            "value": "?",
+                            "label": "Query delimiter"
+                        },
+                        {
+                            "value": "#",
+                            "label": " Fragment identifier delimiter"
+                        }
+                    ],
+                    "default": "?",
+                    "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+                }
+            ]
+        }
+    },
+    {
+        "resource": "themes",
+        "id_name": "-id theme classic-",
+        "data": {
+            "name": "classic",
+            "label": "Classic Theme",
+            "version": "2.1.0",
+            "extends": "angular",
+            "styles": [
+                "styles/reset.css",
+                "styles/embed.css",
+                "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+                "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+            ],
+            "scripts": [
+                "//code.angularjs.org/1.4.2/angular-animate.js",
+                "vendors/ng-infinite-scroll.min.js",
+                "main.js"
+            ],
+            "screenshot_url": "https://media.giphy.com/media/xkmQfH1TB0dLW/giphy.gif",
+            "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+            "license": "AGPL-3.0",
+            "options": [
+                {
+                    "name": "canComment",
+                    "label": "Users can comment",
+                    "type": "checkbox",
+                    "default": true,
+                    "help": "If the users can comment from embed page"
+                },
+                {
+                    "name": "showAuthor",
+                    "label": "Show Author",
+                    "type": "checkbox",
+                    "default": true,
+                    "help": "Show the author information on postsed"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "languages",
+        "id_name": "-id language fr-",
+        "data": {
+            "language_code": "fr",
+            "name": "Français"
+        }
+    },
+    {
+        "resource": "blogs",
         "username": "editor",
-        "first_name": "Victor",
-        "last_name": "the Editor",
-        "role": "-id Editor role-",
-        "user_type": "administrator",
-        "password": "editor",
-        "email": "editor@other.com",
-        "sign_off": "eo",
-        "needs_activation": false
-    }
-},
-{
-    "resource": "users",
-    "data": {
-        "username": "contributor",
-        "first_name": "Gregor",
-        "last_name": "the contributor",
-        "role": "-id Contributor role-",
-        "user_type": "user",
-        "password": "contributor",
-        "email": "contributor@other.com",
-        "sign_off": "co",
-        "needs_activation": false
+        "data": {
+            "title": "title: end to end One",
+            "versioncreated": "2014-02-03T19:34:00+0000",
+            "description": "description: end to end one",
+            "members": [
+                {
+                    "user": "-id admin-"
+                },
+                {
+                    "user": "-id contributor-"
+                }
+            ]
+        },
+        "id_name": "-id blog one-"
     },
-    "id_name": "-id contributor-"
-
-},
-{
-    "resource": "global_preferences",
-    "data": {
-        "key": "language",
-        "value": "en"
-    }
-},
-{
-    "resource": "global_preferences",
-    "data": {
-        "key": "theme",
-        "value": "classic"
-    }
-},
-{
-    "resource": "languages",
-    "id_name": "-id language de-",
-    "data": {
-        "language_code": "de",
-        "name": "Deutch"
-    }
-},
-{
-    "resource": "languages",
-    "id_name": "-id language en-",
-    "data": {
-        "language_code": "en",
-        "name": "English"
-    }
-},
-{
-    "resource": "themes",
-    "data": {
-        "name": "forest",
-        "label": "forest"
-    }
-},
-{
-    "resource": "themes",
-    "data": {
-        "label": "Angular Based Theme",
-        "name": "angular",
-        "abstract": true,
-        "version": "1.1.0",
-        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
-        "license": "AGPL-3.0",
-        "scripts": [
-            "//code.jquery.com/jquery-1.11.3.min.js",
-            "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
-            "//code.angularjs.org/1.4.2/angular-resource.js",
-            "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
-            "vendors/lodash.min.js",
-            "liveblog-embed/main.js",
-            "liveblog-embed/resources.service.js",
-            "liveblog-embed/pages-manager.service.js",
-            "liveblog-embed/permalink.service.js",
-            "liveblog-embed/directives.js",
-            "liveblog-embed/filters.js"
-        ],
-        "options": [
-            {
-                "name": "postsPerPage",
-                "label": "Number of posts per page",
-                "type": "number",
-                "default": 20,
-                "help": "Set the number of posts you want to see at the initialization"
-            },
-            {
-                "name": "permalinkDelimiter",
-                "label": "Permalin Delimiter",
-                "type": "select",
-                "options": [
-                    {"value": "?", "label": "Query delimiter"},
-                    {"value": "#", "label": " Fragment identifier delimiter"}
-                ],
-                "default": "?",
-                "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
-            }
-        ]
-    }
-},
-{
-    "resource": "themes",
-    "id_name": "-id theme classic-",
-    "data": {
-        "name": "classic",
-        "label": "Classic Theme",
-        "version": "2.1.0",
-        "extends": "angular",
-        "styles": [
-            "styles/reset.css",
-            "styles/embed.css",
-            "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
-            "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
-        ],
-        "scripts": [
-            "//code.angularjs.org/1.4.2/angular-animate.js",
-            "vendors/ng-infinite-scroll.min.js",
-            "main.js"
-        ],
-        "screenshot_url": "https://media.giphy.com/media/xkmQfH1TB0dLW/giphy.gif",
-        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
-        "license": "AGPL-3.0",
-        "options": [
-            {
-                "name": "canComment",
-                "label": "Users can comment",
-                "type": "checkbox",
-                "default": true,
-                "help": "If the users can comment from embed page"
-            },{
-                "name": "showAuthor",
-                "label": "Show Author",
-                "type": "checkbox",
-                "default": true,
-                "help": "Show the author information on postsed"
-            }
-        ]
-    }
-},
-{
-    "resource": "languages",
-    "id_name": "-id language fr-",
-    "data": {
-        "language_code": "fr",
-        "name": "Français"
-    }
-},
-{
-    "resource": "blogs",
-    "username": "editor",
-    "data": {
-        "title": "title: end to end One",
-        "versioncreated" : "2014-02-03T19:34:00+0000",
-        "description": "description: end to end one",
-        "members": [{"user": "-id admin-"}, {"user": "-id contributor-"}]
+    {
+        "resource": "blogs",
+        "username": "editor",
+        "data": {
+            "title": "title: end to end two",
+            "versioncreated": "2014-02-03T19:35:00+0000",
+            "description": "description: end to end two"
+        },
+        "id_name": "-id blog two-"
     },
-    "id_name": "-id blog one-"
-},
-{
-    "resource": "blogs",
-    "username": "editor",
-    "data": {
-        "title": "title: end to end two",
-        "versioncreated" : "2014-02-03T19:35:00+0000",
-        "description": "description: end to end two"
+    {
+        "resource": "blogs",
+        "username": "editor",
+        "data": {
+            "title": "title: end To end three",
+            "versioncreated": "2014-02-03T19:36:00+0000",
+            "description": "description: end to end three"
+        },
+        "id_name": "-id blog three-"
     },
-    "id_name": "-id blog two-"
-},
-{
-    "resource": "blogs",
-    "username": "editor",
-    "data": {
-        "title": "title: end To end three",
-        "versioncreated" : "2014-02-03T19:36:00+0000",
-        "description": "description: end to end three"
+    {
+        "resource": "blogs",
+        "username": "editor",
+        "data": {
+            "title": "title: end to end closed",
+            "description": "description: end to end closed",
+            "firstcreated": "2014-02-03T19:37:00+0000",
+            "blog_status": "closed"
+        },
+        "id_name": "-id blog four-"
     },
-    "id_name": "-id blog three-"
-},
-{
-    "resource": "blogs",
-    "username": "editor",
-    "data": {
-        "title": "title: end to end closed",
-        "description": "description: end to end closed",
-        "firstcreated" : "2014-02-03T19:37:00+0000",
-        "blog_status": "closed"
+    {
+        "resource": "blogs",
+        "username": "editor",
+        "data": {
+            "title": "title: end to end image",
+            "description": "description: end to end image",
+            "firstcreated": "2014-02-03T19:38:00+0000",
+            "picture_url": "http://i.imgur.com/L0Ci8Yj.png"
+        },
+        "id_name": "-id blog five-"
     },
-    "id_name": "-id blog four-"
-},
-{
-    "resource": "blogs",
-    "username": "editor",
-    "data": {
-        "title": "title: end to end image",
-        "description": "description: end to end image",
-        "firstcreated" : "2014-02-03T19:38:00+0000",
-        "picture_url": "http://i.imgur.com/L0Ci8Yj.png"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:11+00:00",
+            "text": "text post one: end to end item One",
+            "item_type": "text"
+        },
+        "id_name": "-id post one item one-"
     },
-    "id_name": "-id blog five-"
-},
-
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:11+00:00",
-        "text": "text post one: end to end item One",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:12+00:00",
+            "text": "text post one: end to end item two",
+            "item_type": "text"
+        },
+        "id_name": "-id post one item two-"
     },
-    "id_name": "-id post one item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:12+00:00",
-        "text": "text post one: end to end item two",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:13+00:00",
+            "text": "text post one: End to End item three",
+            "item_type": "text"
+        },
+        "id_name": "-id post one item three-"
     },
-    "id_name": "-id post one item two-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:13+00:00",
-        "text": "text post one: End to End item three",
-        "item_type": "text"
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:14+00:00",
+            "blog": "-id blog one-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post one item one-"
+                        },
+                        {
+                            "residRef": "-id post one item two-"
+                        },
+                        {
+                            "residRef": "-id post one item three-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
     },
-    "id_name": "-id post one item three-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:14+00:00",
-        "blog": "-id blog one-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post one item one-"
-                }, {
-                    "residRef": "-id post one item two-"
-                }, {
-                    "residRef": "-id post one item three-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:15+00:00",
-        "text": "text post two: end to end item onE",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:15+00:00",
+            "text": "text post two: end to end item onE",
+            "item_type": "text"
+        },
+        "id_name": "-id post two item one-"
     },
-    "id_name": "-id post two item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:16+00:00",
-        "text": "text post two: end to end item two",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:16+00:00",
+            "text": "text post two: end to end item two",
+            "item_type": "text"
+        },
+        "id_name": "-id post two item two-"
     },
-    "id_name": "-id post two item two-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:17+00:00",
-        "blog": "-id blog one-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post two item one-"
-                }, {
-                    "residRef": "-id post two item two-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:18+00:00",
-        "text": "editor's contribution",
-        "item_type": "text"
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:17+00:00",
+            "blog": "-id blog one-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post two item one-"
+                        },
+                        {
+                            "residRef": "-id post two item two-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
     },
-    "id_name": "-id editor contribution-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "post_status": "submitted",
-        "firstcreated": "2013-11-11T11:11:19+00:00",
-        "blog": "-id blog one-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id editor contribution-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "admin",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:19+00:00",
-        "text": "admin's contribution",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:18+00:00",
+            "text": "editor's contribution",
+            "item_type": "text"
+        },
+        "id_name": "-id editor contribution-"
     },
-    "id_name": "-id admin contribution-"
-},
-{
-    "resource": "posts",
-    "username": "admin",
-    "data": {
-        "post_status": "submitted",
-        "firstcreated": "2013-11-11T11:11:20+00:00",
-        "blog": "-id blog one-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id admin contribution-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:18+00:00",
-        "text": "text post three: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "post_status": "submitted",
+            "firstcreated": "2013-11-11T11:11:19+00:00",
+            "blog": "-id blog one-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id editor contribution-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
     },
-    "id_name": "-id post three item one-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:19+00:00",
-        "blog": "-id blog one-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post three item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post four: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "admin",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:19+00:00",
+            "text": "admin's contribution",
+            "item_type": "text"
+        },
+        "id_name": "-id admin contribution-"
     },
-    "id_name": "-id post four item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post five: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "posts",
+        "username": "admin",
+        "data": {
+            "post_status": "submitted",
+            "firstcreated": "2013-11-11T11:11:20+00:00",
+            "blog": "-id blog one-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id admin contribution-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
     },
-    "id_name": "-id post five item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post six: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:18+00:00",
+            "text": "text post three: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post three item one-"
     },
-    "id_name": "-id post six item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post seven: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:19+00:00",
+            "blog": "-id blog one-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post three item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
     },
-    "id_name": "-id post seven item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post eight: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post four: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post four item one-"
     },
-    "id_name": "-id post eight item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post nine: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post five: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post five item one-"
     },
-    "id_name": "-id post nine item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post ten: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post six: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post six item one-"
     },
-    "id_name": "-id post ten item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post eleven: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post seven: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post seven item one-"
     },
-    "id_name": "-id post eleven item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post twelve: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post eight: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post eight item one-"
     },
-    "id_name": "-id post twelve item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post thirteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post nine: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post nine item one-"
     },
-    "id_name": "-id post thirteen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post fourteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post ten: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post ten item one-"
     },
-    "id_name": "-id post fourteen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post fifteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post eleven: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post eleven item one-"
     },
-    "id_name": "-id post fifteen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post sixteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post twelve: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post twelve item one-"
     },
-    "id_name": "-id post sixteen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post seventeen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post thirteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post thirteen item one-"
     },
-    "id_name": "-id post seventeen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post eighteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post fourteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post fourteen item one-"
     },
-    "id_name": "-id post eighteen item one-"
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "text": "text post nineteen: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post fifteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post fifteen item one-"
     },
-    "id_name": "-id post nineteen item one-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post four item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post five item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post six item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post seven item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post eight item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post nine item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post ten item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post eleven item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post twelve item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post thirteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post fourteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post fifteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post sixteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post seventeen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post eighteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "blog": "-id blog three-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-id post nineteen item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:12+00:00",
-        "text": "text post one: end to end item one",
-        "item_type": "text"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post sixteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post sixteen item one-"
     },
-    "id_name": "-blog two id post one item one-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:21+00:00",
-        "blog": "-id blog two-",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-blog two id post one item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "items",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:13+00:00",
-        "client_blog": "-id blog five-",
-        "text": "comment: contents",
-        "commenter": "comment: first last",
-        "item_type": "comment"
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post seventeen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post seventeen item one-"
     },
-    "id_name": "-blog five id post one item one-"
-},
-{
-    "resource": "posts",
-    "username": "editor",
-    "data": {
-        "firstcreated": "2013-11-11T11:11:21+00:00",
-        "client_blog": "-id blog five-",
-        "post_status":"comment",
-        "groups": [{
-                "id": "root",
-                "refs": [{
-                    "idRef": "main"
-                }],
-                "role": "grpRole:NEP"
-            }, {
-                "id": "main",
-                "refs": [{
-                    "residRef": "-blog five id post one item one-"
-                }],
-                "role": "grpRole:Main"
-            }]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere",
-        "webhook_url": "http://www.deere.com/api/syndication/webhook",
-        "api_key": "123456789qwerty",
-        "contacts": [{
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john.doe@gmail.com"
-        }]
-    }
-},
-
-
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #1",
-        "webhook_url": "http://www.deere1.com/api/syndication/webhook",
-        "api_key": "123456789qwerty1",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #2",
-        "webhook_url": "http://www.deere2.com/api/syndication/webhook",
-        "api_key": "123456789qwerty2",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #3",
-        "webhook_url": "http://www.deere3.com/api/syndication/webhook",
-        "api_key": "123456789qwerty3",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #4",
-        "webhook_url": "http://www.deere4.com/api/syndication/webhook",
-        "api_key": "123456789qwerty4",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #5",
-        "webhook_url": "http://www.deere5.com/api/syndication/webhook",
-        "api_key": "123456789qwerty5",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #6",
-        "webhook_url": "http://www.deere6.com/api/syndication/webhook",
-        "api_key": "123456789qwerty6",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #7",
-        "webhook_url": "http://www.deere7.com/api/syndication/webhook",
-        "api_key": "123456789qwerty7",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #8",
-        "webhook_url": "http://www.deere8.com/api/syndication/webhook",
-        "api_key": "123456789qwerty8",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #9",
-        "webhook_url": "http://www.deere9.com/api/syndication/webhook",
-        "api_key": "123456789qwerty9",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #10",
-        "webhook_url": "http://www.deere10.com/api/syndication/webhook",
-        "api_key": "123456789qwerty10",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #11",
-        "webhook_url": "http://www.deere11.com/api/syndication/webhook",
-        "api_key": "123456789qwerty11",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #12",
-        "webhook_url": "http://www.deere12.com/api/syndication/webhook",
-        "api_key": "123456789qwerty12",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #13",
-        "webhook_url": "http://www.deere13.com/api/syndication/webhook",
-        "api_key": "123456789qwerty13",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #14",
-        "webhook_url": "http://www.deere14.com/api/syndication/webhook",
-        "api_key": "123456789qwerty14",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #15",
-        "webhook_url": "http://www.deere15.com/api/syndication/webhook",
-        "api_key": "123456789qwerty15",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #16",
-        "webhook_url": "http://www.deere16.com/api/syndication/webhook",
-        "api_key": "123456789qwerty16",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #17",
-        "webhook_url": "http://www.deere17.com/api/syndication/webhook",
-        "api_key": "123456789qwerty17",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #18",
-        "webhook_url": "http://www.deere18.com/api/syndication/webhook",
-        "api_key": "123456789qwerty18",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #19",
-        "webhook_url": "http://www.deere19.com/api/syndication/webhook",
-        "api_key": "123456789qwerty19",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #20",
-        "webhook_url": "http://www.deere20.com/api/syndication/webhook",
-        "api_key": "123456789qwerty20",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #21",
-        "webhook_url": "http://www.deere21.com/api/syndication/webhook",
-        "api_key": "123456789qwerty21",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #22",
-        "webhook_url": "http://www.deere22.com/api/syndication/webhook",
-        "api_key": "123456789qwerty22",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #23",
-        "webhook_url": "http://www.deere23.com/api/syndication/webhook",
-        "api_key": "123456789qwerty23",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #24",
-        "webhook_url": "http://www.deere24.com/api/syndication/webhook",
-        "api_key": "123456789qwerty24",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #25",
-        "webhook_url": "http://www.deere25.com/api/syndication/webhook",
-        "api_key": "123456789qwerty25",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #26",
-        "webhook_url": "http://www.deere26.com/api/syndication/webhook",
-        "api_key": "123456789qwerty26",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #27",
-        "webhook_url": "http://www.deere27.com/api/syndication/webhook",
-        "api_key": "123456789qwerty27",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #28",
-        "webhook_url": "http://www.deere28.com/api/syndication/webhook",
-        "api_key": "123456789qwerty28",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #29",
-        "webhook_url": "http://www.deere29.com/api/syndication/webhook",
-        "api_key": "123456789qwerty29",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #30",
-        "webhook_url": "http://www.deere30.com/api/syndication/webhook",
-        "api_key": "123456789qwerty30",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #31",
-        "webhook_url": "http://www.deere31.com/api/syndication/webhook",
-        "api_key": "123456789qwerty31",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #32",
-        "webhook_url": "http://www.deere32.com/api/syndication/webhook",
-        "api_key": "123456789qwerty32",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #33",
-        "webhook_url": "http://www.deere33.com/api/syndication/webhook",
-        "api_key": "123456789qwerty33",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #34",
-        "webhook_url": "http://www.deere34.com/api/syndication/webhook",
-        "api_key": "123456789qwerty34",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "consumers",
-    "data": {
-        "name": "John Deere #35",
-        "webhook_url": "http://www.deere35.com/api/syndication/webhook",
-        "api_key": "123456789qwerty35",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-
-
-{
-    "resource": "producers",
-    "data": {
-        "name": "John Deere",
-        "api_url": "http://www.deere.com/api",
-        "consumer_api_key": "1234567890asdfgh",
-        "contacts": [{
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john.doe@gmail.com"
-        }]
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post eighteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post eighteen item one-"
     },
-    "id_name": "-producer one-"
-},
-
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #1",
-        "api_url": "http://www.kubota1.com/api",
-        "consumer_api_key": "1234567890asdfgh1",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #2",
-        "api_url": "http://www.kubota2.com/api",
-        "consumer_api_key": "1234567890asdfgh2",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #3",
-        "api_url": "http://www.kubota3.com/api",
-        "consumer_api_key": "1234567890asdfgh3",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #4",
-        "api_url": "http://www.kubota4.com/api",
-        "consumer_api_key": "1234567890asdfgh4",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #5",
-        "api_url": "http://www.kubota5.com/api",
-        "consumer_api_key": "1234567890asdfgh5",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #6",
-        "api_url": "http://www.kubota6.com/api",
-        "consumer_api_key": "1234567890asdfgh6",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #7",
-        "api_url": "http://www.kubota7.com/api",
-        "consumer_api_key": "1234567890asdfgh7",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #8",
-        "api_url": "http://www.kubota8.com/api",
-        "consumer_api_key": "1234567890asdfgh8",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #9",
-        "api_url": "http://www.kubota9.com/api",
-        "consumer_api_key": "1234567890asdfgh9",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #10",
-        "api_url": "http://www.kubota10.com/api",
-        "consumer_api_key": "1234567890asdfgh10",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #11",
-        "api_url": "http://www.kubota11.com/api",
-        "consumer_api_key": "1234567890asdfgh11",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #12",
-        "api_url": "http://www.kubota12.com/api",
-        "consumer_api_key": "1234567890asdfgh12",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #13",
-        "api_url": "http://www.kubota13.com/api",
-        "consumer_api_key": "1234567890asdfgh13",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #14",
-        "api_url": "http://www.kubota14.com/api",
-        "consumer_api_key": "1234567890asdfgh14",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #15",
-        "api_url": "http://www.kubota15.com/api",
-        "consumer_api_key": "1234567890asdfgh15",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #16",
-        "api_url": "http://www.kubota16.com/api",
-        "consumer_api_key": "1234567890asdfgh16",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #17",
-        "api_url": "http://www.kubota17.com/api",
-        "consumer_api_key": "1234567890asdfgh17",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #18",
-        "api_url": "http://www.kubota18.com/api",
-        "consumer_api_key": "1234567890asdfgh18",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #19",
-        "api_url": "http://www.kubota19.com/api",
-        "consumer_api_key": "1234567890asdfgh19",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #20",
-        "api_url": "http://www.kubota20.com/api",
-        "consumer_api_key": "1234567890asdfgh20",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #21",
-        "api_url": "http://www.kubota21.com/api",
-        "consumer_api_key": "1234567890asdfgh21",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #22",
-        "api_url": "http://www.kubota22.com/api",
-        "consumer_api_key": "1234567890asdfgh22",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #23",
-        "api_url": "http://www.kubota23.com/api",
-        "consumer_api_key": "1234567890asdfgh23",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #24",
-        "api_url": "http://www.kubota24.com/api",
-        "consumer_api_key": "1234567890asdfgh24",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #25",
-        "api_url": "http://www.kubota25.com/api",
-        "consumer_api_key": "1234567890asdfgh25",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #26",
-        "api_url": "http://www.kubota26.com/api",
-        "consumer_api_key": "1234567890asdfgh26",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #27",
-        "api_url": "http://www.kubota27.com/api",
-        "consumer_api_key": "1234567890asdfgh27",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #28",
-        "api_url": "http://www.kubota28.com/api",
-        "consumer_api_key": "1234567890asdfgh28",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #29",
-        "api_url": "http://www.kubota29.com/api",
-        "consumer_api_key": "1234567890asdfgh29",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #30",
-        "api_url": "http://www.kubota30.com/api",
-        "consumer_api_key": "1234567890asdfgh30",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #31",
-        "api_url": "http://www.kubota31.com/api",
-        "consumer_api_key": "1234567890asdfgh31",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #32",
-        "api_url": "http://www.kubota32.com/api",
-        "consumer_api_key": "1234567890asdfgh32",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #33",
-        "api_url": "http://www.kubota33.com/api",
-        "consumer_api_key": "1234567890asdfgh33",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #34",
-        "api_url": "http://www.kubota34.com/api",
-        "consumer_api_key": "1234567890asdfgh34",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-{
-    "resource": "producers",
-    "data": {
-        "name": "Kubota #35",
-        "api_url": "http://www.kubota35.com/api",
-        "consumer_api_key": "1234567890asdfgh35",
-        "contacts": [
-            {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@gmail.com"
-            }
-        ]
-    }
-},
-
-
-{
-    "resource": "syndication_in",
-    "data": {
-        "producer_blog_title" : "This blog does not exist",
-        "producer_blog_id" : "583430a2de3e2a0e690994ad",
-        "blog_id" : "-id blog one-",
-        "blog_token" : "2ec28e31942faddece35aa10316cf878aaa36d90",
-        "producer_id" : "-producer one-",
-        "auto_publish" : false
-    }
-},
-
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "text": "text post nineteen: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-id post nineteen item one-"
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post four item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post five item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post six item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post seven item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post eight item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post nine item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post ten item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post eleven item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post twelve item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post thirteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post fourteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post fifteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post sixteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post seventeen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post eighteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "blog": "-id blog three-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-id post nineteen item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:12+00:00",
+            "text": "text post one: end to end item one",
+            "item_type": "text"
+        },
+        "id_name": "-blog two id post one item one-"
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:21+00:00",
+            "blog": "-id blog two-",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-blog two id post one item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "items",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:13+00:00",
+            "client_blog": "-id blog five-",
+            "text": "comment: contents",
+            "commenter": "comment: first last",
+            "item_type": "comment"
+        },
+        "id_name": "-blog five id post one item one-"
+    },
+    {
+        "resource": "posts",
+        "username": "editor",
+        "data": {
+            "firstcreated": "2013-11-11T11:11:21+00:00",
+            "client_blog": "-id blog five-",
+            "post_status": "comment",
+            "groups": [
+                {
+                    "id": "root",
+                    "refs": [
+                        {
+                            "idRef": "main"
+                        }
+                    ],
+                    "role": "grpRole:NEP"
+                },
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "-blog five id post one item one-"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere",
+            "webhook_url": "http://www.deere.com/api/syndication/webhook",
+            "api_key": "123456789qwerty",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #1",
+            "webhook_url": "http://www.deere1.com/api/syndication/webhook",
+            "api_key": "123456789qwerty1",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #2",
+            "webhook_url": "http://www.deere2.com/api/syndication/webhook",
+            "api_key": "123456789qwerty2",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #3",
+            "webhook_url": "http://www.deere3.com/api/syndication/webhook",
+            "api_key": "123456789qwerty3",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #4",
+            "webhook_url": "http://www.deere4.com/api/syndication/webhook",
+            "api_key": "123456789qwerty4",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #5",
+            "webhook_url": "http://www.deere5.com/api/syndication/webhook",
+            "api_key": "123456789qwerty5",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #6",
+            "webhook_url": "http://www.deere6.com/api/syndication/webhook",
+            "api_key": "123456789qwerty6",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #7",
+            "webhook_url": "http://www.deere7.com/api/syndication/webhook",
+            "api_key": "123456789qwerty7",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #8",
+            "webhook_url": "http://www.deere8.com/api/syndication/webhook",
+            "api_key": "123456789qwerty8",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #9",
+            "webhook_url": "http://www.deere9.com/api/syndication/webhook",
+            "api_key": "123456789qwerty9",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #10",
+            "webhook_url": "http://www.deere10.com/api/syndication/webhook",
+            "api_key": "123456789qwerty10",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #11",
+            "webhook_url": "http://www.deere11.com/api/syndication/webhook",
+            "api_key": "123456789qwerty11",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #12",
+            "webhook_url": "http://www.deere12.com/api/syndication/webhook",
+            "api_key": "123456789qwerty12",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #13",
+            "webhook_url": "http://www.deere13.com/api/syndication/webhook",
+            "api_key": "123456789qwerty13",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #14",
+            "webhook_url": "http://www.deere14.com/api/syndication/webhook",
+            "api_key": "123456789qwerty14",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #15",
+            "webhook_url": "http://www.deere15.com/api/syndication/webhook",
+            "api_key": "123456789qwerty15",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #16",
+            "webhook_url": "http://www.deere16.com/api/syndication/webhook",
+            "api_key": "123456789qwerty16",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #17",
+            "webhook_url": "http://www.deere17.com/api/syndication/webhook",
+            "api_key": "123456789qwerty17",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #18",
+            "webhook_url": "http://www.deere18.com/api/syndication/webhook",
+            "api_key": "123456789qwerty18",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #19",
+            "webhook_url": "http://www.deere19.com/api/syndication/webhook",
+            "api_key": "123456789qwerty19",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #20",
+            "webhook_url": "http://www.deere20.com/api/syndication/webhook",
+            "api_key": "123456789qwerty20",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #21",
+            "webhook_url": "http://www.deere21.com/api/syndication/webhook",
+            "api_key": "123456789qwerty21",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #22",
+            "webhook_url": "http://www.deere22.com/api/syndication/webhook",
+            "api_key": "123456789qwerty22",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #23",
+            "webhook_url": "http://www.deere23.com/api/syndication/webhook",
+            "api_key": "123456789qwerty23",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #24",
+            "webhook_url": "http://www.deere24.com/api/syndication/webhook",
+            "api_key": "123456789qwerty24",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #25",
+            "webhook_url": "http://www.deere25.com/api/syndication/webhook",
+            "api_key": "123456789qwerty25",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #26",
+            "webhook_url": "http://www.deere26.com/api/syndication/webhook",
+            "api_key": "123456789qwerty26",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #27",
+            "webhook_url": "http://www.deere27.com/api/syndication/webhook",
+            "api_key": "123456789qwerty27",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #28",
+            "webhook_url": "http://www.deere28.com/api/syndication/webhook",
+            "api_key": "123456789qwerty28",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #29",
+            "webhook_url": "http://www.deere29.com/api/syndication/webhook",
+            "api_key": "123456789qwerty29",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #30",
+            "webhook_url": "http://www.deere30.com/api/syndication/webhook",
+            "api_key": "123456789qwerty30",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #31",
+            "webhook_url": "http://www.deere31.com/api/syndication/webhook",
+            "api_key": "123456789qwerty31",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #32",
+            "webhook_url": "http://www.deere32.com/api/syndication/webhook",
+            "api_key": "123456789qwerty32",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #33",
+            "webhook_url": "http://www.deere33.com/api/syndication/webhook",
+            "api_key": "123456789qwerty33",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #34",
+            "webhook_url": "http://www.deere34.com/api/syndication/webhook",
+            "api_key": "123456789qwerty34",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "consumers",
+        "data": {
+            "name": "John Deere #35",
+            "webhook_url": "http://www.deere35.com/api/syndication/webhook",
+            "api_key": "123456789qwerty35",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "John Deere",
+            "api_url": "http://www.deere.com/api",
+            "consumer_api_key": "1234567890asdfgh",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        },
+        "id_name": "-producer one-"
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #1",
+            "api_url": "http://www.kubota1.com/api",
+            "consumer_api_key": "1234567890asdfgh1",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #2",
+            "api_url": "http://www.kubota2.com/api",
+            "consumer_api_key": "1234567890asdfgh2",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #3",
+            "api_url": "http://www.kubota3.com/api",
+            "consumer_api_key": "1234567890asdfgh3",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #4",
+            "api_url": "http://www.kubota4.com/api",
+            "consumer_api_key": "1234567890asdfgh4",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #5",
+            "api_url": "http://www.kubota5.com/api",
+            "consumer_api_key": "1234567890asdfgh5",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #6",
+            "api_url": "http://www.kubota6.com/api",
+            "consumer_api_key": "1234567890asdfgh6",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #7",
+            "api_url": "http://www.kubota7.com/api",
+            "consumer_api_key": "1234567890asdfgh7",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #8",
+            "api_url": "http://www.kubota8.com/api",
+            "consumer_api_key": "1234567890asdfgh8",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #9",
+            "api_url": "http://www.kubota9.com/api",
+            "consumer_api_key": "1234567890asdfgh9",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #10",
+            "api_url": "http://www.kubota10.com/api",
+            "consumer_api_key": "1234567890asdfgh10",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #11",
+            "api_url": "http://www.kubota11.com/api",
+            "consumer_api_key": "1234567890asdfgh11",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #12",
+            "api_url": "http://www.kubota12.com/api",
+            "consumer_api_key": "1234567890asdfgh12",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #13",
+            "api_url": "http://www.kubota13.com/api",
+            "consumer_api_key": "1234567890asdfgh13",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #14",
+            "api_url": "http://www.kubota14.com/api",
+            "consumer_api_key": "1234567890asdfgh14",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #15",
+            "api_url": "http://www.kubota15.com/api",
+            "consumer_api_key": "1234567890asdfgh15",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #16",
+            "api_url": "http://www.kubota16.com/api",
+            "consumer_api_key": "1234567890asdfgh16",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #17",
+            "api_url": "http://www.kubota17.com/api",
+            "consumer_api_key": "1234567890asdfgh17",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #18",
+            "api_url": "http://www.kubota18.com/api",
+            "consumer_api_key": "1234567890asdfgh18",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #19",
+            "api_url": "http://www.kubota19.com/api",
+            "consumer_api_key": "1234567890asdfgh19",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #20",
+            "api_url": "http://www.kubota20.com/api",
+            "consumer_api_key": "1234567890asdfgh20",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #21",
+            "api_url": "http://www.kubota21.com/api",
+            "consumer_api_key": "1234567890asdfgh21",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #22",
+            "api_url": "http://www.kubota22.com/api",
+            "consumer_api_key": "1234567890asdfgh22",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #23",
+            "api_url": "http://www.kubota23.com/api",
+            "consumer_api_key": "1234567890asdfgh23",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #24",
+            "api_url": "http://www.kubota24.com/api",
+            "consumer_api_key": "1234567890asdfgh24",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #25",
+            "api_url": "http://www.kubota25.com/api",
+            "consumer_api_key": "1234567890asdfgh25",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #26",
+            "api_url": "http://www.kubota26.com/api",
+            "consumer_api_key": "1234567890asdfgh26",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #27",
+            "api_url": "http://www.kubota27.com/api",
+            "consumer_api_key": "1234567890asdfgh27",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #28",
+            "api_url": "http://www.kubota28.com/api",
+            "consumer_api_key": "1234567890asdfgh28",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #29",
+            "api_url": "http://www.kubota29.com/api",
+            "consumer_api_key": "1234567890asdfgh29",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #30",
+            "api_url": "http://www.kubota30.com/api",
+            "consumer_api_key": "1234567890asdfgh30",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #31",
+            "api_url": "http://www.kubota31.com/api",
+            "consumer_api_key": "1234567890asdfgh31",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #32",
+            "api_url": "http://www.kubota32.com/api",
+            "consumer_api_key": "1234567890asdfgh32",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #33",
+            "api_url": "http://www.kubota33.com/api",
+            "consumer_api_key": "1234567890asdfgh33",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #34",
+            "api_url": "http://www.kubota34.com/api",
+            "consumer_api_key": "1234567890asdfgh34",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "producers",
+        "data": {
+            "name": "Kubota #35",
+            "api_url": "http://www.kubota35.com/api",
+            "consumer_api_key": "1234567890asdfgh35",
+            "contacts": [
+                {
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "email": "john.doe@gmail.com"
+                }
+            ]
+        }
+    },
+    {
+        "resource": "syndication_in",
+        "data": {
+            "producer_blog_title": "This blog does not exist",
+            "producer_blog_id": "583430a2de3e2a0e690994ad",
+            "blog_id": "-id blog one-",
+            "blog_token": "2ec28e31942faddece35aa10316cf878aaa36d90",
+            "producer_id": "-producer one-",
+            "auto_publish": false
+        }
+    },
     {
         "resource": "config",
         "data": {
             "_id": "phone_home",
-            "val": {"done": 1}
+            "val": {
+                "done": 1
+            }
         }
     }
 ]
-

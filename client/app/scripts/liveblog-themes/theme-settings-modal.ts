@@ -35,8 +35,8 @@ interface IScope {
                 return moment().format(text);
             };
         }])
-        .directive('themeSettingsModal', ['api', '$q', 'notify', 'config',
-            (api, $q, notify, config) => {
+        .directive('themeSettingsModal', ['api', '$q', 'notify', 'featuresService',
+            (api, $q, notify, featuresService) => {
                 return {
                     templateUrl: themeSettingsModalTpl,
                     scope: {
@@ -46,14 +46,14 @@ interface IScope {
                     },
                     link: (scope: IScope) => {
                         const vm = scope;
-                        const isSoloSubscription = config.subscriptionLevel === 'solo';
 
                         // all basic configuration for tabs
                         vm.settingsTab = 'Settings',
                         vm.stylesTab = 'Styles',
                         vm.tabs = [vm.settingsTab];
                         vm.activeTab = vm.settingsTab;
-                        vm.supportThemeStyles = vm.theme.supportStylesSettings && !isSoloSubscription;
+                        vm.supportThemeStyles = (vm.theme.supportStylesSettings &&
+                            featuresService.isEnabled('theme_styles'));
 
                         if (vm.supportThemeStyles) {
                             vm.tabs.push(vm.stylesTab);

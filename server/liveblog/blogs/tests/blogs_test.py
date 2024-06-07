@@ -1,15 +1,28 @@
 import liveblog.blogs as blog_app
 import liveblog.advertisements as advert_app
+import liveblog.client_modules as client_modules
+
+from unittest.mock import MagicMock
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
+from liveblog.instance_settings.features_service import FeaturesService
+
+
+def db_service_mock():
+    """Mock database service with a method to simulate database config retrieval."""
+    db_service = MagicMock()
+    db_service.get_existing_config = MagicMock()
+    return db_service
 
 
 class BlogsTestCase(TestCase):
     def setUp(self):
+        self.app.features = FeaturesService(self.app, db_service_mock())
+
         blog_app.init_app(self.app)
         advert_app.init_app(self.app)
+        client_modules.init_app(self.app)
 
         self.blog_with_output = {
             "title": "Test blog",
@@ -62,21 +75,22 @@ class BlogsTestCase(TestCase):
         }
 
     def test_if_not_check_max_active(self):
+        self.app.features.current_sub_level = MagicMock(return_value="network")
         increment = 0
         self.assertEqual(
             get_resource_service("blogs")._check_max_active(increment), None
         )
 
     def test_if_check_max_active(self):
-        if SUBSCRIPTION_LEVEL in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
-            try:
-                increment = SUBSCRIPTION_MAX_ACTIVE_BLOGS[SUBSCRIPTION_LEVEL] + 5
-            except KeyError:
-                increment = 10
-            with self.assertRaises(SuperdeskApiError):
-                get_resource_service("blogs")._check_max_active(increment)
+        plan = "basic"
+        self.app.features._settings = {plan: {"limits": {"blogs": 5}}}
+        self.app.features.current_sub_level = MagicMock(return_value=plan)
+
+        with self.assertRaises(SuperdeskApiError):
+            get_resource_service("blogs")._check_max_active(10)
 
     def test_auto_create_output(self):
+        self.app.features.current_sub_level = MagicMock(return_value="network")
         get_resource_service("blogs")._auto_create_output(self.blog_with_output)
         self.assertIsNotNone(
             get_resource_service("outputs").find(
@@ -85,6 +99,7 @@ class BlogsTestCase(TestCase):
         )
 
     def test_not_auto_create_output(self):
+        self.app.features.current_sub_level = MagicMock(return_value="network")
         get_resource_service("blogs")._auto_create_output(self.blog_without_output)
         with self.assertRaises(IndexError):
             get_resource_service("outputs").find(

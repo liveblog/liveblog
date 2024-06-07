@@ -31,12 +31,7 @@ from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 from liveblog.utils.api import api_error
 
-from settings import (
-    COMPILED_TEMPLATES_PATH,
-    UPLOAD_THEMES_DIRECTORY,
-    SUBSCRIPTION_LEVEL,
-    SUBSCRIPTION_MAX_THEMES,
-)
+from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
 from .template.filters import (
@@ -600,15 +595,10 @@ class ThemesService(BaseService):
         return blogs
 
     def check_themes_limit(self, docs=[]):
-        subscription = SUBSCRIPTION_LEVEL
+        current_themes_count = self.find({}).count() + len(docs)
 
-        if subscription in SUBSCRIPTION_MAX_THEMES:
-            all = self.find({})
-
-            if all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]:
-                raise SuperdeskApiError.forbiddenError(
-                    message="Cannot add another theme."
-                )
+        if app.features.is_limit_reached("custom_themes", current_themes_count):
+            raise SuperdeskApiError.forbiddenError(message="Cannot add another theme.")
 
     def on_create(self, docs):
         self.check_themes_limit(docs)

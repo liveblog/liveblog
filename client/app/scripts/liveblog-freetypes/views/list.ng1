@@ -1,6 +1,6 @@
 <div class="subnav ng-scope items-manager">
     <h3 class="subnav__page-title" translate>Free types manager</h3>
-    <div class="subnav__button-stack--square-buttons">
+    <div class="subnav__button-stack--square-buttons" ng-if="self.isFreetypesManagerEnabled()">
         <button class="navbtn sd-create-btn" ng-click="self.openFreetypeDialog();" title="{{ 'Create Free Type' | translate }}">
             <i class="svg-icon-plus"></i>
             <span class="circle"></span>
@@ -8,7 +8,20 @@
     </div>
 </div>
 
-<section class="main-section freetypeslist">
+<section class="main-section freetypeslist" ng-if="!self.isFreetypesManagerEnabled()">
+    <div class="list-container content desk-settings">
+        <div>
+            <p translate>
+                Your subscription plan does not include Custom Free Types Manager. To enable this feature
+                please subscribe to a bigger plan.
+            </p>
+            <p translate>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{self.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+            <p translate>Please feel free to contact our support if you have questions.</p>
+        </div>
+    </div>
+</section>
+
+<section class="main-section freetypeslist" ng-if="self.isFreetypesManagerEnabled()">
     <div class="loading-indicator" ng-show="self.loading"><span translate>loading</span></div>
     <div class="list-container content desk-settings">
         <div class="alert alert-info alert--margin-left" role="alert">
@@ -54,35 +67,35 @@
 
 
 <div sd-modal="" data-model="self.freetypeModalActive">
-        <div class="modal__header">
-            <button class="modal__close pull-right" ng-click="self.cancelCreate()"><i class="icon-close-small"></i></button>
-            <h3 class="modal__heading" translate>Create New Free Type</h3>
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="self.cancelCreate()"><i class="icon-close-small"></i></button>
+        <h3 class="modal__heading" translate>Create New Free Type</h3>
+    </div>
+    <div class="modal__body" style="min-height: 300px;">
+        <div class="item-creation">
+            <fieldset>
+                <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Free Type Title<span class="ft-alert" ng-if="!self.dialogFreetype.name">required</span></label>
+                    <input class="sd-line-input__input" type="text" ng-model="self.dialogFreetype.name" maxlength="24" required>
+                    <div sd-character-count data-item="self.dialogFreetype.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
+                </div>
+                <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Free Type Template <span class="ft-comments">*</span> <span class="ft-alert" translate ng-if="!self.dialogFreetype.template">required</span></label>
+                    <textarea ng-model="self.dialogFreetype.template" rows="15"></textarea>
+                </div>
+                <div class="field ft-comments">
+                <span translate class="c">* Must contain at least one variable.<span><span>&nbsp;Do not use the DOCTYPE, BODY and HEAD tags.</span><span translate>&nbsp;All used tags must be closed.</span>
+                <a href="https://sofab.atlassian.net/l/cp/Qo8ShATE" target="_blank" translate>See the technical documentation for further details</a>
+                </div>
+            </fieldset>
         </div>
-        <div class="modal__body" style="min-height: 300px;">
-            <div class="item-creation">
-                <fieldset>
-                    <div class="sd-line-input">
-                        <label class="sd-line-input__label translate" translate>Free Type Title<span class="ft-alert" ng-if="!self.dialogFreetype.name">required</span></label>
-                        <input class="sd-line-input__input" type="text" ng-model="self.dialogFreetype.name" maxlength="24" required>
-                        <div sd-character-count data-item="self.dialogFreetype.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
-                    </div>
-                    <div class="sd-line-input">
-                        <label class="sd-line-input__label translate" translate>Free Type Template <span class="ft-comments">*</span> <span class="ft-alert" translate ng-if="!self.dialogFreetype.template">required</span></label>
-                        <textarea ng-model="self.dialogFreetype.template" rows="15"></textarea>
-                    </div>
-                    <div class="field ft-comments">
-                    <span translate class="c">* Must contain at least one variable.<span><span>&nbsp;Do not use the DOCTYPE, BODY and HEAD tags.</span><span translate>&nbsp;All used tags must be closed.</span>
-                    <a href="https://sofab.atlassian.net/l/cp/Qo8ShATE" target="_blank" translate>See the technical documentation for further details</a>
-                    </div>
-                </fieldset>
-            </div>
+    </div>
+    <div class="modal__footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="self.cancelCreate()">Cancel</button>
+            <button type="button" class="btn btn--primary" translate ng-click="self.saveFreetype()"
+            ng-disabled="!self.dialogFreetype.name || !self.dialogFreetype.template || self.dialogPostLoading"
+            >Save</button>
         </div>
-        <div class="modal__footer">
-            <div>
-                <button type="button" class="btn btn-default pull-left" translate ng-click="self.cancelCreate()">Cancel</button>
-                <button type="button" class="btn btn--primary" translate ng-click="self.saveFreetype()"
-                ng-disabled="!self.dialogFreetype.name || !self.dialogFreetype.template || self.dialogPostLoading"
-                >Save</button>
-            </div>
-        </div>
+    </div>
 </div>

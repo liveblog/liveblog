@@ -89,6 +89,7 @@ import 'liveblog-analytics';
 import 'liveblog-advertising';
 
 import 'liveblog-security.service';
+import 'liveblog-features.service';
 
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
@@ -125,7 +126,6 @@ const sdCore = angular.module('superdesk.core', [
     'superdesk.core.loading',
     'superdesk.core.editor3',
     'superdesk.core.services',
-
     'superdesk.core.directives',
 ]);
 
