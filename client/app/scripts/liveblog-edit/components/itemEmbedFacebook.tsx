@@ -3,6 +3,12 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { PlaceholderEmbed } from 'react-social-media-embed';
 import { IItemMeta } from './itemEmbedInfo';
 
+declare global {
+    interface Window {
+        FB: any;
+    }
+}
+
 interface IProps extends IItemMeta {
     style?: CSSProperties | undefined;
 }
@@ -31,7 +37,6 @@ const RenderPlaceHolder = ({ url }: { url: string }) => {
         <PlaceholderEmbed
             linkText="View post on Facebook"
             url={url}
-            // @ts-ignore:next-line
             style={{ maxWidth: 550, height: 600 }}
         />
     );
@@ -48,7 +53,7 @@ export const ItemEmbedFacebook: React.FunctionComponent<IProps> = (props) => {
 
     useEffect(() => {
         if (!isLoading && (window as any)?.FB) {
-            (window as any)?.FB?.XFBML?.parse();
+            window.FB.XFBML.parse();
         }
     }, [isLoading, props.url]);
 
