@@ -52,7 +52,7 @@ export const ItemEmbedFacebook: React.FunctionComponent<IProps> = (props) => {
     }, []);
 
     useEffect(() => {
-        if (!isLoading && (window as any)?.FB) {
+        if (!isLoading && window?.FB) {
             window.FB.XFBML.parse();
         }
     }, [isLoading, props.url]);
