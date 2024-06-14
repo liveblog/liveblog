@@ -314,7 +314,7 @@ vm.getQuery = function(opts) {
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[2].range._updated = {
-      "gt": opts.fromDate
+      "gte": opts.fromDate
     };
 
     // remove sticky posts from update polling request.
