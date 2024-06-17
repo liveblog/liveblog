@@ -9,7 +9,7 @@ services:
 
   elasticsearch-1.7.2:
     container_name: elasticsearch
-    image: barnybug/elasticsearch:1.7.2
+    image: liveblog3/elasticsearch:1.7.2
     ports:
       - 9200:9200
     volumes:
@@ -18,7 +18,7 @@ services:
   mongodb-3.4.23:
     container_name: mongodb
     image: mongo:3.4.23
-    ports: 
+    ports:
       - 27017:27017
     volumes:
       - ../data/mongodb:/data/db
