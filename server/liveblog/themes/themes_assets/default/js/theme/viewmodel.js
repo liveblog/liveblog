@@ -227,7 +227,7 @@ vm.updateViewModel = function(api_response) {
  * @returns {string} - ISO 8601 encoded date
  */
 vm.getLatestUpdate = function(api_response) {
-  var timestamps = api_response._items.map((post) => new Date(post._updated));
+  var timestamps = api_response._items.map((post) => new Date(post.content_updated_date));
 
   var latest = new Date(Math.max.apply(null, timestamps));
   return latest.toISOString(); // convert timestamp to ISO
@@ -313,8 +313,8 @@ vm.getQuery = function(opts) {
   };
 
   if (opts.fromDate) {
-    query.query.filtered.filter.and[2].range._updated = {
-      "gte": opts.fromDate
+    query.query.filtered.filter.and[2].range = {
+      "content_updated_date": {"gt": opts.fromDate }
     };
 
     // remove sticky posts from update polling request.
