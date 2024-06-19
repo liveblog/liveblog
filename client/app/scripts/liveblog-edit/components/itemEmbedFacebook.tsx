@@ -3,11 +3,13 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import { PlaceholderEmbed } from 'react-social-media-embed';
 import { IItemMeta } from './itemEmbedInfo';
 
+/* tslint:disable:interface-name */
 declare global {
     interface Window {
         FB: any;
     }
 }
+/* tslint:enable:interface-name */
 
 interface IProps extends IItemMeta {
     style?: CSSProperties | undefined;
