@@ -27,15 +27,15 @@ class Blog(AuthorsMixin):
     Utility class to fetch blog data directly from mongo collections.
     """
 
-    order_by = ("_updated", "_created", "order")
+    order_by = ("_updated", "published_date", "order")
     sort = ("asc", "desc")
     ordering = {
-        "newest_first": ("_created", "desc"),
-        "oldest_first": ("_created", "asc"),
+        "newest_first": ("published_date", "desc"),
+        "oldest_first": ("published_date", "asc"),
         "editorial": ("order", "desc"),
     }
     default_ordering = "newest_first"
-    default_order_by = "_created"
+    default_order_by = "published_date"
     default_sort = "desc"
     default_page = 1
     default_page_limit = 25

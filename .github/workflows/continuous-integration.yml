@@ -36,7 +36,7 @@ jobs:
         ports:
           - 6379:6379
       elasticsearch-1.7.2:
-        image: barnybug/elasticsearch:1.7.2
+        image: liveblog3/elasticsearch:1.7.2
         ports:
           - 9200:9200
 
