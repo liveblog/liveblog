@@ -37,7 +37,7 @@
 
         <!-- General Tab content -->
         <div class="details-info" ng-show="!tab || tab === 'general'">
-            <div sd-info-item class="user_type form__row" ng-if="privileges.users && isNetworkSubscription()" style="margin-bottom: 20px;">
+            <div sd-info-item class="user_type form__row" ng-if="(privileges.users && isNetworkSubscription()) || user.is_support" style="margin-bottom: 20px;">
                 <sd-check ng-true-value="administrator" ng-false-value="user" ng-model="user.user_type" name="user_type" id="user_type">{{ 'Administrator'|translate }}</sd-check>
                 <sd-check ng-model="user.is_author" name="user_author" id="user_author">{{ 'Author'|translate }}</sd-check>
             </div>
