@@ -147,6 +147,15 @@
                                               rows="6"
                                               readonly="readonly"
                                               select-text-on-click>{{ settings.blogPreferences.embed_height_responsive_default ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
+                                    <div ng-if="settings.selectedTheme.settings.renderForESI">
+                                        <textarea class="form-control"
+                                                  rows="6"
+                                                  readonly="readonly"
+                                                  select-text-on-click>{{ settings.esi }}</textarea>
+                                        <p>
+                                            To learn how to setup and use ESI, click <a href="https://liveblog.pro/en/how-to-use-live-blogs-seo-features/" target="_blank">here.</a>
+                                        </p>
+                                    </div>
                                     <a href="{{ settings.publicUrl }}" target="_blank"><span ng-bind="settings.publicUrl"></span> <i class="icon-external"></i></a>
                                 </div>
                             </div>
