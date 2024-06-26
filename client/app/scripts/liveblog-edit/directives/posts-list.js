@@ -232,7 +232,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
     };
 
     const getMaxPublishedDate = (posts, isUpdated) =>
-        isUpdated ? undefined : posts.length > 0 && posts[0]['published_date'];
+        (isUpdated === undefined || (isUpdated && posts[0]['scheduled'])) ? posts[0]['published_date'] : undefined;
 
     const refreshInstagramEmbeds = () => {
         // Regenerate the embed otherwise the image doesn't appear
