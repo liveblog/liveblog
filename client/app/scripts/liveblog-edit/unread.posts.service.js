@@ -72,7 +72,7 @@ export default function unreadPostsService($rootScope) {
         if (eventParams.posts && !eventParams.scheduled_done) {
             const post = eventParams.posts[0];
 
-            if (post.scheduled && blog._id === post.blog) {
+            if (post.scheduled && blog._id === post.blog && eventParams.created) {
                 scheduled = scheduled.concat(eventParams.posts);
                 return true;
             }
