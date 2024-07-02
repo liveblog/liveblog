@@ -11,11 +11,14 @@ const Permalink = require('./permalink');
 const gdprConsent = require('./gdpr');
 const nunjucks = require('nunjucks/browser/nunjucks-slim');
 const filters = require('../../misc/filters');
+const polls = require('./polls');
+import * as messages from './common/messages';
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
 nunjucksEnv.addFilter('decode_uri', filters.decodeUri);
 nunjucksEnv.addFilter('fix_x_domain_embed', filters.fixXDomainEmbed);
+nunjucksEnv.addFilter('tojson', filters.tojson);
 nunjucks.env = nunjucksEnv;
 
 const permalink = new Permalink();
@@ -25,6 +28,7 @@ const els = {
   emptyMessage: document.querySelector("[data-empty-message]"),
   loadMore: document.querySelector("[data-load-more]")
 };
+
 
 /**
  * Replace the current timeline unconditionally.
@@ -39,7 +43,7 @@ function renderTimeline(api_response) {
   api_response._items.forEach((post) => {
     renderedPosts.push(
       nunjucks.env.render('template-post.html', {
-        item: post,
+        post: post,
         options: optionsObj,
         settings: window.LB.settings,
         assets_root: window.LB.assets_root
@@ -51,11 +55,15 @@ function renderTimeline(api_response) {
   els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   els.timelineNormal.innerHTML = renderedPosts.length ? renderedPosts.join('') : '';
 
+  if (api_response.pendingPosts) {
+    checkPending(api_response.pendingPosts);
+  }
   updateTimestamps();
   loadEmbeds();
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+  polls.checkExistingVotes();
 }
 
 /**
@@ -66,7 +74,7 @@ function renderTimeline(api_response) {
 function renderSinglePost(post, displayNone) {
   return nunjucks.env.render(
     'template-post.html', {
-      item: post,
+      post: post,
       settings: window.LB.settings,
       options: {i18n: window.LB.i18n},
       assets_root: window.LB.assets_root,
@@ -95,7 +103,7 @@ function renderPosts(api_response) {
     const elem = document.querySelector(`[data-post-id="${post._id}"]`);
     const isVideoPlaying = Object.values(window.playersState).some(x => x === true);
     const displaynone = api_response.requestOpts.fromDate &&
-                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying) && !elem;
+                        (!window.LB.settings.autoApplyUpdates || isVideoPlaying ) && !elem;
 
     const rendered = renderSinglePost(post, displaynone);
 
@@ -145,19 +153,31 @@ function addPosts(posts, position) {
   attachShareBox();
 }
 
-function checkPending() {
+function checkPending(pendingPosts = 0) {
   let pending = document.querySelectorAll("[data-post-id].mod--displaynone"),
-    one = document.querySelector('[data-one-new-update]').classList,
-    updates = document.querySelector('[data-new-updates]').classList;
-  if (pending.length === 1) {
-    one.toggle('mod--displaynone', false);
-    updates.toggle('mod--displaynone', true);
-  } else if (pending.length > 1) {
-    one.toggle('mod--displaynone', true);
-    updates.toggle('mod--displaynone', false);
+    singleSelector = document.querySelector('[data-one-new-update]').classList,
+    multipleSelector = document.querySelector('[data-new-updates]').classList,
+    countedSelector = document.querySelector('[data-counted-updates]').classList;
+
+  const updateToggles = (single, multiple, counted) => {
+    singleSelector.toggle('mod--displaynone', single);
+    multipleSelector.toggle('mod--displaynone', multiple);
+    countedSelector.toggle('mod--displaynone', counted);
+  }
+
+  let count = pending.length || pendingPosts;
+
+  if (count === 1) {
+    updateToggles(false, true, true);
+  } else if (count > 1) {
+    if (permalink) {
+      updateToggles(true, true, false);
+      document.getElementById('data-counted-updates-length-container').textContent = count;
+    } else {
+      updateToggles(true, false, true);
+    }
   } else {
-    one.toggle('mod--displaynone', true);
-    updates.toggle('mod--displaynone', true);
+    updateToggles(true, true, true);
   }
 }
 
@@ -203,6 +223,12 @@ function updatePost(post, rendered) {
       var embedContainer = document.querySelector(`[data-post-id="${post._id}"] .embed`);
       FB.XFBML.parse(embedContainer);
     }, 500);
+  }
+
+  // If post updated is a poll, check existing votes to see if user has already voted
+  // and apply UI changes accordingly
+  if (post.post_items_type === 'poll') {
+    polls.checkExistingVotes();
   }
 
   return true;
@@ -348,6 +374,13 @@ function updateTimestamps() {
     elem.classList.remove('mod--displaynone');
     elem.textContent = helpers.convertTimestamp(timestamp);
   }
+
+  // Also update the times for the polls
+  const elements = document.querySelectorAll('.lb-item.poll');
+  elements.forEach((elem) => {
+      reloadScripts(elem)
+  });
+
   return null;
 }
 
@@ -435,6 +468,21 @@ function permalinkScroll() {
   return false;
 }
 
+function scrollHeaderIntoView() {
+  const elem = document.querySelector('.header-bar');
+
+  if(elem) {
+    const elemPosition = elem.getBoundingClientRect().top + window.scrollY;
+    const offset = 20;
+    window.scrollTo({
+      top: elemPosition - offset,
+      behavior: 'smooth'
+    });
+  }
+
+  messages.send('scroll_header_into_view');
+}
+
 function attachDropdownCloseEvent() {
   document.addEventListener("click", function (evt) {
     const target = evt.target;
@@ -481,5 +529,9 @@ module.exports = {
   toggleTagsFilterDropdown: toggleTagsFilterDropdown,
   attachDropdownCloseEvent: attachDropdownCloseEvent,
   loadEmbeds: loadEmbeds,
-  initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds
+  initGdprConsentAndRefreshAds: initGdprConsentAndRefreshAds,
+  scrollHeaderIntoView: scrollHeaderIntoView,
+  reloadScripts: reloadScripts,
+  renderSinglePost: renderSinglePost,
+  updatePost: updatePost,
 };

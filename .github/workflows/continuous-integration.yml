@@ -1,6 +1,6 @@
 name: Liveblog CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -84,7 +84,7 @@ jobs:
         pip install 'pip<=20.2.3'
         pip install 'setuptools<50'
         pip install -r dev-requirements.txt
-        pytest --ignore=src/ -v
+        pytest --ignore=src/ --disable-pytest-warnings -v
         behave --format progress2 --logging-level ERROR
 
     - name: Install Nodejs dependencies and lint
@@ -110,17 +110,25 @@ jobs:
         (nohup honcho start &)
         (nohup sudo python -m smtpd -n -c DebuggingServer localhost:2225 &)
 
-    - name: Build client and run e2e tests
+    - name: Build client
       working-directory: ./client
       run: |
         grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
         cd dist
         while [ ! -f index.html ]; do sleep .5; done
         (nohup python -m http.server 9000 &)
+
+    - name: Run Protractor e2e tests
+      working-directory: ./client
+      run: |
         export DISPLAY=:99
         export SELENIUM_ADDRESS='http://localhost:4444/wd/hub'
         chromedriver --port=4444 --url-base=/wd/hub &
         sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         $CHROME_BIN --version
-        cd ../
         npm run e2e
+
+    - name: Run Cypress e2e tests
+      working-directory: ./client
+      run: |
+        npm run cy:run

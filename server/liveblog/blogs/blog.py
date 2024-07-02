@@ -1,5 +1,6 @@
 import pymongo
 from bson.objectid import ObjectId
+from datetime import datetime, timedelta
 from eve.utils import date_to_str
 
 from html5lib.html5parser import ParseError
@@ -8,6 +9,7 @@ from lxml.html.html5parser import fragments_fromstring, HTMLParser
 from superdesk.utc import utcnow
 from superdesk import get_resource_service
 
+from liveblog.polls.polls import poll_calculations
 from liveblog.posts.mixins import AuthorsMixin
 from liveblog.posts.utils import get_associations
 
@@ -86,6 +88,24 @@ class Blog(AuthorsMixin):
             original_text = div_wrapped
         return original_text
 
+    def fix_item_markup_if_needed(self, doc):
+        if doc.get("type") == "text":
+            original_text = doc["item"].get("text")
+            doc["item"]["text"] = self.check_html_markup(original_text)
+        elif doc.get("type") == "poll":
+            poll_body = doc["item"]["poll_body"]
+            active_until = poll_body.get("active_until")
+
+            if active_until is not None:
+                if not isinstance(active_until, str):
+                    poll_body["active_until"] = active_until.isoformat()
+            else:
+                # Set default active_until to 1 hour from now
+                default_active_until = datetime.now() + timedelta(hours=1)
+                poll_body["active_until"] = default_active_until.isoformat()
+
+            doc["item"]["poll_body"] = poll_calculations(poll_body)
+
     def posts(self, **kwargs):
         """
         Builds a query with the given parameters and hit mongodb to retrive the data
@@ -120,15 +140,16 @@ class Blog(AuthorsMixin):
         results = results.skip(skip).limit(limit).sort(order_by, sort)
 
         posts = [x for x in results if "groups" in x]
-        related_items = self._posts_service._related_items_map(posts)
+        related_items = self._posts_service.related_items_map(posts)
 
         for post in posts:
             for assoc in get_associations(post):
-                ref_id = assoc.get("residRef", None)
-                if ref_id:
-                    assoc["item"] = related_items[ref_id]
-                    original_text = assoc["item"].get("text")
-                    assoc["item"]["text"] = self.check_html_markup(original_text)
+                ref_id = str(assoc.get("residRef", None))
+                rel_item = related_items.get(ref_id)
+
+                if ref_id and rel_item:
+                    assoc["item"] = rel_item
+                    self.fix_item_markup_if_needed(assoc)
 
         # Enrich documents
         self.complete_posts_info(posts)

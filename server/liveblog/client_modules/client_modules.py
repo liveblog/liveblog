@@ -30,9 +30,11 @@ from liveblog.posts.posts import (
     BlogPostsResource,
 )
 from liveblog.items.items import ItemsResource, ItemsService
+from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
+from liveblog.posts.tasks import update_post_blog_embed
 from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
@@ -188,6 +190,34 @@ class ClientItemsService(ItemsService):
         for doc in docs:
             check_comment_length(doc["text"])
         super().on_create(docs)
+
+
+class ClientPollsResource(PollsResource):
+    datasource = {
+        "source": "polls",
+        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "default_sort": [("order", -1)],
+    }
+    public_methods = ["GET", "PATCH"]
+    public_item_methods = ["GET", "PATCH"]
+    item_methods = ["GET", "PATCH"]
+    resource_methods = ["GET"]
+    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    schema.update(PollsResource.schema)
+
+
+class ClientPollsService(PollsService):
+    def on_updated(self, updates, original):
+        super().on_updated(updates, original)
+
+        poll_id = str(original.get("_id"))
+        blog_id = original.get("blog")
+
+        for post in get_resource_service("client_posts").find({"blog": blog_id}):
+            for assoc in post_utils.get_associations(post):
+                if assoc.get("residRef") == poll_id:
+                    app.blog_cache.invalidate(blog_id)
+                    update_post_blog_embed.delay(post)
 
 
 class ClientCommentsResource(PostsResource):
@@ -548,5 +578,7 @@ def _get_converted_item(item):
         meta["credit"] = item["meta"]["credit"]
         converted["meta"] = meta
         converted["renditions"] = item["meta"]["media"]["renditions"]
+    elif item_type == "poll":
+        converted["poll_body"] = poll_calculations(item["poll_body"])
 
     return converted

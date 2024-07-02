@@ -8,8 +8,14 @@ import * as messages from './common/messages';
 
 var view = require('./view')
   , viewmodel = require('./viewmodel')
-  , helpers = require('./helpers');
+  , helpers = require('./helpers')
+  , polls = require('./polls');
 const { permalink } = require('./view');
+
+const Event = Object.freeze({
+    SendUrl: 'permalink_url',
+    UpdateTimeline: 'update_timeline',
+});
 
 /**
  * Contains a mapping of element data-selectors and click handlers
@@ -39,9 +45,12 @@ var showPendings = (e) => {
   let pendings = document.querySelectorAll('[data-post-id].mod--displaynone');
   pendings.forEach((pending) => {
     pending.classList.toggle('mod--displaynone', false);
+    view.reloadScripts(pending);
   });
+  view.loadEmbeds();
   view.checkPending();
   view.attachSlideshow();
+  polls.checkExistingVotes();
 };
 
 var isOrderChanged = (order) => {
@@ -125,7 +134,8 @@ var buttons = {
         .catch(catchError);
     },
     '[data-one-new-update]': showPendings,
-    '[data-new-updates]': showPendings
+    '[data-new-updates]': showPendings,
+    '[data-counted-updates]': showPendings
   },
 
   attach: function() {
@@ -153,13 +163,21 @@ var buttons = {
       adjustPermalinkStuff();
     }, 500);
 
-    messages.listen('permalink_url', (data) => {
+    messages.listen(Event.SendUrl, (data) => {
       setTimeout(() => {
         adjustPermalinkStuff();
       }, 500);
     });
+    
+    messages.listen(Event.UpdateTimeline, (data) => {
+      updateTimeline(data);
+    });
   }
 };
+
+function updateTimeline(postId) {
+  viewmodel.handleSharedPost(postId);
+}
 
 function adjustPermalinkStuff() {
   view.attachPermalink();
@@ -198,10 +216,15 @@ function loadSort(sortBy) {
     tags: viewmodel.getSelectedTags()
   }).then(view.renderTimeline)
     .then(view.displayNewPosts)
+    .then(view.checkPending)
     .then(view.toggleSortBtn(sortBy))
     .then(view.consent.init)
     .then(view.adsManager.refreshAds)
     .then(view.loadEmbeds)
+    .then(polls.checkExistingVotes)
+    .then(() => {
+      onYouTubeIframeAPIReady();
+    })
     .catch(catchError);
 }
 

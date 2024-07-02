@@ -100,6 +100,10 @@ const app = angular.module('liveblog.edit',
             type: 'http',
             backend: {rel: 'items'},
         });
+        apiProvider.api('polls', {
+            type: 'http',
+            backend: {rel: 'polls'},
+        });
         apiProvider.api('archive', {
             type: 'http',
             backend: {rel: 'archive'},
@@ -165,7 +169,7 @@ const app = angular.module('liveblog.edit',
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
             },
-            blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment', 'Video'],
+            blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment', 'Poll', 'Video'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
             transform: {

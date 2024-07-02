@@ -52,8 +52,6 @@ export default function producerList(api, $http, modal, config, notify) {
                             producer.api_status = data.producer.api_status;
 
                             scope.$apply(() => {
-                                notify.pop();
-
                                 if (producer.api_status === 'enabled') {
                                     notify.success(gettext(`${producer.name} is online`));
                                 } else if (producer.api_status === 'invalid_key') {

@@ -33,12 +33,13 @@ import freetypeImage from './directives/freetype-image';
 
 import tagsSelector from './directives/tags-selector';
 import settingsConsumerList from './directives/settings-consumer-list';
-import {dateTimePickerDirective, lbItemEmbed} from './directives/react-directives';
+import {dateTimePickerDirective, lbItemEmbed, lbItemPoll} from './directives/react-directives';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
     .directive('lbItem', lbItem)
     .directive('lbItemEmbed', lbItemEmbed)
+    .directive('lbItemPoll', lbItemPoll)
     .directive('lbPost', lbPost)
     .directive('stopEvent', stopEvent)
     .directive('selectTextOnClick', selectTextOnClick)

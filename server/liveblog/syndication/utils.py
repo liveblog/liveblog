@@ -113,17 +113,11 @@ def blueprint_superdesk_token_auth():
         return abort(401, "Authorization failed.")
 
 
-def extract_post_items_data(original_doc):
-    """Extract blog post items."""
-    items_service = get_resource_service("items")
-    user_service = get_resource_service("users")
-    item_type = original_doc.get(ITEM_TYPE, "")
-    if item_type != CONTENT_TYPE.COMPOSITE:
-        raise NotImplementedError(
-            'Post item_type "{}" not supported.'.format(item_type)
-        )
+def extract_creator_data(doc):
+    """
+    Extracts creator's necessary data from doc to send together with syndicated items
+    """
 
-    items = []
     needed_fields = (
         "avatar",
         "avatar_renditions",
@@ -140,20 +134,44 @@ def extract_post_items_data(original_doc):
         "_updated",
     )
 
+    users_service = get_resource_service("users")
+    original_creator = users_service.find_one(req=None, _id=doc.get("original_creator"))
+
+    if not original_creator:
+        return None
+
+    creator_data = {}
+    for key in needed_fields:
+        if key in original_creator:
+            creator_data[key] = original_creator.get(key)
+
+    return creator_data
+
+
+def extract_post_items_data(original_doc):
+    """Extract blog post items."""
+
+    item_type = original_doc.get(ITEM_TYPE, "")
+    if item_type != CONTENT_TYPE.COMPOSITE:
+        raise NotImplementedError(
+            'Post item_type "{}" not supported.'.format(item_type)
+        )
+
+    items = []
     for group in original_doc["groups"]:
         if group["id"] == "main":
             for ref in group["refs"]:
-                item = items_service.find_one(req=None, _id=ref["residRef"])
-                syndicated_creator = user_service.find_one(
-                    req=None, _id=item["original_creator"]
-                )
-                syndicated_obj = None
-                if syndicated_creator:
-                    syndicated_obj = {
-                        k: v
-                        for k, v in syndicated_creator.items()
-                        if k in needed_fields
-                    }
+                service_name = ref.get("location", "items")
+                service = get_resource_service(service_name)
+
+                item = service.find_one(req=None, _id=ref["residRef"])
+                if item is None:
+                    continue
+
+                # TODO: consider with the team if comments should be syndicated or not
+                if item.get("item_type") == "post_comment":
+                    continue
+
                 text = item.get("text")
                 item_type = item.get("item_type")
                 group_type = item.get("group_type")
@@ -163,9 +181,16 @@ def extract_post_items_data(original_doc):
                     "item_type": item_type,
                     "group_type": group_type,
                     "commenter": item.get("commenter"),
-                    "syndicated_creator": syndicated_obj,
+                    "syndicated_creator": extract_creator_data(item),
                     "meta": meta,
                 }
+
+                # Add specific fields based on service used to get item, if necessary
+                # This assumes different origins can indicate specific handling
+                # For example, when handling polls
+                if service_name == "polls":
+                    data["poll_body"] = item.get("poll_body")
+
                 items.append(data)
     return items
 
@@ -253,7 +278,10 @@ def extract_producer_post_data(post, fields=None):
             "blog",
             "tags",
         )
-    return {key: post.get(key) for key in fields}
+    post_data = {key: post.get(key) for key in fields}
+    post_data["syndicated_creator"] = extract_creator_data(post)
+
+    return post_data
 
 
 def get_post_creator(post):
@@ -276,6 +304,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """
 
     post_items = []
+    post_polls = []
 
     for item in items:
         if item["item_type"] == "image":
@@ -290,14 +319,30 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 continue
 
         item["blog"] = in_syndication["blog_id"]
-        post_items.append(item)
 
-    items_service = get_resource_service("blog_items")
-    item_ids = items_service.post(post_items)
+        if item["item_type"] == "poll":
+            post_polls.append(item)
+        else:
+            post_items.append(item)
+
     item_refs = []
+    services = {
+        "items": ("blog_items", post_items),
+        "polls": ("polls", post_polls),
+    }
 
-    for i, item_id in enumerate(item_ids):
-        item_refs.append({"residRef": str(item_id)})
+    for service_key, (service_name, items_list) in services.items():
+        if items_list:
+            service = get_resource_service(service_name)
+            item_ids = service.post(items_list)
+            item_refs.extend(
+                (
+                    {"residRef": str(item_id), "location": service_key}
+                    if service_key == "polls"
+                    else {"residRef": str(item_id)}
+                )
+                for item_id in item_ids
+            )
 
     auto_publish = in_syndication.get("auto_publish", False)
     if auto_publish:
@@ -312,12 +357,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
             {"id": "root", "role": "grpRole:NEP", "refs": [{"idRef": "main"}]},
             {"id": "main", "role": "grpRole:Main", "refs": item_refs},
         ],
-        "lb_highlight": producer_post["lb_highlight"]
-        if "lb_highlight" in producer_post.keys()
-        else False,
-        "sticky": producer_post["sticky"]
-        if "sticky" in producer_post.keys()
-        else False,
+        "lb_highlight": producer_post.get("lb_highlight", False),
+        "sticky": producer_post.get("sticky", False),
         "syndication_in": in_syndication["_id"],
         "particular_type": "post",
         "post_status": post_status,
@@ -336,16 +377,18 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
 
 
 def validate_secure_url(value):
-    """Check if url is secure (https or whitelist)"""
+    """
+    Check if url is secure (https or whitelisted)
+    """
     parsed = urllib.parse.urlparse(value)
-    # TODO: add whitelist app settings.
+
     try:
         netloc = parsed.netloc.split(":")[0]
     except IndexError:
         netloc = parsed.netloc
-    if netloc in ("localhost", "127.0.0.1") or netloc.endswith(".local"):
-        return True
-    if parsed.scheme != "https":
-        return False
-    else:
-        return True
+
+    return (
+        parsed.scheme == "https"
+        or netloc in ("localhost", "127.0.0.1")
+        or netloc.endswith(".local")
+    )

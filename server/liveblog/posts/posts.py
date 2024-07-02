@@ -20,12 +20,13 @@ from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length, get_user
+from liveblog.polls.polls import poll_calculations
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
 from .mixins import AuthorsMixin
-from .utils import get_associations, get_associations_ids
+from .utils import get_associations, check_content_diff
 
 
 logger = logging.getLogger("superdesk")
@@ -139,6 +140,11 @@ class PostsResource(ArchiveResource):
                 "mapping": {"type": "object", "enabled": False},
             },
             "content_updated_date": {"type": "datetime"},
+            "syndicated_creator": {
+                "type": "dict",
+                "nullable": True,
+                "mapping": {"type": "object", "enabled": False},
+            },
             "syndication_in": Resource.rel(
                 "syndication_in", embeddable=True, required=False, nullable=True
             ),
@@ -148,6 +154,7 @@ class PostsResource(ArchiveResource):
             ),
         }
     )
+
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
     mongo_indexes = {
         "_created_1": ([("_created", 1)]),
@@ -223,10 +230,13 @@ class PostsService(ArchiveService):
         try:
             # include items in the response
             for assoc in self.packageService._get_associations(doc):
-                if assoc.get("residRef"):
-                    item = get_resource_service("archive").find_one(
-                        req=None, _id=assoc["residRef"]
-                    )
+                residRef = assoc.get("residRef")
+                if residRef:
+                    service_name = assoc.get("location", "archive")
+                    item_service = get_resource_service(service_name)
+                    item = item_service.find_one(req=None, _id=residRef)
+                    if item.get("type") == "poll":
+                        item["poll_body"] = poll_calculations(item["poll_body"])
                     assoc["item"] = item
         except Exception:
             pass
@@ -323,7 +333,6 @@ class PostsService(ArchiveService):
 
     def on_create(self, docs):
         for doc in docs:
-            # check permission
             self.check_post_permission(doc)
             doc["type"] = "composite"
             doc["order"] = self.get_next_order_sequence(doc.get("blog"))
@@ -412,19 +421,7 @@ class PostsService(ArchiveService):
             check_comment_length(item["text"])
 
         # check if updates `content` is different than the original.
-        content_diff = False
-        if not updates.get("groups", False):
-            content_diff = False
-        elif len(original["groups"][1]["refs"]) != len(updates["groups"][1]["refs"]):
-            content_diff = True
-        else:
-            for index, val in enumerate(updates["groups"][1]["refs"]):
-                item = get_resource_service("archive").find_one(
-                    req=None, _id=val["residRef"]
-                )
-                if item["text"] != original["groups"][1]["refs"][index]["item"]["text"]:
-                    content_diff = True
-                    break
+        content_diff = check_content_diff(updates, original)
         if content_diff:
             updates["content_updated_date"] = utcnow()
 
@@ -449,7 +446,7 @@ class PostsService(ArchiveService):
             if not updates.get("content_updated_date", False):
                 updates["content_updated_date"] = updates["published_date"]
 
-            # assure that the item info is keept if is needed.
+            # assure that the item info is kept if is needed.
             if (
                 original.get("post_status") == "submitted"
                 and original.get("original_creator", False)
@@ -513,7 +510,7 @@ class PostsService(ArchiveService):
 
             if updates.get("post_status") == "open":
                 if original["post_status"] in ("submitted", "draft", "comment"):
-                    # Post has been published as contribution, then published.
+                    # Post has been saved as contribution/draft, then published.
                     # Syndication will be sent with 'created' action.
                     out_service.send_syndication_post(doc, action="created")
                 else:
@@ -548,6 +545,12 @@ class PostsService(ArchiveService):
         # Send notifications
         push_notification("posts", deleted=True)
 
+    def validate_embargo(self, item):
+        """
+        Overridden method to skip embargo validation.
+        """
+        pass
+
 
 class PostFlagResource(Resource):
     datasource = {"source": "post_flags"}
@@ -557,10 +560,7 @@ class PostFlagResource(Resource):
         # other types of flag like lock, unlock among others
         # flag_type edit => it's just used to show alert in frontend
         "flag_type": {"type": "string", "allowed": ["edit"], "default": "edit"},
-        "users": {
-            "type": "list",
-            "nullable": True,
-        },
+        "users": {"type": "list", "nullable": True},
         # TTL for the flag, this ensures the flag doesn't stay there forever
         "expireAt": {"type": "datetime"},
     }
@@ -572,20 +572,6 @@ class PostFlagResource(Resource):
         "edit_flag_ttl": ([("expireAt", 1)], {"expireAfterSeconds": 0}),
         "unique_flag_x_post": ([("postId", 1), ("flag_type", 1)], {"unique": True}),
     }
-
-
-def complete_flag_info(flag):
-    if not flag:
-        return
-
-    users = []
-    if "users" in flag:
-        for userId in flag["users"]:
-            users.append(get_resource_service("users").find_one(req=None, _id=userId))
-        flag["users"] = users
-
-    # so this we have _links available for other methods in frontend
-    build_custom_hateoas(PostFlagService.custom_hateoas, flag, location="post_flags")
 
 
 class PostFlagService(BaseService):
@@ -616,9 +602,30 @@ class PostFlagService(BaseService):
 
         return super().create(docs, **kwargs)
 
+    def complete_flag_info(self, flag):
+        """
+        Appends additional required information to flag registry like users data
+        and hateoas data
+        """
+        if not flag:
+            return
+
+        users = []
+        if "users" in flag:
+            for userId in flag["users"]:
+                users.append(
+                    get_resource_service("users").find_one(req=None, _id=userId)
+                )
+            flag["users"] = users
+
+        # so this we have _links available for other methods in frontend
+        build_custom_hateoas(
+            PostFlagService.custom_hateoas, flag, location="post_flags"
+        )
+
     def on_created(self, docs):
         for doc in docs:
-            complete_flag_info(doc)
+            self.complete_flag_info(doc)
 
         # send notifications
         push_notification("posts:updateFlag", flags=docs)
@@ -639,7 +646,7 @@ class PostFlagService(BaseService):
         else:
             super().delete(lookup)
 
-        complete_flag_info(flag)
+        self.complete_flag_info(flag)
         self.delete_notify(flag, update=update)
 
         return flag
@@ -672,7 +679,7 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)
-        related_items = self._related_items_map(docs)
+        related_items = self.related_items_map(docs)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
@@ -680,6 +687,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                 ref_id = assoc.get("residRef", None)
                 if ref_id:
                     assoc["item"] = related_items[ref_id]
+                    if assoc.get("type") == "poll":
+                        assoc["item"]["poll_body"] = poll_calculations(
+                            assoc["item"]["poll_body"]
+                        )
 
             self.extract_author_ids(doc)
 
@@ -689,19 +700,32 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
         return docs
 
-    def _related_items_map(self, docs):
-        """It receives an array of posts and extracts the associations' ID
-        then it hits the database just 1 time and return them as dictionary"""
+    def related_items_map(self, docs):
+        """
+        It receives an array of posts and extracts the associations' ID
+        then it hits the database just 1 time per resource and return them as dictionary.
+
+        It should fetch the items from the respective resource service according to the
+        location attribute. Otherwise, it should fetch from `archive` resource by default
+        """
 
         items_map = {}
-        ids = []
+        ids_by_service = {}
 
         for doc in docs:
-            ids += get_associations_ids(doc)
+            for assoc in self.packageService._get_associations(doc):
+                item_ref_id = assoc.get("residRef")
 
-        # now let's get this into a form of dictionary
-        for item in get_resource_service("archive").find({"_id": {"$in": ids}}):
-            items_map[item.get("_id")] = item
+                if item_ref_id:
+                    service_name = assoc.get("location", "archive")
+                    ids = ids_by_service.get(service_name, [])
+                    ids.append(item_ref_id)
+                    ids_by_service[service_name] = ids
+
+        # let's get all the items at once and turn it into a dict
+        for service_name, ids in ids_by_service.items():
+            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
+                items_map[str(item.get("_id"))] = item
 
         return items_map
 

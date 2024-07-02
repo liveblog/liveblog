@@ -335,8 +335,8 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
         const addPost = (postsParams) => {
             const allPosts = self.allPosts();
             const posts = angular.isArray(postsParams) ? postsParams : [postsParams];
-            // for every post, check if exist before or add it
 
+            // for every post, check if exist before or add it
             posts.forEach((post) => {
                 if (!angular.isDefined(getPostPageIndexes(post))) {
                     allPosts.push(post);
@@ -355,6 +355,10 @@ const pagesManagerFactory = (postsService, $q, _, moment, instagramService) => {
          */
         const removePost = (postToRemove) => {
             const indexes = getPostPageIndexes(postToRemove);
+
+            if (!indexes) {
+                return;
+            }
 
             if (angular.isDefined(postToRemove)) {
                 const pageIndex = indexes[0];
