@@ -4,7 +4,15 @@
  */
 import _ from 'lodash';
 
-const lbSettingsView = ($route, superdesk, pageTitle) => {
+const filterSupportTools = (settings, session, usersService) => {
+    if (!usersService.isSupport(session.identity)) {
+        return settings.filter((x) => x.liveblogSupportTools !== true);
+    }
+
+    return settings;
+};
+
+const lbSettingsView = ($route, superdesk, pageTitle, session, usersService) => {
     return {
         scope: {},
         transclude: true,
@@ -12,6 +20,9 @@ const lbSettingsView = ($route, superdesk, pageTitle) => {
         link: (scope) => {
             superdesk.getMenu(superdesk.MENU_SETTINGS).then((menu) => {
                 scope.settings = menu.filter((x) => x.liveblogSetting === true);
+
+                // filter settings that should only be available to support team
+                scope.settings = filterSupportTools(scope.settings, session, usersService);
             });
 
             scope.currentRoute = $route.current;
@@ -28,6 +39,6 @@ const lbSettingsView = ($route, superdesk, pageTitle) => {
     };
 };
 
-lbSettingsView.$inject = ['$route', 'superdesk', 'pageTitle'];
+lbSettingsView.$inject = ['$route', 'superdesk', 'pageTitle', 'session', 'usersService'];
 
 export { lbSettingsView };
