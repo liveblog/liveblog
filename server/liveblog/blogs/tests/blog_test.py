@@ -15,19 +15,19 @@ class BlogsPostOrderingTestCase(TestCase):
     def test_default_ordering(self):
         # get default ordering, when no values supplied
         order_by, sort = self.blog_instance.get_ordering("")
-        self.assertEqual(order_by, "_created")
+        self.assertEqual(order_by, "published_date")
         self.assertEqual(sort, "desc")
 
     def test_check_newest_first(self):
         ordering = "newest_first"
         order_by, sort = self.blog_instance.get_ordering(ordering)
-        self.assertEqual(order_by, "_created")
+        self.assertEqual(order_by, "published_date")
         self.assertEqual(sort, "desc")
 
     def test_check_oldest_first(self):
         ordering = "oldest_first"
         order_by, sort = self.blog_instance.get_ordering(ordering)
-        self.assertEqual(order_by, "_created")
+        self.assertEqual(order_by, "published_date")
         self.assertEqual(sort, "asc")
 
     def test_check_editorial(self):

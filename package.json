@@ -1,6 +1,10 @@
 {
   "name": "liveblog",
+<<<<<<< HEAD
   "version": "3.86.0-rc2",
+=======
+  "version": "3.85.2",
+>>>>>>> master
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
