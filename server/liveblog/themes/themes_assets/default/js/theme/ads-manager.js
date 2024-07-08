@@ -36,35 +36,54 @@ function resetAds() {
 }
 
 function renderAds() {
-    const articles = document.querySelectorAll(adsSettings.postSelector);
-    const adsCount = advertisements.length;
+    try {
+        const articles = document.querySelectorAll(adsSettings.postSelector);
+        if (articles.length === 0) {
+            console.warn("renderAds: No articles found");
+            return;
+        }
 
-    if (adsCount === 0) return;
+        const adsList = [...advertisements]
+        if (adsList.length === 0) {
+            console.warn("renderAds: No advertisements available");
+            return;
+        }
 
-    const postCount = articles.length;
-    const frequency = adsSettings.frequency;
-    const order = output.settings.order;
+        const adsCount = adsList.length;
+        const postCount = articles.length;
+        const frequency = adsSettings.frequency;
+        const order = output.settings.order;
+        
+        if (order === DESC)
+            adsList.reverse();
+        
+        let looper = helpers.range(frequency, postCount, frequency);
+        
+        looper.forEach(i => {
+            const index = Math.floor((i - frequency) / frequency) % adsCount;
+            const refNode = articles[i];
+            const parentNode = refNode.parentNode;
 
-    let adsList = advertisements.slice();
-    //check if we need to show ads in descending order
-    if (order === DESC)
-        adsList = adsList.reverse();
-
-    let looper = helpers.range(frequency, postCount, frequency);
-    looper.forEach(i => {
-        let index = Math.ceil((i - frequency) / frequency) % adsCount;
-        let refNode = articles[i];
-        let parentNode = refNode.parentNode;
-
-        const rendered = nunjucks.env.render('template-ad-entry.html', {
-          item: adsList[index],
-          settings: config.settings,
-          assets_root: window.LB.assets_root
+            try {
+                const rendered = nunjucks.env.render('template-ad-entry.html', {
+                  item: adsList[index],
+                  settings: config.settings,
+                  assets_root: window.LB.assets_root
+                }).trim();
+                
+                const fragment = helpers.fragmentFromString(rendered);
+                if (fragment && fragment.childNodes.length) {
+                    parentNode.insertBefore(fragment.childNodes[0], refNode);
+                } else {
+                    console.warn("renderAds: Failed to create valid fragment");
+                }
+            } catch (error) {
+                console.error("renderAds: Error rendering ad", error);
+            }
         });
-
-        let fragment = helpers.fragmentFromString(rendered.trim());
-        parentNode.insertBefore(fragment.childNodes[0], refNode);
-    });
+    } catch (error) {
+        console.error("Error in renderAds function", error);
+    }
 }
 
 
