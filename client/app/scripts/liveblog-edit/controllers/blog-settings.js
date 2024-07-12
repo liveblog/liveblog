@@ -516,6 +516,9 @@ function BlogSettingsController(
             resizeing: `<script src="${embedScript}" defer></script>
 <iframe id="liveblog-iframe" width="100%" scrolling="no" src="${vm.publicUrl}" data-responsive="yes" frameborder="0" allowfullscreen></iframe>`,
         };
+
+        vm.esi = `<script src="${embedScript}" defer></script>
+<esi:include src="${vm.publicUrl}" />`;
     });
 
     api('users')
