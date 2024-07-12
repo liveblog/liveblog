@@ -4,7 +4,6 @@ import _ from 'lodash';
 BlogListController.$inject = [
     '$scope',
     '$location',
-    '$http',
     'api',
     'gettext',
     'upload',
@@ -16,12 +15,12 @@ BlogListController.$inject = [
     'urls',
     'modal',
     'blogService',
+    'featuresService',
 ];
 
 export default function BlogListController(
     $scope,
     $location,
-    $http,
     api,
     gettext,
     upload,
@@ -32,7 +31,9 @@ export default function BlogListController(
     config,
     urls,
     modal,
-    blogService) {
+    blogService,
+    featuresService
+) {
     $scope.maxResults = 25;
     $scope.states = [
         ACTIVE_STATE,
@@ -319,11 +320,10 @@ export default function BlogListController(
         $scope.accessRequestedTo = blog;
         $scope.showBlogAccessModal = true;
 
-        if (config.subscriptionLevel
-        && ['solo', 'team'].indexOf(config.subscriptionLevel) !== -1) {
-            $scope.checkAccessRequestLimit(blog);
-        } else {
+        if (featuresService.isNetworkSubscription()) {
             $scope.allowAccessRequest = true;
+        } else {
+            $scope.checkAccessRequestLimit(blog);
         }
     };
 
@@ -345,23 +345,18 @@ export default function BlogListController(
             });
         }
 
-        $http({
-            url: config.server.url + '/blogs/' + blog._id + '/request_membership',
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-            },
-        })
+        api
+            .get(`/blogs/${blog._id}/request_membership`)
             .then((response) => {
-                if (response.data._items.length > 0) {
-                    response.data._items.forEach((item) => {
-                        if (theoricalMembers.indexOf(item._id) === -1) {
-                            theoricalMembers.push(item._id);
-                        }
-                    });
-                }
+                (response._items || []).forEach((item) => {
+                    if (theoricalMembers.indexOf(item._id) === -1) {
+                        theoricalMembers.push(item._id);
+                    }
+                });
 
-                if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
+                const isMembersLimitReached = featuresService.isLimitReached('blog_members', theoricalMembers.length);
+
+                if (!isMembersLimitReached) {
                     $scope.allowAccessRequest = true;
                 }
             });
@@ -436,13 +431,7 @@ export default function BlogListController(
         });
     };
 
-    $scope.hasReachedMembersLimit = function() {
-        if (!_.has(config.assignableUsers, config.subscriptionLevel)) {
-            return false;
-        }
-
-        return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
-    };
+    $scope.hasReachedMembersLimit = () => featuresService.isLimitReached('blog_members', $scope.blogMembers.length);
 
     // Set grid or list view
     $scope.setBlogsView = function(blogsView) {

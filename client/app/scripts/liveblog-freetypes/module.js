@@ -7,6 +7,8 @@ LiveblogFreetypesController.$inject = [
     '$q',
     'modal',
     'privileges',
+    'featuresService',
+    'config',
 ];
 
 function LiveblogFreetypesController(
@@ -15,7 +17,9 @@ function LiveblogFreetypesController(
     gettext,
     $q,
     modal,
-    privileges
+    privileges,
+    featuresService,
+    config
 ) {
     const self = this;
 
@@ -62,6 +66,11 @@ function LiveblogFreetypesController(
             name: '',
             template: '',
         },
+        isFreetypesManagerEnabled: () => featuresService.isEnabled('freetypes_manager'),
+        mailto: 'mail:upgrade@liveblog.pro?subject=' +
+            encodeURIComponent(location.hostname) +
+            ' ' +
+            config.subscriptionLevel,
         // open dialog for adding editing an item type
         openFreetypeDialog: function(freetype) {
             self.checkItemIsUsed(freetype).then(() => {
@@ -188,21 +197,19 @@ function LiveblogFreetypesController(
     getFreetypes();
 }
 
-const liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
-    .config(['superdeskProvider', 'config', function(superdesk, config) {
-        if (config.subscriptionLevel !== 'solo') {
-            superdesk
-                .activity('/freetypes/', {
-                    label: gettext('Free types manager'),
-                    controller: LiveblogFreetypesController,
-                    controllerAs: 'self',
-                    betaMark: false,
-                    category: superdesk.MENU_MAIN,
-                    adminTools: true,
-                    privileges: {global_preferences: 1},
-                    templateUrl: listViewTpl,
-                });
-        }
+const liveblogFreetypesModule = angular.module('liveblog.freetypes', ['liveblog.features'])
+    .config(['superdeskProvider', function(superdesk) {
+        superdesk
+            .activity('/freetypes/', {
+                label: gettext('Free types manager'),
+                controller: LiveblogFreetypesController,
+                controllerAs: 'self',
+                betaMark: false,
+                category: superdesk.MENU_MAIN,
+                adminTools: true,
+                privileges: {global_preferences: 1},
+                templateUrl: listViewTpl,
+            });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('freetypes', {
