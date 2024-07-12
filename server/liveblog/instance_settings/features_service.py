@@ -94,7 +94,7 @@ class FeaturesService:
         limits = self._get_settings_for("limits")
         subscription_limit = limits.get(feature_name, 0)
 
-        return current_usage >= subscription_limit
+        return current_usage > subscription_limit
 
     def _get_settings_for(self, settings_key):
         """
