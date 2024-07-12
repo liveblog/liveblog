@@ -1,0 +1,29 @@
+<div lb-settings-view class="general-settings">
+    <div class="split-content">
+        <div style="margin:10px">
+            <button ng-click="saveInstanceSettings()" class="btn btn--primary pull-right" type="button" translate ng-disabled="!instanceForm.$dirty">Save</button>
+            <button ng-click="close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
+        </div>
+        <div class="content">
+            <div class="loading-indicator" ng-show="settingsLoading"><span translate>loading</span></div>
+            <form class="form-horizontal" name="instanceForm">
+                <div class="flex-grid wrap-items padded-grid medium-3">
+                    <div class="flex-item">
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label class="sd-line-input__label text-uppercase text-bold">
+                                    Instance Settings
+                                </label>
+                            </div>
+
+                            <div ace-editor ng-model="instanceSettings.settings" style="height: 700px; width: 600px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+            <!-- really dirty workaround but found no way -->
+            {{setFormRef(this)}}
+        </div>
+    </div>
+</div>

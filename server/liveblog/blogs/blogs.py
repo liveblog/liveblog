@@ -28,8 +28,6 @@ from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
 from settings import (
-    SUBSCRIPTION_LEVEL,
-    SUBSCRIPTION_MAX_ACTIVE_BLOGS,
     DAYS_REMOVE_DELETED_BLOGS,
     TRIGGER_HOOK_URLS,
 )
@@ -213,12 +211,8 @@ class BlogService(BaseService):
 
         # If archiving a blog, remove any syndication in records
         if blog_status == "closed":
-            self._on_deactivate(original["_id"])
-
-            # if SOLO subscription level, let's update embeds to show
-            # warning message that blog is not available anymore
-            if "solo" in SUBSCRIPTION_LEVEL:
-                publish_blog_embeds_on_s3.apply_async(args=[original], countdown=2)
+            self.stop_blog_syndication(original["_id"])
+            self.make_embed_unavailable_if_needed(original)
 
         # we mark the time to later remove it with celery beat if status is deleted
         # use this below for local devel purposes
@@ -289,7 +283,7 @@ class BlogService(BaseService):
         lookup = {"blog_id": blog_id}
         syndication_out.delete_action(lookup)
 
-        self._on_deactivate(blog_id)
+        self.stop_blog_syndication(blog_id)
 
         # Send notifications.
         push_notification("blogs", deleted=1)
@@ -298,17 +292,30 @@ class BlogService(BaseService):
         return "{}/#/liveblog/edit/{}".format(app.config["CLIENT_URL"], blog_id)
 
     def _check_max_active(self, increment):
-        subscription = SUBSCRIPTION_LEVEL
-        if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
-            active = self.find({"blog_status": "open"})
-            logger.info("active.count() %s " % active.count())
-            if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
-                raise SuperdeskApiError.forbiddenError(
-                    message="Cannot add another active blog."
-                )
+        active = self.find({"blog_status": "open"})
+        current_blogs = active.count() + increment
 
-    def _on_deactivate(self, blog_id):
-        # Stop syndication when archiving or deleting a blog
+        if app.features.is_limit_reached("blogs", current_blogs):
+            raise SuperdeskApiError.forbiddenError(
+                message="Cannot add another active blog."
+            )
+
+    def make_embed_unavailable_if_needed(self, blog):
+        """
+        Triggers the publishing of the blog's embed which will render an 'not available'
+        message if the subscription plan is limited and the blog is archived or deleted.
+        """
+        if app.config.get("SUPERDESK_TESTING"):
+            return
+
+        if not app.features.is_enabled("archived_blogs_available"):
+            publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+
+    def stop_blog_syndication(self, blog_id):
+        """
+        Stop syndication when archiving or deleting a blog
+        """
+
         syndication_in_service = get_resource_service("syndication_in")
         syndication_ins = syndication_in_service.find({"blog_id": blog_id})
         producers = get_resource_service("producers")
