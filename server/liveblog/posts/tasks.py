@@ -42,7 +42,10 @@ def update_post_blog_data(post, action="created"):
     if action in ("updated", "created"):
         # Update last_updated_post or last_created_post.
         post_field = "last_{}_post".format(action)
-        updates[post_field] = {"_id": post["_id"], "_updated": post["_updated"]}
+        updates[post_field] = {
+            "_id": post["_id"],
+            "_updated": post["content_updated_date"],
+        }
     try:
         blogs.system_update(blog_id, updates, blog)
     except DataLayer.OriginalChangedError:

@@ -1,9 +1,24 @@
-import _ from 'lodash';
-
-angular.module('liveblog.security', [])
+angular.module('liveblog.security', ['liveblog.features'])
     .service('blogSecurityService',
-        ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',
-            function($q, $rootScope, $route, blogService, $location, privileges, config, api) {
+        [
+            '$q',
+            '$rootScope',
+            '$route',
+            'blogService',
+            '$location',
+            'privileges',
+            'api',
+            'featuresService',
+            function(
+                $q,
+                $rootScope,
+                $route,
+                blogService,
+                $location,
+                privileges,
+                api,
+                featuresService
+            ) {
                 function canPublishAPost() {
                     return privileges.userHasPrivileges({publish_post: 1});
                 }
@@ -21,19 +36,15 @@ angular.module('liveblog.security', [])
                     return ids.indexOf($rootScope.currentUser._id) > -1;
                 }
                 function showUpgradeModal() {
-                    if (!_.has(config.blogCreationRestrictions, config.subscriptionLevel)) {
-                        return $q.when(false);
-                    }
-
-                    const numberOfAllowedBlogs = config.blogCreationRestrictions[config.subscriptionLevel];
-
                     const criteria = {
                         source: {
                             query: {filtered: {filter: {term: {blog_status: 'open'}}}},
                         },
                     };
 
-                    return api.blogs.query(criteria).then((blogs) => blogs._items.length >= numberOfAllowedBlogs);
+                    return api.blogs
+                        .query(criteria)
+                        .then((blogs) => featuresService.isLimitReached('blogs', blogs._items.length));
                 }
                 function canAccessBlog(blog) {
                     return isAdmin() || isMemberOfBlog(blog);
