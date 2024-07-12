@@ -91,6 +91,7 @@ import 'liveblog-security.service';
 import 'liveblog-common/notify';
 
 import {EventNames} from './liveblog-common/constants';
+import 'liveblog-features.service';
 
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
@@ -126,7 +127,6 @@ const sdCore = angular.module('superdesk.core', [
     'superdesk.core.loading',
     'superdesk.core.editor3',
     'superdesk.core.services',
-
     'superdesk.core.directives',
 ]);
 

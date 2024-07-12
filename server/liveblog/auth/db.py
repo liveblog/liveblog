@@ -1,8 +1,10 @@
 from flask import request
-from apps.auth.db import DbAuthService
-from settings import SUBSCRIPTION_LEVEL, ACCESS_SUBSCRIPTIONS_MOBILE
+from flask import current_app as app
+
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
+
+from apps.auth.db import DbAuthService
 from apps.auth.errors import CredentialsAuthError
 
 AGENT_MOBILE_ANDROID = "okhttp/"
@@ -16,15 +18,13 @@ class AccessAuthService(DbAuthService):
         return super().authenticate(credentials)
 
     def _check_subscription_level(self):
-        subscription = SUBSCRIPTION_LEVEL
-
         # get user agent information to detect if request comes from mobile app
         user_agent = request.user_agent.string
         is_mobile_agent = any(
             [(AGENT_MODILE_IOS in user_agent), (AGENT_MOBILE_ANDROID in user_agent)]
         )
 
-        if subscription not in ACCESS_SUBSCRIPTIONS_MOBILE and is_mobile_agent:
+        if not app.features.is_enabled("mobile_app") and is_mobile_agent:
             raise SuperdeskApiError.forbiddenError(
                 message="Liveblog mobile can not access on this subscription"
             )

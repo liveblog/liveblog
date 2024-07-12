@@ -51,6 +51,7 @@ const app = angular.module('liveblog.edit',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security',
+        'liveblog.features',
         'liveblog.freetypes',
         'liveblog.edit.components.inactivityModal',
     ])
@@ -269,12 +270,26 @@ const app = angular.module('liveblog.edit',
             embedServiceProvider.setConfig('fallbackService', 'iframely');
         },
     ])
-    .run(['embedService', 'embedInstagramHandler', 'embedFacebookHandler', 'embedPictureHandler', 'embedTwitterHandler',
-        function(embedService, embedInstagramHandler, embedFacebookHandler, embedPictureHandler, embedTwitterHandler) {
+    .run([
+        'embedService',
+        'embedInstagramHandler',
+        'embedFacebookHandler',
+        'embedPictureHandler',
+        'embedTwitterHandler',
+        'featuresService',
+        function(
+            embedService,
+            embedInstagramHandler,
+            embedFacebookHandler,
+            embedPictureHandler,
+            embedTwitterHandler,
+            featuresService
+        ) {
             embedService.registerHandler(embedInstagramHandler);
             embedService.registerHandler(embedFacebookHandler);
             embedService.registerHandler(embedPictureHandler);
             embedService.registerHandler(embedTwitterHandler);
+            featuresService.initialize();
         },
     ]);
 
