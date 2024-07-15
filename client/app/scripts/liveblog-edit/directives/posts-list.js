@@ -211,7 +211,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
 
     // Check if posts belong to the same blog and update accordingly
     const updateIfPostsBelongToSameBlog = (posts, $scope, listInstance, eventParams) => {
-        if (posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
+        if (posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId && !x.scheduled)) {
             // if post was removed and was a syndicated one
             if (eventParams.deleted && eventParams.syndicated) {
                 listInstance.pagesManager.removePost(posts[0]);
@@ -232,7 +232,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
     };
 
     const getMaxPublishedDate = (posts, isUpdated) =>
-        (isUpdated === undefined || (isUpdated && posts[0]['scheduled'])) ? posts[0]['published_date'] : undefined;
+        isUpdated ? undefined : posts.length > 0 && posts[0]['published_date'];
 
     const refreshInstagramEmbeds = () => {
         // Regenerate the embed otherwise the image doesn't appear
