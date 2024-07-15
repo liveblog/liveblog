@@ -116,7 +116,7 @@ export default function unreadPostsService($rootScope, postsService) {
     }
 
     // Check for scheduled posts and show indicator
-    function checkExistingUnreads() {
+    function checkCurrentScheduledPosts() {
         const filters = {
             scheduled: true,
             // eslint-disable-next-line newline-per-chained-call
@@ -144,7 +144,7 @@ export default function unreadPostsService($rootScope, postsService) {
             if (!listener) {
                 blog = currentBlog;
                 listener = $rootScope.$on('posts', onPostReceive);
-                checkExistingUnreads();
+                checkCurrentScheduledPosts();
             }
         },
         stopListening: function() {
