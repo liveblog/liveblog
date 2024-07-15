@@ -8,10 +8,11 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 import _ from 'lodash';
+import moment from 'moment';
 
-unreadPostsService.$inject = ['$rootScope'];
+unreadPostsService.$inject = ['$rootScope', 'postsService'];
 
-export default function unreadPostsService($rootScope) {
+export default function unreadPostsService($rootScope, postsService) {
     let blog;
     let listener;
     let contributions = [];
@@ -114,6 +115,24 @@ export default function unreadPostsService($rootScope) {
         }
     }
 
+    // Check for scheduled posts and show indicator
+    function checkExistingUnreads() {
+        const filters = {
+            scheduled: true,
+            // eslint-disable-next-line newline-per-chained-call
+            maxPublishedDate: moment().utc().format(),
+        };
+
+        postsService.getPosts(blog._id, filters, undefined, 1)
+            .then((posts) => {
+                posts._items.forEach((post) => {
+                    if (post.blog === blog._id) {
+                        scheduled = scheduled.concat(post);
+                    }
+                });
+            });
+    }
+
     return {
         isContribution: isContribution,
         countContributions: countContributions,
@@ -125,6 +144,7 @@ export default function unreadPostsService($rootScope) {
             if (!listener) {
                 blog = currentBlog;
                 listener = $rootScope.$on('posts', onPostReceive);
+                checkExistingUnreads();
             }
         },
         stopListening: function() {
