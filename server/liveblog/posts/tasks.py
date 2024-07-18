@@ -44,7 +44,7 @@ def update_post_blog_data(post, action="created"):
         post_field = "last_{}_post".format(action)
         updates[post_field] = {
             "_id": post["_id"],
-            "_updated": post["content_updated_date"],
+            "_updated": post["_updated"],
         }
     try:
         blogs.system_update(blog_id, updates, blog)
