@@ -6,7 +6,9 @@
 'use strict';
 
 var helpers = require('./helpers')
-  , view = require('./view');
+  , view = require('./view')
+  , handlers = require('./handlers')
+  , polls = require('./polls');
 const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
@@ -302,6 +304,25 @@ vm.handleSharedPost = function(postId) {
   .catch(error => console.log(error));
 }
 
+vm.initialRender = function() {
+  var sortBy = helpers.getSortBy(window.LB.settings.postOrder);
+  return vm.loadPosts({
+    sort: sortBy,
+    notDeleted: true,
+    tags: vm.getSelectedTags()
+  }).then(view.renderTimeline)
+    .then(view.displayNewPosts)
+    .then(view.checkPending)
+    .then(view.toggleSortBtn(sortBy))
+    .then(view.consent.init)
+    .then(view.adsManager.refreshAds)
+    .then(view.loadEmbeds)
+    .then(polls.checkExistingVotes)
+    .then(() => {
+      onYouTubeIframeAPIReady();
+    }).then(vm.fetchLatestAndRender)
+}
+
 /**
  * Set up viewmodel.
  */
@@ -320,8 +341,10 @@ vm.init = function() {
   }
 
   if (isBlogOpen) {
-    // let's hit backend right away after load and render latest updates
-    vm.fetchLatestAndRender();
+    // We immediately hit the backend and render all the posts
+    // This is a redundancy to mitigate the last html template having missing posts
+    // After which we get fetchLatestAndRender and do that every 10 seconds
+    vm.initialRender();
 
     // then every 10 seconds
     setInterval(vm.fetchLatestAndRender, tenSeconds);
