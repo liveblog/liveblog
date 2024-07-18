@@ -106,6 +106,7 @@ def notify_scheduled_post(post, published_date):
 
     if db_post.get("published_date") == published_date:
         app.blog_cache.invalidate(post.get("blog"))
+        update_post_blog_data.delay(post, action="created")
         update_post_blog_embed.delay(post)
         push_notification(
             "posts", scheduled_done=True, post_status=PostStatus.OPEN, posts=[post]
