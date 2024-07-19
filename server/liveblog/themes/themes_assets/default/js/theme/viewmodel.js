@@ -305,22 +305,28 @@ vm.handleSharedPost = function(postId) {
 }
 
 vm.initialRender = function() {
-  var sortBy = helpers.getSortBy(window.LB.settings.postOrder);
-  return vm.loadPosts({
+  var sortBy = helpers.getSortBy(settings.postOrder);
+  vm.loadPosts({
     sort: sortBy,
     notDeleted: true,
     tags: vm.getSelectedTags()
-  }).then(view.renderTimeline)
-    .then(view.displayNewPosts)
-    .then(view.checkPending)
-    .then(view.toggleSortBtn(sortBy))
-    .then(view.consent.init)
-    .then(view.adsManager.refreshAds)
-    .then(view.loadEmbeds)
-    .then(polls.checkExistingVotes)
-    .then(() => {
-      onYouTubeIframeAPIReady();
-    }).then(vm.fetchLatestAndRender)
+  })
+  .then((api_response) => {
+    view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
+    return api_response;
+  })
+  .then(view.renderTimeline)
+  .then(view.displayNewPosts)
+  .then(view.checkPending)
+  .then(view.toggleSortBtn(sortBy))
+  .then(view.consent.init)
+  .then(view.adsManager.refreshAds)
+  .then(view.loadEmbeds)
+  .then(polls.checkExistingVotes)
+  .then(() => {
+    onYouTubeIframeAPIReady();
+  })
+  .catch(error => console.log(error))
 }
 
 /**
