@@ -307,6 +307,10 @@ class PostsService(ArchiveService):
             eta_time = arrow.get(published_date).replace(seconds=+10)
             notify_scheduled_post.apply_async(args=[post, published_date], eta=eta_time)
 
+    def _is_scheduled_post(self, post):
+        published_date = post.get("published_date")
+        return published_date and arrow.get(published_date) > utcnow()
+
     def check_post_permission(self, post):
         PUBLISH = "publish_post"
         CONTRIBUTE = "submit_post"
@@ -378,8 +382,11 @@ class PostsService(ArchiveService):
             # invalidate cache for updated blog
             app.blog_cache.invalidate(blog_id)
 
-            # Update blog post data and embed for SEO-enabled blogs.
-            update_post_blog_data.delay(doc, action="created")
+            # Update blog post data if it is normal post and not scheduled post
+            if not self._is_scheduled_post(doc):
+                update_post_blog_data.delay(doc, action="created")
+
+            # Update blog post embed
             update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
