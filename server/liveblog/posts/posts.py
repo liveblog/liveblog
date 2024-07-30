@@ -24,7 +24,12 @@ from liveblog.polls.polls import poll_calculations
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
-from .tasks import update_post_blog_data, update_post_blog_embed, notify_scheduled_post
+from .tasks import (
+    update_post_blog_data,
+    update_post_blog_embed,
+    notify_scheduled_post,
+    update_scheduled_post_blog_data,
+)
 from .mixins import AuthorsMixin
 from .utils import get_associations, check_content_diff
 
@@ -293,7 +298,7 @@ class PostsService(ArchiveService):
             next_order = self.get_next_order_sequence(post["blog"])
             self.system_update(post["_id"], {"order": next_order}, post)
 
-    def _scheduled_notification_if_needed(self, post):
+    def _scheduled_notification_if_needed(self, post, action="created"):
         """
         Check if the post it's been scheduled and send client notification
         """
@@ -305,7 +310,14 @@ class PostsService(ArchiveService):
         # but also let's append 10 more seconds to make sure it happens after
         if post["scheduled"]:
             eta_time = arrow.get(published_date).replace(seconds=+10)
+            update_scheduled_post_blog_data.apply_async(
+                args=[post, action], eta=eta_time
+            )
             notify_scheduled_post.apply_async(args=[post, published_date], eta=eta_time)
+
+    def _is_scheduled_post(self, post):
+        published_date = post.get("published_date")
+        return published_date and arrow.get(published_date) > utcnow()
 
     def check_post_permission(self, post):
         PUBLISH = "publish_post"
@@ -362,7 +374,7 @@ class PostsService(ArchiveService):
             post["syndication_in"] = doc.get("syndication_in")
             post["published_date"] = doc.get("published_date")
 
-            self._scheduled_notification_if_needed(post)
+            self._scheduled_notification_if_needed(doc, action="created")
 
             synd_in_id = doc.get("syndication_in")
             if synd_in_id:
@@ -378,8 +390,11 @@ class PostsService(ArchiveService):
             # invalidate cache for updated blog
             app.blog_cache.invalidate(blog_id)
 
-            # Update blog post data and embed for SEO-enabled blogs.
-            update_post_blog_data.delay(doc, action="created")
+            # Update blog post data if it is normal post and not scheduled post
+            if not self._is_scheduled_post(doc):
+                update_post_blog_data.delay(doc, action="created")
+
+            # Update blog post embed
             update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
@@ -506,7 +521,7 @@ class PostsService(ArchiveService):
             )
             posts.append(doc)
 
-            self._scheduled_notification_if_needed(doc)
+            self._scheduled_notification_if_needed(doc, action="updated")
 
             if updates.get("post_status") == "open":
                 if original["post_status"] in ("submitted", "draft", "comment"):

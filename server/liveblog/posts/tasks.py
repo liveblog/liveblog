@@ -1,5 +1,6 @@
 import logging
 
+from datetime import datetime
 from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
@@ -44,7 +45,7 @@ def update_post_blog_data(post, action="created"):
         post_field = "last_{}_post".format(action)
         updates[post_field] = {
             "_id": post["_id"],
-            "_updated": post["content_updated_date"],
+            "_updated": post["_updated"],
         }
     try:
         blogs.system_update(blog_id, updates, blog)
@@ -106,6 +107,58 @@ def notify_scheduled_post(post, published_date):
 
     if db_post.get("published_date") == published_date:
         app.blog_cache.invalidate(post.get("blog"))
+        update_post_blog_embed.delay(post)
         push_notification(
             "posts", scheduled_done=True, post_status=PostStatus.OPEN, posts=[post]
+        )
+
+
+@celery.task
+def update_scheduled_post_blog_data(post, action):
+    """
+    Update blog data last created or updated post based on scheduled post
+    only if the existing time is older than the scheduled post time
+    """
+    blogs = get_resource_service("client_blogs")
+    blog_id = post.get("blog")
+    if not blog_id:
+        return
+
+    blog = blogs.find_one(req=None, _id=blog_id)
+    if not blog:
+        return
+
+    content_updated_date = post.get("content_updated_date")
+    if not content_updated_date:
+        return
+
+    last_created_post = blog.get("last_created_post", {})
+    last_updated_post = blog.get("last_updated_post", {})
+    updates = {}
+
+    if action == "created":
+        if not last_created_post or content_updated_date > last_created_post.get(
+            "_updated", datetime.min
+        ):
+            updates["last_created_post"] = {
+                "_id": post["_id"],
+                "_updated": content_updated_date,
+            }
+    elif action == "updated":
+        if not last_updated_post or content_updated_date > last_updated_post.get(
+            "_updated", datetime.min
+        ):
+            updates["last_updated_post"] = {
+                "_id": post["_id"],
+                "_updated": content_updated_date,
+            }
+
+    if updates:
+        try:
+            blogs.system_update(blog_id, updates, blog)
+        except DataLayer.OriginalChangedError:
+            blog = blogs.find_one(req=None, _id=blog_id)
+            blogs.system_update(blog_id, updates, blog)
+        logger.warning(
+            'Blog "{}" scheduled post data has been updated.'.format(blog_id)
         )

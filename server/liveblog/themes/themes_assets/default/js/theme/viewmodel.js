@@ -7,8 +7,7 @@
 
 var helpers = require('./helpers')
   , view = require('./view')
-  , handlers = require('./handlers')
-  , polls = require('./polls');
+  , handlers = require('./handlers');
 const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
@@ -20,22 +19,10 @@ const permalink = new Permalink();
 var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
-var latestUpdate;
+var latestUpdate = new Date().toISOString();
 var pendingPosts;
 var sharedPostTimestamp;
 var selectedTags = [];
-
-// Check if last_created_post and last_updated_post are there.
-// and use them properly
-if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
-    LB.blog.last_updated_post && LB.blog.last_updated_post._updated) {
-  latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
-                            new Date(LB.blog.last_updated_post._updated))).toISOString();
-} else if (LB.blog.last_created_post && LB.blog.last_created_post._updated) {
-  latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
-} else {
-  latestUpdate = new Date().toISOString();
-}
 
 /**
  * Get initial or reset viewmodel.
@@ -305,27 +292,16 @@ vm.handleSharedPost = function(postId) {
 }
 
 vm.initialRender = function() {
-  var sortBy = helpers.getSortBy(settings.postOrder);
   vm.loadPosts({
-    sort: sortBy,
-    notDeleted: true,
-    tags: vm.getSelectedTags()
+    beforeDate: latestUpdate,
+    tags: selectedTags,
   })
-  .then((api_response) => {
+  .then(api_response => {
     view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
-    return api_response;
+    return api_response;  
   })
   .then(view.renderTimeline)
-  .then(view.displayNewPosts)
-  .then(view.checkPending)
-  .then(view.toggleSortBtn(sortBy))
-  .then(view.consent.init)
-  .then(view.adsManager.refreshAds)
-  .then(view.loadEmbeds)
-  .then(polls.checkExistingVotes)
-  .then(() => {
-    onYouTubeIframeAPIReady();
-  })
+  .then(vm.fetchLatestAndRender)
   .catch(error => console.log(error))
 }
 
@@ -347,9 +323,8 @@ vm.init = function() {
   }
 
   if (isBlogOpen) {
-    // We immediately hit the backend and render all the posts
-    // This is a redundancy to mitigate the last html template having missing posts
-    // After which we get fetchLatestAndRender and do that every 10 seconds
+    // let's hit backend right away after load and load posts before current time
+    // after which we check for new posts
     vm.initialRender();
 
     // then every 10 seconds
