@@ -373,8 +373,9 @@ class PostsService(ArchiveService):
             # Check if post has syndication_in entry.
             post["syndication_in"] = doc.get("syndication_in")
             post["published_date"] = doc.get("published_date")
+            post["content_updated_date"] = doc.get("content_updated_date")
 
-            self._scheduled_notification_if_needed(doc, action="created")
+            self._scheduled_notification_if_needed(post, action="created")
 
             synd_in_id = doc.get("syndication_in")
             if synd_in_id:
