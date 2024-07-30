@@ -212,6 +212,12 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
     // Check if posts belong to the same blog and update accordingly
     const updateIfPostsBelongToSameBlog = (posts, $scope, listInstance, eventParams) => {
         if (posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
+            // If post is scheduled and just created, don't show on timeline.
+            // The post will show when scheduled_done is true
+            if (posts[0].scheduled && eventParams.created) {
+                return;
+            }
+
             // if post was removed and was a syndicated one
             if (eventParams.deleted && eventParams.syndicated) {
                 listInstance.pagesManager.removePost(posts[0]);
