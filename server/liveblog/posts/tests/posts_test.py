@@ -1,3 +1,4 @@
+import datetime
 import flask
 
 import liveblog.blogs as blogs
@@ -16,7 +17,11 @@ from superdesk.tests import TestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import get_publisher, private_draft_filter
-from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
+from liveblog.posts.tasks import (
+    update_post_blog_data,
+    update_post_blog_embed,
+    update_scheduled_post_blog_data,
+)
 from liveblog.posts.utils import check_content_diff
 from liveblog.common import run_once
 
@@ -604,6 +609,68 @@ class PostsModuleTestCase(TestCase):
                     "_id": self.blog_posts[0]["_id"],
                 },
                 "total_posts": total_posts,
+            },
+            blog,
+        )
+
+    @patch("liveblog.posts.tasks.get_resource_service")
+    def test_update_scheduled_post_blog_data_on_created(self, *mocks):
+        fake_get_service = mocks[0]
+
+        post = self.blog_posts[0]
+        post["content_updated_date"] = datetime.datetime(2024, 7, 30, 10, 0)
+
+        blog_id = self.blogs_list[0]["_id"]
+        blog = {
+            "_id": blog_id,
+            "last_created_post": {
+                "_id": "old_post_id",
+                "_updated": datetime.datetime(2024, 7, 29, 10, 0),
+            },
+        }
+
+        fake_get_service().find_one.return_value = blog
+
+        update_scheduled_post_blog_data(post, action="created")
+
+        fake_get_service().system_update.assert_called_with(
+            blog_id,
+            {
+                "last_created_post": {
+                    "_id": post["_id"],
+                    "_updated": post["content_updated_date"],
+                },
+            },
+            blog,
+        )
+
+    @patch("liveblog.posts.tasks.get_resource_service")
+    def test_update_scheduled_post_blog_data_on_updated(self, *mocks):
+        fake_get_service = mocks[0]
+
+        post = self.blog_posts[0]
+        post["content_updated_date"] = datetime.datetime(2024, 7, 30, 10, 0)
+
+        blog_id = self.blogs_list[0]["_id"]
+        blog = {
+            "_id": blog_id,
+            "last_updated_post": {
+                "_id": "old_post_id",
+                "_updated": datetime.datetime(2024, 7, 29, 10, 0),
+            },
+        }
+
+        fake_get_service().find_one.return_value = blog
+
+        update_scheduled_post_blog_data(post, action="updated")
+
+        fake_get_service().system_update.assert_called_with(
+            blog_id,
+            {
+                "last_updated_post": {
+                    "_id": post["_id"],
+                    "_updated": post["content_updated_date"],
+                },
             },
             blog,
         )
