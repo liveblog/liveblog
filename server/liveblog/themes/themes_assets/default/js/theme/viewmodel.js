@@ -18,22 +18,10 @@ const permalink = new Permalink();
 var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
-var latestUpdate;
+var latestUpdate = new Date().toISOString();
 var pendingPosts;
 var sharedPostTimestamp;
 var selectedTags = [];
-
-// Check if last_created_post and last_updated_post are there.
-// and use them properly
-if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
-    LB.blog.last_updated_post && LB.blog.last_updated_post._updated) {
-  latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
-                            new Date(LB.blog.last_updated_post._updated))).toISOString();
-} else if (LB.blog.last_created_post && LB.blog.last_created_post._updated) {
-  latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
-} else {
-  latestUpdate = new Date().toISOString();
-}
 
 /**
  * Get initial or reset viewmodel.
@@ -302,6 +290,20 @@ vm.handleSharedPost = function(postId) {
   .catch(error => console.log(error));
 }
 
+vm.initialRender = function() {
+  vm.loadPosts({
+    beforeDate: latestUpdate,
+    tags: selectedTags,
+  })
+  .then(api_response => {
+    view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
+    return api_response;  
+  })
+  .then(view.renderTimeline)
+  .then(vm.fetchLatestAndRender)
+  .catch(error => console.log(error))
+}
+
 /**
  * Set up viewmodel.
  */
@@ -320,8 +322,9 @@ vm.init = function() {
   }
 
   if (isBlogOpen) {
-    // let's hit backend right away after load and render latest updates
-    vm.fetchLatestAndRender();
+    // let's hit backend right away after load and load posts before current time
+    // after which we check for new posts
+    vm.initialRender();
 
     // then every 10 seconds
     setInterval(vm.fetchLatestAndRender, tenSeconds);
