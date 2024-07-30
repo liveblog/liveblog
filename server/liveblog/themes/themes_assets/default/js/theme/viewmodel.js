@@ -6,8 +6,7 @@
 'use strict';
 
 var helpers = require('./helpers')
-  , view = require('./view')
-  , handlers = require('./handlers');
+  , view = require('./view');
 const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
