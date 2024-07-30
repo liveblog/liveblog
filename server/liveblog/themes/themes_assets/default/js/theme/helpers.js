@@ -151,6 +151,26 @@ function range(start, stop, step) {
     return result;
 };
 
+function getSortBy(sortBy) {
+  // initialy on server sort params are set as newest_first, oldest_first
+  // on client we dont use this, so this is temp fix
+  switch (sortBy) {
+    case 'oldest_first':
+    case 'ascending':
+      sortBy = 'ascending';
+      break;
+    case 'newest_first':
+    case 'descending':
+      sortBy = 'descending';
+      break;
+    default:
+      sortBy = 'editorial';
+  }
+  
+  window.playersState = {};
+  return sortBy;
+};
+
 module.exports = {
   getElems: getElems,
   getJSON: getJSON,
@@ -159,5 +179,6 @@ module.exports = {
   patch: patch,
   convertTimestamp: convertTimestamp,
   fragmentFromString: fragmentFromString,
-  range: range
+  range: range,
+  getSortBy: getSortBy
 };
