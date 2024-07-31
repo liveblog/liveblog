@@ -6,7 +6,8 @@
 'use strict';
 
 var helpers = require('./helpers')
-  , view = require('./view');
+  , view = require('./view')
+  , polls = require('./polls');
 const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
@@ -294,12 +295,22 @@ vm.initialRender = function() {
   vm.loadPosts({
     beforeDate: latestUpdate,
     tags: selectedTags,
+    notDeleted: true,
   })
   .then(api_response => {
     view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
     return api_response;  
   })
   .then(view.renderTimeline)
+  .then(view.displayNewPosts)
+  .then(view.checkPending)
+  .then(view.consent.init)
+  .then(view.adsManager.refreshAds)
+  .then(view.loadEmbeds)
+  .then(polls.checkExistingVotes)
+  .then(() => {
+    onYouTubeIframeAPIReady();
+  })
   .then(vm.fetchLatestAndRender)
   .catch(error => console.log(error))
 }
