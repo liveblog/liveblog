@@ -18,7 +18,6 @@ import superdesk
 from bs4 import BeautifulSoup
 from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
-from flask_cors import cross_origin
 from flask import current_app as app
 from flask import json, render_template, request, url_for
 from superdesk import get_resource_service
@@ -377,60 +376,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     return response_content
 
 
-@embed_blueprint.route("/api/embed/shared_post/<blog_id>/<post_id>")
-@cross_origin()
-def embed_shared_post(blog_id, post_id):
-    post = get_resource_service("client_posts").find_one(req=None, _id=post_id)
-    if not post or (post and str(post.get("blog")) != blog_id):
-        return "Post not found", 404
-
-    theme_service = get_resource_service("themes")
-    theme = theme_service.find_one(req=None, name="default")
-    settings = theme_service.get_default_settings(theme)
-    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
-
-    if theme.get("public_url", False):
-        assets_root = theme.get("public_url")
-    else:
-        assets_root = theme_service.get_theme_assets_url(theme.get("name"))
-
-    assets, template_content = collect_theme_assets(
-        theme, template="template-shared-post.html", parents=[]
-    )
-
-    embed_env = theme_service.get_theme_template_env(
-        theme, loader=CompiledThemeTemplateLoader
-    )
-    embed_template = embed_env.get_template(template_content)
-
-    api_host = request.url_root
-    api_host = (
-        api_host.replace("//", app.config.get("EMBED_PROTOCOL"))
-        if api_host.startswith("//")
-        else api_host
-    )
-    api_host = api_host.replace("http://", app.config.get("EMBED_PROTOCOL"))
-    i18n = theme.get("i18n", {})
-
-    base_ctx = dict(
-        blog=blog,
-        output=None,
-        settings=settings,
-        i18n=i18n,
-        assets_root=assets_root,
-        api_host=api_host,
-    )
-
-    post_ctx = dict(
-        options=theme, item=post, json_options=bson_dumps(theme), **base_ctx
-    )
-    template_content = embed_template.render(post_ctx)
-
-    context = dict(theme=theme, assets=assets, template=template_content, **base_ctx)
-
-    return render_template("embed_shared_post.html", **context)
-
-
 @embed_blueprint.route("/embed/iframe/<blog_id>")
 def embed_iframe(blog_id):
     blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
@@ -469,7 +414,7 @@ def tojson(obj):
 def tostyle(obj):
     if obj:
         styles = []
-        for (key, value) in obj.items():
+        for key, value in obj.items():
             if key.lower() == "background-image":
                 value = "url({})".format(value)
             styles.append("{}: {}".format(key, value))

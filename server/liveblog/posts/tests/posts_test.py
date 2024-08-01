@@ -1,51 +1,61 @@
+import datetime
 import flask
 
 import liveblog.blogs as blogs
+import liveblog.items as items
+import liveblog.polls as polls
 import liveblog.posts as posts
 import superdesk.users as users_app
+import liveblog.themes as themes
+import liveblog.client_modules as client_modules_app
+import liveblog.advertisements as advertisements
+
+from bson import ObjectId
+from unittest.mock import patch
+
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
-from liveblog.posts.posts import get_publisher, private_draft_filter
-from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
-import liveblog.client_modules as client_modules
-import liveblog.themes as themes
-import liveblog.advertisements as advertisements
-from unittest.mock import patch
 from superdesk.errors import SuperdeskApiError
+from liveblog.posts.posts import get_publisher, private_draft_filter
+from liveblog.posts.tasks import (
+    update_post_blog_data,
+    update_post_blog_embed,
+    update_scheduled_post_blog_data,
+)
+from liveblog.posts.utils import check_content_diff
+from liveblog.common import run_once
 
 
-class Foo:
-    def __init__(self):
-        self.setup_call = False
+class PostsModuleTestCase(TestCase):
+    @run_once
+    def setup_test_case(self):
+        test_config = {
+            "LIVEBLOG_DEBUG": True,
+            "EMBED_PROTOCOL": "http://",
+            "CORS_ENABLED": False,
+            "DEBUG": False,
+        }
+        self.app.config.update(test_config)
 
-    def setup_called(self):
-        self.setup_call = True
-        return self.setup_call
+        init_apps = [
+            blogs,
+            posts,
+            client_modules_app,
+            users_app,
+            themes,
+            advertisements,
+            polls,
+            items,
+        ]
+        for lb_app in init_apps:
+            lb_app.init_app(self.app)
 
+        self.client = self.app.test_client()
 
-foo = Foo()
-
-
-class ClientModuleTestCase(TestCase):
     def setUp(self):
-        if not foo.setup_call:
-            test_config = {
-                "LIVEBLOG_DEBUG": True,
-                "EMBED_PROTOCOL": "http://",
-                "CORS_ENABLED": False,
-                "DEBUG": False,
-            }
-            self.app.config.update(test_config)
-            foo.setup_called()
-            blogs.init_app(self.app)
-            posts.init_app(self.app)
-            client_modules.init_app(self.app)
-            users_app.init_app(self.app)
-            themes.init_app(self.app)
-            advertisements.init_app(self.app)
-            self.client = self.app.test_client()
-
+        self.setup_test_case()
         self.posts_service = get_resource_service("posts")
+        self.blog_posts_service = get_resource_service("blog_posts")
 
         self.user_list = [
             {
@@ -72,6 +82,7 @@ class ClientModuleTestCase(TestCase):
                 ]
             }
         }
+
         self.blogs_list = [
             {
                 "_id": "blog_one",
@@ -162,6 +173,66 @@ class ClientModuleTestCase(TestCase):
         ]
         # Create blogs
         self.blogs_ids = self.app.data.insert("client_blogs", self.blogs_list)
+
+        self.polls = [
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d59"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-09T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d60"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d60", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-10T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+        ]
+
+        self.polls_ids = self.app.data.insert("polls", self.polls)
+
         self.items = [
             {
                 "_created": "2018-04-03T05:42:43+00:00",
@@ -301,6 +372,24 @@ class ClientModuleTestCase(TestCase):
 
         self.items_ids = self.app.data.insert("items", self.items)
 
+        self.post_comments = [
+            {
+                "_id": ObjectId("65c69c310f565268cb598807"),
+                "post_id": "urn:newsml:localhost:2018-04-03T11:12:43.187311:ad5e39b1-2fb2-4676-bd2f-425dca184765",
+                "author_name": "John Doe",
+                "text": "Any random comment from myself",
+                "is_published": False,
+                "_updated": "2024-02-09T21:42:09.000Z",
+                "_created": "2024-02-09T21:42:09.000Z",
+                "item_type": "post_comment",
+                "_etag": "680f7656e1ea09eae89bee39d370f9594d9c6e18",
+            }
+        ]
+
+        self.post_comments_ids = self.app.data.insert(
+            "post_comments", self.post_comments
+        )
+
         self.blog_posts = [
             {
                 "_created": "2018-04-03T05:42:43+00:00",
@@ -335,16 +424,26 @@ class ClientModuleTestCase(TestCase):
                         "id": "main",
                         "refs": [
                             {
-                                "guid": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
                                 "item": self.items[0],
                                 "residRef": self.items_ids[0],
                                 "type": "text",
                             },
                             {
-                                "guid": "urn:newsml:localhost:2018-04-13T12:18:23.258732:2a4a8c45-aae6-4d7a-8193-04d7de5b133c",
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
                                 "type": "text",
+                            },
+                            {
+                                "item": self.post_comments[0],
+                                "residRef": self.post_comments_ids[0],
+                                "location": "post_comments",
+                                "type": "text",
+                            },
+                            {
+                                "item": self.polls[0],
+                                "residRef": self.polls_ids[0],
+                                "location": "polls",
+                                "type": "poll",
                             },
                         ],
                         "role": "grpRole:Main",
@@ -513,3 +612,156 @@ class ClientModuleTestCase(TestCase):
             },
             blog,
         )
+
+    @patch("liveblog.posts.tasks.get_resource_service")
+    def test_update_scheduled_post_blog_data_on_created(self, *mocks):
+        fake_get_service = mocks[0]
+
+        post = self.blog_posts[0]
+        post["content_updated_date"] = datetime.datetime(2024, 7, 30, 10, 0)
+
+        blog_id = self.blogs_list[0]["_id"]
+        blog = {
+            "_id": blog_id,
+            "last_created_post": {
+                "_id": "old_post_id",
+                "_updated": datetime.datetime(2024, 7, 29, 10, 0),
+            },
+        }
+
+        fake_get_service().find_one.return_value = blog
+
+        update_scheduled_post_blog_data(post, action="created")
+
+        fake_get_service().system_update.assert_called_with(
+            blog_id,
+            {
+                "last_created_post": {
+                    "_id": post["_id"],
+                    "_updated": post["content_updated_date"],
+                },
+            },
+            blog,
+        )
+
+    @patch("liveblog.posts.tasks.get_resource_service")
+    def test_update_scheduled_post_blog_data_on_updated(self, *mocks):
+        fake_get_service = mocks[0]
+
+        post = self.blog_posts[0]
+        post["content_updated_date"] = datetime.datetime(2024, 7, 30, 10, 0)
+
+        blog_id = self.blogs_list[0]["_id"]
+        blog = {
+            "_id": blog_id,
+            "last_updated_post": {
+                "_id": "old_post_id",
+                "_updated": datetime.datetime(2024, 7, 29, 10, 0),
+            },
+        }
+
+        fake_get_service().find_one.return_value = blog
+
+        update_scheduled_post_blog_data(post, action="updated")
+
+        fake_get_service().system_update.assert_called_with(
+            blog_id,
+            {
+                "last_updated_post": {
+                    "_id": post["_id"],
+                    "_updated": post["content_updated_date"],
+                },
+            },
+            blog,
+        )
+
+    def test_related_items_map_fetches_resources_correctly(self):
+        """
+        `related_items_map` should fetch from related locations and from
+        archive by default if location attribute is not present
+        """
+
+        with self.app.app_context():
+            related_items = self.blog_posts_service.related_items_map(self.blog_posts)
+
+            assert len(related_items.keys()) == 4
+
+            # default archieve item should be fetched
+            assert self.items[0]["_id"] in related_items
+
+            # item from `post_comment` should be also fetched
+            assert str(self.post_comments[0]["_id"]) in related_items
+
+    def test_check_content_diff_missing_groups(self):
+        updates = {}
+        original = self.blog_posts[0]
+        assert not check_content_diff(updates, original)
+
+    def test_check_content_diff_refs_length(self):
+        updates = {"groups": [{}, {"refs": []}]}
+        original = self.blog_posts[0]
+        assert check_content_diff(updates, original)
+
+    def test_check_content_diff_items(self):
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.items_ids[1],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.items[0],
+                            "residRef": self.items_ids[0],
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        assert check_content_diff(updates, original)
+        assert not check_content_diff(original, original)
+
+    def test_check_content_diff_polls(self):
+        updates = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "residRef": self.polls_ids[1],
+                            "location": "polls",
+                            "type": "poll",
+                        },
+                    ]
+                },
+            ]
+        }
+        original = {
+            "groups": [
+                {},
+                {
+                    "refs": [
+                        {
+                            "item": self.polls[0],
+                            "residRef": self.polls_ids[0],
+                            "location": "polls",
+                            "type": "text",
+                        },
+                    ]
+                },
+            ]
+        }
+        assert check_content_diff(updates, original)
+        assert not check_content_diff(original, original)

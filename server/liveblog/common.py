@@ -71,3 +71,16 @@ class BlogCacheTestCase(unittest.TestCase):
             self.assertEqual(blog_cache.get("blog", "key"), "value")
             blog_cache.invalidate("blog")
             self.assertEqual(blog_cache.get("blog", "key"), None)
+
+
+def run_once(func):
+    """
+    Decorator to ensure that the decorated method only runs once
+    """
+
+    def wrapper(*args, **kwargs):
+        if not hasattr(wrapper, "has_run"):
+            wrapper.has_run = True
+            return func(*args, **kwargs)
+
+    return wrapper

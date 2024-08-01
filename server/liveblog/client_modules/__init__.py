@@ -20,6 +20,8 @@ from liveblog.client_modules.client_modules import (
     ClientOutputsService,
     ClientOutputPostsResource,
     ClientOutputPostsService,
+    ClientPollsService,
+    ClientPollsResource,
 )
 
 
@@ -65,3 +67,7 @@ def init_app(app):
     endpoint_name = "client_items"
     service = ClientItemsService(endpoint_name, backend=superdesk.get_backend())
     ClientItemsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = "client_polls"
+    service = ClientPollsService(endpoint_name, backend=superdesk.get_backend())
+    ClientPollsResource(endpoint_name, app=app, service=service)

@@ -68,35 +68,25 @@ def calculate_post_type(post, items=None):
 
         if first_item_type.startswith("advertisement"):
             post_items_type = "advertisement"
-
         elif first_item_type == "embed":
-            post_items_type = "embed"
-            if "provider_name" in items[0]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[0]["meta"]["provider_name"].lower()
-                )
+            post_items_type = get_embed_type(items[0])
+        elif first_item_type == "poll":
+            post_items_type = "poll"
 
     elif items_length == 2 and not all(
         [item["item_type"] == "embed" for item in items]
     ):
-        if (
-            items[1].get("item_type", "").lower() == "embed"
-            and items[0].get("item_type", "").lower() == "text"
+        item0_type = items[0].get("item_type", "").lower()
+        item1_type = items[1].get("item_type", "").lower()
+
+        if item1_type == "embed" and item0_type == "text":
+            post_items_type = get_embed_type(items[1])
+        elif item0_type == "embed" and item1_type == "text":
+            post_items_type = get_embed_type(items[0])
+        elif (item0_type == "poll" and item1_type == "text") or (
+            item1_type == "poll" and item0_type == "text"
         ):
-            post_items_type = "embed"
-            if "provider_name" in items[1]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[1]["meta"]["provider_name"].lower()
-                )
-        elif (
-            items[0].get("item_type", "").lower() == "embed"
-            and items[1].get("item_type", "").lower() == "text"
-        ):
-            post_items_type = "embed"
-            if "provider_name" in items[0]["meta"]:
-                post_items_type = "{}-{}".format(
-                    post_items_type, items[0]["meta"]["provider_name"].lower()
-                )
+            post_items_type = "poll"
 
     elif items_length > 1:
         for k, g in groupby(items, key=lambda i: i["item_type"]):
@@ -107,6 +97,15 @@ def calculate_post_type(post, items=None):
     post["post_items_type"] = post_items_type
 
     return post
+
+
+def get_embed_type(item):
+    post_items_type = "embed"
+    if "provider_name" in item["meta"]:
+        post_items_type = "{}-{}".format(
+            post_items_type, item["meta"]["provider_name"].lower()
+        )
+    return post_items_type
 
 
 def attach_syndication(post):
@@ -120,10 +119,10 @@ def attach_syndication(post):
         )
 
 
-def get_main_item(post):
+def get_first_item(post):
     """
     It gets the first related item of a post. If the post is syndicated then
-    it will return the syndicated item instead as the main item
+    it will return the syndicated item instead as the first one
     """
     is_syndicated = post.get("syndication_in")
     main_item = {}
@@ -151,3 +150,42 @@ def get_main_item(post):
         )
 
     return main_item
+
+
+def check_content_diff(updates, original):
+    """
+    Checks if there are any content differences between the original and updated
+    objects
+    """
+    content_diff = False
+
+    if not updates.get("groups", False):
+        return content_diff
+
+    original_refs = original["groups"][1]["refs"]
+    updated_refs = updates["groups"][1]["refs"]
+
+    if len(original_refs) != len(updated_refs):
+        return True
+
+    for index, item_ref in enumerate(updated_refs):
+        service_name = item_ref.get("location", "archive")
+        service = get_resource_service(service_name)
+        item = service.find_one(req=None, _id=item_ref["residRef"])
+        item_type = item.get("item_type")
+
+        if item_type == "poll":
+            original_poll_body = original_refs[index]["item"].get("poll_body", {})
+            item_poll_body = item.get("poll_body", {})
+
+            original_active_until = original_poll_body.get("active_until")
+            item_active_until = item_poll_body.get("active_until")
+
+            if original_active_until and item_active_until:
+                if original_active_until != item_active_until:
+                    return True
+        else:
+            if item["text"] != original_refs[index]["item"]["text"]:
+                return True
+
+    return content_diff

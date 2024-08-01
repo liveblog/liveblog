@@ -14,6 +14,14 @@
         ng-class-even="'lb-post__item--even'"
     >
     </div>
+    
+    <div ng-switch-when="poll"
+        lb-item-poll
+        item="item"
+        class="lb-post__item" 
+        ng-class-even="'lb-post__item--even'"
+    >
+    </div>
 
     <div ng-switch-default 
         lb-bind-html 

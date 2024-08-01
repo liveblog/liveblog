@@ -1,8 +1,9 @@
 import React from 'react';
-import { FacebookEmbed, TwitterEmbed } from 'react-social-media-embed';
+import { TwitterEmbed } from 'react-social-media-embed';
 import { ItemEmbedGeneric } from './itemEmbedGeneric';
 import { IItemMeta, ItemEmbedInfo } from './itemEmbedInfo';
 import { ItemEmbedInstagram } from './itemEmbedInstagram';
+import { ItemEmbedFacebook } from './itemEmbedFacebook';
 
 interface IProps extends IItemMeta {
     text: string;
@@ -24,12 +25,9 @@ export const ItemEmbedRender: React.FunctionComponent<IProps> = (props) => {
     case 'Facebook':
         return (
             <>
-                <FacebookEmbed
-                    url={props.url}
-                    linkText={props.title}
-                    // @ts-ignore:next-line
-                    style={{ maxWidth: 550 }}
-                    width="100%"
+                <ItemEmbedFacebook
+                    {...props}
+                    style={{ maxWidth: 550, width: '100%' }}
                 />
                 <ItemEmbedInfo {...props} original_url={props.url} />
             </>

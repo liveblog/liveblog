@@ -1,0 +1,15 @@
+{
+  "fileServerFolder": "./spec/cypress",
+  "fixturesFolder": "./spec/cypress/fixtures",
+  "integrationFolder": "./spec/cypress/integration",
+  "pluginsFile": "./spec/cypress/plugins/index.js",
+  "supportFile": "./spec/cypress/support/index.js",
+  "video": false,
+  "screenshotOnRunFailure": false,
+  "baseUrl": "http://localhost:9000",
+  "env": {
+    "baseBackendUrl": "http://localhost:5000/api/",
+    "username": "admin",
+    "password": "admin"
+  }
+}
