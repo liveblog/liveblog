@@ -161,6 +161,10 @@ CELERY_BEAT_SCHEDULE = CELERYBEAT_SCHEDULE
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_INCLUDE_PATHS = ["superdesk"]
 
+# Cloudflare
+CLOUDFLARE_URL = env("CLOUDFLARE_URL", "")
+CLOUDFLARE_AUTH = env("CLOUDFLARE_AUTH", "")
+
 INSTALLED_APPS = [
     "apps.auth",
     "apps.preferences",
@@ -197,6 +201,7 @@ INSTALLED_APPS = [
     "liveblog.advertisements",
     "liveblog.video_upload",
     "liveblog.instance_settings",
+    "liveblog.bandwidth",
 ]
 
 RESOURCE_METHODS = ["GET", "POST"]
