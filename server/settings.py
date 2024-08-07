@@ -152,6 +152,10 @@ CELERYBEAT_SCHEDULE = {
         "task": "liveblog.blogs.tasks.remove_deleted_blogs",
         "schedule": crontab(hour="*/1"),  # run every hour
     },
+    "bandwidth:update": {
+        "task": "liveblog.bandwidth.tasks.fetch_bandwidth_usage",
+        "schedule": crontab(minute=0, hour=0),
+    },
 }
 
 # trying to fix stuff
@@ -164,6 +168,7 @@ SENTRY_INCLUDE_PATHS = ["superdesk"]
 # Cloudflare
 CLOUDFLARE_URL = env("CLOUDFLARE_URL", "")
 CLOUDFLARE_AUTH = env("CLOUDFLARE_AUTH", "")
+CLOUDFLARE_ZONE_TAG = env("CLOUDFLARE_ZONE_TAG", "")
 
 INSTALLED_APPS = [
     "apps.auth",
