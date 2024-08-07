@@ -377,6 +377,7 @@ MARKETPLACE_APP_URL = env(
 )
 
 # Settings related to subscription levels
+SUBSCRIPTION_LEVEL_GO = "liveblog-go"
 SUBSCRIPTION_LEVEL_SOLO = "solo"
 SUBSCRIPTION_LEVEL_TEAM = "team"
 SUBSCRIPTION_LEVEL_NETWORK = "network"

@@ -5,7 +5,13 @@ from datetime import timedelta
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.utc import utcnow
-from settings import CLOUDFLARE_URL, CLOUDFLARE_AUTH, CLOUDFLARE_ZONE_TAG
+from settings import (
+    CLOUDFLARE_URL,
+    CLOUDFLARE_AUTH,
+    CLOUDFLARE_ZONE_TAG,
+    SUBSCRIPTION_LEVEL,
+    SUBSCRIPTION_LEVEL_GO,
+)
 
 logger = logging.getLogger("liveblog")
 
@@ -15,8 +21,10 @@ def fetch_bandwidth_usage():
     """
     Fetch bandwidth usage from Cloudflare API
     """
-
     logger.info("Fetching bandwidth usage from Cloudflare API")
+
+    if SUBSCRIPTION_LEVEL != SUBSCRIPTION_LEVEL_GO:
+        return
 
     if not CLOUDFLARE_URL or not CLOUDFLARE_AUTH:
         logger.error("Missing needed credentials for Cloudflare API")
@@ -54,7 +62,7 @@ def fetch_bandwidth_usage():
             "filter": {
                 "datetime_geq": start_date,
                 "datetime_lt": end_date,
-                "clientRequestHTTPHost_like": "%pnp%",
+                "clientRequestHTTPHost_like": "%test%",
                 "requestSource": "eyeball",
             },
         },
