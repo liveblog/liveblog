@@ -56,7 +56,7 @@ class BandwidthService(BaseService):
         try:
             self.patch(
                 ObjectId(original.get("_id")),
-                updates,
+                dict(bandwidthUsage=updates["bandwidthUsage"]),
             )
         except Exception as err:
             logger.error("Unable to update bandwidth usage. {}".format(err))
