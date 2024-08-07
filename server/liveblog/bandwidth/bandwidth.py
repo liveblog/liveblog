@@ -2,12 +2,19 @@ import logging
 
 from bson import ObjectId
 from eve.utils import ParsedRequest
+from flask_cors import CORS
+from flask import Blueprint
+from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from liveblog.utils.api import api_response
 
 
 logger = logging.getLogger(__name__)
 bandwidth_key = "bandwidth"
+bandwidth_blueprint = Blueprint(bandwidth_key, __name__)
+CORS(bandwidth_blueprint)
+
 BANDWIDTH_SCHEMA = {
     "bandwidthUsage": {
         "type": "integer",
@@ -32,12 +39,6 @@ class BandwidthService(BaseService):
     """
     Provides service methods for handling the retrieval and update of bandwidth usage data.
     """
-
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
 
     def get_current_bandwidth(self):
         """
@@ -70,3 +71,28 @@ class BandwidthService(BaseService):
             self.update_bandwidth_usage(current_bandwidth, updates)
         else:
             logger.info("No existing bandwidth record found to update.")
+
+
+@bandwidth_blueprint.route("/api/bandwidth/current", methods=["GET"])
+def get_instance_bandwidth():
+    """
+    Returns the bandwidth for the instance
+    """
+    current_bandwidth = get_resource_service(bandwidth_key).get_current_bandwidth()
+
+    response = {}
+    if current_bandwidth:
+        bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
+        bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
+
+        response["bandwidthUsageBytes"] = bandwidth_usage_bytes
+        response["bandwidthUsageGB"] = bandwidth_usage_gb
+
+        if bandwidth_usage_gb < 0.375:
+            response["message"] = "Within limit"
+        else:
+            response["message"] = "Close to limit"
+    else:
+        response["message"] = "No data found"
+
+    return api_response(response, 200)

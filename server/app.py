@@ -31,6 +31,7 @@ from liveblog.client_modules.client_modules import blog_posts_blueprint
 from liveblog.advertisements.advertisements import advertisements_blueprint
 from liveblog.video_upload.video_upload import video_upload_blueprint
 from liveblog.instance_settings.instance_settings import instance_settings_blueprint
+from liveblog.bandwidth.bandwidth import bandwidth_blueprint
 
 from superdesk.factory import get_app as superdesk_app
 from superdesk.default_settings import celery_queue as instance_prefix
@@ -120,7 +121,11 @@ def get_app(config=None):
     # Video upload endpoint
     app.register_blueprint(video_upload_blueprint)
 
+    # Instance setting endpoint
     app.register_blueprint(instance_settings_blueprint)
+
+    # Bandwidth endpoint
+    app.register_blueprint(bandwidth_blueprint)
 
     return app
 
