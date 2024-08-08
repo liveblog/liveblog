@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 import {ACTIVE_STATE, ARCHIVED_STATE, DELETED_STATE} from './constants';
 import _ from 'lodash';
 
