@@ -84,14 +84,12 @@ def get_instance_bandwidth():
     if current_bandwidth:
         bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
         bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
+        upper_limit_gb = 0.5
+        percentage_used = (bandwidth_usage_gb / upper_limit_gb) * 100
 
         response["bandwidthUsageBytes"] = bandwidth_usage_bytes
         response["bandwidthUsageGB"] = bandwidth_usage_gb
-
-        if bandwidth_usage_gb < 0.375:
-            response["message"] = "Within limit"
-        else:
-            response["message"] = "Close to limit"
+        response["percentageUsed"] = percentage_used
     else:
         response["message"] = "No data found"
 
