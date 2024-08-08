@@ -26,7 +26,7 @@ def fetch_bandwidth_usage():
     if SUBSCRIPTION_LEVEL != SUBSCRIPTION_LEVEL_GO:
         return
 
-    if not CLOUDFLARE_URL or not CLOUDFLARE_AUTH:
+    if not CLOUDFLARE_URL or not CLOUDFLARE_AUTH or not CLOUDFLARE_ZONE_TAG:
         logger.error("Missing needed credentials for Cloudflare API")
         return
 
@@ -62,7 +62,7 @@ def fetch_bandwidth_usage():
             "filter": {
                 "datetime_geq": start_date,
                 "datetime_lt": end_date,
-                "clientRequestHTTPHost_like": "%test%",
+                "clientRequestHTTPHost_like": "%test%",  # TODO: Confirm if SERVER_NAME is the right one to use here
                 "requestSource": "eyeball",
             },
         },

@@ -1,7 +1,6 @@
 import logging
 
 from bson import ObjectId
-from eve.utils import ParsedRequest
 from flask_cors import CORS
 from flask import Blueprint
 from superdesk import get_resource_service
@@ -84,7 +83,7 @@ def get_instance_bandwidth():
     if current_bandwidth:
         bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
         bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
-        upper_limit_gb = 0.5
+        upper_limit_gb = 0.5  # TODO: This should be configurable, or set in feature limits of subscription
         percentage_used = (bandwidth_usage_gb / upper_limit_gb) * 100
 
         response["bandwidthUsageBytes"] = bandwidth_usage_bytes
