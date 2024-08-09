@@ -41,6 +41,7 @@ __entities__ = OrderedDict(
         # which can cause issues with MongoDB's index size limits. Using wildcards for indexes can be
         # implemented later with an update of the mongo version
         ("instance_settings", ("instance_settings.json", [], True)),
+        ("bandwidth", ("bandwidth.json", [], True)),
         ("roles", ("roles.json", ["name"], True)),
         ("users", ("users.json", [], False)),
         ("stages", ("stages.json", ["desk"], False)),
