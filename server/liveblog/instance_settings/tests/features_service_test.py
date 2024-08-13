@@ -141,3 +141,35 @@ def test_is_limit_reached_no_limit_set(service):
     service._get_settings_for = MagicMock(return_value={})
 
     assert service.is_limit_reached("feature_x", 5) is True
+
+
+def test_get_feature_limit_with_limit_set(service):
+    "Should return limit if set."
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={"feature_x": 10})
+
+    assert service.get_feature_limit("feature_x") == 10
+
+
+def test_get_feature_limit_with_no_limit_set(service):
+    "Should return 0 if limit is not set."
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={})
+
+    assert service.get_feature_limit("feature_x") == 0
+
+
+def test_is_bandwidth_limit_enabled_with_limit_set(service):
+    "Should return True if bandwidth limit is set."
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={"bandwidth_limit": 50})
+
+    assert service.is_bandwidth_limit_enabled() is True
+
+
+def test_is_bandwidth_limit_enabled_with_no_limit_set(service):
+    "Should return False if bandwidth limit is 0 or not set."
+    service.is_network_subscription = MagicMock(return_value=False)
+    service._get_settings_for = MagicMock(return_value={"bandwidth_limit": 0})
+
+    assert service.is_bandwidth_limit_enabled() is False

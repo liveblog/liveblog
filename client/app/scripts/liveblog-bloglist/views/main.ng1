@@ -63,6 +63,11 @@
             </button>
         </div>
 
+        <!-- bandwidth threshhold reached  -->
+        <div ng-if="bandwidthUsageAlert" class="empty-state">
+            <div translate class="alert alert-warning">Warning: You have used {{ bandwidthPercentage }}% of your allocated bandwidth. Please contact admin.</div>
+        </div>
+
         <div ng-if="blogs._meta.total >= 0 && activeState.code === 'deleted'" class="empty-state">
             <div translate class="alert alert-warning">Blogs show the time remaininig before deletion. After that time, they will be permanently deleted.</div>
         </div>

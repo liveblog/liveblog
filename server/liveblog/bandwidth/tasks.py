@@ -2,6 +2,7 @@ import logging
 import requests
 from datetime import timedelta
 
+from flask import current_app as app
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.utc import utcnow
@@ -9,8 +10,6 @@ from settings import (
     CLOUDFLARE_URL,
     CLOUDFLARE_AUTH,
     CLOUDFLARE_ZONE_TAG,
-    SUBSCRIPTION_LEVEL,
-    SUBSCRIPTION_LEVEL_GO,
 )
 
 logger = logging.getLogger("liveblog")
@@ -23,7 +22,7 @@ def fetch_bandwidth_usage():
     """
     logger.info("Fetching bandwidth usage from Cloudflare API")
 
-    if SUBSCRIPTION_LEVEL != SUBSCRIPTION_LEVEL_GO:
+    if not app.features.is_bandwidth_limit_enabled():
         return
 
     if not CLOUDFLARE_URL or not CLOUDFLARE_AUTH or not CLOUDFLARE_ZONE_TAG:
@@ -37,11 +36,11 @@ def fetch_bandwidth_usage():
         "Content-Type": "application/json",
     }
 
-    # Calculate the date range for the previous day
-    today = utcnow()
-    yesterday = today - timedelta(days=1)
-    start_date = yesterday.strftime("%Y-%m-%dT00:00:00Z")
-    end_date = today.strftime("%Y-%m-%dT00:00:00Z")
+    # Calculate the date range for the last 6 hours
+    end_date = utcnow()
+    start_date = end_date - timedelta(hours=6)
+    start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    end_date_str = end_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     data = {
         "query": """
@@ -60,8 +59,8 @@ def fetch_bandwidth_usage():
         "variables": {
             "zoneTag": CLOUDFLARE_ZONE_TAG,
             "filter": {
-                "datetime_geq": start_date,
-                "datetime_lt": end_date,
+                "datetime_geq": start_date_str,
+                "datetime_lt": end_date_str,
                 "clientRequestHTTPHost_like": "%test%",  # TODO: Confirm if SERVER_NAME is the right one to use here
                 "requestSource": "eyeball",
             },

@@ -2,7 +2,7 @@ import logging
 
 from bson import ObjectId
 from flask_cors import CORS
-from flask import Blueprint
+from flask import Blueprint, current_app as app
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -77,19 +77,23 @@ def get_instance_bandwidth():
     """
     Returns the bandwidth for the instance
     """
-    current_bandwidth = get_resource_service(bandwidth_key).get_current_bandwidth()
-
     response = {}
-    if current_bandwidth:
-        bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
-        bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
-        upper_limit_gb = 0.5  # TODO: This should be configurable, or set in feature limits of subscription
-        percentage_used = (bandwidth_usage_gb / upper_limit_gb) * 100
+    if app.features.is_bandwidth_limit_enabled():
+        current_bandwidth = get_resource_service(bandwidth_key).get_current_bandwidth()
 
-        response["bandwidthUsageBytes"] = bandwidth_usage_bytes
-        response["bandwidthUsageGB"] = bandwidth_usage_gb
-        response["percentageUsed"] = percentage_used
+        if current_bandwidth:
+            upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
+            bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
+            bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
+            percentage_used = (bandwidth_usage_gb / upper_limit_gb) * 100
+
+            response["bandwidthUsageBytes"] = bandwidth_usage_bytes
+            response["bandwidthUsageGB"] = bandwidth_usage_gb
+            response["percentageUsed"] = percentage_used
+            response["bandwidthLimit"] = True
+        else:
+            response["bandwidthLimit"] = False
     else:
-        response["message"] = "No data found"
+        response["bandwidthLimit"] = False
 
     return api_response(response, 200)
