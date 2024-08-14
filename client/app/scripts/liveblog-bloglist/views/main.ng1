@@ -1,3 +1,8 @@
+<!-- bandwidth threshhold reached  -->
+<p ng-if="bandwidthUsageAlert" class="bandwidth-alert">
+    Warning: You have used {{ bandwidthPercentage }}% of your allocated bandwidth. Please contact admin.
+</p>
+
 <div class="subnav">
     <div class="subnav__sliding-toolbar" ng-show="bulkActions">
         <div class="sliding-toolbar__inner">
@@ -34,7 +39,7 @@
 </div>
 
 <section class="main-section bloglist">
-    <header>
+    <header ng-class="{'header-with-alert': bandwidthUsageAlert}">
         <div sd-searchbar style="float: left"></div>
         <div class="view-select pull-right">
             <button title="{{ 'switch to grid view' | translate}}" ng-show="blogsView === 'list'" ng-click="setBlogsView('grid');">
@@ -61,11 +66,6 @@
                 <i class="svg-icon-add inverse"></i>
                 <span class="title" translate>Create a Blog</span>
             </button>
-        </div>
-
-        <!-- bandwidth threshhold reached  -->
-        <div ng-if="bandwidthUsageAlert" class="empty-state">
-            <div translate class="alert alert-warning">Warning: You have used {{ bandwidthPercentage }}% of your allocated bandwidth. Please contact admin.</div>
         </div>
 
         <div ng-if="blogs._meta.total >= 0 && activeState.code === 'deleted'" class="empty-state">
