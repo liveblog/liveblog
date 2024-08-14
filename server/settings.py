@@ -154,7 +154,7 @@ CELERYBEAT_SCHEDULE = {
     },
     "bandwidth:update": {
         "task": "liveblog.bandwidth.tasks.fetch_bandwidth_usage",
-        "schedule": crontab(minute=0, hour="*/6"),  # every 6 hours
+        "schedule": crontab(minute=0, hour="*/1"),  # every hours
     },
 }
 
