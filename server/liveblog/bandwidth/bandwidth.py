@@ -2,8 +2,9 @@ import logging
 
 from bson import ObjectId
 from flask_cors import CORS
-from flask import Blueprint, current_app as app
+from flask import Blueprint, render_template, current_app as app
 from superdesk import get_resource_service
+from superdesk.emails import send_email
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from liveblog.utils.api import api_response
@@ -68,8 +69,56 @@ class BandwidthService(BaseService):
             updated_bandwidth_usage = existing_bandwidth_usage + bandwidth_usage
             updates = {"bandwidthUsage": updated_bandwidth_usage}
             self.update_bandwidth_usage(current_bandwidth, updates)
+            self.send_email_if_bandwidth_exceeded(updated_bandwidth_usage)
         else:
             logger.info("No existing bandwidth record found to update.")
+
+    def send_email_if_bandwidth_exceeded(self, current_bandwidth):
+        """
+        Send an email to the instance admin and support if the bandwidth usage exceeds the threshold
+        """
+        upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
+        bandwidth_usage_gb = current_bandwidth / (1024**3)
+        percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
+
+        if percentage_used <= 75:
+            return
+
+        users = get_resource_service("users").get(
+            req=None, lookup={"user_type": "administrator"}
+        )
+        recipients_email = [user["email"] for user in users] if users else []
+        server_name = app.config["SERVER_NAME"]
+        admins = app.config["ADMINS"]
+        app_name = app.config["APPLICATION_NAME"]
+
+        if recipients_email:
+            subject = render_template(
+                "bandwidth_alert_subject.txt",
+                app_name=app_name,
+                server_name=server_name,
+            )
+            text_body = render_template(
+                "bandwidth_alert.txt",
+                app_name=app_name,
+                server_name=server_name,
+                bandwidth_usage=percentage_used,
+                allocated_bandwidth=upper_limit_gb,
+            )
+            html_body = render_template(
+                "bandwidth_alert.html",
+                app_name=app_name,
+                server_name=server_name,
+                bandwidth_usage=percentage_used,
+                allocated_bandwidth=upper_limit_gb,
+            )
+            send_email.delay(
+                subject=subject,
+                sender=admins[0],
+                recipients=recipients_email,
+                text_body=text_body,
+                html_body=html_body,
+            )
 
 
 @bandwidth_blueprint.route("/api/bandwidth/current", methods=["GET"])
@@ -85,7 +134,7 @@ def get_instance_bandwidth():
             upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
             bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
             bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
-            percentage_used = (bandwidth_usage_gb / upper_limit_gb) * 100
+            percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
             response["bandwidthUsageBytes"] = bandwidth_usage_bytes
             response["bandwidthUsageGB"] = bandwidth_usage_gb

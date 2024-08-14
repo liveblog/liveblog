@@ -493,7 +493,7 @@ export default function BlogListController(
     // Check for bandwidth
     api.get('/bandwidth/current').then((bandwidthUsage) => {
         if (bandwidthUsage.bandwidthLimit) {
-            const percentageUsed = parseFloat(bandwidthUsage.percentageUsed.toFixed(1));
+            const percentageUsed = bandwidthUsage.percentageUsed;
 
             if (percentageUsed >= 75) {
                 $scope.bandwidthUsageAlert = true;
