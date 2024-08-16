@@ -6,11 +6,7 @@ from flask import current_app as app
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.utc import utcnow
-from settings import (
-    CLOUDFLARE_URL,
-    CLOUDFLARE_AUTH,
-    CLOUDFLARE_ZONE_TAG,
-)
+from settings import CLOUDFLARE_URL, CLOUDFLARE_AUTH, CLOUDFLARE_ZONE_TAG, SERVER_NAME
 
 logger = logging.getLogger("liveblog")
 
@@ -27,6 +23,12 @@ def fetch_bandwidth_usage():
 
     if not CLOUDFLARE_URL or not CLOUDFLARE_AUTH or not CLOUDFLARE_ZONE_TAG:
         logger.error("Missing needed credentials for Cloudflare API")
+        return
+
+    subdomain = SERVER_NAME.split(".")[0] if SERVER_NAME else None
+
+    if not subdomain:
+        logger.error("Missing subdomain for Cloudflare API request")
         return
 
     url = f"{CLOUDFLARE_URL}"
@@ -61,7 +63,7 @@ def fetch_bandwidth_usage():
             "filter": {
                 "datetime_geq": start_date_str,
                 "datetime_lt": end_date_str,
-                "clientRequestHTTPHost_like": "%test%",  # TODO: Confirm if SERVER_NAME is the right one to use here
+                "clientRequestHTTPHost_like": f"%{subdomain}%",
                 "requestSource": "eyeball",
             },
         },
@@ -69,19 +71,33 @@ def fetch_bandwidth_usage():
 
     response = requests.post(url, headers=headers, json=data)
 
-    if response.status_code == 200:
-        json_response = response.json()
-        if "errors" in json_response and json_response["errors"]:
-            logger.error("Errors from Cloudflare API: %s", json_response["errors"])
-            return
-
-        bandwidth_used = json_response["data"]["viewer"]["zones"][0][
-            "httpRequestsAdaptiveGroups"
-        ][0]["sum"]["edgeResponseBytes"]
-
-        logger.info("Fetching bandwidth usage from Cloudflare API successful.")
-
-        bandwidth_service = get_resource_service("bandwidth")
-        bandwidth_service.compute_new_bandwidth_usage(bandwidth_used)
-    else:
+    if response.status_code != 200:
         logger.error("Failed to retrieve data from Cloudflare API: %s", response.text)
+        return
+
+    json_response = response.json()
+
+    if "errors" in json_response and json_response["errors"]:
+        logger.error("Errors from Cloudflare API: %s", json_response["errors"])
+        return
+
+    zones = json_response["data"]["viewer"].get("zones")
+    if not zones or len(zones) == 0:
+        logger.error("No zones data available in the response.")
+        return
+
+    http_requests_groups = zones[0].get("httpRequestsAdaptiveGroups")
+    if not http_requests_groups or len(http_requests_groups) == 0:
+        logger.error("No httpRequestsAdaptiveGroups data available in the response.")
+        return
+
+    sum_data = http_requests_groups[0].get("sum")
+    if not sum_data or "edgeResponseBytes" not in sum_data:
+        logger.info("No edgeResponseBytes data available in the response.")
+        return
+
+    bandwidth_used = sum_data["edgeResponseBytes"]
+    logger.info("Fetching bandwidth usage from Cloudflare API successful.")
+
+    bandwidth_service = get_resource_service("bandwidth")
+    bandwidth_service.compute_new_bandwidth_usage(bandwidth_used)
