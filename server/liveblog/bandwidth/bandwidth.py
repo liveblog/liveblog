@@ -8,7 +8,7 @@ from superdesk.emails import send_email
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from liveblog.utils.api import api_response
-
+from settings import LIVEBLOG_ZENDESK_EMAIL
 
 logger = logging.getLogger(__name__)
 bandwidth_key = "bandwidth"
@@ -84,10 +84,13 @@ class BandwidthService(BaseService):
         if percentage_used <= 75:
             return
 
+        recipients_email = [LIVEBLOG_ZENDESK_EMAIL]
         users = get_resource_service("users").get(
             req=None, lookup={"user_type": "administrator"}
         )
-        recipients_email = [user["email"] for user in users] if users else []
+        if users:
+            recipients_email.extend([user["email"] for user in users])
+
         server_name = app.config["SERVER_NAME"]
         admins = app.config["ADMINS"]
         app_name = app.config["APPLICATION_NAME"]

@@ -170,6 +170,10 @@ CLOUDFLARE_URL = env("CLOUDFLARE_URL", "")
 CLOUDFLARE_AUTH = env("CLOUDFLARE_AUTH", "")
 CLOUDFLARE_ZONE_TAG = env("CLOUDFLARE_ZONE_TAG", "")
 
+LIVEBLOG_ZENDESK_EMAIL = env(
+    "LIVEBLOG_ZENDESK_EMAIL", "liveblogpro@sourcefabricberlin.zendesk.com"
+)
+
 INSTALLED_APPS = [
     "apps.auth",
     "apps.preferences",
