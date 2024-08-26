@@ -49,6 +49,13 @@ function hasVoted(selectedPoll) {
 
 /**
  * Places a vote for a poll and updates the UI with the new total votes.
+ * 
+ * This function first checks if the user has already voted on the poll to 
+ * prevent duplicate voting.
+ * 
+ * A retry mechanism is implemented to handle potential ETag mismatches 
+ * This can occur if another client updates the poll between the time the 
+ * client fetches the poll and the time it tries to send the update.
  */
 function placeVote(event) {
   const { selectedOption, selectedPoll } = event.detail;
@@ -60,6 +67,10 @@ function placeVote(event) {
     return;
   }
 
+  /**
+   * Function to fetch the poll data, and send PATCH request to update poll
+   * with selected option.
+   */
   function updateVote() {
     return helpers.get(pollEndpoint)
       .then((poll) => {
@@ -77,6 +88,10 @@ function placeVote(event) {
       });
   }
 
+  /**
+   * Attempts to update the poll with the user's vote, with a retry mechanism
+   * to handle potential ETag mismatches (HTTP 412 error).
+   */
   function tryVote(retries = 3) {
     updateVote()
       .then((updatedPoll) => {
