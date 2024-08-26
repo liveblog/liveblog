@@ -60,24 +60,40 @@ function placeVote(event) {
     return;
   }
 
-  helpers.get(pollEndpoint)
-    .then((poll) => {
-      const etag = poll._etag;
-      let data = { "poll_body": { "answers" : poll.poll_body.answers }};
-      
-      for (let answer of data.poll_body.answers) {
-        if (answer.option === selectedOption) {
-          answer.votes += 1;
-          break; 
+  function updateVote() {
+    return helpers.get(pollEndpoint)
+      .then((poll) => {
+        const etag = poll._etag;
+        let data = { "poll_body": { "answers" : poll.poll_body.answers }};
+        
+        for (let answer of data.poll_body.answers) {
+          if (answer.option === selectedOption) {
+            answer.votes += 1;
+            break; 
+          }
         }
-      }
-      
-      helpers.patch(pollEndpoint, data, etag)
-        .then((updatedPoll) => {
-          updatePollUI(selectedPoll);
-          persistVote(selectedPoll, selectedOption);
+        
+        return helpers.patch(pollEndpoint, data, etag);
       });
-    });
+  }
+
+  function tryVote(retries = 3) {
+    updateVote()
+      .then((updatedPoll) => {
+        updatePollUI(selectedPoll);
+        persistVote(selectedPoll, selectedOption);
+      })
+      .catch((error) => {
+        if (error.code === 412 && retries > 0) {
+          console.log("ETag mismatch, retrying...", retries);
+          tryVote(retries - 1);
+        } else {
+          console.log("Error occurred:", error);
+        }
+      });
+  }
+
+  tryVote();
 }
 
 /**
