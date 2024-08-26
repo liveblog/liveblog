@@ -32,11 +32,33 @@ function updatePollUI(selectedPoll) {
 }
 
 /**
+ * Checks if poll is already voted on by the user in another tab
+ * Returns true if voted, false otherwise
+ */
+function hasVoted(selectedPoll) {
+  const pollsData = Storage.read(POLLS_KEY) || {};
+  const blogPolls = pollsData[blogId];
+  
+  if(blogPolls && blogPolls[selectedPoll]) {
+    updatePollUI(selectedPoll);
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Places a vote for a poll and updates the UI with the new total votes.
  */
 function placeVote(event) {
   const { selectedOption, selectedPoll } = event.detail;
   const pollEndpoint = `${apiHost}api/client_polls/${selectedPoll}`;
+  
+  // Check if voting happened on another tab
+  if (hasVoted(selectedPoll)) {
+    alert("You have already voted on this poll.")
+    return;
+  }
 
   helpers.get(pollEndpoint)
     .then((poll) => {
