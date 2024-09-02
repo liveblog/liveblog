@@ -1,6 +1,6 @@
 import requests
 from unittest.mock import Mock
-from ..tasks import get_bandwidth_used
+from liveblog.bandwidth.tasks import get_bandwidth_used
 
 
 def test_get_bandwidth_used_successful_response():
