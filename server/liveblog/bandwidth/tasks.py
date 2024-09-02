@@ -11,6 +11,40 @@ from settings import CLOUDFLARE_URL, CLOUDFLARE_AUTH, CLOUDFLARE_ZONE_TAG, SERVE
 logger = logging.getLogger("liveblog")
 
 
+def get_bandwidth_used(response):
+    """
+    Extract bandwidth usage from the Cloudflare API response
+    """
+    if response.status_code != 200:
+        logger.error("Failed to retrieve data from Cloudflare API: %s", response.text)
+        return None
+
+    json_response = response.json()
+
+    if "errors" in json_response and json_response["errors"]:
+        logger.error("Errors from Cloudflare API: %s", json_response["errors"])
+        return None
+
+    zones = json_response["data"]["viewer"].get("zones")
+    if not zones or len(zones) == 0:
+        logger.error("No zones data available in the response.")
+        return None
+
+    http_requests_groups = zones[0].get("httpRequestsAdaptiveGroups")
+    if not http_requests_groups or len(http_requests_groups) == 0:
+        logger.error("No httpRequestsAdaptiveGroups data available in the response.")
+        return None
+
+    sum_data = http_requests_groups[0].get("sum")
+    if not sum_data or "edgeResponseBytes" not in sum_data:
+        logger.info("No edgeResponseBytes data available in the response.")
+        return None
+
+    bandwidth_used = sum_data["edgeResponseBytes"]
+    logger.info("Bandwidth usage data extraction successful.")
+    return bandwidth_used
+
+
 @celery.task
 def fetch_bandwidth_usage():
     """
@@ -71,33 +105,9 @@ def fetch_bandwidth_usage():
 
     response = requests.post(url, headers=headers, json=data)
 
-    if response.status_code != 200:
-        logger.error("Failed to retrieve data from Cloudflare API: %s", response.text)
+    bandwidth_used = get_bandwidth_used(response)
+    if bandwidth_used is None:
         return
-
-    json_response = response.json()
-
-    if "errors" in json_response and json_response["errors"]:
-        logger.error("Errors from Cloudflare API: %s", json_response["errors"])
-        return
-
-    zones = json_response["data"]["viewer"].get("zones")
-    if not zones or len(zones) == 0:
-        logger.error("No zones data available in the response.")
-        return
-
-    http_requests_groups = zones[0].get("httpRequestsAdaptiveGroups")
-    if not http_requests_groups or len(http_requests_groups) == 0:
-        logger.error("No httpRequestsAdaptiveGroups data available in the response.")
-        return
-
-    sum_data = http_requests_groups[0].get("sum")
-    if not sum_data or "edgeResponseBytes" not in sum_data:
-        logger.info("No edgeResponseBytes data available in the response.")
-        return
-
-    bandwidth_used = sum_data["edgeResponseBytes"]
-    logger.info("Fetching bandwidth usage from Cloudflare API successful.")
 
     bandwidth_service = get_resource_service("bandwidth")
     bandwidth_service.compute_new_bandwidth_usage(bandwidth_used)
