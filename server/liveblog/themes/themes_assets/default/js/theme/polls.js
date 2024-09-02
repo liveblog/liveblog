@@ -32,30 +32,83 @@ function updatePollUI(selectedPoll) {
 }
 
 /**
+ * Checks if poll is already voted on by the user in another tab
+ * Returns true if voted, false otherwise
+ */
+function hasVoted(selectedPoll) {
+  const pollsData = Storage.read(POLLS_KEY) || {};
+  const blogPolls = pollsData[blogId];
+  
+  if(blogPolls && blogPolls[selectedPoll]) {
+    updatePollUI(selectedPoll);
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Places a vote for a poll and updates the UI with the new total votes.
+ * 
+ * This function first checks if the user has already voted on the poll to 
+ * prevent duplicate voting.
+ * 
+ * A retry mechanism is implemented to handle potential ETag mismatches 
+ * This can occur if another client updates the poll between the time the 
+ * client fetches the poll and the time it tries to send the update.
  */
 function placeVote(event) {
   const { selectedOption, selectedPoll } = event.detail;
   const pollEndpoint = `${apiHost}api/client_polls/${selectedPoll}`;
+  
+  // Check if voting happened on another tab
+  if (hasVoted(selectedPoll)) {
+    alert("You have already voted on this poll.")
+    return;
+  }
 
-  helpers.get(pollEndpoint)
-    .then((poll) => {
-      const etag = poll._etag;
-      let data = { "poll_body": { "answers" : poll.poll_body.answers }};
-      
-      for (let answer of data.poll_body.answers) {
-        if (answer.option === selectedOption) {
-          answer.votes += 1;
-          break; 
+  /**
+   * Function to fetch the poll data, and send PATCH request to update poll
+   * with selected option.
+   */
+  function updateVote() {
+    return helpers.get(pollEndpoint)
+      .then((poll) => {
+        const etag = poll._etag;
+        let data = { "poll_body": { "answers" : poll.poll_body.answers }};
+        
+        for (let answer of data.poll_body.answers) {
+          if (answer.option === selectedOption) {
+            answer.votes += 1;
+            break; 
+          }
         }
-      }
-      
-      helpers.patch(pollEndpoint, data, etag)
-        .then((updatedPoll) => {
-          updatePollUI(selectedPoll);
-          persistVote(selectedPoll, selectedOption);
+        
+        return helpers.patch(pollEndpoint, data, etag);
       });
-    });
+  }
+
+  /**
+   * Attempts to update the poll with the user's vote, with a retry mechanism
+   * to handle potential ETag mismatches (HTTP 412 error).
+   */
+  function tryVote(retries = 3) {
+    updateVote()
+      .then((updatedPoll) => {
+        updatePollUI(selectedPoll);
+        persistVote(selectedPoll, selectedOption);
+      })
+      .catch((error) => {
+        if (error.code === 412 && retries > 0) {
+          console.log("ETag mismatch, retrying...", retries);
+          tryVote(retries - 1);
+        } else {
+          console.log("Error occurred:", error);
+        }
+      });
+  }
+
+  tryVote();
 }
 
 /**
