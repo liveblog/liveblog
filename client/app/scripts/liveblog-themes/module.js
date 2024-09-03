@@ -17,6 +17,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         'upload',
         'privileges',
         'featuresService',
+        '$q',
     ];
     function LiveblogThemesController(
         _,
@@ -33,7 +34,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         session,
         upload,
         privileges,
-        featuresService
+        featuresService,
+        $q
     ) {
         const self = this;
         /**
@@ -115,53 +117,57 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         }
         function loadThemes() {
             // load only global preference for themes.
-            api.global_preferences.query({where: {key: 'theme'}}).then((globalPreferences) => {
-                self.globalTheme = _.find(globalPreferences._items, (item) => item.key === 'theme');
+            const globalPrefPromise = api.global_preferences.query({where: {key: 'theme'}})
+                .then((globalPreferences) => {
+                    self.globalTheme = _.find(globalPreferences._items, (item) => item.key === 'theme');
+                });
+
+            // get all blogs
+            const blogsPromise = api.blogs.query().then((data) => {
+                self.blogs = data._items;
             });
-            // load all the themes.
-            // TODO: Pagination
-            return api.themes.query().then((data) => {
-                const themes = data._items;
 
-                self.themeNames = [];
-                for (var i = 0; i < themes.length; i++) {
-                    if (themes[i].name !== 'angular') {
-                        self.themeNames.push({label: themes[i].label, name: themes[i].name});
+            return $q.all([globalPrefPromise, blogsPromise]).then(() =>
+                // load all the themes.
+                // TODO: Pagination
+                api.themes.query().then((data) => {
+                    const themes = data._items;
+
+                    self.themeNames = [];
+                    for (var i = 0; i < themes.length; i++) {
+                        if (themes[i].name !== 'angular') {
+                            self.themeNames.push({label: themes[i].label, name: themes[i].name});
+                        }
                     }
-                }
 
-                themes.forEach((theme) => {
-                    // create criteria to load blogs with the theme.
-                    const criteria = {
-                        source: {
-                            query: {match: {'blog_preferences.theme': theme.name}},
-                        },
-                    };
+                    themes.forEach((theme) => {
+                        const matchingBlogs = self.blogs.filter((blog) =>
+                            blog.blog_preferences
+                            && blog.blog_preferences.theme === theme.name);
 
-                    api.blogs.query(criteria).then((data) => {
-                        theme.blogs_count = data._meta.total;
-                        // TODO: Pagination. Will only show the first results page
-                        theme.blogs = data._items;
+                        theme.blogs_count = matchingBlogs.length;
+                        theme.blogs = matchingBlogs;
+
                         // retrieve the public url for each blog
                         theme.blogs.forEach((blog) => {
                             blogService.getPublicUrl(blog).then((url) => {
                                 blog.iframe_url = $sce.trustAsResourceUrl(url);
                             });
                         });
+                        parseTheme(theme);
                     });
-                    parseTheme(theme);
-                });
-                // object that represent the themes hierachy
-                const themesHierachy = getHierachyFromThemesCollection(themes);
-                // update the scope
+                    // object that represent the themes hierachy
+                    const themesHierachy = getHierachyFromThemesCollection(themes);
+                    // update the scope
 
-                angular.extend(self, {
-                    themesHierachy: themesHierachy,
-                    themes: themes,
-                    loading: false,
-                });
-                return themes;
-            });
+                    angular.extend(self, {
+                        themesHierachy: themesHierachy,
+                        themes: themes,
+                        loading: false,
+                    });
+                    return themes;
+                })
+            );
         }
         angular.extend(self, {
             mailto: 'mailto:upgrade@liveblog.pro?subject=' +
