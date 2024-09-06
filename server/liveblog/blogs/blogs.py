@@ -13,6 +13,7 @@ import logging
 import datetime
 
 from bson.objectid import ObjectId
+from eve.utils import ParsedRequest
 from flask import current_app as app
 from flask import render_template
 from superdesk import get_resource_service
@@ -107,6 +108,17 @@ def send_email_to_added_members(blog, recipients, blog_url):
 
 class BlogService(BaseService):
     notification_key = "blog"
+
+    def get(self, req, lookup):
+        if req is None:
+            req = ParsedRequest()
+
+        if req.where:
+            docs = super().get_from_mongo(req, lookup)
+        else:
+            docs = super().get(req, lookup)
+
+        return docs
 
     def _update_theme_settings(self, doc, theme_name):
         theme = get_resource_service("themes").find_one(req=None, name=theme_name)
