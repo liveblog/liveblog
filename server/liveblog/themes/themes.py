@@ -482,7 +482,7 @@ class ThemesService(BaseService):
 
             # Set theme settings for blogs using previous theme.
             blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get(
+            blogs = blogs_service.get_from_mongo(
                 req=None, lookup={"blog_preferences.theme": previous_theme["name"]}
             )
             for blog in blogs:
@@ -651,7 +651,7 @@ class ThemesService(BaseService):
 
         # Update all the blogs using the removed theme and assign the default theme.
         blogs_service = get_resource_service("blogs")
-        blogs = blogs_service.get(
+        blogs = blogs_service.get_from_mongo(
             req=None, lookup={"blog_preferences.theme": deleted_theme["name"]}
         )
 
