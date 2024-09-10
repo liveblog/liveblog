@@ -472,9 +472,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers["Access-Control-Expose-Headers"] = (
-        "AMP-Access-Control-Allow-Source-Origin"
-    )
+    resp.headers[
+        "Access-Control-Expose-Headers"
+    ] = "AMP-Access-Control-Allow-Source-Origin"
     return resp
 
 
