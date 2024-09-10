@@ -216,6 +216,11 @@ class ClientPollsService(PollsService):
         for post in get_resource_service("client_posts").find({"blog": blog_id}):
             for assoc in post_utils.get_associations(post):
                 if assoc.get("residRef") == poll_id:
+                    updated_post = post.copy()
+                    updated_post["content_updated_date"] = utcnow()
+                    get_resource_service("posts").update(
+                        post.get("_id"), updated_post, post
+                    )
                     app.blog_cache.invalidate(blog_id)
                     update_post_blog_embed.delay(post)
 
@@ -467,9 +472,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers[
-        "Access-Control-Expose-Headers"
-    ] = "AMP-Access-Control-Allow-Source-Origin"
+    resp.headers["Access-Control-Expose-Headers"] = (
+        "AMP-Access-Control-Allow-Source-Origin"
+    )
     return resp
 
 
