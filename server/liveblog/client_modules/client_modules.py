@@ -34,7 +34,6 @@ from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
-from liveblog.posts.tasks import update_post_blog_embed
 from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
@@ -222,7 +221,6 @@ class ClientPollsService(PollsService):
                         post.get("_id"), updated_post, post
                     )
                     app.blog_cache.invalidate(blog_id)
-                    update_post_blog_embed.delay(post)
 
 
 class ClientCommentsResource(PostsResource):
