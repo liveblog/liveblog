@@ -96,6 +96,41 @@ class FeaturesService:
 
         return current_usage > subscription_limit
 
+    def get_feature_limit(self, feature_name):
+        """
+        Returns the limit for a specific feature
+
+        Args:
+            feature_name (str): The name of the feature to return the limit.
+
+        Returns:
+            integer: The limit of the feature, 0 if not found
+        """
+
+        if self.is_network_subscription():
+            return 0
+
+        limits = self._get_settings_for("limits")
+        return limits.get(feature_name, 0)
+
+    def is_bandwidth_limit_enabled(self):
+        """
+        Checks if the bandwidth limit is enabled for the current subscription plan.
+        The limit could either be 0, which in this case means unlimited, or a number
+        which represents the upper limit in GBs.
+
+        Returns:
+            bool: True if the bandwidth has a limit, False otherwise.
+        """
+
+        if self.is_network_subscription():
+            return False
+
+        limits = self._get_settings_for("limits")
+        subscription_limit = limits.get("bandwidth_limit", 0)
+
+        return subscription_limit > 0
+
     def _get_settings_for(self, settings_key):
         """
         Simple function to retrieve the settings for a given key from instance settings

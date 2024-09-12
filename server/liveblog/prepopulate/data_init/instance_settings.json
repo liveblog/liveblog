@@ -16,7 +16,8 @@
                     "blogs": 1,
                     "themes": 1,
                     "blog_members": 1,
-                    "custom_themes": 0
+                    "custom_themes": 0,
+                    "bandwidth_limit": 30
                 }
             },
             "uni": {
@@ -34,7 +35,8 @@
                     "blogs": 2,
                     "themes": 1,
                     "blog_members": 1,
-                    "custom_themes": 0
+                    "custom_themes": 0,
+                    "bandwidth_limit": 0
                 }
             },
             "solo": {
@@ -52,7 +54,8 @@
                     "blogs": 1,
                     "themes": 1,
                     "blog_members": 1,
-                    "custom_themes": 0
+                    "custom_themes": 0,
+                    "bandwidth_limit": 0
                 }
             },
             "solo-mobile": {
@@ -70,7 +73,8 @@
                     "blogs": 1,
                     "themes": 1,
                     "blog_members": 1,
-                    "custom_themes": 0
+                    "custom_themes": 0,
+                    "bandwidth_limit": 0
                 }
             },
             "team": {
@@ -88,7 +92,8 @@
                     "blogs": 3,
                     "themes": 6,
                     "blog_members": 5,
-                    "custom_themes": 5
+                    "custom_themes": 5,
+                    "bandwidth_limit": 0
                 }
             }
         }

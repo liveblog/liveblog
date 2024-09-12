@@ -8,6 +8,6 @@ Thanks,
 
 The {{app_name}} Team
 
-{{app_name}} is developed by Sourcefabric and the {{app_name}} community.
+{{app_name}} is developed by Sourcefabric.
 
 http://sourcefabric.org

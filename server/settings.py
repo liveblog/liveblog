@@ -152,6 +152,10 @@ CELERYBEAT_SCHEDULE = {
         "task": "liveblog.blogs.tasks.remove_deleted_blogs",
         "schedule": crontab(hour="*/1"),  # run every hour
     },
+    "bandwidth:update": {
+        "task": "liveblog.bandwidth.tasks.fetch_bandwidth_usage",
+        "schedule": crontab(minute=0, hour="*/1"),  # every hours
+    },
 }
 
 # trying to fix stuff
@@ -160,6 +164,13 @@ CELERY_BEAT_SCHEDULE = CELERYBEAT_SCHEDULE
 
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_INCLUDE_PATHS = ["superdesk"]
+
+# Cloudflare
+CLOUDFLARE_URL = env("CLOUDFLARE_URL", "")
+CLOUDFLARE_AUTH = env("CLOUDFLARE_AUTH", "")
+CLOUDFLARE_ZONE_TAG = env("CLOUDFLARE_ZONE_TAG", "")
+
+LIVEBLOG_ZENDESK_EMAIL = env("LIVEBLOG_ZENDESK_EMAIL", "")
 
 INSTALLED_APPS = [
     "apps.auth",
@@ -197,6 +208,7 @@ INSTALLED_APPS = [
     "liveblog.advertisements",
     "liveblog.video_upload",
     "liveblog.instance_settings",
+    "liveblog.bandwidth",
 ]
 
 RESOURCE_METHODS = ["GET", "POST"]
@@ -367,6 +379,7 @@ MARKETPLACE_APP_URL = env(
 )
 
 # Settings related to subscription levels
+SUBSCRIPTION_LEVEL_GO = "liveblog-go"
 SUBSCRIPTION_LEVEL_SOLO = "solo"
 SUBSCRIPTION_LEVEL_TEAM = "team"
 SUBSCRIPTION_LEVEL_NETWORK = "network"
