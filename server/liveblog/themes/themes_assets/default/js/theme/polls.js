@@ -19,7 +19,7 @@ function updatePollUI(selectedPoll) {
     const postId = pollElem.closest('[data-post-id]').getAttribute('data-post-id');
     const postEndpoint = `${apiHost}api/client_posts/${postId}`;
 
-    helpers.get(postEndpoint)
+    helpers.get(postEndpoint, true)
       .then((post) => {
         var view = require('./view');
         const rendered = view.renderSinglePost(post, false);
@@ -72,7 +72,7 @@ function placeVote(event) {
    * with selected option.
    */
   function updateVote() {
-    return helpers.get(pollEndpoint)
+    return helpers.get(pollEndpoint, true)
       .then((poll) => {
         const etag = poll._etag;
         let data = { "poll_body": { "answers" : poll.poll_body.answers }};
@@ -84,7 +84,7 @@ function placeVote(event) {
           }
         }
         
-        return helpers.patch(pollEndpoint, data, etag);
+        return helpers.patch(pollEndpoint, data, etag, true);
       });
   }
 
