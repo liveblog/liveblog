@@ -37,11 +37,40 @@ from .utils import (
 logger = logging.getLogger("liveblog")
 
 
+def publish_embed_fallback(blog_id, output=None, api_host=None):
+    """
+    Fallback for embed generation using the default theme if primary generation fails.
+
+    If an error occurs during fallback generation, logs the error and generates
+    a default public URL.
+    """
+    logger.info(
+        'publish_embed_fallback for blog "{}"{} started.'.format(
+            blog_id, ' with output="{}"'.format(output.get("name")) if output else ""
+        )
+    )
+    theme = "default"
+
+    try:
+        public_url = publish_embed(blog_id, theme, output, api_host)
+    except Exception as e:
+        exc_info = sys.exc_info()
+        logger.exception(
+            f"Failed embed fallback generation with theme `{theme}`. Error: {e}",
+            exc_info=exc_info,
+        )
+        public_url = build_blog_public_url(app, blog_id, theme)
+
+    logger.info('publish_embed_fallback for blog "{}" finished.'.format(blog_id))
+    return public_url
+
+
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
     """
     Generates the html for the embed file using the `embed` function.
     If the embed fails to generate with a `TemplateNotFound` exception
-    it will send a push notification so the user can be notified.
+    it will send a push notification so the user can be notified and it
+    will also trigger the fallback mechanism.
     """
     try:
         html = embed(blog_id, theme, output, api_host)
@@ -54,7 +83,8 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
             f"Failed embed generation with theme `{theme}`. Error: {e}",
             exc_info=exc_info,
         )
-        return notify_about_embed_generation_error(str(e), blog_id, theme)
+        notify_about_embed_generation_error(str(e), blog_id, theme)
+        return publish_embed_fallback(blog_id, output, api_host)
 
     check_media_storage()
     output_id = output["_id"] if output else None
