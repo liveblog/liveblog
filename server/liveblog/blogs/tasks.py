@@ -37,19 +37,19 @@ from .utils import (
 logger = logging.getLogger("liveblog")
 
 
-def generate_fallback_html(blog_id, output, api_host):
+def generate_fallback_html_url(blog_id, output, api_host):
     """
     This function is called when the primary embed generation fails, and it
-    generates an HTML embed for the blog using the default seo theme. The function
+    generates an HTML embed url for the blog using the default seo theme. The function
     also updates the blog's theme and theme settings to the default theme in the
     database.
     """
-    logger.info(f'generate_fallback_html for blog "{blog_id}" started.')
+    logger.info(f'generate_fallback_html_url for blog "{blog_id}" started.')
 
     theme = "default"
     updates = {}
     blogs = get_resource_service("blogs")
-    html = embed(blog_id, theme, output, api_host)
+    public_url = publish_embed(blog_id, theme, output, api_host)
 
     blog_id, blog = get_blog(blog_id)
 
@@ -59,8 +59,8 @@ def generate_fallback_html(blog_id, output, api_host):
     blogs._update_theme_settings(updates, theme)
     blogs.system_update(blog_id, updates, blog)
 
-    logger.info(f'generate_fallback_html for blog "{blog_id}" finished.')
-    return html
+    logger.info(f'generate_fallback_html_url for blog "{blog_id}" finished.')
+    return public_url
 
 
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
@@ -86,7 +86,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
         if theme != "default":
             notify_about_embed_generation_error(str(e), blog_id, theme)
             try:
-                html = generate_fallback_html(blog_id, output, api_host)
+                return generate_fallback_html_url(blog_id, output, api_host)
             except Exception as e:
                 exc_info = sys.exc_info()
                 return logger.exception(
