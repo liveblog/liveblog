@@ -59,7 +59,20 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
 
         logger.info('generate_embed_fallback for blog "{}" started.'.format(blog_id))
         try:
-            html = embed(blog_id, "default", output, api_host)
+            theme = "default"
+            updates = {}
+            blogs = get_resource_service("blogs")
+            html = embed(blog_id, theme, output, api_host)
+
+            # Also update the blog theme and theme settings
+            blog_id, blog = get_blog(blog_id)
+
+            # Ensure blog_preferences exists in the updates dictionary
+            updates["blog_preferences"] = blog.get("blog_preferences", {})
+            updates["blog_preferences"]["theme"] = theme
+
+            blogs._update_theme_settings(updates, theme)
+            blogs.system_update(blog_id, updates, blog)
             logger.info(
                 'generate_embed_fallback for blog "{}" finished.'.format(blog_id)
             )
