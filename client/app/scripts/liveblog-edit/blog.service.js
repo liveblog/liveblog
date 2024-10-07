@@ -88,7 +88,7 @@ export default function blogService(api, $q, $rootScope, config, notify) {
             const errorMessage = `There has been an error while generating the embed for the
                 current blog. Please try with another theme and contact our Support Team
                 and provide this error: "${eventData.error}". The embed generation has fallen
-                back to the Default theme for the current blog.`;
+                back to the Default SEO theme for the current blog.`;
 
             notify.error(errorMessage, 30000);
             Storage.write(storeKey, '1', expiry);
