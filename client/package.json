@@ -80,7 +80,7 @@
     "@atlaskit/icon": "21.1.2",
     "@types/react-dom": "^16.9.15",
     "adblock-detect": "1.0.5",
-    "angular": "1.6.9",
+    "angular": "1.8.3",
     "angular-animate": "1.6.1",
     "angular-contenteditable": "0.3.9",
     "angular-embed": "git+https://github.com/eos87/angular-embed#13e145a8ce6f7cb9d877e32504a4c2af61a1b490",
