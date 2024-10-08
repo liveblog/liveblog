@@ -37,12 +37,40 @@ from .utils import (
 logger = logging.getLogger("liveblog")
 
 
+def generate_fallback_html_url(blog_id, output, api_host):
+    """
+    This function is called when the primary embed generation fails, and it
+    generates an HTML embed url for the blog using the default seo theme. The function
+    also updates the blog's theme and theme settings to the default theme in the
+    database.
+    """
+    logger.info(f'generate_fallback_html_url for blog "{blog_id}" started.')
+
+    theme = "default"
+    updates = {}
+    blogs = get_resource_service("blogs")
+    public_url = publish_embed(blog_id, theme, output, api_host)
+
+    blog_id, blog = get_blog(blog_id)
+
+    updates["blog_preferences"] = blog.get("blog_preferences", {})
+    updates["blog_preferences"]["theme"] = theme
+
+    blogs._update_theme_settings(updates, theme)
+    blogs.system_update(blog_id, updates, blog)
+
+    logger.info(f'generate_fallback_html_url for blog "{blog_id}" finished.')
+    return public_url
+
+
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
     """
     Generates the html for the embed file using the `embed` function.
     If the embed fails to generate with a `TemplateNotFound` exception
-    it will send a push notification so the user can be notified.
+    it will send a push notification so the user can be notified and it
+    will also trigger the fallback mechanism to use the default theme
     """
+    html = None
     try:
         html = embed(blog_id, theme, output, api_host)
     except SuperdeskApiError as e:
@@ -54,7 +82,22 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
             f"Failed embed generation with theme `{theme}`. Error: {e}",
             exc_info=exc_info,
         )
-        return notify_about_embed_generation_error(str(e), blog_id, theme)
+
+        if theme != "default":
+            notify_about_embed_generation_error(str(e), blog_id, theme)
+            try:
+                return generate_fallback_html_url(blog_id, output, api_host)
+            except Exception as e:
+                exc_info = sys.exc_info()
+                return logger.exception(
+                    f"Failed embed fallback generation with theme `{theme}`. Error: {e}",
+                    exc_info=exc_info,
+                )
+
+    if html is None:
+        return logger.exception(
+            f"Failed embed and embed fallback generation for blog {blog_id}."
+        )
 
     check_media_storage()
     output_id = output["_id"] if output else None
