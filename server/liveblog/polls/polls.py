@@ -19,7 +19,7 @@ class PollsResource(Resource):
 
     datasource = {
         "source": "polls",
-        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "search_backend": None,
         "default_sort": [("_updated", -1)],
     }
     schema = {

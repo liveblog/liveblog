@@ -197,7 +197,7 @@ class ClientItemsService(ItemsService):
 class ClientPollsResource(PollsResource):
     datasource = {
         "source": "polls",
-        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "search_backend": None,
         "default_sort": [("order", -1)],
     }
     public_methods = ["GET"]
