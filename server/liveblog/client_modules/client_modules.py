@@ -200,64 +200,16 @@ class ClientPollsResource(PollsResource):
         "elastic_filter": {"term": {"particular_type": "poll"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "PATCH"]
-    public_item_methods = ["GET", "PATCH"]
-    item_methods = ["GET", "PATCH"]
+    public_methods = ["GET"]
+    public_item_methods = ["GET"]
+    item_methods = ["GET"]
     resource_methods = ["GET"]
     schema = {"client_blog": Resource.rel("client_blogs", True)}
     schema.update(PollsResource.schema)
 
 
 class ClientPollsService(PollsService):
-    """
-    This service handles client polls, enabling vote updates.
-    Voting operations currently rely on the PATCH method to update resources.
-
-    **TODO:**
-
-    * Use a custom voting endpoint to allow the use of `rate_limit` decorator
-    """
-
-    def update(self, id, updates, original):
-        """
-        Updates a poll document with the provided updates and ensures ETag consistency.
-
-        The `_etag` from the original document is copied into the `updates` because the PATCH request goes
-        through an internal patch command that would otherwise generate a new ETag. By copying the last ETag
-        manually, we ensure that the `system_update` uses the original ETag for consistency in update behavior.
-        """
-        updates["_etag"] = original.get("_etag")
-
-        try:
-            self.system_update(id, updates, original)
-        except DataLayer.OriginalChangedError:
-            poll = self.find_one(req=None, _id=id)
-            self.system_update(id, updates, poll)
-
-    def on_updated(self, updates, original):
-        """
-        Performs actions when a poll has been successfully updated.
-
-        After updating the poll, this method checks for any associated client posts that reference the updated
-        poll and updates the `content_updated_date` for these posts to reflect that the
-        poll content has changed. This then ensures the clients get the poll updates on the embeds
-        """
-        super().on_updated(updates, original)
-
-        poll_id = str(original.get("_id"))
-        blog_id = original.get("blog")
-
-        for post in get_resource_service("client_posts").find(
-            {"blog": blog_id, "particular_type": "post"}
-        ):
-            for assoc in post_utils.get_associations(post):
-                if assoc.get("residRef") == poll_id:
-                    updated_post = post.copy()
-                    updated_post["content_updated_date"] = utcnow()
-                    get_resource_service("posts").update(
-                        post.get("_id"), updated_post, post
-                    )
-                    app.blog_cache.invalidate(blog_id)
+    pass
 
 
 class ClientCommentsResource(PostsResource):
