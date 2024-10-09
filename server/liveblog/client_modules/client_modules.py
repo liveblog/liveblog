@@ -3,7 +3,6 @@ import logging
 
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
-from eve.io.base import DataLayer
 from flask_cors import CORS
 from flask import Blueprint, request
 from flask import current_app as app
@@ -527,7 +526,7 @@ def client_poll_vote(poll_id):
             - 201: If the vote is successfully recorded.
             - 400: If the request is invalid or any check fails.
             - 500: If an error occurs during vote update.
-    
+
     **TODO:**
     * Add rate limiter decorator on endpoint
     """
