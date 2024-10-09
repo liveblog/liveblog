@@ -40,7 +40,9 @@ from liveblog.utils.api import api_error, api_response
 
 
 blog_posts_blueprint = Blueprint("blog_posts", __name__)
+voting_blueprint = Blueprint("polls", __name__)
 CORS(blog_posts_blueprint)
+CORS(voting_blueprint)
 logger = logging.getLogger(__name__)
 
 
@@ -505,9 +507,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers[
-        "Access-Control-Expose-Headers"
-    ] = "AMP-Access-Control-Allow-Source-Origin"
+    resp.headers["Access-Control-Expose-Headers"] = (
+        "AMP-Access-Control-Allow-Source-Origin"
+    )
     return resp
 
 
@@ -555,6 +557,69 @@ def get_blog_posts(blog_id):
     response_data = blog.posts(wrap=True, **kwargs)
     result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
+
+
+@voting_blueprint.route("/api/client_poll_vote/<poll_id>", methods=["POST"])
+def client_poll_vote(poll_id):
+    """
+    Handles the voting action for a poll.
+
+    This function allows users to vote for a specific option in a poll. It performs the following steps:
+    1. Validate the request data
+    2. Retrieve the poll and validate selected option
+    3. Increment the vote count
+    4. Update associated blog posts
+
+    Args:
+        poll_id (str): The unique identifier of the poll to vote on.
+
+    Returns:
+        JSON response:
+            - 201: If the vote is successfully recorded.
+            - 400: If the request is invalid
+            - 500: If an error occurs during vote update.
+    """
+    data = request.json
+    option_selected = data.get("option_selected", None)
+    if option_selected is None:
+        return api_error("Error: Option selected is required in request", 400)
+
+    polls = get_resource_service("polls")
+    poll = polls.find_one(req=None, _id=poll_id)
+    if poll is None:
+        return api_error("Error: Poll not found", 400)
+
+    poll_body = poll.get("poll_body", {})
+    answers = poll_body.get("answers", [])
+    option_exists = any(answer.get("option") == option_selected for answer in answers)
+    if not option_exists:
+        return api_error(
+            f"Error: Option '{option_selected}' not found in poll answers", 400
+        )
+
+    result = polls.find_and_modify(
+        query={"_id": poll_id, "poll_body.answers.option": option_selected},
+        update={"$inc": {"poll_body.answers.$.votes": 1}},
+        new=True,
+    )
+
+    if result is None:
+        return api_error("Error: Unable to update poll votes", 500)
+
+    blog_id = poll.get("blog")
+    for post in get_resource_service("client_posts").find(
+        {"blog": blog_id, "particular_type": "post"}
+    ):
+        for assoc in post_utils.get_associations(post):
+            if assoc.get("residRef") == poll_id:
+                updated_post = post.copy()
+                updated_post["content_updated_date"] = utcnow()
+                get_resource_service("posts").update(
+                    post.get("_id"), updated_post, post
+                )
+                app.blog_cache.invalidate(blog_id)
+
+    return api_response({"_status": "OK", "message": "Vote placed successfuly"}, 201)
 
 
 # convert posts - add items in post
