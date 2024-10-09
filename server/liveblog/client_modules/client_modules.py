@@ -527,6 +527,9 @@ def client_poll_vote(poll_id):
             - 201: If the vote is successfully recorded.
             - 400: If the request is invalid or any check fails.
             - 500: If an error occurs during vote update.
+    
+    **TODO:**
+    * Add rate limiter decorator on endpoint
     """
     data = request.json
     option_selected = data.get("option_selected", None)
