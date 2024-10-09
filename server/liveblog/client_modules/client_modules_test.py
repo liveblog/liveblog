@@ -12,6 +12,7 @@ from bson import ObjectId
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import (
     blog_posts_blueprint,
+    voting_blueprint,
     convert_posts,
     _get_converted_item,
 )
@@ -47,6 +48,7 @@ class ClientModuleTestCase(TestCase):
             users_app.init_app(self.app)
             client_modules.init_app(self.app)
             self.app.register_blueprint(blog_posts_blueprint)
+            self.app.register_blueprint(voting_blueprint)
             self.client = self.app.test_client()
             self.app.cache = Cache(self.app, config={"CACHE_TYPE": "simple"})
 
@@ -624,3 +626,84 @@ class ClientModuleTestCase(TestCase):
         renditions = converted_item_image.get("renditions")
         self.assertIsNotNone(renditions, True)
         self.assertEqual(renditions, self.items[1]["meta"]["media"]["renditions"])
+
+    def test_client_poll_vote(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        option_selected = "Yes"
+        vote_data = {"option_selected": option_selected}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            self.assertEqual(response.status_code, 201)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "OK")
+            self.assertEqual(response_data["message"], "Vote placed successfully")
+
+            # Validate that the vote count has been incremented in the poll
+            updated_poll = get_resource_service("polls").find_one(req=None, _id=poll_id)
+            updated_answers = updated_poll["poll_body"]["answers"]
+            for answer in updated_answers:
+                if answer["option"] == option_selected:
+                    self.assertEqual(answer["votes"], 1)
+
+    def test_client_poll_vote_missing_option(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        vote_data = {}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because "option_selected" is missing
+            self.assertEqual(response.status_code, 400)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn("Error: Option selected is required", response_data["_error"])
+
+    def test_client_poll_vote_invalid_poll(self):
+        headers = {"content-type": "application/json"}
+        invalid_poll_id = "invalid_poll_id"
+        vote_data = {"option_selected": "Yes"}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{invalid_poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because the poll does not exist
+            self.assertEqual(response.status_code, 400)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn("Error: Poll not found", response_data["_error"])
+
+    def test_client_poll_vote_invalid_option(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        vote_data = {"option_selected": "Invalid Option"}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because the option is invalid
+            self.assertEqual(response.status_code, 400)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn(
+                "Error: Option 'Invalid Option' not found", response_data["_error"]
+            )

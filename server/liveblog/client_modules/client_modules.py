@@ -459,9 +459,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers["Access-Control-Expose-Headers"] = (
-        "AMP-Access-Control-Allow-Source-Origin"
-    )
+    resp.headers[
+        "Access-Control-Expose-Headers"
+    ] = "AMP-Access-Control-Allow-Source-Origin"
     return resp
 
 
@@ -520,15 +520,12 @@ def client_poll_vote(poll_id):
     1. Validate the request data
     2. Retrieve the poll and validate selected option
     3. Increment the vote count
-    4. Update associated blog posts
-
-    Args:
-        poll_id (str): The unique identifier of the poll to vote on.
+    4. Update associated blog posts to reflect change on embed
 
     Returns:
-        JSON response:
+        JSON response with code:
             - 201: If the vote is successfully recorded.
-            - 400: If the request is invalid
+            - 400: If the request is invalid or any check fails.
             - 500: If an error occurs during vote update.
     """
     data = request.json
@@ -571,7 +568,7 @@ def client_poll_vote(poll_id):
                 )
                 app.blog_cache.invalidate(blog_id)
 
-    return api_response({"_status": "OK", "message": "Vote placed successfuly"}, 201)
+    return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
 
 
 # convert posts - add items in post
