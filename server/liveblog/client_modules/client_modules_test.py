@@ -668,7 +668,7 @@ class ClientModuleTestCase(TestCase):
             self.assertEqual(response.status_code, 400)
             response_data = json.loads(response.data.decode())
             self.assertEqual(response_data["_status"], "ERR")
-            self.assertIn("Error: Option selected is required", response_data["_error"])
+            self.assertIn("Please select a voting option.", response_data["_error"])
 
     def test_client_poll_vote_invalid_poll(self):
         headers = {"content-type": "application/json"}
@@ -683,7 +683,7 @@ class ClientModuleTestCase(TestCase):
             )
 
             # Expecting a 400 error because the poll does not exist
-            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.status_code, 404)
             response_data = json.loads(response.data.decode())
             self.assertEqual(response_data["_status"], "ERR")
             self.assertIn("Error: Poll not found", response_data["_error"])
@@ -701,7 +701,7 @@ class ClientModuleTestCase(TestCase):
             )
 
             # Expecting a 400 error because the option is invalid
-            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.status_code, 404)
             response_data = json.loads(response.data.decode())
             self.assertEqual(response_data["_status"], "ERR")
             self.assertIn(

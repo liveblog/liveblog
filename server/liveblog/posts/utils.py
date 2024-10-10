@@ -197,7 +197,7 @@ def update_associated_post(blog_id, item_id):
     """
     Updates all associated blog posts related to the given item i.e poll.
     """
-    posts_service = get_resource_service("posts")
+    posts_service = get_resource_service("client_posts")
 
     for post in posts_service.find({"blog": blog_id, "particular_type": "post"}):
         for assoc in get_associations(post):
