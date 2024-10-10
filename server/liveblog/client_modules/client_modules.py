@@ -458,9 +458,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers["Access-Control-Expose-Headers"] = (
-        "AMP-Access-Control-Allow-Source-Origin"
-    )
+    resp.headers[
+        "Access-Control-Expose-Headers"
+    ] = "AMP-Access-Control-Allow-Source-Origin"
     return resp
 
 
@@ -558,17 +558,7 @@ def client_poll_vote(poll_id):
         return api_error("Error: Unable to update poll votes", 422)
 
     blog_id = poll.get("blog")
-    for post in get_resource_service("client_posts").find(
-        {"blog": blog_id, "particular_type": "post"}
-    ):
-        for assoc in post_utils.get_associations(post):
-            if assoc.get("residRef") == poll_id:
-                updated_post = post.copy()
-                updated_post["content_updated_date"] = utcnow()
-                get_resource_service("posts").update(
-                    post.get("_id"), updated_post, post
-                )
-                app.blog_cache.invalidate(blog_id)
+    post_utils.update_associated_post(blog_id, poll_id)
 
     return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
 
