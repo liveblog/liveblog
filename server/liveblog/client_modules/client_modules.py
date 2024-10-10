@@ -524,8 +524,9 @@ def client_poll_vote(poll_id):
     Returns:
         JSON response with code:
             - 201: If the vote is successfully recorded.
-            - 400: If the request is invalid or any check fails.
-            - 500: If an error occurs during vote update.
+            - 400: If the request is invalid
+            - 404: If option_selected/poll is not found
+            - 422: If an error occurs during vote update.
 
     **TODO:**
     * Add rate limiter decorator on endpoint
