@@ -458,9 +458,9 @@ def create_amp_comment():
     client_domain = data.get("__amp_source_origin")
     resp.headers["Access-Control-Allow-Origin"] = client_domain
     resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers[
-        "Access-Control-Expose-Headers"
-    ] = "AMP-Access-Control-Allow-Source-Origin"
+    resp.headers["Access-Control-Expose-Headers"] = (
+        "AMP-Access-Control-Allow-Source-Origin"
+    )
     return resp
 
 
@@ -533,19 +533,19 @@ def client_poll_vote(poll_id):
     data = request.json
     option_selected = data.get("option_selected", None)
     if option_selected is None:
-        return api_error("Error: Option selected is required in request", 400)
+        return api_error("Please select a voting option.", 400)
 
     polls = get_resource_service("polls")
     poll = polls.find_one(req=None, _id=poll_id)
     if poll is None:
-        return api_error("Error: Poll not found", 400)
+        return api_error("Error: Poll not found", 404)
 
     poll_body = poll.get("poll_body", {})
     answers = poll_body.get("answers", [])
     option_exists = any(answer.get("option") == option_selected for answer in answers)
     if not option_exists:
         return api_error(
-            f"Error: Option '{option_selected}' not found in poll answers", 400
+            f"Error: Option '{option_selected}' not found in poll answers", 404
         )
 
     result = polls.find_and_modify(
@@ -555,7 +555,7 @@ def client_poll_vote(poll_id):
     )
 
     if result is None:
-        return api_error("Error: Unable to update poll votes", 500)
+        return api_error("Error: Unable to update poll votes", 422)
 
     blog_id = poll.get("blog")
     for post in get_resource_service("client_posts").find(
