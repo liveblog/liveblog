@@ -1,3 +1,4 @@
+import {EventNames} from 'liveblog-common/constants';
 import postTpl from 'scripts/liveblog-edit/views/post.ng1';
 
 lbPost.$inject = [
@@ -93,15 +94,14 @@ export default function lbPost(notify, gettext, postsService, modal,
                 removePost: function(post) {
                     let postToDelete = angular.copy(post);
 
-                    postsService.remove(postToDelete).then((message) => {
-                        notify.pop();
-                        notify.info(gettext('Removing post...'));
-                        scope.removePostFromList(post);
-                        $rootScope.$broadcast('removing_timeline_post', {post: post});
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong'));
-                    });
+                    postsService.remove(postToDelete)
+                        .then((message) => {
+                            notify.info(gettext('Removing post...'));
+                            scope.removePostFromList(post);
+                            $rootScope.$broadcast(EventNames.RemoveTimelinePost, {post: post});
+                        }, () => {
+                            notify.error(gettext('Something went wrong'));
+                        });
                 },
                 preMovePost: function(post) {
                     $document.bind('keypress', escClearReorder);
@@ -118,13 +118,12 @@ export default function lbPost(notify, gettext, postsService, modal,
                     return postsService.savePost(post.blog, post, undefined, {sticky: status});
                 },
                 togglePinStatus: function(post) {
-                    scope.changePinStatus(post, !post.sticky).then((post) => {
-                        notify.pop();
-                        notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                    });
+                    scope.changePinStatus(post, !post.sticky)
+                        .then((post) => {
+                            notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
+                        }, () => {
+                            notify.error(gettext('Something went wrong. Please try again later'));
+                        });
                 },
                 onEditClick: function(post) {
                     scope.clearReorder();
@@ -133,8 +132,16 @@ export default function lbPost(notify, gettext, postsService, modal,
                 isYoutubeAttached: function(post) {
                     return post.items.some((x) => x.item.item_type === 'video');
                 },
+                isPollAttached: function(post) {
+                    return post.items.some((x) => x.item.item_type === 'poll');
+                },
                 askRemovePost: function(post) {
                     let msg = gettext('Are you sure you want to delete the post?');
+
+                    if (scope.isPollAttached(post)) {
+                        msg += `<br />It contains a poll with important data that will be
+                            permanently lost if you proceed.`;
+                    }
 
                     if (scope.isYoutubeAttached(post)) {
                         msg += '<br/>This will NOT remove the video from YouTube\'s account.';
@@ -146,41 +153,37 @@ export default function lbPost(notify, gettext, postsService, modal,
                             if (!post.edit_flag) {
                                 scope.removePost(post);
                             } else {
-                                notify.pop();
-                                notify.error(gettext('Post cannot be deleted: Someone is editing this post'));
+                                notify.error(gettext('Post cannot be deleted. Someone else is editing this post.'));
                             }
                         });
                 },
                 unpublishPost: function(post) {
                     scope.clearReorder();
-                    changePostStatus(post, 'submitted').then((post) => {
-                        notify.pop();
-                        notify.info(gettext('Post saved as contribution'));
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                    });
+                    changePostStatus(post, 'submitted')
+                        .then((post) => {
+                            notify.info(gettext('Post saved as contribution'));
+                        }, () => {
+                            notify.error(gettext('Something went wrong. Please try again later'));
+                        });
                 },
                 highlightPost: function(post) {
-                    changeHighlightStatus(post, !post.lb_highlight).then((post) => {
-                        notify.pop();
-                        notify.info(
-                            post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted')
-                        );
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                    });
+                    changeHighlightStatus(post, !post.lb_highlight)
+                        .then((post) => {
+                            notify.info(
+                                post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted')
+                            );
+                        }, () => {
+                            notify.error(gettext('Something went wrong. Please try again later'));
+                        });
                 },
                 publishPost: function(post) {
                     scope.clearReorder();
-                    changePostStatus(post, 'open').then((post) => {
-                        notify.pop();
-                        notify.info(gettext('Post published'));
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                    });
+                    changePostStatus(post, 'open')
+                        .then((post) => {
+                            notify.info(gettext('Post published'));
+                        }, () => {
+                            notify.error(gettext('Something went wrong. Please try again later'));
+                        });
                 },
             });
         },

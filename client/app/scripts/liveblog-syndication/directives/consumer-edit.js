@@ -62,14 +62,13 @@ export default function consumerEdit(api, notify, _, superdesk) {
                     apiQuery = api.consumers.save(data);
                 }
 
-                apiQuery.then((result) => {
-                    const successMsg = gettext('Consumer saved.');
+                apiQuery
+                    .then((result) => {
+                        const successMsg = gettext('Consumer saved.');
 
-                    notify.pop();
-                    notify.success(successMsg);
-
-                    scope.onsave({consumer: result});
-                })
+                        notify.success(successMsg);
+                        scope.onsave({consumer: result});
+                    })
                     .catch((err) => {
                         const errorMsg = gettext('Fatal error!');
 
@@ -85,7 +84,6 @@ export default function consumerEdit(api, notify, _, superdesk) {
                             });
                         }
 
-                        notify.pop();
                         notify.error(errorMsg);
                     });
             };

@@ -13,6 +13,7 @@ import logging
 import datetime
 
 from bson.objectid import ObjectId
+from eve.utils import ParsedRequest
 from flask import current_app as app
 from flask import render_template
 from superdesk import get_resource_service
@@ -107,6 +108,19 @@ def send_email_to_added_members(blog, recipients, blog_url):
 
 class BlogService(BaseService):
     notification_key = "blog"
+
+    def get(self, req, lookup):
+        """
+        This `get` method decides whether to fetch data from MongoDB or ElasticSearch based on the presence of a `where` filter.
+        - If `where` is used in the request (e.g., filtering blogs by a non-indexed field like `blog_preferences.theme`), it fetches directly from MongoDB.
+        - Otherwise, it uses the standard get method to retrieve from ElasticSearch.
+
+        Returns:
+            The result of the appropriate fetch method based on the request type.
+        """
+        req = req or ParsedRequest()
+        method = super().get_from_mongo if req.where else super().get
+        return method(req, lookup)
 
     def _update_theme_settings(self, doc, theme_name):
         theme = get_resource_service("themes").find_one(req=None, name=theme_name)
@@ -248,7 +262,7 @@ class BlogService(BaseService):
             theme_name = updates["blog_preferences"].get("theme")
             if theme_name:
                 publish_blog_embeds_on_s3.apply_async(
-                    args=[blog], kwargs={"save": False}, countdown=2
+                    args=[blog], kwargs={"save": True}, countdown=2
                 )
 
         members = updates.get("members", {})

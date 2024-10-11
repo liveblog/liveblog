@@ -92,14 +92,14 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             },
             updatePostOrder: function(post, order) {
                 self.hideAllPosts = true;
-                postsService.savePost(post.blog, post, undefined, {order: order}).then(() => {
-                    self.keepHighlighted = order;
-                    self.clearReorder();
-                }, () => {
-                    self.hideAllPosts = false;
-                    notify.pop();
-                    notify.error(gettext('Something went wrong. Please reload and try again later'));
-                });
+                postsService.savePost(post.blog, post, undefined, {order: order})
+                    .then(() => {
+                        self.keepHighlighted = order;
+                        self.clearReorder();
+                    }, () => {
+                        self.hideAllPosts = false;
+                        notify.error(gettext('Something went wrong. Please reload and try again later'));
+                    });
             },
             removePostFromList: function(post) {
                 self.pagesManager.removePost(post);
@@ -149,6 +149,7 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             },
         });
         $scope.lbPostsInstance = self;
+
         // retrieve first page
         self.fetchNewPage()
             // retrieve updates when event is received
@@ -160,42 +161,77 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
             });
     }
 
-    // This function is responsible for updating the timeline,
-    // the contribution, the draft and the comment panel on incoming
-    // new post as well unpublished posts
+    /**
+     * This function is responsible for updating the timeline,
+     * the contribution, the draft and the comment panel on incoming
+     * new post as well unpublished posts
+     */
     const handleNotification = (eventParams, $element, $scope) => {
         const listInstance = $scope.lbPostsInstance;
+        const posts = eventParams.posts || [];
+
+        if (shouldExcludeFromUpdates($element, $scope, eventParams))
+            return false;
+
+        if (isNotMainTimelineWithStagesDefined($element, eventParams))
+            return false;
+
+        // Notify for scheduled post
+        notifyScheduledPostPublished(eventParams);
+
+        // Only update if posts belong to the same blog
+        updateIfPostsBelongToSameBlog(posts, $scope, listInstance, eventParams);
+    };
+
+    /**
+     * Determines if the element should be updated based on:
+     * 1. If it not the main timeline
+     * 2. It is not a comments panel
+     * 3. If the first post is syndicated
+     */
+    const shouldExcludeFromUpdates = ($element, $scope, eventParams) => {
         const isMainTimeline = $element.hasClass('timeline-posts-list');
         const isPanelOfComments = $scope.lbPostsStatus === 'comment';
         const isFirstPostSyndicated = eventParams.posts && _.has(eventParams.posts[0], 'syndication_in');
 
-        if (!isMainTimeline && !isPanelOfComments && isFirstPostSyndicated)
-            return false;
+        return !isMainTimeline && !isPanelOfComments && isFirstPostSyndicated;
+    };
 
-        if (!isMainTimeline && angular.isDefined(eventParams.stages))
-            return false;
+    const isNotMainTimelineWithStagesDefined = ($element, eventParams) => {
+        const isMainTimeline = $element.hasClass('timeline-posts-list');
 
+        return !isMainTimeline && angular.isDefined(eventParams.stages);
+    };
+
+    const notifyScheduledPostPublished = (eventParams) => {
         if (eventParams.scheduled_done) {
-            notify.pop();
             notify.info(gettext('Scheduled post has been published'));
         }
+    };
 
-        // only update if posts belong to same blog
-        const posts = eventParams.posts || [];
+    // Check if posts belong to the same blog and update accordingly
+    const updateIfPostsBelongToSameBlog = (posts, $scope, listInstance, eventParams) => {
+        if (posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
+            // If post is scheduled and just created, don't show on timeline.
+            // The post will show when scheduled_done is true
+            if (posts[0].scheduled && eventParams.created) {
+                return;
+            }
 
-        if (posts && posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
-            const applyUpdatesToPostList = true;
+            // if post was removed and was a syndicated one
+            if (eventParams.deleted && eventParams.syndicated) {
+                listInstance.pagesManager.removePost(posts[0]);
+                return notify.info(gettext('Syndicated post removed by the producer'));
+            }
+
             const maxPublishedDate = getMaxPublishedDate(posts, eventParams.updated);
 
             listInstance.isLoading = true;
-            listInstance.pagesManager.retrieveUpdate(applyUpdatesToPostList, maxPublishedDate).then(() => {
+            listInstance.pagesManager.retrieveUpdate(true, maxPublishedDate).then(() => {
                 refreshInstagramEmbeds();
-
                 if (eventParams.deleted === true) {
-                    notify.pop();
                     notify.info(gettext('Post removed'));
                 }
-
                 listInstance.isLoading = false;
             });
         }

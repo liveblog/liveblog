@@ -6,30 +6,23 @@
 'use strict';
 
 var helpers = require('./helpers')
-  , view = require('./view');
+  , view = require('./view')
+  , polls = require('./polls');
+const Permalink = require('./permalink');
 
 const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
 const commentItemEndpoint = `${apiHost}api/client_items`;
 const clientPostsEndpoint = `${apiHost}api/client_posts`;
 const commentPostEndpoint = `${apiHost}api/client_comments`;
+const permalink = new Permalink();
 
 var endpoint = apiHost + 'api/client_blogs/' + LB.blog._id + '/posts';
 var settings = LB.settings;
 var vm = {};
-var latestUpdate;
+var latestUpdate = new Date().toISOString();
+var pendingPosts;
+var sharedPostTimestamp;
 var selectedTags = [];
-
-// Check if last_created_post and last_updated_post are there.
-// and use them properly
-if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
-    LB.blog.last_updated_post && LB.blog.last_updated_post._updated) {
-  latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
-                            new Date(LB.blog.last_updated_post._updated))).toISOString();
-} else if (LB.blog.last_created_post && LB.blog.last_created_post._updated) {
-  latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
-} else {
-  latestUpdate = new Date().toISOString();
-}
 
 /**
  * Get initial or reset viewmodel.
@@ -99,7 +92,8 @@ vm.getPosts = function(opts) {
     notDeleted: opts.notDeleted,
     fromDate: opts.fromDate ? opts.fromDate : false,
     sticky: opts.sticky,
-    tags: opts.tags
+    tags: opts.tags,
+    beforeDate: opts.beforeDate ? opts.beforeDate : false
   });
 
   if (LB.output && endpoint.indexOf('api/client_blogs') !== -1) {
@@ -254,6 +248,73 @@ vm.isTimelineEnd = function(api_response) {
   return api_response._meta.total <= itemsInView - extraPosts;
 };
 
+
+vm.fetchLatestAndRender = function() {
+  vm.loadPosts({
+    fromDate: latestUpdate,
+    tags: selectedTags
+  })
+  .then(view.renderPosts)
+  .then(view.initGdprConsentAndRefreshAds)
+  .catch(error => console.log(error))
+}
+
+vm.fetchFromPermalinkAndRender = function() {
+  vm.loadPosts({
+    beforeDate: sharedPostTimestamp,
+    tags: selectedTags,
+  })
+  .then(response => {
+    response.pendingPosts = pendingPosts;
+    latestUpdate = sharedPostTimestamp;
+    return view.renderTimeline(response);
+  })
+  .then(view.scrollHeaderIntoView)
+  .then(vm.fetchLatestAndRender)
+  .catch(error => console.log(error))
+}
+
+vm.handleSharedPost = function(postId) {
+  LB.settings.autoApplyUpdates = false;
+  vm.getSinglePost(postId)
+  .then(post => {
+    sharedPostTimestamp = new Date(post._updated).toISOString();
+    vm.loadPosts({
+      fromDate: sharedPostTimestamp,
+      tags: selectedTags
+    })
+    .then(response => {
+      pendingPosts = response._meta.total;
+      return vm.fetchFromPermalinkAndRender();
+    })
+  })
+  .catch(error => console.log(error));
+}
+
+vm.initialRender = function() {
+  vm.loadPosts({
+    beforeDate: latestUpdate,
+    tags: selectedTags,
+    notDeleted: true,
+  })
+  .then(api_response => {
+    view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
+    return api_response;  
+  })
+  .then(view.renderTimeline)
+  .then(view.displayNewPosts)
+  .then(view.checkPending)
+  .then(view.consent.init)
+  .then(view.adsManager.refreshAds)
+  .then(view.loadEmbeds)
+  .then(polls.checkExistingVotes)
+  .then(() => {
+    onYouTubeIframeAPIReady();
+  })
+  .then(vm.fetchLatestAndRender)
+  .catch(error => console.log(error))
+}
+
 /**
  * Set up viewmodel.
  */
@@ -262,24 +323,22 @@ vm.init = function() {
   this.vm = getEmptyVm(settings.postsPerPage);
   this.vm.timeInitialized = new Date().toISOString();
 
-  function fetchLatestAndRender() {
-    vm.loadPosts({
-      fromDate: latestUpdate,
-      tags: selectedTags
-    })
-    .then(view.renderPosts)
-    .then(view.initGdprConsentAndRefreshAds);
-  }
-
   var isBlogOpen = LB.blog.blog_status === "open";
   var tenSeconds = 10 * 1000;
 
+  if (permalink._id) {
+    // if permalink exists, even if blog is archived, get the timestamp and render the post and the posts before it
+    // after which get the latest posts from the same timestamp and render as new updates
+    vm.handleSharedPost(permalink._id);
+  }
+
   if (isBlogOpen) {
-    // let's hit backend right away after load and render latest updates
-    fetchLatestAndRender();
+    // let's hit backend right away after load and load posts before current time
+    // after which we check for new posts
+    vm.initialRender();
 
     // then every 10 seconds
-    setInterval(fetchLatestAndRender, tenSeconds);
+    setInterval(vm.fetchLatestAndRender, tenSeconds);
   }
 };
 
@@ -300,7 +359,7 @@ vm.getQuery = function(opts) {
           "and": [
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
-            {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
+            {"range": {"_updated": opts.beforeDate ? { "lte": opts.beforeDate } : {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
       }
@@ -368,7 +427,7 @@ vm.getQuery = function(opts) {
   }
 
   // Remove the range, we want all the results
-  if (!opts.fromDate) {
+  if (!opts.fromDate && !opts.beforeDate) {
     query.query.filtered.filter.and.forEach((rule, index) => {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);

@@ -50,7 +50,7 @@ class AuthorsMixin:
                 if isinstance(author_id, dict):
                     author_id = author_id.get("_id", "")
 
-                # author_id might be an empty string, for instance when the post is syndicated in
+                # author_id might be an empty string, for instance when the post is syndicated_in
                 # for this case we use the syndicated_creator in `attach_authors` method
                 if author_id:
                     author_id = ObjectId(author_id)
@@ -131,17 +131,27 @@ class AuthorsMixin:
         for post in posts:
             post_author_id = str(post.get("original_creator", "__not_found__"))
             original_creator = self.authors_map.get(post_author_id)
-            main_item = post_utils.get_main_item(post)
+            first_item = post_utils.get_first_item(post)
 
             if not original_creator:
-                if main_item.get("item_type") == "comment":
+                item_type = first_item.get("item_type")
+
+                if item_type == "comment":
                     original_creator = {
-                        "display_name": main_item.get("commenter"),
+                        "display_name": first_item.get("commenter"),
+                        "_id": None,
+                    }
+
+                elif item_type == "post_comment":
+                    original_creator = {
+                        "display_name": first_item.get("author_name"),
                         "_id": None,
                     }
 
                 elif post.get("syndication_in"):
-                    original_creator = main_item.get("syndicated_creator", {})
+                    # get the syndicated_creator from post, otherwise grab it from item (fallback for previous logic)
+                    first_item_author = first_item.get("syndicated_creator", {})
+                    original_creator = post.get("syndicated_creator", first_item_author)
 
             post["original_creator"] = (
                 original_creator.get("_id") if is_mobile_app else original_creator
@@ -155,9 +165,10 @@ class AuthorsMixin:
                 for group in post.get("groups", [])
                 for assoc in group.get("refs", [])
             ]
+
             for ref in items_refs:
                 item = ref.get("item")
-                if item:
+                if item and "original_creator" in item:
                     author_id = str(item["original_creator"])
                     item["original_creator"] = (
                         author_id if is_mobile_app else self.authors_map.get(author_id)

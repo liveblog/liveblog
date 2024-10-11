@@ -105,14 +105,14 @@
                         <dt ng-if="isAdmin()">{{ ::'Theme' | translate }}:</dt>
                         <dd ng-if="isAdmin()">{{ ::blog.blog_preferences.theme }}</dd>
                         <dt>{{ ::'Created' | translate}}:</dt>
-                        <dd><time datetime="{{ blog._created}}">{{ blog._created | reldateAutoUpdate }}</time></dd>
+                        <dd><time datetime="{{ blog._created}}"><span ng-bind-html="blog._created | reldateAutoUpdate"></span></time></dd>
                         <dt>{{ ::'No. of Posts' | translate }}:</dt>
                         <dd>{{ ::blog.total_posts }}</dd>
                         <dl>
                         <dt> {{ :: 'Last updated' | translate }}:</dt>
-                        <dd><time datetime="{{ blog._updated}}">{{ blog._updated | reldateAutoUpdate }}</time></dd>
+                        <dd><time datetime="{{ blog._updated}}"><span ng-bind-html="blog._updated | reldateAutoUpdate"></span></time></dd>
                         <dt> {{ :: 'Last posted' | translate }}:</dt>
-                        <dd><time datetime="{{ blog.last_created_post._updated}}">{{ blog.last_created_post._updated | reldateAutoUpdate }}</time></dd>
+                        <dd><time datetime="{{ blog.last_created_post._updated}}"><span ng-bind-html="blog.last_created_post._updated | reldateAutoUpdate"></span></time></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
                         <dt> {{ :: 'Syndication' | translate }}:</dt>
                         <dd>
@@ -128,7 +128,7 @@
                             {{ ::'To be deleted' | translate }}:
                         </dt>
                         <dd ng-if="blog.blog_status == 'deleted'" class="text-red">
-                            {{ ::blog.delete_not_before | reldateAutoUpdate }}
+                            <span ng-html-bind="::blog.delete_not_before | reldateAutoUpdate"></span>
                         </dd>
                     </dl>
                 </div>

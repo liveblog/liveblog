@@ -78,6 +78,54 @@ function post(url, data) {
 
 }
 
+function get(url, noCache = false) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', url);
+    
+    // Add the Cache-Control header if noCache is True
+    if (noCache) {
+      xhr.setRequestHeader("Cache-Control", "no-cache");
+    }
+    
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send();
+  });
+}
+
+
+function patch(url, data, etag, noCache = false) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PATCH', url);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("If-Match", etag);
+
+    // Add the Cache-Control header if noCache is True
+    if (noCache) {
+      xhr.setRequestHeader("Cache-Control", "no-cache");
+    }
+
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send(JSON.stringify(data));
+  });
+}
 /**
  * Simple function to convert plain text to html
  * @param {string} strHTML - plain html to be converted to DOM Nodes
@@ -114,11 +162,34 @@ function range(start, stop, step) {
     return result;
 };
 
+function getSortBy(sortBy) {
+  // initialy on server sort params are set as newest_first, oldest_first
+  // on client we dont use this, so this is temp fix
+  switch (sortBy) {
+    case 'oldest_first':
+    case 'ascending':
+      sortBy = 'ascending';
+      break;
+    case 'newest_first':
+    case 'descending':
+      sortBy = 'descending';
+      break;
+    default:
+      sortBy = 'editorial';
+  }
+  
+  window.playersState = {};
+  return sortBy;
+};
+
 module.exports = {
   getElems: getElems,
   getJSON: getJSON,
   post: post,
+  get: get,
+  patch: patch,
   convertTimestamp: convertTimestamp,
   fragmentFromString: fragmentFromString,
-  range: range
+  range: range,
+  getSortBy: getSortBy
 };
