@@ -1,6 +1,8 @@
 import logging
+from flask import current_app as app
 from itertools import groupby
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 
 
 logger = logging.getLogger("superdesk")
@@ -189,3 +191,18 @@ def check_content_diff(updates, original):
                 return True
 
     return content_diff
+
+
+def update_associated_post(blog_id, item_id):
+    """
+    Updates all associated blog posts related to the given item i.e poll.
+    """
+    posts_service = get_resource_service("client_posts")
+
+    for post in posts_service.find({"blog": blog_id, "particular_type": "post"}):
+        for assoc in get_associations(post):
+            if assoc.get("residRef") == item_id:
+                updated_post = post.copy()
+                updated_post["content_updated_date"] = utcnow()
+                posts_service.update(post.get("_id"), updated_post, post)
+                app.blog_cache.invalidate(blog_id)

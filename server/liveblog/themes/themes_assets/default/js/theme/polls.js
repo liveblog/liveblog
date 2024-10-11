@@ -53,13 +53,11 @@ function hasVoted(selectedPoll) {
  * This function first checks if the user has already voted on the poll to 
  * prevent duplicate voting.
  * 
- * A retry mechanism is implemented to handle potential ETag mismatches 
- * This can occur if another client updates the poll between the time the 
- * client fetches the poll and the time it tries to send the update.
+ * A retry mechanism is implemented to handle potential errors
  */
 function placeVote(event) {
   const { selectedOption, selectedPoll } = event.detail;
-  const pollEndpoint = `${apiHost}api/client_polls/${selectedPoll}`;
+  const pollEndpoint = `${apiHost}api/client_poll_vote/${selectedPoll}`;
   
   // Check if voting happened on another tab
   if (hasVoted(selectedPoll)) {
@@ -68,29 +66,16 @@ function placeVote(event) {
   }
 
   /**
-   * Function to fetch the poll data, and send PATCH request to update poll
-   * with selected option.
+   * Function to send request to place vote on poll with selected option.
    */
   function updateVote() {
-    return helpers.get(pollEndpoint, true)
-      .then((poll) => {
-        const etag = poll._etag;
-        let data = { "poll_body": { "answers" : poll.poll_body.answers }};
-        
-        for (let answer of data.poll_body.answers) {
-          if (answer.option === selectedOption) {
-            answer.votes += 1;
-            break; 
-          }
-        }
-        
-        return helpers.patch(pollEndpoint, data, etag, true);
-      });
+    let data = { "option_selected": selectedOption };
+    return helpers.post(pollEndpoint, data);
   }
 
   /**
    * Attempts to update the poll with the user's vote, with a retry mechanism
-   * to handle potential ETag mismatches (HTTP 412 error).
+   * to handle potential errors
    */
   function tryVote(retries = 3) {
     updateVote()
@@ -99,8 +84,8 @@ function placeVote(event) {
         persistVote(selectedPoll, selectedOption);
       })
       .catch((error) => {
-        if (error.code === 412 && retries > 0) {
-          console.log("ETag mismatch, retrying...", retries);
+        if (error && retries > 0) {
+          console.log("Error occurred:", error);
           tryVote(retries - 1);
         } else {
           console.log("Error occurred:", error);

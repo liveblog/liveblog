@@ -3,7 +3,6 @@ import logging
 
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
-from eve.io.base import DataLayer
 from flask_cors import CORS
 from flask import Blueprint, request
 from flask import current_app as app
@@ -40,7 +39,9 @@ from liveblog.utils.api import api_error, api_response
 
 
 blog_posts_blueprint = Blueprint("blog_posts", __name__)
+voting_blueprint = Blueprint("polls", __name__)
 CORS(blog_posts_blueprint)
+CORS(voting_blueprint)
 logger = logging.getLogger(__name__)
 
 
@@ -195,67 +196,19 @@ class ClientItemsService(ItemsService):
 class ClientPollsResource(PollsResource):
     datasource = {
         "source": "polls",
-        "elastic_filter": {"term": {"particular_type": "poll"}},
+        "search_backend": None,
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "PATCH"]
-    public_item_methods = ["GET", "PATCH"]
-    item_methods = ["GET", "PATCH"]
+    public_methods = ["GET"]
+    public_item_methods = ["GET"]
+    item_methods = ["GET"]
     resource_methods = ["GET"]
     schema = {"client_blog": Resource.rel("client_blogs", True)}
     schema.update(PollsResource.schema)
 
 
 class ClientPollsService(PollsService):
-    """
-    This service handles client polls, enabling vote updates.
-    Voting operations currently rely on the PATCH method to update resources.
-
-    **TODO:**
-
-    * Use a custom voting endpoint to allow the use of `rate_limit` decorator
-    """
-
-    def update(self, id, updates, original):
-        """
-        Updates a poll document with the provided updates and ensures ETag consistency.
-
-        The `_etag` from the original document is copied into the `updates` because the PATCH request goes
-        through an internal patch command that would otherwise generate a new ETag. By copying the last ETag
-        manually, we ensure that the `system_update` uses the original ETag for consistency in update behavior.
-        """
-        updates["_etag"] = original.get("_etag")
-
-        try:
-            self.system_update(id, updates, original)
-        except DataLayer.OriginalChangedError:
-            poll = self.find_one(req=None, _id=id)
-            self.system_update(id, updates, poll)
-
-    def on_updated(self, updates, original):
-        """
-        Performs actions when a poll has been successfully updated.
-
-        After updating the poll, this method checks for any associated client posts that reference the updated
-        poll and updates the `content_updated_date` for these posts to reflect that the
-        poll content has changed. This then ensures the clients get the poll updates on the embeds
-        """
-        super().on_updated(updates, original)
-
-        poll_id = str(original.get("_id"))
-        blog_id = original.get("blog")
-
-        for post in get_resource_service("client_posts").find(
-            {"blog": blog_id, "particular_type": "post"}
-        ):
-            for assoc in post_utils.get_associations(post):
-                if assoc.get("residRef") == poll_id:
-                    updated_post = post.copy()
-                    updated_post["content_updated_date"] = utcnow()
-                    get_resource_service("posts").update(
-                        post.get("_id"), updated_post, post
-                    )
-                    app.blog_cache.invalidate(blog_id)
+    pass
 
 
 class ClientCommentsResource(PostsResource):
@@ -555,6 +508,60 @@ def get_blog_posts(blog_id):
     response_data = blog.posts(wrap=True, **kwargs)
     result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
+
+
+@voting_blueprint.route("/api/client_poll_vote/<poll_id>", methods=["POST"])
+def client_poll_vote(poll_id):
+    """
+    Handles the voting action for a poll.
+
+    This function allows users to vote for a specific option in a poll. It performs the following steps:
+    1. Validate the request data
+    2. Retrieve the poll and validate selected option
+    3. Increment the vote count
+    4. Update associated blog posts to reflect change on embed
+
+    Returns:
+        JSON response with code:
+            - 201: If the vote is successfully recorded.
+            - 400: If the request is invalid
+            - 404: If option_selected/poll is not found
+            - 422: If an error occurs during vote update.
+
+    **TODO:**
+    * Add rate limiter decorator on endpoint
+    """
+    data = request.json
+    option_selected = data.get("option_selected", None)
+    if option_selected is None:
+        return api_error("Please select a voting option.", 400)
+
+    polls = get_resource_service("polls")
+    poll = polls.find_one(req=None, _id=poll_id)
+    if poll is None:
+        return api_error("Error: Poll not found", 404)
+
+    poll_body = poll.get("poll_body", {})
+    answers = poll_body.get("answers", [])
+    option_exists = any(answer.get("option") == option_selected for answer in answers)
+    if not option_exists:
+        return api_error(
+            f"Error: Option '{option_selected}' not found in poll answers", 404
+        )
+
+    result = polls.find_and_modify(
+        query={"_id": poll_id, "poll_body.answers.option": option_selected},
+        update={"$inc": {"poll_body.answers.$.votes": 1}},
+        new=True,
+    )
+
+    if result is None:
+        return api_error("Error: Unable to update poll votes", 422)
+
+    blog_id = poll.get("blog")
+    post_utils.update_associated_post(blog_id, poll_id)
+
+    return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
 
 
 # convert posts - add items in post
