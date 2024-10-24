@@ -106,7 +106,7 @@ CACHE_CONTROL = "max-age=0, no-cache"
 
 X_DOMAINS = "*"
 X_MAX_AGE = 24 * 3600
-X_HEADERS = ["Content-Type", "Authorization", "If-Match"]
+X_HEADERS = ["Content-Type", "Authorization", "If-Match", "Cache-Control"]
 
 MONGO_ENABLE_MULTI_DBS = False
 MONGO_DBNAME = env("MONGO_DBNAME", "liveblog")

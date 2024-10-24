@@ -78,11 +78,17 @@ function post(url, data) {
 
 }
 
-function get(url) {
+function get(url, noCache = false) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', url);
+    
+    // Add the Cache-Control header if noCache is True
+    if (noCache) {
+      xhr.setRequestHeader("Cache-Control", "no-cache");
+    }
+    
     xhr.onload = function() {
       if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText));
@@ -96,13 +102,18 @@ function get(url) {
 }
 
 
-function patch(url, data, etag) {
+function patch(url, data, etag, noCache = false) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
     xhr.open('PATCH', url);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("If-Match", etag);
+
+    // Add the Cache-Control header if noCache is True
+    if (noCache) {
+      xhr.setRequestHeader("Cache-Control", "no-cache");
+    }
 
     xhr.onload = function() {
       if (xhr.status === 200) {
