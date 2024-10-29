@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function openSocialShareWindow(location, width, height) {
-        window.open(location,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + width +',height=' + height);
+        window.open(location, 'targetWindow', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + width + ',height=' + height);
         return false;
     }
 </script>
@@ -8,139 +8,144 @@
     <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
         <div class="illustration" ng-if="timeline.blog.picture_url && timeline.settings.showImage" ng-cloak>
-            <img ng-src="{{ timeline.blog.picture_url }}" ng-srcset="{{ timeline.blog.picture_srcset }}" sizes="100vw"/>
+            <img ng-src="{{ timeline.blog.picture_url }}" ng-srcset="{{ timeline.blog.picture_srcset }}"
+                sizes="100vw" />
         </div>
-        <p class="description" ng-if="timeline.settings.showDescription" ng-bind-html="timeline.blog.descriptionHtml"></p>
+        <p class="description" ng-if="timeline.settings.showDescription" ng-bind-html="timeline.blog.descriptionHtml">
+        </p>
     </div>
     <div ng-if="timeline.settings.livestream" class="livestream">
-        <lb-posts
-            ng-if='!timeline.stickyPagesManager.hideSticky'
-            timeline="timeline"
-            hide-info="true"
-            posts="timeline.stickyPagesManager.allPosts"
-            class="pin-posts" ng-cloak></lb-posts>
+        <lb-posts ng-if='!timeline.stickyPagesManager.hideSticky' timeline="timeline" hide-info="true"
+            posts="timeline.stickyPagesManager.allPosts" class="pin-posts" ng-cloak></lb-posts>
     </div>
     <div class="header-bar">
         <div class="sorting-bar">
             <div class="sorting-bar__title" translate>Sort by:</div>
             <div class="sorting-bar__orders">
-                <div
-                    class="sorting-bar__order"
+                <div class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
                     ng-click="timeline.orderBy('editorial')" translate>Editorial</div>
-                <div
-                    class="sorting-bar__order"
+                <div class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
                     ng-click="timeline.orderBy('newest_first')" translate>Newest first</div>
-                <div
-                    class="sorting-bar__order"
+                <div class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
-                <lb-dropdown ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__order tags-bar" placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
+                <lb-dropdown ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__order tags-bar"
+                    placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
                     tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
             <div class="sorting-bar__orders-mobile">
                 <lb-dropdown placeholder="{{ 'Sort by:' | translate }}" list="timeline.sortOptions"
-                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)" type="single_select"></lb-dropdown>
+                    selected="timeline.pagesManager.order()" order="timeline.orderBy(order)"
+                    type="single_select"></lb-dropdown>
             </div>
             <div ng-if="timeline.tagsFilterOptions.length > 0" class="sorting-bar__orders-mobile">
                 <lb-dropdown placeholder="{{ 'Filter Content' | translate }}" list="timeline.tagsFilterOptions"
-                tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
+                    tags="timeline.filterBy(tags)" type="multiple_select"></lb-dropdown>
             </div>
         </div>
         <div class="header-bar__actions">
-            <div
-                class="toggleHighlights"
-                ng-if="timeline.settings.hasHighlights"
-                ng-class="{'active': timeline.highlightsOnly}"
-                ng-click="timeline.toggleHighlighsOnly()"
+            <div class="toggleHighlights" ng-if="timeline.settings.hasHighlights"
+                ng-class="{'active': timeline.highlightsOnly}" ng-click="timeline.toggleHighlighsOnly()"
                 only-title="{{ 'Show highlighted post only' | translate }}"
                 all-title="{{ 'Show all posts'| translate }}"
                 title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
                 <i class="icon-star icon--orange"></i>
             </div>
-            <button
-                ng-if="timeline.settings.canComment"
-                class="btn comment ng-cloak"
-                ng-class="{'active': timeline.comment}"
-                ng-click="timeline.comment = !timeline.comment"><i class="icon-comment"></i>{{ :: "Comment" | translate }}</button>
+            <button ng-if="timeline.settings.canComment" class="btn comment ng-cloak"
+                ng-class="{'active': timeline.comment}" ng-click="timeline.comment = !timeline.comment"><i
+                    class="icon-comment"></i>{{ :: "Comment" | translate }}</button>
         </div>
         <div class="header-bar__logo">
-            <img ng-if="timeline.output.logo_url" ng-src="{{ timeline.output.logo_url }}"/>
+            <img ng-if="timeline.output.logo_url" ng-src="{{ timeline.output.logo_url }}" />
             <a ng-if="!timeline.output.logo_url" href="https://www.liveblog.pro" target="_blank">
-                <img ng-src="{{ timeline.templateDir}}images/lb-logo.svg"/>
+                <img ng-src="{{ timeline.templateDir}}images/lb-logo.svg" />
             </a>
         </div>
     </div>
     <div class="timeline-body">
         <div lb-comments data-comment="timeline.comment"></div>
-        <div
-            class="lb-post emtpy-message" ng-cloak
+        <div class="lb-post emtpy-message" ng-cloak
             ng-show="timeline.pagesManager.allPosts().length + (timeline.settings.livestream? 0 :timeline.stickyPagesManager.allPosts().length)< 1 && !timeline.loading">
             <div translate>No posts for now.</div>
         </div>
-        <section
-            ng-class="{'comment-active': timeline.comment}"
-            class="lb-posts list-group"
+        <section ng-class="{'comment-active': timeline.comment}" class="lb-posts list-group"
             infinite-scroll="timeline.fetchNewPage()"
             infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
             infinite-scroll-immediate-check="true">
-            <div class="lb-post load-new-posts"
-                 ng-click="timeline.applyUpdates()"
-                 ng-show="timeline.settings.loadNewPostsManually && (timeline.newPosts.length > 0 || timeline.newStickyPosts.length > 0)"
-                 translate translate-n="timeline.newPosts.length + timeline.newStickyPosts.length"
-                 translate-plural="See {{$count}} new updates" ng-cloak>
+            <div class="lb-post load-new-posts" ng-click="timeline.applyUpdates()"
+                ng-show="timeline.settings.loadNewPostsManually && (timeline.newPosts.length > 0 || timeline.newStickyPosts.length > 0)"
+                translate translate-n="timeline.newPosts.length + timeline.newStickyPosts.length"
+                translate-plural="See {{$count}} new updates" ng-cloak>
                 See one new update
             </div>
             <div ng-if="!timeline.settings.livestream">
-                <lb-posts
-                    ng-if='!timeline.stickyPagesManager.hideSticky'
-                    timeline="timeline"
-                    posts="timeline.stickyPagesManager.allPosts"
-                    class="pin-posts" ng-cloak></lb-posts>
+                <lb-posts ng-if='!timeline.stickyPagesManager.hideSticky' timeline="timeline"
+                    posts="timeline.stickyPagesManager.allPosts" class="pin-posts" ng-cloak></lb-posts>
 
-                <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
-                    class="pin-drawer" ng-cloak>
+                <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading" class="pin-drawer"
+                    ng-cloak>
 
-                    <div class="pin-drawer-info"
-                         ng-if="timeline.stickyPagesManager.hideSticky"
-                         translate translate-n="timeline.stickyPagesManager.allPosts().length"
-                         translate-plural="{{$count}} pinned posts">
+                    <div class="pin-drawer-info" ng-if="timeline.stickyPagesManager.hideSticky" translate
+                        translate-n="timeline.stickyPagesManager.allPosts().length"
+                        translate-plural="{{$count}} pinned posts">
                         One pinned post
                     </div>
-                    <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
-                    ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
+                    <button class="pin-drawer-button"
+                        ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
+                        ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
                         <i class="icon-chevron-up"></i>
                     </button>
                 </div>
             </div>
-            <lb-posts
-                timeline="timeline"
-                enhance="timeline.enhance"
-                posts="timeline.pagesManager.allPosts"></lb-posts>
+            <lb-posts timeline="timeline" enhance="timeline.enhance" posts="timeline.pagesManager.allPosts"></lb-posts>
         </section>
-        <button ng-click="timeline.fetchNewPage()"
-                class="ng-cloak"
-                ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" translate>Load more posts</button>
+        <button ng-click="timeline.fetchNewPage()" class="ng-cloak"
+            ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" translate>Load more
+            posts</button>
         <div class="loading" ng-show="timeline.loading" translate>Loading</div>
     </div>
 </div>
 
 <script>
-    window.fbAsyncInit = function() {
+    window.fbAsyncInit = function () {
         try {
-            FB.init({ xfbml: true, version: 'v7.0' });
+            FB.init({xfbml: true, version: 'v7.0'});
             console.log('init facebook script');
-        } catch(err) {console.log('facebook script not loaded')}
+        } catch (err) {console.log('facebook script not loaded')}
     }
+
+    function processInstagram() {
+        try {
+            instgrm.Embeds.process();
+            console.log('processing instagram embeds');
+        } catch (err) {console.log('instgrm script not loaded')}
+    }
+
+    function loadFacebookEmbedScript() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://connect.facebook.net/en_US/sdk.js';
+            script.async = true;
+            script.onload = () => resolve('FB embed script loaded successfully');
+            script.onerror = () => reject(new Error('Failed to load FB embed script'));
+            document.head.appendChild(script);
+        });
+    }
+
+    setTimeout(() => {
+        loadFacebookEmbedScript().then(() => {console.log('FB loaded')});
+    }, 1000);
 </script>
-<script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script async defer src="https://www.instagram.com/embed.js" onload="processInstagram()"></script>
 
 <script src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 <style class="embedly-css">
-    .card .hdr{
-      display: none;
+    .card .hdr {
+        display: none;
     }
+
     body#cards {
         padding: 0px;
     }
