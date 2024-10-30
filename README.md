@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.90.0-rc3*
+*Version 3.90.0*
 
 [![Liveblog CI](https://github.com/liveblog/liveblog/workflows/Liveblog%20CI/badge.svg)](https://github.com/liveblog/liveblog/actions)
 
@@ -13,7 +13,7 @@
 
 ### Liveblog local setup (recommended)
 
-Here I'm assuming you are running Ubuntu Linux 20.04.6 LTS
+Here it is assumed you are running Ubuntu Linux 20.04.6 LTS
 
 #### Install the dependencies (for Mac OS users [follow this](https://github.com/liveblog/liveblog/blob/master/README-macos.md))
 
