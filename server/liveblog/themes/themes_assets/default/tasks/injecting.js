@@ -121,6 +121,8 @@ const themeReplace = (theme, paths, callback) => {
         let newVersion;
         if (parsedVersion.prerelease.length) {
           newVersion = semver.inc(version, 'prerelease');
+        } else if (parsedVersion.patch >= 9) {
+          newVersion = semver.inc(version, 'minor');
         } else {
           newVersion = semver.inc(version, 'patch');
         }
@@ -134,6 +136,8 @@ const themeReplace = (theme, paths, callback) => {
         let newVersion;
         if (parsedVersion.prerelease.length) {
           newVersion = semver.inc(version, 'prerelease');
+        } else if (parsedVersion.patch >= 9) {
+          newVersion = semver.inc(version, 'minor');
         } else {
           newVersion = semver.inc(version, 'patch');
         }

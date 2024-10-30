@@ -1,15 +1,15 @@
 {
     "label": "Liveblog SEO Simple Theme",
     "name": "simple",
-    "version": "0.3.5",
+    "version": "0.3.6",
     "seoTheme": true,
     "extends": "default",
     "extendsFromPackage": "liveblog-default-theme",
     "license": "AGPL-3.0",
     "devStyles": ["dist/simple-0c6ddd6dd6.css"],
-    "devScripts": ["dist/simple-bf752a85c6.js"],
+    "devScripts": ["dist/simple-721e729fb7.js"],
     "styles": ["dist/simple-0c6ddd6dd6.css"],
-    "scripts": ["dist/simple-bf752a85c6.js"],
+    "scripts": ["dist/simple-721e729fb7.js"],
     "options": [],
     "i18n": {
         "cs": {
