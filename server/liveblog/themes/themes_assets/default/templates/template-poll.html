@@ -1,0 +1,54 @@
+{% set pollId = ref.item._id %}
+{% set poll = ref.item.poll_body %}
+
+<div id="poll-container-{{ pollId }}" class="lb-poll_container">
+  <p class="lb-poll_question">{{ poll.question }}</p>
+    <form class="lb-poll_form" onsubmit="placeVote(event, this)">
+
+      <!-- When the poll is open -->
+      <div id="poll-open-{{ pollId }}" class="lb-poll_options_container" style="display: flex;">
+        {% for answer in poll.answers %}
+          <div class="lb-poll_open_option">
+            <input type="radio" class="lb-poll_custom_radio" id="{{ pollId }}-answer-{{ loop.index0 }}" name="selectedOption" value="{{ answer.option }}" required>
+            <label for="{{ pollId }}-answer-{{ loop.index0 }}" class="lb_poll_custom_label">{{ answer.option }}</label>
+          </div>
+        {% endfor %}
+        <input type="text" name="selectedPoll" value="{{ pollId }}" style="display: none">
+      </div>
+      
+      <!-- When the poll is closed -->
+      <div id="poll-closed-{{ pollId }}" class="lb-poll_options_container">
+        {% for answer in poll.answers %}
+            <div class="lb-poll_closed_option">
+                <p class="lb-poll_answer">{{ answer.option }}</p>
+                <div class="lb-poll_closed_result">
+                    <div class="lb-poll_closed_bar">
+                        <div class="lb-poll_closed_bar_bg">
+                          <div class="lb-poll_closed_bar_fg" style="width: {{ answer.percentage }}%;"></div>
+                        </div>
+                    </div>
+                    <p class="lb-poll_percentage">
+                        {{ answer.percentage }}%
+                    </p>
+                </div>
+                <p class="lb-poll_subtitle">Votes: {{ answer.votes }}</p>
+            </div>
+        {% endfor %}
+      </div>
+
+      <div class="lb-poll_footer">
+          <div class="lb-poll_footer_summary">
+            <p class="lb-poll_subtitle">Total Votes: <span id="total-votes-{{ pollId }}"></span></p>
+            <p class="lb-poll_subtitle">&bull;</p>
+            <p class="lb-poll_subtitle"><span id="vote-end-{{ pollId }}"></span></p>
+          </div>
+          <button id="vote-button-{{ pollId }}" class="lb-poll_vote_btn" type="submit">VOTE</button>
+      </div>
+      
+    </form>
+</div>
+
+<script>
+  getTotalVotes({{ poll | tojson | safe }}, '{{ pollId }}');
+  getTimeLeft({{ poll | tojson  | safe }}, '{{ pollId }}');
+</script>

@@ -26,6 +26,9 @@ registerHandler(consent.Message.Accept, consent.accept);
 // permalink handling messages
 registerHandler(permalink.Event.Init, permalink.init);
 
+// sharing handling messages
+registerHandler(sharing.Message.ScrollHeaderIntoView, sharing.scrollHeaderIntoView);
+
 permalink.init();
 responsive.init();
 

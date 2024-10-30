@@ -1,0 +1,38 @@
+<script>
+  function getTotalVotes(poll, pollId) {
+    let elementId = `total-votes-${pollId}`;
+    let totalVotes = poll.answers.reduce((acc, ans) => acc + ans.votes, 0);
+    document.getElementById(elementId).innerText = totalVotes;
+  }
+
+  function getTimeLeft(poll, pollId) {
+    let elementId = `vote-end-${pollId}`;
+    let buttonId = `vote-button-${pollId}`;
+    
+    if(typeof window.moment === 'function') {
+      let now = window.moment();
+      let activeUntil = window.moment(poll.active_until);
+      let timeLeft = activeUntil.fromNow();
+
+      if (activeUntil.isBefore(now)) {
+        document.getElementById(elementId).innerText = "Poll closed";
+        document.getElementById(buttonId).style.display = "none";
+      } else {
+        document.getElementById(elementId).innerText = "Ends " + timeLeft;
+      }
+    }
+  }
+
+  function placeVote(event, form) {
+    event.preventDefault();
+    var formData = new FormData(form);
+
+    var data = {};
+    for (var pair of formData.entries()) {
+      data[pair[0]] = pair[1];
+    }
+
+    var voteEvent = new CustomEvent('place_vote', { detail: data });
+    document.dispatchEvent(voteEvent);
+  }
+</script>

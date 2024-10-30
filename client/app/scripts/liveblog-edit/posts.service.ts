@@ -197,7 +197,7 @@ const postsService = (api, $q, _userList, session) => {
             angular.extend(post, {
                 multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
-                mainItem: post.groups[1].refs[0],
+                mainItem: post.groups[1].refs[0] || { item: {} },
                 items: post.groups[1].refs,
             });
 
@@ -295,7 +295,7 @@ const postsService = (api, $q, _userList, session) => {
 
     const savePost = (blogId, postToUpdate, itemsParam: any[], post: any = {}) => {
         let items = itemsParam;
-        const dfds = [];
+        const savePromises = [];
 
         post.post_status = post.post_status || _.result(postToUpdate, 'post_status') || 'open';
 
@@ -307,23 +307,50 @@ const postsService = (api, $q, _userList, session) => {
 
             // save every items
             _.each(items, (itemParam) => {
-                const item = {
-                    blog: blogId,
-                    text: itemParam.text,
-                    meta: itemParam.meta,
-                    group_type: itemParam.group_type,
-                    item_type: itemParam.item_type,
-                    commenter: itemParam.meta && itemParam.meta.commenter,
-                    syndicated_creator: itemParam.syndicated_creator,
-                };
+                switch (itemParam.item_type) {
+                case 'poll': {
+                    const poll = {
+                        blog: blogId,
+                        poll_body: itemParam.poll_body,
+                    };
 
-                dfds.push(api.items.save(item));
+                    if (angular.isDefined(itemParam.id_to_update)) {
+                        const pollPromise = api.polls.getById(itemParam.id_to_update).then((pollToUpdate) => {
+                            // Retrieving the poll is necessary in order to update the poll data from the editor
+                            // which could be outdated in terms of number of votes. This is because there could be
+                            // new votes since the initial creation or in between subsequent updates.
+                            poll.poll_body.answers = pollToUpdate.poll_body.answers;
+                            return api.polls.save(pollToUpdate, poll);
+                        });
+
+                        savePromises.push(pollPromise);
+                    } else {
+                        savePromises.push(api.polls.save(poll));
+                    }
+
+                    break;
+                }
+                default: {
+                    const item = {
+                        blog: blogId,
+                        text: itemParam.text,
+                        meta: itemParam.meta,
+                        group_type: itemParam.group_type,
+                        item_type: itemParam.item_type,
+                        commenter: itemParam.meta && itemParam.meta.commenter,
+                        syndicated_creator: itemParam.syndicated_creator,
+                    };
+
+                    savePromises.push(api.items.save(item));
+                    break;
+                }
+                }
             });
         }
 
         // save the post
-        return $q.all(dfds).then((itemsList) => {
-            if (dfds.length > 0) {
+        return $q.all(savePromises).then((itemsList) => {
+            if (savePromises.length > 0) {
                 angular.extend(post, {
                     blog: blogId,
                     groups: [
@@ -341,7 +368,14 @@ const postsService = (api, $q, _userList, session) => {
 
                 // update the post reference (links with itemsList)
                 _.each(itemsList, (item) => {
-                    post.groups[1].refs.push({ residRef: item._id });
+                    switch (item.item_type) {
+                    case 'poll':
+                        post.groups[1].refs.push({ residRef: item._id, location: 'polls', type: 'poll' });
+                        break;
+                    default:
+                        post.groups[1].refs.push({ residRef: item._id });
+                        break;
+                    }
                 });
             }
 
@@ -359,9 +393,49 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const removePost = (post) => {
-        const deleted = { deleted: true };
+        const removeParams = { deleted: true };
 
-        return savePost(post.blog, post, [], deleted);
+        const items = post.groups[1].refs;
+        const deletePromises = [];
+
+        _.each(items, (item) => {
+            switch (item.item.item_type) {
+            case 'poll': {
+                deletePromises.push(
+                    api.polls.getById(item.residRef).then((pollToDelete) => {
+                        return api.polls.remove(pollToDelete);
+                    })
+                );
+                break;
+            }
+            default: {
+                deletePromises.push(
+                    api.items.getById(item.residRef).then((itemToDelete) => {
+                        return api.items.remove(itemToDelete);
+                    })
+                );
+                break;
+            }
+            }
+        });
+
+        return $q.all(deletePromises).then(() => {
+            angular.extend(removeParams, {
+                groups: [
+                    {
+                        id: 'root',
+                        refs: [{ idRef: 'main' }],
+                        role: 'grpRole:NEP',
+                    }, {
+                        id: 'main',
+                        refs: [],
+                        role: 'grpRole:Main',
+                    },
+                ],
+            });
+
+            return api.posts.save(post, removeParams);
+        });
     };
 
     const flagPost = (postId) => {

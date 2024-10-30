@@ -136,7 +136,7 @@ module.exports = function makeConfig(grunt) {
                     ]
                 },
                 {
-                    test: /\.scss$/,
+                    test: /\.s[ac]ss$/i,
                     use: [
                         'style-loader',
                         'css-loader',

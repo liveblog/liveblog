@@ -315,6 +315,7 @@
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
+                    <div id="fb-root"></div>
                     <lb-posts-list ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
                         !blogEdit.timelineStickyInstance.hideSticky" data-test-id="timeline-posts-pinned"
                         class="timeline-posts-list pinned" lb-posts-instance="blogEdit.timelineStickyInstance"

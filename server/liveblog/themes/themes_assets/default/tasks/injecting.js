@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
-
+const semver = require('semver');
 const { lessCommon } = require('./assets');
 const { resolveResource, debugState } = require('./utils');
 
@@ -116,11 +116,33 @@ const themeReplace = (theme, paths, callback) => {
     gulp.src('theme.json', { base: base })
       .pipe(plugins.replace(cssName, manifest[paths.cssfile] || manifest[`${theme.name}.css`]))
       .pipe(plugins.replace(jsName, manifest[paths.jsfile] || manifest[`${theme.name}.js`]))
-      .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
+      .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.\d+(-\w+\.\d+)?)"/, (match, version) => {
+        const parsedVersion = semver.parse(version);
+        let newVersion;
+        if (parsedVersion.prerelease.length) {
+          newVersion = semver.inc(version, 'prerelease');
+        } else if (parsedVersion.patch >= 9) {
+          newVersion = semver.inc(version, 'minor');
+        } else {
+          newVersion = semver.inc(version, 'patch');
+        }
+        return `"version": "${newVersion}"`;
+      }))
       .pipe(gulp.dest(base));
 
     gulp.src('package.json', { base: base })
-      .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
+      .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.\d+(-\w+\.\d+)?)"/, (match, version) => {
+        const parsedVersion = semver.parse(version);
+        let newVersion;
+        if (parsedVersion.prerelease.length) {
+          newVersion = semver.inc(version, 'prerelease');
+        } else if (parsedVersion.patch >= 9) {
+          newVersion = semver.inc(version, 'minor');
+        } else {
+          newVersion = semver.inc(version, 'patch');
+        }
+        return `"version": "${newVersion}"`;
+      }))
       .pipe(gulp.dest(base));
 
     // Reload theme options

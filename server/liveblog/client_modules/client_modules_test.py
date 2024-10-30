@@ -4,6 +4,7 @@ import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import superdesk.users as users_app
 import liveblog.items as items_app
+import liveblog.polls as polls_app
 from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
@@ -11,6 +12,7 @@ from bson import ObjectId
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import (
     blog_posts_blueprint,
+    voting_blueprint,
     convert_posts,
     _get_converted_item,
 )
@@ -42,9 +44,11 @@ class ClientModuleTestCase(TestCase):
             foo.setup_called()
             blogs.init_app(self.app)
             items_app.init_app(self.app)
+            polls_app.init_app(self.app)
             users_app.init_app(self.app)
             client_modules.init_app(self.app)
             self.app.register_blueprint(blog_posts_blueprint)
+            self.app.register_blueprint(voting_blueprint)
             self.client = self.app.test_client()
             self.app.cache = Cache(self.app, config={"CACHE_TYPE": "simple"})
 
@@ -222,6 +226,38 @@ class ClientModuleTestCase(TestCase):
         # Create blogs
         self.blogs_ids = self.app.data.insert("blogs", self.blogs_list)
 
+        self.polls = [
+            {
+                "_created": "2024-02-07T07:18:11+00:00",
+                "_etag": "654eeec87a0b297f220467d20d836a551398e28c",
+                "_id": ObjectId("65c32eb35c29be1d62515d59"),
+                "_links": {
+                    "self": {"href": "polls/65c32eb35c29be1d62515d59", "title": "Poll"}
+                },
+                "_status": "OK",
+                "_updated": "2024-02-07T07:18:11+00:00",
+                "blog": self.blogs_ids[0],
+                "firstcreated": "2024-02-07T07:18:11+00:00",
+                "group_type": "default",
+                "item_type": "poll",
+                "meta": {},
+                "original_creator": self.user_ids[0],
+                "particular_type": "poll",
+                "poll_body": {
+                    "active_until": "2024-02-09T23:59:59+00:00",
+                    "question": "Do you think Liveblog is the best ?",
+                    "answers": [
+                        {"option": "Yes", "votes": 0},
+                        {"option": "No", "votes": 0},
+                    ],
+                },
+                "text": "Sample poll",
+                "versioncreated": "2024-02-07T07:18:11+00:00",
+            },
+        ]
+
+        self.polls_ids = self.app.data.insert("polls", self.polls)
+
         self.items = [
             {
                 "_created": "2018-04-03T05:42:43+00:00",
@@ -357,6 +393,7 @@ class ClientModuleTestCase(TestCase):
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-13T06:48:23+00:00",
             },
+            self.polls[0],
         ]
 
         self.items_ids = self.app.data.insert("items", self.items)
@@ -404,6 +441,13 @@ class ClientModuleTestCase(TestCase):
                                 "guid": "urn:newsml:localhost:2018-04-13T12:18:23.258732:2a4a8c45-aae6-4d7a-8193-04d7de5b133c",
                                 "item": self.items[1],
                                 "residRef": self.items_ids[1],
+                                "type": "text",
+                            },
+                            {
+                                "guid": "65c32eb35c29be1d62515d59",
+                                "item": self.items[2],
+                                "residRef": self.items_ids[2],
+                                "location": "polls",
                                 "type": "text",
                             },
                         ],
@@ -476,6 +520,32 @@ class ClientModuleTestCase(TestCase):
         # test post items type items_length > 1, but only one image
         post_items_type = doc.get("post_items_type")
         self.assertIsNone(post_items_type, True)
+
+    def test_post_type_poll(self):
+        doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
+        self.blog_posts[0]["groups"][1] = {
+            "id": "main",
+            "refs": [
+                {
+                    "guid": "65c32eb35c29be1d62515d59",
+                    "item": self.items[2],
+                    "residRef": self.items_ids[2],
+                    "location": "polls",
+                    "type": "text",
+                },
+                {
+                    "guid": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
+                    "item": self.items[0],
+                    "residRef": self.items_ids[0],
+                    "type": "text",
+                },
+            ],
+            "role": "grpRole:Main",
+        }
+        post_utils.calculate_post_type(self.blog_posts[0])
+        post_items_type = doc.get("post_items_type")
+        self.assertIsNotNone(post_items_type, True)
+        self.assertEqual(post_items_type, "poll")
 
     def test_b_get_blog_posts(self):
         blog_id = str(self.blogs_ids[0])
@@ -556,3 +626,84 @@ class ClientModuleTestCase(TestCase):
         renditions = converted_item_image.get("renditions")
         self.assertIsNotNone(renditions, True)
         self.assertEqual(renditions, self.items[1]["meta"]["media"]["renditions"])
+
+    def test_client_poll_vote(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        option_selected = "Yes"
+        vote_data = {"option_selected": option_selected}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            self.assertEqual(response.status_code, 201)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "OK")
+            self.assertEqual(response_data["message"], "Vote placed successfully")
+
+            # Validate that the vote count has been incremented in the poll
+            updated_poll = get_resource_service("polls").find_one(req=None, _id=poll_id)
+            updated_answers = updated_poll["poll_body"]["answers"]
+            for answer in updated_answers:
+                if answer["option"] == option_selected:
+                    self.assertEqual(answer["votes"], 1)
+
+    def test_client_poll_vote_missing_option(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        vote_data = {}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because "option_selected" is missing
+            self.assertEqual(response.status_code, 400)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn("Please select a voting option.", response_data["_error"])
+
+    def test_client_poll_vote_invalid_poll(self):
+        headers = {"content-type": "application/json"}
+        invalid_poll_id = "invalid_poll_id"
+        vote_data = {"option_selected": "Yes"}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{invalid_poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because the poll does not exist
+            self.assertEqual(response.status_code, 404)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn("Error: Poll not found", response_data["_error"])
+
+    def test_client_poll_vote_invalid_option(self):
+        headers = {"content-type": "application/json"}
+        poll_id = str(self.polls_ids[0])
+        vote_data = {"option_selected": "Invalid Option"}
+
+        with self.app.test_request_context("polls", method="POST"):
+            response = self.client.post(
+                f"/api/client_poll_vote/{poll_id}",
+                data=json.dumps(vote_data),
+                headers=headers,
+            )
+
+            # Expecting a 400 error because the option is invalid
+            self.assertEqual(response.status_code, 404)
+            response_data = json.loads(response.data.decode())
+            self.assertEqual(response_data["_status"], "ERR")
+            self.assertIn(
+                "Error: Option 'Invalid Option' not found", response_data["_error"]
+            )

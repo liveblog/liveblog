@@ -30,6 +30,7 @@ from liveblog.posts.posts import (
     BlogPostsResource,
 )
 from liveblog.items.items import ItemsResource, ItemsService
+from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from liveblog.posts.mixins import AuthorsMixin
@@ -38,7 +39,9 @@ from liveblog.utils.api import api_error, api_response
 
 
 blog_posts_blueprint = Blueprint("blog_posts", __name__)
+voting_blueprint = Blueprint("polls", __name__)
 CORS(blog_posts_blueprint)
+CORS(voting_blueprint)
 logger = logging.getLogger(__name__)
 
 
@@ -188,6 +191,24 @@ class ClientItemsService(ItemsService):
         for doc in docs:
             check_comment_length(doc["text"])
         super().on_create(docs)
+
+
+class ClientPollsResource(PollsResource):
+    datasource = {
+        "source": "polls",
+        "search_backend": None,
+        "default_sort": [("order", -1)],
+    }
+    public_methods = ["GET"]
+    public_item_methods = ["GET"]
+    item_methods = ["GET"]
+    resource_methods = ["GET"]
+    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    schema.update(PollsResource.schema)
+
+
+class ClientPollsService(PollsService):
+    pass
 
 
 class ClientCommentsResource(PostsResource):
@@ -489,6 +510,60 @@ def get_blog_posts(blog_id):
     return api_response(result_data, 200)
 
 
+@voting_blueprint.route("/api/client_poll_vote/<poll_id>", methods=["POST"])
+def client_poll_vote(poll_id):
+    """
+    Handles the voting action for a poll.
+
+    This function allows users to vote for a specific option in a poll. It performs the following steps:
+    1. Validate the request data
+    2. Retrieve the poll and validate selected option
+    3. Increment the vote count
+    4. Update associated blog posts to reflect change on embed
+
+    Returns:
+        JSON response with code:
+            - 201: If the vote is successfully recorded.
+            - 400: If the request is invalid
+            - 404: If option_selected/poll is not found
+            - 422: If an error occurs during vote update.
+
+    **TODO:**
+    * Add rate limiter decorator on endpoint
+    """
+    data = request.json
+    option_selected = data.get("option_selected", None)
+    if option_selected is None:
+        return api_error("Please select a voting option.", 400)
+
+    polls = get_resource_service("polls")
+    poll = polls.find_one(req=None, _id=poll_id)
+    if poll is None:
+        return api_error("Error: Poll not found", 404)
+
+    poll_body = poll.get("poll_body", {})
+    answers = poll_body.get("answers", [])
+    option_exists = any(answer.get("option") == option_selected for answer in answers)
+    if not option_exists:
+        return api_error(
+            f"Error: Option '{option_selected}' not found in poll answers", 404
+        )
+
+    result = polls.find_and_modify(
+        query={"_id": poll_id, "poll_body.answers.option": option_selected},
+        update={"$inc": {"poll_body.answers.$.votes": 1}},
+        new=True,
+    )
+
+    if result is None:
+        return api_error("Error: Unable to update poll votes", 422)
+
+    blog_id = poll.get("blog")
+    post_utils.update_associated_post(blog_id, poll_id)
+
+    return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
+
+
 # convert posts - add items in post
 def convert_posts(response_data, blog):
     fields = [
@@ -548,5 +623,7 @@ def _get_converted_item(item):
         meta["credit"] = item["meta"]["credit"]
         converted["meta"] = meta
         converted["renditions"] = item["meta"]["media"]["renditions"]
+    elif item_type == "poll":
+        converted["poll_body"] = poll_calculations(item["poll_body"])
 
     return converted

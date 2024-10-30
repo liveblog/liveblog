@@ -1,11 +1,14 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
-{% set mainItem = item.groups[1].refs[0].item %}
-{% set postDate = item.published_date %}
-{% set type = item.post_items_type %}
+{% set mainItem = post.groups[1].refs[0].item %}
+{% set postDate = post.published_date %}
+{% set type = post.post_items_type %}
 {% set galleryItem = false %}
 
+{# set item variable below for compatibility but we should also rename the variables appropriately #}
+{% set item = post %}
+
 {% if mainItem.commenter %}
-  {% if item.groups[1].refs|length > 1 %}
+  {% if post.groups[1].refs|length > 1 %}
     {% set type = 'comment' %}
   {% endif %}
   {% set postDate = mainItem._created %}
@@ -15,36 +18,36 @@
 {% endif %}
 
 <!-- sticky position toggle -->
-{% if item.sticky and settings.stickyPosition == 'top' %}
+{% if post.sticky and settings.stickyPosition == 'top' %}
 <article
   class="lb-sticky-top-post list-group-item {{ type }} {% if displaynone %}mod--displaynone{% endif %}"
-  data-post-id="{{ item._id }}"
-  data-post-sticky="{{ item.sticky }}">
+  data-post-id="{{ post._id }}"
+  data-post-sticky="{{ post.sticky }}">
   {% else %}
 <article
-  class="lb-post list-group-item show-author-avatar {{ type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone %}mod--displaynone{% endif %}"
-  data-post-id="{{ item._id }}"
-  data-post-sticky="{{ item.sticky }}">
+  class="lb-post list-group-item show-author-avatar {{ type }} {% if post.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone %}mod--displaynone{% endif %}"
+  data-post-id="{{ post._id }}"
+  data-post-sticky="{{ post.sticky }}">
 
   {% block post_header %}
   <div class="lb-post-header">
 
-    <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
+    <div class="lb-type lb-type--{{ post.post_items_type }}"></div>
 
     <div class="lb-post-date-icons">
-      {% if item.sticky and item.lb_highlight %}
+      {% if post.sticky and post.lb_highlight %}
         <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
         <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
-      {% elif item.sticky %}
+      {% elif post.sticky %}
         <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
-      {% elif item.lb_highlight %}
+      {% elif post.lb_highlight %}
         <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
-      {% elif item.post_items_type == "advertisement" %}
+      {% elif post.post_items_type == "advertisement" %}
         <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
       {% endif %}
 
       <!-- remove advertisement stylization-->
-      {% set showPostDate = item.post_items_type != "advertisement" and not (item.sticky and settings.hidePinnedPostDatetime) %}
+      {% set showPostDate = post.post_items_type != "advertisement" and not (post.sticky and settings.hidePinnedPostDatetime) %}
 
       {% if showPostDate %}
         <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
@@ -67,13 +70,15 @@
   <div class="items-container">
   {% if type == "comment" %}
     {% include "template-post-comment.html" %}
+  {% elif type == "post_comment" %}
+    <!-- TODO: complete rendering -->
   {% else %}
-    {% if item and item.groups and item.groups[1] and item.groups[1].refs and (item.groups[1].refs | length > 0) %}
-        {% for ref in item.groups[1].refs %}
+    {% if post and post.groups and post.groups[1] and post.groups[1].refs and (post.groups[1].refs | length > 0) %}
+        {% for ref in post.groups[1].refs %}
           {% if ref.item.item_type == "image" and ref.item.meta.media %}
             {% set isNotTheLastItem = loop.index0 + 1 < loop.length %}
-            {% set isNextItemOfImageType = item.groups[1].refs[loop.index0 + 1].item.item_type == "image" %}
-            {% set isPreviousItemOfImageType = item.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
+            {% set isNextItemOfImageType = post.groups[1].refs[loop.index0 + 1].item.item_type == "image" %}
+            {% set isPreviousItemOfImageType = post.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
             {% set inGalleryLoop = loop.index0 > 0 and isPreviousItemOfImageType %}
 
             {% if settings.showGallery and isNotTheLastItem and isNextItemOfImageType and (loop.index0 - 1 < 0 or not inGalleryLoop) %}
@@ -107,6 +112,8 @@
             {% include "template-item-quote.html" %}
           {% elif ref.item.item_type == "comment" %}
             {% include "template-item-comment.html" %}
+          {% elif ref.item.item_type == "poll" %}
+            {% include "template-poll.html" %}
           {% elif ref.item.item_type == "video" and not ref.item.meta.provider_name %}
             {% include "template-mobile-app-video-workaround.html" %}
           {% else %}
@@ -115,7 +122,7 @@
           </div>
 
           <!-- item end -->
-          {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and item.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
+          {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and post.groups[1].refs[loop.index0 - 1].item.item_type == "image" and post.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
                 <span class="lb-slideshow_prev">
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M302.67 90.877l55.77 55.508L254.575 250.75 358.44 355.116l-55.77 55.506L143.56 250.75z"/></g></svg>
                 </span>
@@ -135,12 +142,12 @@
 
   {% block post_footer %}
   <div class="lb-post-bottom">
-    {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
+    {% if settings.showUpdateDatetime and (post.content_updated_date != post.firstcreated) and post.post_items_type != "advertisement" %}
       <div class="lb-post-updated">
-        <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{item.content_updated_date}}">{{item.content_updated_date | date('')}}</span>
+        <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{post.content_updated_date}}">{{post.content_updated_date | date('')}}</span>
       </div>
     {% endif %}
-    {% if (not item.sticky) or (item.sticky and settings.stickyPosition != 'top') %}
+    {% if (not post.sticky) or (post.sticky and settings.stickyPosition != 'top') %}
       {% if settings.authorPosition == "bottom"  %}
         {% include "template-author.html" %}
       {% else %}

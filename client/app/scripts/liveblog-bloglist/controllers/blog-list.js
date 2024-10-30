@@ -118,10 +118,8 @@ export default function BlogListController(
 
     function bulkDelete(blog) {
         api.blogs.remove(angular.copy(blog)).then((message) => {
-            notify.pop();
             notify.info(gettext('Blog removed'));
         }, () => {
-            notify.pop();
             notify.error(gettext('Something went wrong'));
         });
     }
@@ -205,7 +203,6 @@ export default function BlogListController(
                 newBlog.original_creator = blog.original_creator._id;
 
                 blogService.update(blog, newBlog).then((blog) => {
-                    notify.pop();
                     if (blog.blog_status === ARCHIVED_STATE.code) {
                         notify.info(gettext('Blog(s) moved to archived'));
                     } else if (blog.blog_status === DELETED_STATE.code) {
@@ -383,11 +380,9 @@ export default function BlogListController(
                 .save({blog: blog._id})
                 .then(
                     (data) => {
-                        notify.pop();
                         notify.info(gettext('Request sent'));
                     },
                     (data) => {
-                        notify.pop();
                         let message = gettext('Something went wrong, plase try again later!');
 
                         if (data.data._message === 'A request has already been sent') {
@@ -398,7 +393,6 @@ export default function BlogListController(
                 );
             $scope.closeAccessRequest();
         } else {
-            notify.pop();
             notify.error(gettext('You are already member of this blog\'s team'));
         }
     };
