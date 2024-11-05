@@ -75,63 +75,65 @@
   {% else %}
     {% if post and post.groups and post.groups[1] and post.groups[1].refs and (post.groups[1].refs | length > 0) %}
         {% for ref in post.groups[1].refs %}
-          {% if ref.item.item_type == "image" and ref.item.meta.media %}
-            {% set isNotTheLastItem = loop.index0 + 1 < loop.length %}
-            {% set isNextItemOfImageType = post.groups[1].refs[loop.index0 + 1].item.item_type == "image" %}
-            {% set isPreviousItemOfImageType = post.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
-            {% set inGalleryLoop = loop.index0 > 0 and isPreviousItemOfImageType %}
+          {% if ref.item and ref.item.item_type %}
+            {% if ref.item.item_type == "image" and ref.item.meta.media %}
+              {% set isNotTheLastItem = loop.index0 + 1 < loop.length %}
+              {% set isNextItemOfImageType = post.groups[1].refs[loop.index0 + 1].item.item_type == "image" %}
+              {% set isPreviousItemOfImageType = post.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
+              {% set inGalleryLoop = loop.index0 > 0 and isPreviousItemOfImageType %}
 
-            {% if settings.showGallery and isNotTheLastItem and isNextItemOfImageType and (loop.index0 - 1 < 0 or not inGalleryLoop) %}
-              {# this works only for first element in gallery loop bcs variables are scoped in jinja2 #}
-              {% set galleryItem = true %}
-              <!-- slideshow start -->
-              <div class="lb-slideshow">
-                <div class="lb-slideshow_frame">
-                  <div class="lb-slideshow_slides">
+              {% if settings.showGallery and isNotTheLastItem and isNextItemOfImageType and (loop.index0 - 1 < 0 or not inGalleryLoop) %}
+                {# this works only for first element in gallery loop bcs variables are scoped in jinja2 #}
+                {% set galleryItem = true %}
+                <!-- slideshow start -->
+                <div class="lb-slideshow">
+                  <div class="lb-slideshow_frame">
+                    <div class="lb-slideshow_slides">
+              {% endif %}
+
+              {# if previous item was an image and current item is an image as well = we are inside gallery loop #}
+              {% if settings.showGallery and isPreviousItemOfImageType %}
+                {% set galleryItem = true %}
+              {% endif %}
+
+              <!-- image item start -->
+              <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
+            {% else %}
+              <!-- item start -->
+              <div class="lb-item {{ref.item.item_type}}">
             {% endif %}
 
-            {# if previous item was an image and current item is an image as well = we are inside gallery loop #}
-            {% if settings.showGallery and isPreviousItemOfImageType %}
-              {% set galleryItem = true %}
+            {% if ref.item.item_type == "embed" or ref.item.meta.provider_name == "YoutubeUpload" %}
+              {% include "template-item-embed.html" %}
+            {% elif ref.item.item_type == "image" and galleryItem %}
+              {% include "template-item-galleryImage.html" %}
+            {% elif ref.item.item_type == "image" and ref.item.meta.media %}
+              {% include "template-item-image.html" %}
+            {% elif ref.item.item_type == "quote" %}
+              {% include "template-item-quote.html" %}
+            {% elif ref.item.item_type == "comment" %}
+              {% include "template-item-comment.html" %}
+            {% elif ref.item.item_type == "poll" %}
+              {% include "template-poll.html" %}
+            {% elif ref.item.item_type == "video" and not ref.item.meta.provider_name %}
+              {% include "template-mobile-app-video-workaround.html" %}
+            {% else %}
+              <article>{{ ref.item.text | safe }}</article>
             {% endif %}
-
-            <!-- image item start -->
-            <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
-          {% else %}
-            <!-- item start -->
-            <div class="lb-item {{ref.item.item_type}}">
-          {% endif %}
-
-          {% if ref.item.item_type == "embed" or ref.item.meta.provider_name == "YoutubeUpload" %}
-            {% include "template-item-embed.html" %}
-          {% elif ref.item.item_type == "image" and galleryItem %}
-            {% include "template-item-galleryImage.html" %}
-          {% elif ref.item.item_type == "image" and ref.item.meta.media %}
-            {% include "template-item-image.html" %}
-          {% elif ref.item.item_type == "quote" %}
-            {% include "template-item-quote.html" %}
-          {% elif ref.item.item_type == "comment" %}
-            {% include "template-item-comment.html" %}
-          {% elif ref.item.item_type == "poll" %}
-            {% include "template-poll.html" %}
-          {% elif ref.item.item_type == "video" and not ref.item.meta.provider_name %}
-            {% include "template-mobile-app-video-workaround.html" %}
-          {% else %}
-            <article>{{ ref.item.text | safe }}</article>
-          {% endif %}
-          </div>
-
-          <!-- item end -->
-          {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and post.groups[1].refs[loop.index0 - 1].item.item_type == "image" and post.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
-                <span class="lb-slideshow_prev">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M302.67 90.877l55.77 55.508L254.575 250.75 358.44 355.116l-55.77 55.506L143.56 250.75z"/></g></svg>
-                </span>
-                <span class="lb-slideshow_next">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M199.33 410.622l-55.77-55.508L247.425 250.75 143.56 146.384l55.77-55.507L358.44 250.75z"/></g></svg>
-                </span>
-              </div>
             </div>
-            <!-- slideshow end -->
+
+            <!-- item end -->
+            {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and post.groups[1].refs[loop.index0 - 1].item.item_type == "image" and post.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
+                  <span class="lb-slideshow_prev">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M302.67 90.877l55.77 55.508L254.575 250.75 358.44 355.116l-55.77 55.506L143.56 250.75z"/></g></svg>
+                  </span>
+                  <span class="lb-slideshow_next">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M199.33 410.622l-55.77-55.508L247.425 250.75 143.56 146.384l55.77-55.507L358.44 250.75z"/></g></svg>
+                  </span>
+                </div>
+              </div>
+              <!-- slideshow end -->
+            {% endif %}
           {% endif %}
         {% endfor %}
     {% endif %}
