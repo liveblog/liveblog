@@ -17,6 +17,7 @@ import superdesk
 import zipfile
 import logging
 from io import BytesIO
+from math import ceil
 
 from bson.objectid import ObjectId
 from eve.io.mongo import MongoJSONEncoder
@@ -600,24 +601,26 @@ class ThemesService(BaseService):
                 return STEPS.get(key)
         return STEPS.get("default")
 
-    def _schedule_items(self, items, step, is_blog):
-        """Schedules publishing for given items."""
+    def _schedule_items(self, items, step, is_blog, batch_size=10, delay=1):
+        """Schedules publishing for given items in manageable batches."""
         from liveblog.blogs.tasks import publish_blog_embed_on_s3
 
         countdown = 1
+        total_batches = ceil(items.count() / batch_size)
 
-        for item in items:
-            args = [item.get("_id")]
-            kwargs = {}
+        for batch_num in range(total_batches):
+            batch_items = items[batch_num * batch_size : (batch_num + 1) * batch_size]
 
-            if not is_blog:
-                args = [item.get("blog")]
-                kwargs = {"output": item}
+            for item in batch_items:
+                args = [item.get("_id")] if is_blog else [item.get("blog")]
+                kwargs = {"output": item} if not is_blog else {}
+                publish_blog_embed_on_s3.apply_async(
+                    args=args, kwargs=kwargs, countdown=countdown
+                )
+                countdown += step
 
-            publish_blog_embed_on_s3.apply_async(
-                args=args, kwargs=kwargs, countdown=countdown
-            )
-            countdown += step
+            # Delay the next batch
+            countdown += delay
 
     def check_themes_limit(self, docs=[]):
         current_themes_count = self.find({}).count() + len(docs)
