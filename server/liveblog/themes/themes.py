@@ -602,14 +602,33 @@ class ThemesService(BaseService):
         return STEPS.get("default")
 
     def _schedule_items(self, items, step, is_blog, batch_size=10, delay=1):
-        """Schedules publishing for given items in manageable batches."""
+        """
+        Schedules publishing for the given items in manageable batches.
+
+        Scheduling Logic:
+        -----------------
+        - Items are grouped into batches based on `batch_size` which is 10 by default.
+        - `total_batches` is calculated to determine the number of iterations required to cover all items
+        to be updated.
+        - Within each batch:
+            - `publish_blog_embed_on_s3` is called on each item
+            - A `countdown` parameter is incremented by `step` seconds between each item to space out
+              individual item executions within a batch.
+        - After completing each batch, `countdown` is further incremented by `delay` seconds to ensure a gap
+          between batches.
+        - This logic is added to ensure instances with many blogs do not strain system resources when publishing
+        embeds after a theme change
+        """
         from liveblog.blogs.tasks import publish_blog_embed_on_s3
 
         countdown = 1
-        total_batches = ceil(items.count() / batch_size)
+        items_list = list(items)
+        total_batches = ceil(len(items_list) / batch_size)
 
         for batch_num in range(total_batches):
-            batch_items = items[batch_num * batch_size : (batch_num + 1) * batch_size]
+            batch_items = items_list[
+                batch_num * batch_size : (batch_num + 1) * batch_size
+            ]
 
             for item in batch_items:
                 args = [item.get("_id")] if is_blog else [item.get("blog")]
