@@ -9,7 +9,7 @@
   "license": "AGPL-3.0",
   "main": "index.js",
   "dependencies": {
-    "liveblog-default-theme": "3.9.0-dev.7"
+    "liveblog-default-theme": "3.90.0-dev.8"
   },
   "repository": {
     "type": "git",
