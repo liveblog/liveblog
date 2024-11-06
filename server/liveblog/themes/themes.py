@@ -631,8 +631,13 @@ class ThemesService(BaseService):
             ]
 
             for item in batch_items:
-                args = [item.get("_id")] if is_blog else [item.get("blog")]
-                kwargs = {"output": item} if not is_blog else {}
+                if is_blog:
+                    args = [item.get("_id")]
+                    kwargs = {}
+                else:
+                    args = [item.get("blog")]
+                    kwargs = {"output": item}
+
                 publish_blog_embed_on_s3.apply_async(
                     args=args, kwargs=kwargs, countdown=countdown
                 )
