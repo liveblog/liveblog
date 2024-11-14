@@ -1,0 +1,152 @@
+<script>
+    function processInstagram() {
+        try{
+            instgrm.Embeds.process();
+            console.log('processing instagram embeds');
+        } catch(err) {console.log('instgrm script not loaded')}
+    }
+
+    function processTwitter() {
+        try{
+            twttr.widgets.load();
+            console.log('processing twitter embeds');
+        } catch(err) {console.log('twttr script not loaded')}
+    }
+
+    window.fbAsyncInit = function() {
+        try {
+            FB.init({ xfbml: true, version: 'v7.0' });
+            console.log('init facebook script');
+        } catch(err) {console.log('facebook script not loaded')}
+    }
+
+    function processEmbedly() {
+        embedly("defaults", {
+            cards: {
+                key: '82645d4daa7742cc891c21506d28235e',
+                align: 'left',
+                chrome: 0
+            }
+        });
+    }
+</script>
+
+<template class="lb_consent--awaiting" data-provider-url="http://instagram.com" data-no-placeholder>
+<script async defer src="https://www.instagram.com/embed.js" onload="processInstagram()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://twitter.com" data-no-placeholder>
+<script async defer src="https://platform.twitter.com/widgets.js" onload="processTwitter()"></script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://facebook.com" data-no-placeholder>
+<script>
+    function loadFacebookEmbedScript() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://connect.facebook.net/en_US/sdk.js';
+            script.async = true;
+            script.onload = () => resolve('FB embed script loaded successfully');
+            script.onerror = () => reject(new Error('Failed to load FB embed script'));
+            document.head.appendChild(script);
+        });
+    }
+
+    setTimeout(() => {
+        loadFacebookEmbedScript().then(() => {console.log('FB loaded')});
+    }, 1000);
+</script>
+</template>
+
+<template class="lb_consent--awaiting" data-provider-url="http://youtube.com" data-no-placeholder>
+<script async defer src="https://www.youtube.com/player_api"></script>
+</template>
+
+<script async defer src="https://cdn.embedly.com/widgets/platform.js" charset="UTF-8" onload="processEmbedly()"></script>
+
+<script async defer src="https://cdn.iframe.ly/embed.js?key=a5ee9a89addd13b7a2e3a48c23e74e8d" onload="iframely.load()"></script>
+
+<script>
+    var SET_FLAG = 'player-set';
+    window.playersState = {};
+
+    function playerStateUpdate(playerId, isPlaying) {
+        window.playersState[playerId] = isPlaying;
+    }
+
+    // Handles direct youtube video embeds
+    function onYouTubeIframeAPIReady() {
+        var iframes = document.querySelectorAll("iframe[src^='https://www.youtube.com']");
+
+        iframes.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG) && !window.playersState[iframe.id].isPlaying) return;
+
+            const { origin, pathname, search } = new URL(iframe.src);
+            const queryParams = new URLSearchParams(search);
+            queryParams.set('enablejsapi', '1');
+            queryParams.set('origin', window.location.origin);
+            iframe.src = `${origin}${pathname}?${queryParams}`;
+
+            new YT.Player(iframe, {
+                events: {
+                    'onReady': function (event) { 
+                        var player = event.target;
+                        var isPlaying = window.playersState[iframe.id];
+
+                        if (isPlaying) {
+                            player.playVideo();
+                        }
+                        
+                        iframe.setAttribute(SET_FLAG, 1); 
+                    },
+                    'onStateChange': function(event) {
+                        var isPlaying = event.data === YT.PlayerState.PLAYING;
+                        playerStateUpdate(iframe.id, isPlaying);
+                    }
+                }
+            });
+        });
+    }
+
+    // Handles embedly players (legacy)
+    function onPlayerJSReady () {
+        var playerJsIFrames = document.querySelectorAll("iframe[src*='cdn.embedly.com/widgets/media']");
+
+        playerJsIFrames.forEach(function (iframe) {
+            if (iframe.getAttribute(SET_FLAG)) return;
+
+            // set id to be used later
+            if (!iframe.id) {
+                var parentId = iframe.closest('[data-post-id]').getAttribute('data-post-id');
+                iframe.id = "iplayer_" + parentId;
+            }
+
+            var player = new playerjs.Player(iframe);
+
+            player.on(playerjs.EVENTS.PLAY, function() {
+                playerStateUpdate(iframe.id, true);
+            });
+
+            player.on(playerjs.EVENTS.ENDED, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            player.on(playerjs.EVENTS.PAUSE, function() {
+                playerStateUpdate(iframe.id, false);
+            });
+
+            // flag to know if this it's been wired
+            iframe.setAttribute(SET_FLAG, 1);
+        });
+    }
+</script>
+<script async defer src="https://cdn.embed.ly/player-0.1.0.min.js" onload="onPlayerJSReady()"></script>
+
+<style class="embedly-css">
+    .card .hdr{
+      display: none;
+    }
+    body#cards {
+        padding: 0px;
+    }
+</style>

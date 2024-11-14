@@ -7,9 +7,9 @@
     "extendsFromPackage": "liveblog-default-theme",
     "license": "AGPL-3.0",
     "devStyles": ["dist/simple-0c6ddd6dd6.css"],
-    "devScripts": ["dist/simple-a8aa9493f6.js"],
+    "devScripts": ["dist/simple-fa0986ba9b.js"],
     "styles": ["dist/simple-0c6ddd6dd6.css"],
-    "scripts": ["dist/simple-a8aa9493f6.js"],
+    "scripts": ["dist/simple-fa0986ba9b.js"],
     "options": [],
     "i18n": {
         "cs": {
