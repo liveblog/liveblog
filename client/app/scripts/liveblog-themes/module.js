@@ -133,7 +133,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 themes.forEach((theme) => {
                     // create criteria to load blogs with the theme.
                     const criteria = {
-                        where: JSON.stringify({'blog_preferences.theme': theme.name}),
+                        source: {
+                            query: {match: {'blog_preferences.theme': theme.name}},
+                        },
                     };
 
                     api.blogs.query(criteria).then((data) => {
