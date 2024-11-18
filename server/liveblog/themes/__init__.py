@@ -1,11 +1,21 @@
 import superdesk
 from .themes import ThemesService, ThemesResource
-from .themes import upload_theme_blueprint, themes_assets_blueprint
+from .themes import (
+    upload_theme_blueprint,
+    themes_assets_blueprint,
+    count_theme_blogs_blueprint,
+)
 from .themes import UnknownTheme
 from .commands import RegisterLocalThemesCommand, RegisterThemeCommand
 from .utils import send_uploaded_static_file
 
-__all__ = ["upload_theme_blueprint", "ThemesService", "ThemesResource", "UnknownTheme"]
+__all__ = [
+    "upload_theme_blueprint",
+    "count_theme_blogs_blueprint",
+    "ThemesService",
+    "ThemesResource",
+    "UnknownTheme",
+]
 
 
 def init_app(app):
@@ -17,6 +27,9 @@ def init_app(app):
     app.register_blueprint(upload_theme_blueprint, url_prefix=app.api_prefix or None)
     # endpoint to serve static files for themes
     app.register_blueprint(themes_assets_blueprint)
+
+    # endpoint to get theme count
+    app.register_blueprint(count_theme_blogs_blueprint)
 
     # Additional endpoint to serve uploaded themes (used when s3 storage is disabled)
     try:

@@ -30,7 +30,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
-from liveblog.utils.api import api_error
+from liveblog.utils.api import api_error, api_response
 
 from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -60,6 +60,7 @@ STEPS = {"ampTheme": 2, "seoTheme": 2, "default": 1}
 
 THEMES_MAX_RESULTS = 50
 
+count_theme_blogs_blueprint = superdesk.Blueprint("count_theme_blogs", __name__)
 upload_theme_blueprint = superdesk.Blueprint("upload_theme", __name__)
 download_theme_blueprint = superdesk.Blueprint("download_theme", __name__)
 themes_assets_blueprint = superdesk.Blueprint(
@@ -890,4 +891,19 @@ def upload_a_theme():
     return json.dumps(
         dict(_status="OK", _action=result.get("status"), theme=theme_json),
         cls=MongoJSONEncoder,
+    )
+
+
+@count_theme_blogs_blueprint.route(
+    "/api/count_theme_blogs/<theme_name>", methods=["GET"]
+)
+@cross_origin()
+def get_count_theme_blogs(theme_name):
+    blogs_service = get_resource_service("blogs")
+    blogs = blogs_service.get_from_mongo(
+        req=None, lookup={"blog_preferences.theme": theme_name}
+    )
+    blogs_list = list(blogs)
+    return api_response(
+        {"_items": blogs_list, "_meta": {"total": len(blogs_list)}}, 200
     )

@@ -131,14 +131,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 }
 
                 themes.forEach((theme) => {
-                    // create criteria to load blogs with the theme.
-                    const criteria = {
-                        source: {
-                            query: {match: {'blog_preferences.theme': theme.name}},
-                        },
-                    };
-
-                    api.blogs.query(criteria).then((data) => {
+                    api.get(`/count_theme_blogs/${theme.name}`).then((data) => {
                         theme.blogs_count = data._meta.total;
                         // TODO: Pagination. Will only show the first results page
                         theme.blogs = data._items;
