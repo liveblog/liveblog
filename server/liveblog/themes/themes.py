@@ -60,7 +60,6 @@ STEPS = {"ampTheme": 2, "seoTheme": 2, "default": 1}
 
 THEMES_MAX_RESULTS = 50
 
-count_theme_blogs_blueprint = superdesk.Blueprint("count_theme_blogs", __name__)
 upload_theme_blueprint = superdesk.Blueprint("upload_theme", __name__)
 download_theme_blueprint = superdesk.Blueprint("download_theme", __name__)
 themes_assets_blueprint = superdesk.Blueprint(
@@ -152,6 +151,19 @@ class ThemesService(BaseService):
         if req:
             req.max_results = THEMES_MAX_RESULTS
         return super().get(req, lookup)
+
+    def on_fetched(self, docs):
+        super().on_fetched(docs)
+
+        for doc in docs["_items"]:
+            theme_name = doc.get("name")
+            blogs_service = get_resource_service("blogs")
+            blogs = blogs_service.get_from_mongo(
+                req=None, lookup={"blog_preferences.theme": theme_name}
+            )
+            blogs_list = list(blogs)
+            blogs_count = len(blogs_list)
+            doc["blogs_data"] = {"_items": blogs_list, "total": blogs_count}
 
     def get_options(self, theme, options=None, parents=[], optionsKey="options"):
         """
@@ -891,19 +903,4 @@ def upload_a_theme():
     return json.dumps(
         dict(_status="OK", _action=result.get("status"), theme=theme_json),
         cls=MongoJSONEncoder,
-    )
-
-
-@count_theme_blogs_blueprint.route(
-    "/api/count_theme_blogs/<theme_name>", methods=["GET"]
-)
-@cross_origin()
-def get_count_theme_blogs(theme_name):
-    blogs_service = get_resource_service("blogs")
-    blogs = blogs_service.get_from_mongo(
-        req=None, lookup={"blog_preferences.theme": theme_name}
-    )
-    blogs_list = list(blogs)
-    return api_response(
-        {"_items": blogs_list, "_meta": {"total": len(blogs_list)}}, 200
     )
