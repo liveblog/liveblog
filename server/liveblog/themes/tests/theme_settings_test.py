@@ -132,7 +132,7 @@ class ThemeSettingsTestCase(TestCase):
             {
                 "_created": "2018-03-27T12:04:58+00:00",
                 "_etag": "b962afec2413ddf43fcf0273a1a422a2fec1e34d",
-                "_id": ObjectId("5aba336a4d003d61e663eeeb"),
+                "_id": "5aba336a4d003d61e663eeeb",
                 "_links": {
                     "self": {"href": "blogs/5aba336a4d003d61e663eeeb", "title": "Blog"}
                 },
@@ -222,7 +222,7 @@ class ThemeSettingsTestCase(TestCase):
             {
                 "_created": "2018-03-30T10:24:33+00:00",
                 "_etag": "8f96666a3d97401979a79bda82886dd12cc6f272",
-                "_id": ObjectId("5abe10614d003d5f22ce005e"),
+                "_id": "5abe10614d003d5f22ce005e",
                 "_links": {
                     "collection": {"href": "client_blogs", "title": "client_blogs"},
                     "parent": {"href": "/", "title": "home"},
@@ -1441,7 +1441,7 @@ class ThemeSettingsTestCase(TestCase):
         blog_title = data.find('"title": "title: end to end Five"')
         self.assertNotEqual(blog_title, -1)
         # blog created date exists in response
-        test_created = data.find('"_created": "2018-03-27T12:04:58+00:00"')
+        test_created = data.find('"_created": "2018-03-27T12:04:58+0000"')
         self.assertNotEqual(test_created, -1)
         # test blog_preferences
         blog_pref = data.find(
@@ -1471,7 +1471,7 @@ class ThemeSettingsTestCase(TestCase):
         blog_title = data.find('"title: end to end Seven"')
         self.assertNotEqual(blog_title, -1)
         # blog created date exists in response
-        test_created = data.find('"_created": "2018-03-30T10:24:33+00:00"')
+        test_created = data.find('"_created": "2018-03-30T10:24:33+0000"')
         self.assertNotEqual(test_created, -1)
         # test blog_preferences
         blog_pref = data.find(

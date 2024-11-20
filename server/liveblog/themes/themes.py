@@ -17,6 +17,7 @@ import superdesk
 import zipfile
 import logging
 from io import BytesIO
+from math import ceil
 
 from bson.objectid import ObjectId
 from eve.io.mongo import MongoJSONEncoder
@@ -150,6 +151,19 @@ class ThemesService(BaseService):
         if req:
             req.max_results = THEMES_MAX_RESULTS
         return super().get(req, lookup)
+
+    def on_fetched(self, docs):
+        super().on_fetched(docs)
+
+        for doc in docs["_items"]:
+            theme_name = doc.get("name")
+            blogs_service = get_resource_service("blogs")
+            blogs = blogs_service.get_from_mongo(
+                req=None, lookup={"blog_preferences.theme": theme_name}
+            )
+            blogs_list = list(blogs)
+            blogs_count = len(blogs_list)
+            doc["blogs_data"] = {"_items": blogs_list, "total": blogs_count}
 
     def get_options(self, theme, options=None, parents=[], optionsKey="options"):
         """
@@ -482,7 +496,7 @@ class ThemesService(BaseService):
 
             # Set theme settings for blogs using previous theme.
             blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get_from_mongo(
+            blogs = blogs_service.get(
                 req=None, lookup={"blog_preferences.theme": previous_theme["name"]}
             )
             for blog in blogs:
@@ -600,24 +614,50 @@ class ThemesService(BaseService):
                 return STEPS.get(key)
         return STEPS.get("default")
 
-    def _schedule_items(self, items, step, is_blog):
-        """Schedules publishing for given items."""
+    def _schedule_items(self, items, step, is_blog, batch_size=10, delay=1):
+        """
+        Schedules publishing for the given items in manageable batches.
+
+        Scheduling Logic:
+        -----------------
+        - Items are grouped into batches based on `batch_size` which is 10 by default.
+        - `total_batches` is calculated to determine the number of iterations required to cover all items
+        to be updated.
+        - Within each batch:
+            - `publish_blog_embed_on_s3` is called on each item
+            - A `countdown` parameter is incremented by `step` seconds between each item to space out
+              individual item executions within a batch.
+        - After completing each batch, `countdown` is further incremented by `delay` seconds to ensure a gap
+          between batches.
+        - This logic is added to ensure instances with many blogs do not strain system resources when publishing
+        embeds after a theme change
+        """
         from liveblog.blogs.tasks import publish_blog_embed_on_s3
 
         countdown = 1
+        items_list = list(items)
+        total_batches = ceil(len(items_list) / batch_size)
 
-        for item in items:
-            args = [item.get("_id")]
-            kwargs = {}
+        for batch_num in range(total_batches):
+            batch_items = items_list[
+                batch_num * batch_size : (batch_num + 1) * batch_size
+            ]
 
-            if not is_blog:
-                args = [item.get("blog")]
-                kwargs = {"output": item}
+            for item in batch_items:
+                if is_blog:
+                    args = [item.get("_id")]
+                    kwargs = {}
+                else:
+                    args = [item.get("blog")]
+                    kwargs = {"output": item}
 
-            publish_blog_embed_on_s3.apply_async(
-                args=args, kwargs=kwargs, countdown=countdown
-            )
-            countdown += step
+                publish_blog_embed_on_s3.apply_async(
+                    args=args, kwargs=kwargs, countdown=countdown
+                )
+                countdown += step
+
+            # Delay the next batch
+            countdown += delay
 
     def check_themes_limit(self, docs=[]):
         current_themes_count = self.find({}).count() + len(docs)
@@ -651,7 +691,7 @@ class ThemesService(BaseService):
 
         # Update all the blogs using the removed theme and assign the default theme.
         blogs_service = get_resource_service("blogs")
-        blogs = blogs_service.get_from_mongo(
+        blogs = blogs_service.get(
             req=None, lookup={"blog_preferences.theme": deleted_theme["name"]}
         )
 
