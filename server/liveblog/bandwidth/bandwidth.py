@@ -16,11 +16,7 @@ bandwidth_blueprint = Blueprint(bandwidth_key, __name__)
 CORS(bandwidth_blueprint)
 
 BANDWIDTH_SCHEMA = {
-    "bandwidthUsage": {
-        "type": "integer",
-        "required": True,
-        "min": 0,
-    },
+    "bandwidthUsage": {"type": "integer", "required": True, "min": 0,},
 }
 
 
@@ -78,7 +74,7 @@ class BandwidthService(BaseService):
         Send an email to the instance admin and support if the bandwidth usage exceeds the threshold
         """
         upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
-        bandwidth_usage_gb = current_bandwidth / (1024**3)
+        bandwidth_usage_gb = current_bandwidth / (1024 ** 3)
         percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
         if percentage_used <= 75:
@@ -136,7 +132,7 @@ def get_instance_bandwidth():
         if current_bandwidth:
             upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
             bandwidth_usage_bytes = current_bandwidth["bandwidthUsage"]
-            bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
+            bandwidth_usage_gb = bandwidth_usage_bytes / (1024 ** 3)
             percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
             response["bandwidthUsageBytes"] = bandwidth_usage_bytes
@@ -145,7 +141,9 @@ def get_instance_bandwidth():
             response["bandwidthLimit"] = True
         else:
             response["bandwidthLimit"] = False
-            response["message"] = "Error getting bandwidth limit on current subscription plan."
+            response[
+                "message"
+            ] = "Error getting bandwidth limit on current subscription plan."
     else:
         response["bandwidthLimit"] = False
         response["message"] = "Bandwidth Limit not enabled on current subscription plan"
