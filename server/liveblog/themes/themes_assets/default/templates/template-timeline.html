@@ -1,6 +1,6 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
-{% include "template-embed-providers.html" %}
+{% include "template-embed-utils.html" %}
 
 {% include "template-watermark.html" %}
 

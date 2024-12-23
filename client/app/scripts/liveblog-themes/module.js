@@ -131,20 +131,13 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 }
 
                 themes.forEach((theme) => {
-                    // create criteria to load blogs with the theme.
-                    const criteria = {
-                        where: JSON.stringify({'blog_preferences.theme': theme.name}),
-                    };
-
-                    api.blogs.query(criteria).then((data) => {
-                        theme.blogs_count = data._meta.total;
-                        // TODO: Pagination. Will only show the first results page
-                        theme.blogs = data._items;
-                        // retrieve the public url for each blog
-                        theme.blogs.forEach((blog) => {
-                            blogService.getPublicUrl(blog).then((url) => {
-                                blog.iframe_url = $sce.trustAsResourceUrl(url);
-                            });
+                    theme.blogs_count = theme.blogs_data.total;
+                    // TODO: Pagination. Will only show the first results page
+                    theme.blogs = theme.blogs_data._items;
+                    // retrieve the public url for each blog
+                    theme.blogs.forEach((blog) => {
+                        blogService.getPublicUrl(blog).then((url) => {
+                            blog.iframe_url = $sce.trustAsResourceUrl(url);
                         });
                     });
                     parseTheme(theme);
