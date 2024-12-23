@@ -145,7 +145,9 @@ def get_instance_bandwidth():
             response["bandwidthLimit"] = True
         else:
             response["bandwidthLimit"] = False
+            response["message"] = "Error getting bandwidth limit on current subscription plan."
     else:
         response["bandwidthLimit"] = False
+        response["message"] = "Bandwidth Limit not enabled on current subscription plan"
 
     return api_response(response, 200)
