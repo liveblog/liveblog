@@ -165,7 +165,7 @@
                     // decode json
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
-                        if (post.groups[1]?.refs[0]?.item) {
+                        if (post.groups[1] && post.groups[1].refs[0] && post.groups[1].refs[0].item) {
                             post.mainItem = _completeUser(post.groups[1].refs[0].item);
                             // if an item has a commenter then that post hasComments.
                             post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
