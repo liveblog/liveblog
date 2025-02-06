@@ -1,6 +1,6 @@
 <!-- bandwidth threshhold reached  -->
 <p ng-if="bandwidthUsageAlert" class="bandwidth-alert">
-    Warning: You have used {{ bandwidthPercentage }}% of your allocated bandwidth. Please contact admin.
+    Warning: You have used {{ bandwidthPercentage }}% of your allocated bandwidth. Please contact Admin.
 </p>
 
 <div class="subnav">
