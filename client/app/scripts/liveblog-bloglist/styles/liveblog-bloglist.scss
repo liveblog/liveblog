@@ -4,6 +4,15 @@
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+.bandwidth-alert {
+    background-color:#2c2c2c; 
+    color: white; 
+    text-align:center; 
+    padding:4px; 
+    font-size:16px;
+    margin:0px;
+}
+
 .bloglist {
     header {
         position: absolute;
@@ -17,6 +26,9 @@
                 padding: 10px;
             }
         }
+    }
+    .header-with-alert {
+        top: 24px;
     }
     .list-container {
         position: absolute;

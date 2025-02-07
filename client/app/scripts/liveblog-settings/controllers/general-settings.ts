@@ -61,7 +61,6 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
     };
 
     $scope.saveSettings = () => {
-        notify.pop();
         notify.info(gettext('Saving settings'));
         let patch = {};
         const reqArr = [];
@@ -79,11 +78,9 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         });
 
         $q.all(reqArr).then(() => {
-            notify.pop();
             notify.info(gettext('Settings saved successfully'));
             $scope.settingsForm.$setPristine();
         }, () => {
-            notify.pop();
             notify.error(gettext('Saving settings failed. Please try again later'));
         });
     };
