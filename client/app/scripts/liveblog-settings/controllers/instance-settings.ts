@@ -32,19 +32,16 @@ const LiveblogInstanceSettingsController = (
             return;
         }
 
-        notify.pop();
         notify.info(gettext('Saving instance settings'));
 
         api.instance_settings.save({ settings: updatedSettings })
             .then(() => {
-                notify.pop();
                 notify.info(gettext('Instance settings saved successfully.'));
                 $scope.instanceForm.$setPristine();
             })
             .catch(({ data }) => {
                 const errMsg = data?._issues?.settings || data?._message;
 
-                notify.pop();
                 notify.error(errMsg, 10000);
             });
     };
