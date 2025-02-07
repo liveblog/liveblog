@@ -1,0 +1,15 @@
+Hi there,
+
+We are writing to inform you that your bandwidth usage on {{server_name}} is at {{bandwidth_usage}}% of your plan's allocated bandwidth of {{allocated_bandwidth}}GB and is about to exceed it.
+
+To avoid service interruptions, we recommend you contact the Liveblog team as soon as possible.
+
+Thank you for your prompt attention to this matter.
+
+Regards,
+
+The {{app_name}} Team
+
+{{app_name}} is developed by Sourcefabric.
+
+http://sourcefabric.org

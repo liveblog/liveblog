@@ -489,4 +489,18 @@ export default function BlogListController(
     $scope.$on('$routeUpdate', fetchBlogs);
     // Reload bloglist on membership's approval
     $scope.$on('blogs', fetchBlogs);
+
+    // Check for bandwidth if limit exists
+    if (featuresService.isBandwidthLimitEnabled()) {
+        api.get('/bandwidth/current').then((bandwidthUsage) => {
+            if (bandwidthUsage.bandwidthLimit) {
+                const percentageUsed = bandwidthUsage.percentageUsed;
+
+                if (percentageUsed >= 75) {
+                    $scope.bandwidthUsageAlert = true;
+                    $scope.bandwidthPercentage = percentageUsed;
+                }
+            }
+        });
+    }
 }

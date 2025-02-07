@@ -59,6 +59,21 @@ class FeaturesService {
 
         return currentUsage >= subscriptionLimit;
     }
+
+    /**
+     * Determines if instance has a bandwidth limit.
+     */
+    isBandwidthLimitEnabled = () => {
+        const settings = this.settings;
+
+        if (settings.isNetworkSubscription) {
+            return false;
+        }
+
+        const bandwidthLimit = settings?.limits['bandwidth_limit'] ?? 0;
+
+        return bandwidthLimit > 0;
+    }
 }
 
 angular.module('liveblog.features', [])
