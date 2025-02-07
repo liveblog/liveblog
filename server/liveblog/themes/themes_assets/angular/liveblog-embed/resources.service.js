@@ -165,46 +165,48 @@
                     // decode json
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
-                        post.mainItem = _completeUser(post.groups[1].refs[0].item);
-                        // if an item has a commenter then that post hasComments.
-                        post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                            return is || !_.isUndefined(val.item.commenter);
-                        }, false);
-                        // `fullDetails` is a business logic that can be compiled from other objects.
-                        post.fullDetails = post.hasComments;
-                        // fallback for older posts.
-                        if(!post.content_updated_date) {
-                            post.content_updated_date = post._updated;
-                        }
-                        // special cases for comments.
-                        post.showUpdate = (post.content_updated_date !== post.published_date) &&
-                                           !post.hasComments && (post.mainItem.item_type !== 'comment');
-                        // add all the items directly in a `items` property.
-                        if (angular.isDefined(post.groups[1])) {
-                            post.items = post.groups[1].refs.map(function(value) {
-                                var item = value.item;
-                                // add `picture_url` and `picture_srcset` property on item.
-                                if( (item.item_type == 'image') && item.meta && item.meta.media) {
-                                    // TODO: ADD A VALIDATION HERE
-                                    item.picture_url = fixProtocol(item.meta.media.renditions.thumbnail.href);
-                                    item.picture_srcset = srcSet(item.meta.media.renditions);
-                                }
+                        if (post.groups[1] && post.groups[1].refs[0] && post.groups[1].refs[0].item) {
+                            post.mainItem = _completeUser(post.groups[1].refs[0].item);
+                            // if an item has a commenter then that post hasComments.
+                            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                                return is || !_.isUndefined(val.item.commenter);
+                            }, false);
+                            // `fullDetails` is a business logic that can be compiled from other objects.
+                            post.fullDetails = post.hasComments;
+                            // fallback for older posts.
+                            if(!post.content_updated_date) {
+                                post.content_updated_date = post._updated;
+                            }
+                            // special cases for comments.
+                            post.showUpdate = (post.content_updated_date !== post.published_date) &&
+                                               !post.hasComments && (post.mainItem.item_type !== 'comment');
+                            // add all the items directly in a `items` property.
+                            if (angular.isDefined(post.groups[1])) {
+                                post.items = post.groups[1].refs.map(function(value) {
+                                    var item = value.item;
+                                    // add `picture_url` and `picture_srcset` property on item.
+                                    if( (item.item_type == 'image') && item.meta && item.meta.media) {
+                                        // TODO: ADD A VALIDATION HERE
+                                        item.picture_url = fixProtocol(item.meta.media.renditions.thumbnail.href);
+                                        item.picture_srcset = srcSet(item.meta.media.renditions);
+                                    }
 
-                                if(post.fullDetails) {
-                                    _completeUser(item);
-                                    item.displayDate = (item.meta && item.meta._created) || item._created;
-                                } else {
-                                    item.displayDate = post.published_date;
-                                }
-                                return item;
-                            });
-                        }
-                        // replace the creator id by the user object
-                        post = _completeUser(post);
-                        if(post.fullDetails) {
-                            post.displayDate = (post.mainItem.meta && post.mainItem.meta._created) || post.mainItem._created;
-                        } else {
-                            post.displayDate = post.published_date;
+                                    if(post.fullDetails) {
+                                        _completeUser(item);
+                                        item.displayDate = (item.meta && item.meta._created) || item._created;
+                                    } else {
+                                        item.displayDate = post.published_date;
+                                    }
+                                    return item;
+                                });
+                            }
+                            // replace the creator id by the user object
+                            post = _completeUser(post);
+                            if(post.fullDetails) {
+                                post.displayDate = (post.mainItem.meta && post.mainItem.meta._created) || post.mainItem._created;
+                            } else {
+                                post.displayDate = post.published_date;
+                            }
                         }
 
                     });

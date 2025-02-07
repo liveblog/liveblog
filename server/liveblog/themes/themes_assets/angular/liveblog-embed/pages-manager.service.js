@@ -178,7 +178,8 @@
                     source: {
                         sort: [{_updated: {order: 'desc'}}],
                         query: {filtered: {filter: {and: [
-                            {range: {_updated: {gt: date}}}
+                            {range: {_updated: {gt: date}}},
+                            {not: {term: {deleted: true}}}
                         ]}}},
                         post_filter: {}
                     }
