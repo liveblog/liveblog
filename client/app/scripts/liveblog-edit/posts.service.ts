@@ -420,6 +420,12 @@ const postsService = (api, $q, _userList, session) => {
         });
 
         return $q.all(deletePromises).then(() => {
+            /*
+             TODO: Re-implement this logic to permanently delete the post
+             instead of just resetting `groups.refs` as this reserves the
+             posts in the system for no reason.
+            */
+
             angular.extend(removeParams, {
                 groups: [
                     {
