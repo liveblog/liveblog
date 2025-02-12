@@ -427,7 +427,7 @@ class PostsService(ArchiveService):
                 )
 
         # in the case we have a comment
-        if original["post_status"] == "comment":
+        if original["post_status"] == "comment" and not updates.get("deleted", False):
             item = original["groups"][1]["refs"][0]["item"]
             blog_id_try = item.get("blog")
             blog_id_object = ObjectId(item.get("client_blog", blog_id_try))
