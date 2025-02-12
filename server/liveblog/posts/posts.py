@@ -426,8 +426,15 @@ class PostsService(ArchiveService):
                     original.get("blog")
                 )
 
-        # in the case we have a comment
-        if original["post_status"] == "comment":
+        """
+        TODO: Review this block of code to understand why we are reassigning
+        the blog ID from updates into the original. This seems unnecessary
+        and should be investigated further.
+        Also, if the comment is marked as deleted in updates, we can safely skip
+        this block since we don’t need to access the comment item anymore thus
+        not causing a key error.
+        """
+        if original["post_status"] == "comment" and not updates.get("deleted", False):
             item = original["groups"][1]["refs"][0]["item"]
             blog_id_try = item.get("blog")
             blog_id_object = ObjectId(item.get("client_blog", blog_id_try))
