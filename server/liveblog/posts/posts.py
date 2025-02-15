@@ -708,6 +708,19 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
             for assoc in get_associations(doc):
                 ref_id = assoc.get("residRef", None)
+
+                # NOTE: not in related_items means it's a deleted item
+                # then let's skip it until we find where is the issue
+                if ref_id and ref_id not in related_items:
+                    # if it's only one item in the group, it's an empty post
+                    # then let's remove the guilty post
+                    if len(doc["groups"][1]["refs"]) == 1:
+                        self.delete(lookup={"_id": doc["_id"]})
+                        docs.remove(doc)
+                    else:
+                        doc["groups"][1]["refs"].remove(assoc)
+                    continue
+
                 if ref_id:
                     assoc["item"] = related_items[ref_id]
                     if assoc.get("type") == "poll":
