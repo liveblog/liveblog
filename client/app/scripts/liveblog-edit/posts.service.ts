@@ -1,6 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
-
 /**
  * This file is part of Superdesk.
  *
@@ -268,11 +265,6 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const retrievePosts = (blogId, postsCriteria) => {
-        console.log("====== posts.service.ts:retrievePosts called ======");
-        console.log("blogId: ", blogId);
-        console.log("postsCriteria: ", postsCriteria);
-        console.log("==========");
-        
         return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', { _id: blogId })
             .query(postsCriteria)
             .then(retrieveSyndications)
@@ -302,13 +294,6 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const savePost = (blogId, postToUpdate, itemsParam: any[], post: any = {}) => {
-        console.log("====== posts.service.ts:savePost called ======");
-        console.log("blogId: ", blogId);
-        console.log("postToUpdate: ", postToUpdate);
-        console.log("itemsParam: ", itemsParam);
-        console.log("post: ", post);
-        console.log("==========");
-        
         let items = itemsParam;
         const savePromises = [];
 
@@ -346,6 +331,8 @@ const postsService = (api, $q, _userList, session) => {
                     break;
                 }
                 default: {
+                    const idToUpdate = postToUpdate && postToUpdate.groups[1].refs &&
+                            postToUpdate.groups[1].refs.length > 0 ? postToUpdate.groups[1].refs[0].residRef : null;
                     const item = {
                         blog: blogId,
                         text: itemParam.text,
@@ -356,7 +343,16 @@ const postsService = (api, $q, _userList, session) => {
                         syndicated_creator: itemParam.syndicated_creator,
                     };
 
-                    savePromises.push(api.items.save(item));
+                    if (idToUpdate) {
+                        const itemPromise = api.items.getById(idToUpdate).then((itemToUpdate) => {
+                            return api.items.save(itemToUpdate, item);
+                        });
+
+                        savePromises.push(itemPromise);
+                    } else {
+                        savePromises.push(api.items.save(item));
+                    }
+
                     break;
                 }
                 }
