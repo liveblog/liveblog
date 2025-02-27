@@ -1,3 +1,6 @@
+/* eslint-disable */
+// @ts-nocheck
+
 /**
  * This file is part of Superdesk.
  *
@@ -265,6 +268,11 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const retrievePosts = (blogId, postsCriteria) => {
+        console.log("====== posts.service.ts:retrievePosts called ======");
+        console.log("blogId: ", blogId);
+        console.log("postsCriteria: ", postsCriteria);
+        console.log("==========");
+        
         return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', { _id: blogId })
             .query(postsCriteria)
             .then(retrieveSyndications)
@@ -294,6 +302,13 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const savePost = (blogId, postToUpdate, itemsParam: any[], post: any = {}) => {
+        console.log("====== posts.service.ts:savePost called ======");
+        console.log("blogId: ", blogId);
+        console.log("postToUpdate: ", postToUpdate);
+        console.log("itemsParam: ", itemsParam);
+        console.log("post: ", post);
+        console.log("==========");
+        
         let items = itemsParam;
         const savePromises = [];
 
@@ -393,8 +408,6 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const removePost = (post) => {
-        const removeParams = { deleted: true };
-
         const items = post.groups[1].refs;
         const deletePromises = [];
 
@@ -421,26 +434,12 @@ const postsService = (api, $q, _userList, session) => {
 
         return $q.all(deletePromises).then(() => {
             /*
-             TODO: Re-implement this logic to permanently delete the post
-             instead of just resetting `groups.refs` as this reserves the
-             posts in the system for no reason.
+                Simply delete the whole post. Much easier to work with instead of marking it
+                as deleted but having no items to reference too since those are deleted
+                permanently as well.
             */
 
-            angular.extend(removeParams, {
-                groups: [
-                    {
-                        id: 'root',
-                        refs: [{ idRef: 'main' }],
-                        role: 'grpRole:NEP',
-                    }, {
-                        id: 'main',
-                        refs: [],
-                        role: 'grpRole:Main',
-                    },
-                ],
-            });
-
-            return api.posts.save(post, removeParams);
+            return api.posts.remove(post);
         });
     };
 

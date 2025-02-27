@@ -416,6 +416,10 @@ class PostsService(ArchiveService):
         )
 
     def on_update(self, updates, original):
+        print("====== posts:on_update called ======")
+        print("updates: ", updates)
+        print("original: ", original)
+        print("====== ======")
         # check if the timeline is reordered
         if updates.get("order"):
             blog = get_resource_service("blogs").find_one(
@@ -495,6 +499,11 @@ class PostsService(ArchiveService):
         super().on_update(updates, original)
 
     def on_updated(self, updates, original):
+        print("====== posts:on_updated called ======")
+        print("updates: ", updates)
+        print("original: ", original)
+        print("====== ======")
+
         super().on_updated(updates, original)
         out_service = get_resource_service("syndication_out")
         # invalidate cache for updated blog
@@ -553,6 +562,10 @@ class PostsService(ArchiveService):
         return doc
 
     def on_deleted(self, doc):
+        print("====== posts:on_deleted called ======")
+        print("doc: ", doc)
+        print("====== ======")
+
         super().on_deleted(doc)
         # Invalidate cache for updated blog
         app.blog_cache.invalidate(doc.get("blog"))
@@ -566,7 +579,8 @@ class PostsService(ArchiveService):
         out_service.send_syndication_post(doc, action="deleted")
 
         # Send notifications
-        push_notification("posts", deleted=True)
+        _posts = [{"post_id": doc.get("_id"), "blog": doc.get("blog")}]
+        push_notification("posts", deleted=True, posts=_posts)
 
     def validate_embargo(self, item):
         """
@@ -690,6 +704,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
     custom_hateoas = {"self": {"title": "Posts", "href": "/{location}/{_id}"}}
 
     def get(self, req, lookup):
+        print("====== BlogPostsService:get called ======")
+        print("req: ", req)
+        print("lookup: ", lookup)
+
         imd = req.args.items()
         for key in imd:
             if key[1][97:104] == "comment":  # TODO: fix
@@ -703,6 +721,9 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
         docs = super().get(req, lookup)
         related_items = self.related_items_map(docs)
+
+        print("docs: ", list(docs))
+        print("related_items: ", related_items)
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
@@ -734,6 +755,7 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         self.generate_authors_map()
         self.attach_authors(docs)
 
+        print("============")
         return docs
 
     def related_items_map(self, docs):
