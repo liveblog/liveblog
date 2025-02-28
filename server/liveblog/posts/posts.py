@@ -9,6 +9,7 @@ from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
+from eve_elastic.elastic import ElasticCursor
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
@@ -706,19 +707,14 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location="posts")
+
             for assoc in get_associations(doc):
                 ref_id = assoc.get("residRef", None)
 
                 # NOTE: not in related_items means it's a deleted item
-                # then let's skip it until we find where is the issue
+                # then let's mark it as deleted to later remove it in `remove_orphan_items`
                 if ref_id and ref_id not in related_items:
-                    # if it's only one item in the group, it's an empty post
-                    # then let's remove the guilty post
-                    if len(doc["groups"][1]["refs"]) == 1:
-                        self.delete(lookup={"_id": doc["_id"]})
-                        docs.remove(doc)
-                    else:
-                        doc["groups"][1]["refs"].remove(assoc)
+                    assoc["deleted"] = True
                     continue
 
                 if ref_id:
@@ -730,11 +726,61 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
 
             self.extract_author_ids(doc)
 
+        # NOTE: temporary workaround for broken references
+        # TODO: remove this after two releases from now
+        self.remove_orphan_items(docs)
+
         # now that we have authors id, let's hit db once
         self.generate_authors_map()
         self.attach_authors(docs)
 
         return docs
+
+    def remove_post_from_list_and_db(self, docs, post):
+        """
+        Removes the post from the list and the database
+        """
+        self.delete(lookup={"_id": post["_id"]})
+
+        try:
+            if isinstance(docs, ElasticCursor):
+                docs.docs.remove(post)
+            else:
+                docs.remove(post)
+        except:
+            logger.warning(f"Failed to remove orphan doc: {post}")
+
+    def remove_orphan_items(self, docs):
+        """This tries to remove the items that are not present in the related_items map"""
+
+        for post in docs:
+            posts_items = []
+
+            # we only get the refs from the main group (meaning child items of the post)
+            for group in post.get("groups", []):
+                if group.get("id") == "main":
+                    posts_items = group.get("refs", [])
+
+            # if the post has no items, we nuke it from db
+            if len(posts_items) == 0:
+                self.remove_post_from_list_and_db(docs, post)
+
+            for assoc in get_associations(post):
+                # if `deleted` is found in the item, it means it's a deleted item
+                if "deleted" in assoc:
+                    # if the post only has one item, we nuke it from db
+                    if (
+                        len(post["groups"]) > 0
+                        and "refs" in post["groups"][1]
+                        and len(post["groups"][1]["refs"]) == 1
+                    ):
+                        self.remove_post_from_list_and_db(docs, post)
+
+                    # finally remove the item from the references of the post
+                    try:
+                        post["groups"][1]["refs"].remove(assoc)
+                    except:
+                        logger.warning(f"Failed to remove orphan item: {assoc}")
 
     def related_items_map(self, docs):
         """
