@@ -747,8 +747,8 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                 docs.docs.remove(post)
             else:
                 docs.remove(post)
-        except:
-            logger.warning(f"Failed to remove orphan doc: {post}")
+        except Exception as e:
+            logger.warning(f"Failed to remove orphan doc: {post}. Error: {e}")
 
     def remove_orphan_items(self, docs):
         """This tries to remove the items that are not present in the related_items map"""
@@ -779,8 +779,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                     # finally remove the item from the references of the post
                     try:
                         post["groups"][1]["refs"].remove(assoc)
-                    except:
-                        logger.warning(f"Failed to remove orphan item: {assoc}")
+                    except Exception as e:
+                        logger.warning(
+                            f"Failed to remove orphan item: {assoc}. Error: {e}"
+                        )
 
     def related_items_map(self, docs):
         """
