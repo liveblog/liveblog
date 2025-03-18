@@ -41,7 +41,7 @@ class FeaturesService {
             return true;
         }
 
-        return settings?.features[featureName] ?? false;
+        return settings?.features?.[featureName] ?? false;
     }
 
     /**
@@ -55,7 +55,7 @@ class FeaturesService {
             return false;
         }
 
-        const subscriptionLimit = settings?.limits[featureName] ?? 0;
+        const subscriptionLimit = settings?.limits?.[featureName] ?? 0;
 
         return currentUsage >= subscriptionLimit;
     }
@@ -70,7 +70,7 @@ class FeaturesService {
             return false;
         }
 
-        const bandwidthLimit = settings?.limits['bandwidth_limit'] ?? 0;
+        const bandwidthLimit = settings?.limits?.['bandwidth_limit'] ?? 0;
 
         return bandwidthLimit > 0;
     }
