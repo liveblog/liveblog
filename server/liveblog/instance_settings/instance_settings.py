@@ -138,7 +138,7 @@ class InstanceSettingsService(BaseService):
         exists only one config at a time.
         """
         try:
-            config = self.get(req=None, lookup={})[0]
+            config = self.get_from_mongo(req=None, lookup={})[0]
             if config and "_id" in config:
                 return config
             return {}
