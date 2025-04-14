@@ -1,3 +1,5 @@
+import { EventNames } from './liveblog-common/constants';
+
 interface ISettings {
     features: { [key: string]: boolean };
     limits: { [key: string]: number };
@@ -77,8 +79,12 @@ class FeaturesService {
 }
 
 angular.module('liveblog.features', [])
-    .service('featuresService', ['api', (api) => {
+    .service('featuresService', ['api', '$rootScope', (api, $rootScope) => {
         const featuresService = new FeaturesService(api);
+
+        $rootScope.$on(EventNames.InstanceSettingsUpdated, () => {
+            featuresService.initialize();
+        });
 
         featuresService.initialize();
         return featuresService;
