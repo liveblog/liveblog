@@ -496,7 +496,7 @@ export default function BlogListController(
             if (bandwidthUsage.bandwidthLimit) {
                 const percentageUsed = bandwidthUsage.percentageUsed;
 
-                if (percentageUsed >= 75) {
+                if (percentageUsed >= 25) {
                     $scope.bandwidthUsageAlert = true;
                     $scope.bandwidthPercentage = percentageUsed;
                 }
