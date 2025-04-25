@@ -1,3 +1,5 @@
+import { EventNames } from './liveblog-common/constants';
+
 interface ISettings {
     features: { [key: string]: boolean };
     limits: { [key: string]: number };
@@ -41,7 +43,7 @@ class FeaturesService {
             return true;
         }
 
-        return settings?.features[featureName] ?? false;
+        return settings?.features?.[featureName] ?? false;
     }
 
     /**
@@ -55,7 +57,7 @@ class FeaturesService {
             return false;
         }
 
-        const subscriptionLimit = settings?.limits[featureName] ?? 0;
+        const subscriptionLimit = settings?.limits?.[featureName] ?? 0;
 
         return currentUsage >= subscriptionLimit;
     }
@@ -70,15 +72,19 @@ class FeaturesService {
             return false;
         }
 
-        const bandwidthLimit = settings?.limits['bandwidth_limit'] ?? 0;
+        const bandwidthLimit = settings?.limits?.['bandwidth_limit'] ?? 0;
 
         return bandwidthLimit > 0;
     }
 }
 
 angular.module('liveblog.features', [])
-    .service('featuresService', ['api', (api) => {
+    .service('featuresService', ['api', '$rootScope', (api, $rootScope) => {
         const featuresService = new FeaturesService(api);
+
+        $rootScope.$on(EventNames.InstanceSettingsUpdated, () => {
+            featuresService.initialize();
+        });
 
         featuresService.initialize();
         return featuresService;

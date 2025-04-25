@@ -9,6 +9,7 @@ from flask import Blueprint, current_app as app
 from superdesk.resource import Resource
 from superdesk.errors import SuperdeskApiError
 from superdesk.services import BaseService
+from superdesk.notification import push_notification
 from liveblog.utils.api import api_response
 
 logger = logging.getLogger(__name__)
@@ -74,9 +75,18 @@ class InstanceSettingsService(BaseService):
         self.validate_payload(doc["settings"])
         existing_config = self.get_existing_config()
 
-        if existing_config:
-            self.patch(ObjectId(existing_config["_id"]), dict(settings=doc["settings"]))
-            return [existing_config["_id"]]
+        if existing_config and "_id" in existing_config:
+            try:
+                self.patch(
+                    ObjectId(existing_config["_id"]), dict(settings=doc["settings"])
+                )
+                return [existing_config["_id"]]
+            except SuperdeskApiError as e:
+                if e.status_code == 404:
+                    # If the document is missing, fallback to creating a new one
+                    return super().create(docs, **kwargs)
+                else:
+                    raise  # re-raise other errors
         else:
             return super().create(docs, **kwargs)
 
@@ -86,6 +96,7 @@ class InstanceSettingsService(BaseService):
 
     def on_updated(self, updates, original):
         app.features.load_settings()
+        push_notification("instance_settings:updated")
         return super().on_updated(updates, original)
 
     def validate_payload(self, settings):
@@ -124,10 +135,13 @@ class InstanceSettingsService(BaseService):
     def get_existing_config(self):
         """
         Check if any config exists at all. This assumes the singleton pattern where there
-        exists only one config at a time
+        exists only one config at a time.
         """
         try:
-            return self.get(req=None, lookup={})[0]
+            config = self.get_from_mongo(req=None, lookup={})[0]
+            if config and "_id" in config:
+                return config
+            return {}
         except IndexError:
             return {}
 

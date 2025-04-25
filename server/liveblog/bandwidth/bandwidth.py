@@ -45,7 +45,7 @@ class BandwidthService(BaseService):
         Check for bandwidth in the db. This assumes the singleton pattern
         """
         try:
-            return self.get(req=None, lookup={})[0]
+            return self.get_from_mongo(req=None, lookup={})[0]
         except IndexError:
             return {}
 
