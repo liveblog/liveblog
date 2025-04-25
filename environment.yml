@@ -1,0 +1,21 @@
+# This is the environment for the continuous integration tests
+# used in the .github/workflows/continuous-integration.yml file
+name: liveblog-ci-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6
+  - nodejs=10
+  - pip
+  - libmagic
+  - libffi
+  - openssl
+  - zlib
+  - libjpeg-turbo
+  - freetype
+  - libwebp
+  - lcms2
+  - chromedriver-binary
+  - xvfbwrapper
+  - pytest
+  - behave

@@ -12,5 +12,5 @@ export enum EventNames {
     // TODO: we should change these below to something more meaninful
     Blog = 'blog',
     Posts = 'posts',
-    InstanceSettingsUpdated = 'instance_settings:updated'
+    InstanceSettingsUpdated = 'instance_settings:updated',
 }

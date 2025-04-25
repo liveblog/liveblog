@@ -4,7 +4,10 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
 
     env:
       CI: true
@@ -35,48 +38,50 @@ jobs:
         image: redis
         ports:
           - 6379:6379
-      elasticsearch-1.7.2:
+      elasticsearch:
         image: liveblog3/elasticsearch:1.7.2
         ports:
           - 9200:9200
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: nanasess/setup-chromedriver@master
 
-    - name: Cache node modules
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-node-modules
+    - name: Cache Conda environment
+      uses: actions/cache@v3
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./client/package.json') }}
+        path: /usr/share/miniconda/envs/liveblog-ci-env
+        key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          ${{ runner.os }}-conda-
 
-    - name: Cache pip modules
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-pip-modules
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v3
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./server/dev-requirements.txt') }}
+        activate-environment: liveblog-ci-env
+        environment-file: environment.yml
+        python-version: 3.6
+        auto-activate-base: false
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.npm
+          client/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          ${{ runner.os }}-node-
 
-    - name: Setup Nodejs 10.x
-      uses: actions/setup-node@v1
+    - name: Cache Python packages
+      uses: actions/cache@v3
       with:
-        node-version: 10.x
-
-    - name: Setup Python 3.6.x
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.6.x
+        path: |
+          ~/.cache/pip
+          /usr/share/miniconda/envs/liveblog-ci-env/lib/python3.6/site-packages
+        key: ${{ runner.os }}-pip-${{ hashFiles('server/dev-requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install Python dependencies and run tests
       working-directory: ./server
@@ -123,8 +128,8 @@ jobs:
       run: |
         export DISPLAY=:99
         export SELENIUM_ADDRESS='http://localhost:4444/wd/hub'
-        chromedriver --port=4444 --url-base=/wd/hub &
         sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+        chromedriver --port=4444 --url-base=/wd/hub &
         $CHROME_BIN --version
         npm run e2e
 

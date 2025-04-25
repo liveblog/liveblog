@@ -14,12 +14,20 @@ jobs:
           version: "~= 22.0"
 
   flake8:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: 3.6.x
-      - uses: py-actions/flake8@v2
-        with:
-          path: "--config=./server/setup.cfg server/"
+          activate-environment: lint-env
+          python-version: 3.6
+          auto-activate-base: false
+      - name: Install flake8
+        run: |
+          conda install -y flake8
+      - name: Run flake8
+        run: |
+          flake8 --config=./server/setup.cfg server/
