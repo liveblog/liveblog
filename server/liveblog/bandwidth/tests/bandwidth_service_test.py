@@ -32,6 +32,7 @@ def test_get_current_bandwidth(bandwidth_service):
     """Test the get_current_bandwidth method when bandwidth exists."""
     mock_bandwidth = {"bandwidthUsage": 1024}
     bandwidth_service.get = MagicMock(return_value=[mock_bandwidth])
+    bandwidth_service.get_from_mongo = MagicMock(return_value=[mock_bandwidth])
     result = bandwidth_service.get_current_bandwidth()
     assert result == mock_bandwidth
 
@@ -39,6 +40,7 @@ def test_get_current_bandwidth(bandwidth_service):
 def test_get_current_bandwidth_no_data(bandwidth_service):
     """Test the get_current_bandwidth method when no bandwidth data exists."""
     bandwidth_service.get = MagicMock(return_value=[])
+    bandwidth_service.get_from_mongo = MagicMock(return_value=[])
     result = bandwidth_service.get_current_bandwidth()
     assert result == {}
 
