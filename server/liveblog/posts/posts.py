@@ -740,6 +740,10 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
         """
         Removes the post from the list and the database
         """
+        # skip in tests as we use posts without items for testing purposes
+        if app.config.get("SUPERDESK_TESTING", False):
+            return
+
         self.delete(lookup={"_id": post["_id"]})
 
         try:

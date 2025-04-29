@@ -653,16 +653,16 @@ Feature: Post operations
         When we get "/users"
         Then we get list with 2 items
         """
-        {"_items": [{"username":"admin"},
-              		    {"username": "test_user"}]}
+        {"_items": [{"username":"admin"}, {"username": "test_user"}]}
         """
         When we find for "users" the id as "user_admin" by "where={"username": "admin"}"
 
         Given "posts"
         """
-        [{"headline": "first post", "blog": "#blogs._id#", "post_status": "open", "original_creator": "#user_admin#"},
-        {"headline": "second post", "blog": "#blogs._id#", "post_status": "open", "original_creator": "#user_admin#"},
-        {"headline": "first draft", "blog": "#blogs._id#", "post_status": "draft", "original_creator": "#user_admin#"}
+        [
+            {"headline": "first post", "blog": "#blogs._id#", "post_status": "open", "original_creator": "#user_admin#"},
+            {"headline": "second post", "blog": "#blogs._id#", "post_status": "open", "original_creator": "#user_admin#"},
+            {"headline": "first draft", "blog": "#blogs._id#", "post_status": "draft", "original_creator": "#user_admin#"}
         ]
         """
 

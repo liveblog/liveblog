@@ -3,7 +3,7 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 
 describe('Advertising Manager', () => {
     beforeEach((done) => {
-        browser.driver.manage().window().maximize();
+        browser.driver.manage().window().setRect({ width: 1920, height: 1080 });
         login()
             .then(done);
     });
