@@ -1,6 +1,7 @@
 import flask
 import logging
 
+from copy import deepcopy
 from bson import ObjectId
 from cerberus import Validator
 from flask_cors import CORS
@@ -59,6 +60,13 @@ class InstanceSettingsService(BaseService):
 
         return flask.g.user.get("is_support", False)
 
+    def get(self, req, lookup):
+        """
+        Retrieve instance settings directly from MongoDB, bypassing the Elasticsearch.
+        This ensures that the most up-to-date configuration is returned to the client.
+        """
+        return self.get_from_mongo(req, lookup)
+
     def create(self, docs, **kwargs):
         # skip permissions if it's comming from initialize_data command
         if not app.is_initialize_data and not self.is_user_authorized():
@@ -76,9 +84,13 @@ class InstanceSettingsService(BaseService):
         existing_config = self.get_existing_config()
 
         if existing_config and "_id" in existing_config:
+            # Merge existing config with new settings
+            existing_settings = deepcopy(existing_config.get("settings", {}))
+            merged_settings = self.deep_merge(existing_settings, doc["settings"])
+
             try:
                 self.patch(
-                    ObjectId(existing_config["_id"]), dict(settings=doc["settings"])
+                    ObjectId(existing_config["_id"]), dict(settings=merged_settings)
                 )
                 return [existing_config["_id"]]
             except SuperdeskApiError as e:
@@ -144,6 +156,28 @@ class InstanceSettingsService(BaseService):
             return {}
         except IndexError:
             return {}
+
+    def deep_merge(self, existing, incoming):
+        """
+        Recursively merge incoming settings into the existing ones
+        without wiping out nested structures.
+
+        This is especially useful during initialization when we want to apply
+        new or default settings but keep any changes the user has already made.
+        It carefully updates only what's needed — preserving existing values,
+        updating changed ones, and adding any new keys that weren’t there before.
+        That way, we don’t lose custom configurations, and we still apply updates cleanly.
+        """
+        for key, value in incoming.items():
+            if key in existing:
+                if isinstance(existing[key], dict) and isinstance(value, dict):
+                    self.deep_merge(existing[key], value)
+                else:
+                    # Only overwrite if the existing key is not meaningful
+                    existing[key] = value
+            else:
+                existing[key] = value
+        return existing
 
 
 @instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])
