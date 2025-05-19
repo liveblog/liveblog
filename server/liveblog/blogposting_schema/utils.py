@@ -63,8 +63,8 @@ def clean_html_text(html_text):
         str: The cleaned text with <br> tags converted to newlines and all other HTML tags removed.
     """
     soup = BeautifulSoup(html_text, "lxml")
-    for br in soup.find_all('br'):
-        br.replace_with('\n')
+    for br in soup.find_all("br"):
+        br.replace_with("\n")
     return soup.get_text().strip()
 
 
