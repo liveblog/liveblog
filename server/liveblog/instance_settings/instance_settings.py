@@ -41,7 +41,7 @@ class InstanceSettingsResource(Resource):
     The instance settings are stored as a JSON object in the settings field.
     """
 
-    datasource = {"source": instance_settings_key, "search_backend": "elastic"}
+    datasource = {"source": instance_settings_key, "search_backend": None}
     schema = INSTANCE_SETTINGS_SCHEMA.copy()
 
     privileges = {"GET": instance_settings_key, "POST": instance_settings_key}
@@ -59,13 +59,6 @@ class InstanceSettingsService(BaseService):
             return False
 
         return flask.g.user.get("is_support", False)
-
-    def get(self, req, lookup):
-        """
-        Retrieve instance settings directly from MongoDB, bypassing the Elasticsearch.
-        This ensures that the most up-to-date configuration is returned to the client.
-        """
-        return self.get_from_mongo(req, lookup)
 
     def create(self, docs, **kwargs):
         # skip permissions if it's comming from initialize_data command
