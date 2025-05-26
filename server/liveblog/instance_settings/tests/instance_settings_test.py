@@ -1,4 +1,3 @@
-import os
 from unittest.mock import MagicMock, patch
 from bson import ObjectId
 from superdesk import register_resource, get_resource_service
