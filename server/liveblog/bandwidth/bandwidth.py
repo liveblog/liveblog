@@ -81,7 +81,7 @@ class BandwidthService(BaseService):
         bandwidth_usage_gb = current_bandwidth / (1024**3)
         percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
-        if percentage_used <= 75:
+        if percentage_used < 75:
             return
 
         recipients_email = [LIVEBLOG_ZENDESK_EMAIL]

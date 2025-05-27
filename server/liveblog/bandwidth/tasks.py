@@ -72,9 +72,9 @@ def fetch_bandwidth_usage():
         "Content-Type": "application/json",
     }
 
-    # Calculate the date range for the last 3 hour
+    # Calculate the date range for the last 1 hour
     end_date = utcnow()
-    start_date = end_date - timedelta(hours=3)
+    start_date = end_date - timedelta(hours=1)
     start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
     end_date_str = end_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
