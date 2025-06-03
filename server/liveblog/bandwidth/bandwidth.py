@@ -2,13 +2,12 @@ import logging
 
 from bson import ObjectId
 from flask_cors import CORS
-from flask import Blueprint, render_template, current_app as app
+from flask import Blueprint, current_app as app
 from superdesk import get_resource_service
-from superdesk.emails import send_email
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from liveblog.utils.api import api_response
-from settings import LIVEBLOG_ZENDESK_EMAIL
+from .utils import send_bandwidth_alerts
 
 logger = logging.getLogger(__name__)
 bandwidth_key = "bandwidth"
@@ -29,7 +28,7 @@ class BandwidthResource(Resource):
     This resources is used to store bandwidth usage for the liveblog instance.
     """
 
-    datasource = {"source": bandwidth_key, "search_backend": "elastic"}
+    datasource = {"source": bandwidth_key, "search_backend": None}
     schema = BANDWIDTH_SCHEMA.copy()
     item_methods = ["GET", "PATCH"]
     privileges = {"GET": "posts", "PATCH": "posts"}
@@ -69,13 +68,13 @@ class BandwidthService(BaseService):
             updated_bandwidth_usage = existing_bandwidth_usage + bandwidth_usage
             updates = {"bandwidthUsage": updated_bandwidth_usage}
             self.update_bandwidth_usage(current_bandwidth, updates)
-            self.send_email_if_bandwidth_exceeded(updated_bandwidth_usage)
+            self.send_alerts_if_bandwidth_exceeded(updated_bandwidth_usage)
         else:
             logger.info("No existing bandwidth record found to update.")
 
-    def send_email_if_bandwidth_exceeded(self, current_bandwidth):
+    def send_alerts_if_bandwidth_exceeded(self, current_bandwidth):
         """
-        Send an email to the instance admin and support if the bandwidth usage exceeds the threshold
+        Send an alert to the instance admin and support if the bandwidth usage exceeds the threshold
         """
         upper_limit_gb = app.features.get_feature_limit("bandwidth_limit")
         bandwidth_usage_gb = current_bandwidth / (1024**3)
@@ -84,44 +83,8 @@ class BandwidthService(BaseService):
         if percentage_used < 75:
             return
 
-        recipients_email = [LIVEBLOG_ZENDESK_EMAIL]
-        users = get_resource_service("users").get(
-            req=None, lookup={"user_type": "administrator"}
-        )
-        if users:
-            recipients_email.extend([user["email"] for user in users])
-
-        server_name = app.config["SERVER_NAME"]
-        admins = app.config["ADMINS"]
-        app_name = app.config["APPLICATION_NAME"]
-
-        if recipients_email:
-            subject = render_template(
-                "bandwidth_alert_subject.txt",
-                app_name=app_name,
-                server_name=server_name,
-            )
-            text_body = render_template(
-                "bandwidth_alert.txt",
-                app_name=app_name,
-                server_name=server_name,
-                bandwidth_usage=percentage_used,
-                allocated_bandwidth=upper_limit_gb,
-            )
-            html_body = render_template(
-                "bandwidth_alert.html",
-                app_name=app_name,
-                server_name=server_name,
-                bandwidth_usage=percentage_used,
-                allocated_bandwidth=upper_limit_gb,
-            )
-            send_email.delay(
-                subject=subject,
-                sender=admins[0],
-                recipients=recipients_email,
-                text_body=text_body,
-                html_body=html_body,
-            )
+        # Send alerts if the usage exceeds 75% threshold
+        send_bandwidth_alerts(upper_limit_gb, percentage_used)
 
 
 @bandwidth_blueprint.route("/api/bandwidth/current", methods=["GET"])
