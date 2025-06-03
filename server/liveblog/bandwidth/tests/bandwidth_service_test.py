@@ -63,12 +63,12 @@ def test_compute_new_bandwidth_usage(bandwidth_service):
         return_value=mock_current_bandwidth
     )
     bandwidth_service.update_bandwidth_usage = MagicMock()
-    bandwidth_service.send_email_if_bandwidth_exceeded = MagicMock()
+    bandwidth_service.send_alerts_if_bandwidth_exceeded = MagicMock()
     bandwidth_service.compute_new_bandwidth_usage(1024)
     bandwidth_service.update_bandwidth_usage.assert_called_once_with(
         mock_current_bandwidth, {"bandwidthUsage": 2048}
     )
-    bandwidth_service.send_email_if_bandwidth_exceeded.assert_called_once_with(2048)
+    bandwidth_service.send_alerts_if_bandwidth_exceeded.assert_called_once_with(2048)
 
 
 def test_get_instance_bandwidth(client, app):
