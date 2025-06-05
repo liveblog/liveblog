@@ -2,11 +2,13 @@ from flask import Blueprint, Response, stream_with_context, request
 from flask_cors import CORS
 from liveblog.bandwidth.utils import send_bandwidth_alerts
 
-dummy_blueprint = Blueprint("dummy_blueprint", __name__)
-CORS(dummy_blueprint)
+dummy_download_blueprint = Blueprint("dummy_download_blueprint", __name__)
+dummy_email_blueprint = Blueprint("dummy_email_blueprint", __name__)
+CORS(dummy_download_blueprint)
+CORS(dummy_email_blueprint)
 
 
-@dummy_blueprint.route("/api/dummy_download", methods=["GET"])
+@dummy_download_blueprint.route("/api/dummy_download", methods=["GET"])
 def dummy_download():
     """
     Serve a large dummy file to test bandwidth.
@@ -33,7 +35,7 @@ def dummy_download():
     )
 
 
-@dummy_blueprint.route("/api/send_dummy_alerts", methods=["GET"])
+@dummy_email_blueprint.route("/api/send_dummy_alerts", methods=["GET"])
 def dummy_alert():
     send_bandwidth_alerts(30, 75)
     return Response(response=None, status=200)
