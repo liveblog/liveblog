@@ -1,1 +1,1 @@
-Urgert: {{app_name}} Bandwidth Usage Alert - {{server_name}}
+Urgent: {{app_name}} Bandwidth Usage Alert - {{server_name}}
