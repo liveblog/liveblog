@@ -1,5 +1,6 @@
 from flask import Blueprint, Response, stream_with_context, request
 from flask_cors import CORS
+from liveblog.bandwidth.utils import send_bandwidth_alerts
 
 dummy_blueprint = Blueprint("dummy_blueprint", __name__)
 CORS(dummy_blueprint)
@@ -30,3 +31,9 @@ def dummy_download():
         stream_with_context(generate()),
         headers=headers,
     )
+
+
+@dummy_blueprint.route("/api/send_dummy_alerts", methods=["GET"])
+def dummy_alert():
+    send_bandwidth_alerts(30, 75)
+    return Response(response=None, status=200)
