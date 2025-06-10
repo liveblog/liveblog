@@ -21,7 +21,7 @@ def send_email_alerts(upper_limit_gb, percentage_used):
     """
     logger.info("Sending bandwidth alert email to admins and support team")
 
-    recipients_email = [LIVEBLOG_ZENDESK_EMAIL, "mwangikabiru21@gmail.com"]
+    recipients_email = [LIVEBLOG_ZENDESK_EMAIL]
     users = get_resource_service("users").get(
         req=None, lookup={"user_type": "administrator"}
     )

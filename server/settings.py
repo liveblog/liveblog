@@ -154,8 +154,7 @@ CELERYBEAT_SCHEDULE = {
     },
     "bandwidth:update": {
         "task": "liveblog.bandwidth.tasks.fetch_bandwidth_usage",
-        # "schedule": crontab(minute=0, hour="*/1"),  # every hours
-        "schedule": crontab(minute="*/5"),  # every 5 minutes for testing
+        "schedule": crontab(minute=0, hour="*/1"),  # every hours
     },
 }
 
@@ -386,7 +385,7 @@ SUBSCRIPTION_LEVEL_GO = "liveblog-go"
 SUBSCRIPTION_LEVEL_SOLO = "solo"
 SUBSCRIPTION_LEVEL_TEAM = "team"
 SUBSCRIPTION_LEVEL_NETWORK = "network"
-SUBSCRIPTION_LEVEL = env("SUBSCRIPTION_LEVEL", SUBSCRIPTION_LEVEL_GO)
+SUBSCRIPTION_LEVEL = env("SUBSCRIPTION_LEVEL", SUBSCRIPTION_LEVEL_NETWORK)
 SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
 SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
 SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 6}

@@ -93,7 +93,7 @@ def fetch_bandwidth_usage():
             "filter": {
                 "datetime_geq": start_date_str,
                 "datetime_lt": end_date_str,
-                "clientRequestHTTPHost_like": "%pnp%",  # f"%{subdomain}%", - Changed for testing
+                "clientRequestHTTPHost_like": f"%{subdomain}%",
                 "requestSource": "eyeball",
             },
         },
