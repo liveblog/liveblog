@@ -7,6 +7,7 @@ from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from liveblog.utils.api import api_response
+from settings import BANDWIDTH_LIMIT_THRESHOLD
 from .utils import send_bandwidth_alerts
 
 logger = logging.getLogger(__name__)
@@ -80,11 +81,9 @@ class BandwidthService(BaseService):
         bandwidth_usage_gb = current_bandwidth / (1024**3)
         percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
-        if percentage_used < 75:
-            return
-
-        # Send alerts if the usage exceeds 75% threshold
-        send_bandwidth_alerts(upper_limit_gb, percentage_used)
+        if percentage_used >= BANDWIDTH_LIMIT_THRESHOLD:
+            # Send alerts if the usage exceeds bandwidth limit threshold
+            send_bandwidth_alerts(upper_limit_gb, percentage_used)
 
 
 @bandwidth_blueprint.route("/api/bandwidth/current", methods=["GET"])
@@ -102,6 +101,7 @@ def get_instance_bandwidth():
             bandwidth_usage_gb = bandwidth_usage_bytes / (1024**3)
             percentage_used = round((bandwidth_usage_gb / upper_limit_gb) * 100, 1)
 
+            response["upperLimitGB"] = upper_limit_gb
             response["bandwidthUsageBytes"] = bandwidth_usage_bytes
             response["bandwidthUsageGB"] = bandwidth_usage_gb
             response["percentageUsed"] = percentage_used

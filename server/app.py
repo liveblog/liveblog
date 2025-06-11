@@ -35,6 +35,7 @@ from liveblog.advertisements.advertisements import advertisements_blueprint
 from liveblog.video_upload.video_upload import video_upload_blueprint
 from liveblog.instance_settings.instance_settings import instance_settings_blueprint
 from liveblog.bandwidth.bandwidth import bandwidth_blueprint
+from liveblog.bandwidth.bandwidth_history import bandwidth_history_blueprint
 from liveblog.dummy import dummy_download_blueprint, dummy_email_blueprint
 
 from superdesk.factory import get_app as superdesk_app
@@ -133,6 +134,9 @@ def get_app(config=None):
 
     # Bandwidth endpoint
     app.register_blueprint(bandwidth_blueprint)
+
+    # Bandwidth history recalculate endpoint
+    app.register_blueprint(bandwidth_history_blueprint)
 
     # Dummy download endpoint
     app.register_blueprint(dummy_download_blueprint)
