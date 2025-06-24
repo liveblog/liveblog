@@ -1059,10 +1059,6 @@ lb-producer__author:before {
     vertical-align: bottom;
   }
 
-  .lb-post-permalink {
-
-  }
-
   .lb-advertisement {
     font-size: 0.75rem;
       color: @grey;
@@ -1171,6 +1167,20 @@ body .scorecard-top__info {
   font-weight: normal;
   margin-top: 10px;
 }
+
+// Hide elements visually but keep them accessible to screen readers
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+  white-space: nowrap;
+}
+
 
 
 /* adapt embed card to small screens
