@@ -5,7 +5,11 @@
       <div class="lb-author__name">
         {{ translate('Comment by') }} {{ mainItem.commenter }}
       </div>
-      <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+      <img
+        class="lb-author__avatar lb-author__avatar--comment"
+        src="{{ assets_root }}images/comment_icon.svg"
+        alt="Comment by {{ mainItem.commenter }}"
+      >
     {% elif settings.showAuthor %}
       <div class="lb-author__name">
       {% if post.syndicated_creator and settings.showSyndicatedAuthor %}
@@ -27,15 +31,31 @@
 
       </div>
       {% if type == 'comment' %}
-        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+        <img
+          class="lb-author__avatar lb-author__avatar--comment"
+          src="{{ assets_root }}images/comment_icon.svg"
+          alt="Comment by {{ mainItem.commenter }}"
+        >
       {% endif %}
       {% if settings.showAuthorAvatar and type != 'comment' %}
         {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
-        <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
+        <img
+          class="lb-author__avatar"
+          src="{{ mainItem.syndicated_creator.picture_url }}"
+          alt="{{ mainItem.syndicated_creator.display_name }}"
+        />
         {% elif post.original_creator and post.original_creator.picture_url %}
-        <img class="lb-author__avatar" src="{{ post.original_creator.picture_url }}" />
+        <img
+          class="lb-author__avatar"
+          src="{{ post.original_creator.picture_url }}"
+          alt="Author {{ post.original_creator.display_name }}"
+        />
         {% elif post.publisher and post.publisher.picture_url %}
-        <img class="lb-author__avatar" src="{{ post.publisher.picture_url }}" />
+        <img
+          class="lb-author__avatar"
+          src="{{ post.publisher.picture_url }}"
+          alt="Publisher {{ post.publisher.display_name }}"
+        />
         {% else %}
         <div class="lb-author__avatar"></div>
         {% endif %}
