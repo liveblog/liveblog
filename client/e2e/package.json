@@ -1,0 +1,25 @@
+{
+  "name": "liveblog-e2e",
+  "version": "1.0.0",
+  "description": "End-to-end tests for LiveBlog",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run",
+    "test:open": "cypress open"
+  },
+  "dependencies": {
+    "cypress": "^13.6.0",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-cypress": "^2.15.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

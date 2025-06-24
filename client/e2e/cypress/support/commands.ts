@@ -1,3 +1,16 @@
+/// <reference types="cypress" />
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            waitForSuperdesk(): Chainable<void>;
+            setupFixtures(): Chainable<void>;
+            login(username: string, password: string): Chainable<void>;
+            getByTestId(testId: string): Chainable<JQuery<HTMLElement>>;
+        }
+    }
+}
+
 Cypress.Commands.add('waitForSuperdesk', () => {
     cy.window().should('have.property', 'superdeskIsReady', true);
 });
