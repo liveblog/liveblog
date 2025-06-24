@@ -377,18 +377,29 @@
   .sorting-bar__order {
       float: left;
       margin-right: 25px;
-      padding-bottom: 8px;
       cursor: pointer;
       color: #999999;
       font-size: 1em;
       transition: color .1s ease-out;
-  }
 
-  .sorting-bar__order--active,
-  .sorting-bar__order:hover {
-      color: @black;
-      margin-bottom: -2px;
-      border-bottom: 2px solid @black;
+      button {
+        font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
+        padding: 0;
+        font-size: inherit;
+        color: #999;
+        transition: inherit;
+        padding-bottom: 10px;
+        font-weight: 500;
+      }
+
+      &:hover,
+      &--active {
+        button {
+          color: @black;
+          margin-bottom: -2px;
+          border-bottom: 2px solid @black;
+        }
+      }
   }
 
   .sorting-bar__dropdownBtn {
@@ -1259,13 +1270,14 @@ body .scorecard-top__info {
         margin-top: 10px;
         margin-left: 5px;
         box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.5);
+        min-width: 100px;
 
         &--active {
           display: block;
         }
       }
 
-      .sorting-bar__order {
+      .sorting-bar__order button {
         float: none;
         margin-right: 0px;
         padding-bottom: 12px;
@@ -1275,7 +1287,7 @@ body .scorecard-top__info {
         padding-bottom: 0px;
       }
 
-      .sorting-bar__order--active, .sorting-bar__order:hover {
+      .sorting-bar__order--active button, .sorting-bar__order:hover button {
         border: none;
         margin-bottom: 0px;
       }
