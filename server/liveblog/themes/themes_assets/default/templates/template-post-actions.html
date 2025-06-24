@@ -2,8 +2,8 @@
     <div class="lb-post-actions {% if settings.authorPosition == 'bottom'  %}lb-post-actions--top{% endif %}">
 
         {% if settings.showSharingButtons %}
-            <div class="lb-post-share">
-                <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+            <div class="lb-post-share" title="Share">
+                <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" alt="Share" />
                 <div class="lb-post-shareBox">
                     <a
                         class="lb-post-shareBox__item"
@@ -68,7 +68,7 @@
         {% if settings.showPermalinkButton %}
             <!-- permalink -->
             <div class="lb-post-permalink">
-                <a id="{{ post._id }}" target="_blank">
+                <a id="{{ post._id }}" target="_blank" title="Permalink">
                     <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
                     <span class="sr-only">Permalink</span>
                 </a>
