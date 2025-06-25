@@ -21,14 +21,13 @@ def check_media_storage():
         raise MediaStorageUnsupportedForBlogPublishing()
 
 
-def get_blog_path(blog_id, theme=None, output_id=None):
-    theme_str = output_str = ""
+def get_blog_path(blog_id, output_id=None):
+    output_str = ""
 
     if output_id:
-        theme_str = f"{theme}/" if theme else ""
         output_str = f"{output_id}/"
 
-    return f"blogs/{blog_id}/{theme_str}{output_str}index.html"
+    return f"blogs/{blog_id}/{output_str}index.html"
 
 
 def get_bloglist_path():
