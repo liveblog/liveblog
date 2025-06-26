@@ -6,7 +6,6 @@ const del = require('del');
 const path = require('path');
 const nunjucks = require('nunjucks');
 const dateFilter = require('nunjucks-date-filter');
-const moment = require('moment');
 
 const { ThemeTemplatesLoader } = require('liveblog-shared-tools');
 const { ampifyFilter, addtenFilter, decodeUri, fixXDomainEmbed } = require('./misc/filters');
@@ -124,8 +123,6 @@ nunjucksEnv.addFilter('addten', addtenFilter);
 nunjucksEnv.addFilter('decode_uri', decodeUri);
 nunjucksEnv.addFilter('fix_x_domain_embed', fixXDomainEmbed);
 
-// Add utcnow global function
-nunjucksEnv.addGlobal('utcnow', () => moment.utc().format('YYYY-MM-DD HH:mm:ss'));
 
 // TODO: add docstrings after merge default theme refactor
 const ampSupport = (item) => {

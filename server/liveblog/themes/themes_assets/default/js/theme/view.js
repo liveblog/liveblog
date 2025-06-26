@@ -19,7 +19,6 @@ nunjucksEnv.addFilter('date', helpers.convertTimestamp);
 nunjucksEnv.addFilter('decode_uri', filters.decodeUri);
 nunjucksEnv.addFilter('fix_x_domain_embed', filters.fixXDomainEmbed);
 nunjucksEnv.addFilter('tojson', filters.tojson);
-nunjucksEnv.addGlobal('utcnow', helpers.utcnow);
 nunjucks.env = nunjucksEnv;
 
 const permalink = new Permalink();
