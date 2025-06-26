@@ -302,12 +302,12 @@ function toggleCommentDialog() {
  * @param {string} name - liveblog API response JSON.
  */
 function toggleSortBtn(name) {
-  var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+  var sortingBtns = document.querySelectorAll('.sorting-bar__order button');
 
   sortingBtns.forEach((el) => {
     var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name);
 
-    el.classList.toggle('sorting-bar__order--active', shouldBeActive);
+    el.parentElement.classList.toggle('sorting-bar__order--active', shouldBeActive);
     if (shouldBeActive) {
       document.querySelector('.sorting-bar__dropdownBtn').innerHTML = el.innerHTML;
     }
