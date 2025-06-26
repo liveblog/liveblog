@@ -170,9 +170,7 @@ CLOUDFLARE_URL = env("CLOUDFLARE_URL", "")
 CLOUDFLARE_AUTH = env("CLOUDFLARE_AUTH", "")
 CLOUDFLARE_ZONE_TAG = env("CLOUDFLARE_ZONE_TAG", "")
 
-LIVEBLOG_ZENDESK_EMAIL = env(
-    "LIVEBLOG_ZENDESK_EMAIL", "liveblogpro@sourcefabricberlin.zendesk.com"
-)
+LIVEBLOG_ZENDESK_EMAIL = env("LIVEBLOG_ZENDESK_EMAIL", "")
 
 INSTALLED_APPS = [
     "apps.auth",
@@ -447,5 +445,6 @@ HIDE_USERS_SENSITIVE_DATA = env("HIDE_USERS_SENSITIVE_DATA", False)
 SLACK_BOT_TOKEN = env("SLACK_BOT_TOKEN", "")
 SLACK_ALERT_CHANNEL = env("SLACK_ALERT_CHANNEL", "#live_blog_support")
 
-# Bandwidth Limit Threshold
+# Bandwidth Limit Threshold in percentage e.g., 75 means 75% of the allocated bandwidth.
+# For example, if the allocated bandwidth is 30 GB, 75% would be 22.5 GB.
 BANDWIDTH_LIMIT_THRESHOLD = int(env("BANDWIDTH_LIMIT_THRESHOLD", 75))

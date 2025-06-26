@@ -6,7 +6,16 @@ from flask import current_app as app
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.utc import utcnow
-from settings import CLOUDFLARE_URL, CLOUDFLARE_AUTH, CLOUDFLARE_ZONE_TAG, SERVER_NAME
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from settings import (
+    CLOUDFLARE_URL,
+    CLOUDFLARE_AUTH,
+    CLOUDFLARE_ZONE_TAG,
+    SERVER_NAME,
+    SLACK_BOT_TOKEN,
+    SLACK_ALERT_CHANNEL,
+)
 
 logger = logging.getLogger("liveblog")
 
@@ -131,3 +140,35 @@ def fetch_bandwidth_usage():
 
     bandwidth_service = get_resource_service("bandwidth")
     bandwidth_service.compute_new_bandwidth_usage(bandwidth_used)
+
+
+@celery.task
+def send_slack_bandwidth_alert(upper_limit_gb, percentage_used):
+    logger.info("Sending bandwidth alert to Slack")
+
+    token = SLACK_BOT_TOKEN
+    channel = SLACK_ALERT_CHANNEL
+
+    if not token or not channel:
+        logger.warning("Slack configurations not set. Skipping Slack alert.")
+        return
+
+    client = WebClient(token=token)
+    server_name = app.config["SERVER_NAME"]
+    app_name = app.config["APPLICATION_NAME"]
+
+    message = (
+        f":warning: *{app_name} Bandwidth Alert* on `{server_name}`\n"
+        f"> *Usage:* {percentage_used:.2f}% of the {upper_limit_gb} GB limit reached."
+    )
+
+    try:
+        response = client.chat_postMessage(
+            channel=channel,
+            text=message,
+        )
+        logger.info("Slack alert sent: %s", response["ts"])
+    except SlackApiError as e:
+        logger.error("Slack API Error: %s", e.response["error"])
+    except Exception as err:
+        logger.error("Error occurred while sending Slack alert: %s", err)

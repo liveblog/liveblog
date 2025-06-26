@@ -6,6 +6,7 @@ from slack_sdk.errors import SlackApiError
 from superdesk import get_resource_service
 from superdesk.emails import send_email
 from settings import LIVEBLOG_ZENDESK_EMAIL, SLACK_BOT_TOKEN, SLACK_ALERT_CHANNEL
+from .tasks import send_slack_bandwidth_alert
 
 logger = logging.getLogger(__name__)
 
@@ -66,31 +67,13 @@ def send_email_alerts(upper_limit_gb, percentage_used):
 
 
 def send_slack_alerts(upper_limit_gb, percentage_used):
-    logger.info("Sending bandwidth alert to Slack")
-
-    token = SLACK_BOT_TOKEN
-    channel = SLACK_ALERT_CHANNEL
-
-    if not token and not channel:
-        logger.warning("Slack configurations not set. Skipping Slack alert.")
-        return
-
-    client = WebClient(token=token)
-    server_name = app.config["SERVER_NAME"]
-    app_name = app.config["APPLICATION_NAME"]
-
-    message = (
-        f":warning: *{app_name} Bandwidth Alert* on `{server_name}`\n"
-        f"> *Usage:* {percentage_used:.2f}% of the {upper_limit_gb} GB limit reached."
-    )
-
+    """
+    Sends a slack alert to the configured Slack channel
+    """
+    print("sending slack alerts now...")
     try:
-        response = client.chat_postMessage(
-            channel=channel,
-            text=message,
-        )
-        logger.info("Slack alert sent: %s", response["ts"])
-    except SlackApiError as e:
-        logger.error("Slack API Error: %s", e.response["error"])
+        send_slack_bandwidth_alert.delay(upper_limit_gb, percentage_used)
     except Exception as err:
-        logger.error("Error occurred while sending Slack alert: %s", err)
+        logger.error(
+            "Error occurred while sending bandwidth alert slack message: %s", err
+        )
