@@ -24,7 +24,6 @@ from eve.io.mongo import MongoJSONEncoder
 from flask_cors import cross_origin
 from flask import make_response, request, current_app as app
 
-from superdesk.utc import utcnow
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
@@ -304,7 +303,6 @@ class ThemesService(BaseService):
         embed_env.filters["ampsupport"] = ampsupport
         embed_env.filters["decode_uri"] = decode_uri
         embed_env.filters["fix_x_domain_embed"] = fix_x_domain_embed
-        embed_env.globals["utcnow"] = utcnow
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):

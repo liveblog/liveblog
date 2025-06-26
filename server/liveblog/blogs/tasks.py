@@ -101,7 +101,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
 
     check_media_storage()
     output_id = output["_id"] if output else None
-    file_path = get_blog_path(blog_id, output_id)
+    file_path = get_blog_path(blog_id, theme, output_id)
 
     # update the embed file
     file_id = app.media.put(
@@ -145,15 +145,21 @@ def delete_embed(blog, theme=None, output=None):
     # TODO: handle all the output `public_url` logic in the output resource.
     if output:
         output_id = str(output.get("_id"))
-        file_path = get_blog_path(blog_id, output_id)
+        file_path = get_blog_path(blog_id, output.get("theme"), output_id)
         public_urls["output"].pop(output_id, None)
+    elif theme:
+        file_path = get_blog_path(blog_id, theme)
+        public_urls["theme"].pop(theme, None)
     else:
         if is_s3_storage_enabled():
             for output_id, output_url in public_urls["output"].items():
                 out = outputs.find_one(req=None, _id=output_id)
                 if out:
-                    output_path = get_blog_path(blog_id, output_id)
+                    output_path = get_blog_path(blog_id, out.get("theme"), output_id)
                     app.media.delete(app.media.media_id(output_path, version=False))
+            for theme_name, theme_url in public_urls["theme"].items():
+                theme_path = get_blog_path(blog_id, theme_name)
+                app.media.delete(app.media.media_id(theme_path, version=False))
             file_path = get_blog_path(blog_id)
 
     # Remove existing file.

@@ -9,13 +9,6 @@ var moment = require('moment'),
 
 require("moment/min/locales.min");
 moment.locale(settings.language);
-
-// Get current UTC time without microseconds
-function utcnow() {
-  const now = moment.utc();
-  return now.format('YYYY-MM-DD HH:mm:ss');
-}
-
 function convertTimestamp(timestamp) {
   if (settings.showRelativeDate) {
     const d = new Date(); // Now
@@ -90,12 +83,12 @@ function get(url, noCache = false) {
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', url);
-
+    
     // Add the Cache-Control header if noCache is True
     if (noCache) {
       xhr.setRequestHeader("Cache-Control", "no-cache");
     }
-
+    
     xhr.onload = function() {
       if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText));
@@ -184,7 +177,7 @@ function getSortBy(sortBy) {
     default:
       sortBy = 'editorial';
   }
-
+  
   window.playersState = {};
   return sortBy;
 };
@@ -198,6 +191,5 @@ module.exports = {
   convertTimestamp: convertTimestamp,
   fragmentFromString: fragmentFromString,
   range: range,
-  getSortBy: getSortBy,
-  utcnow: utcnow
+  getSortBy: getSortBy
 };
