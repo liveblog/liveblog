@@ -393,55 +393,9 @@ const postsService = (api, $q, _userList, session) => {
     };
 
     const removePost = (post) => {
-        const removeParams = { deleted: true };
+        const deleted = { deleted: true };
 
-        const items = post.groups[1].refs;
-        const deletePromises = [];
-
-        _.each(items, (item) => {
-            switch (item.item.item_type) {
-            case 'poll': {
-                deletePromises.push(
-                    api.polls.getById(item.residRef).then((pollToDelete) => {
-                        return api.polls.remove(pollToDelete);
-                    })
-                );
-                break;
-            }
-            default: {
-                deletePromises.push(
-                    api.items.getById(item.residRef).then((itemToDelete) => {
-                        return api.items.remove(itemToDelete);
-                    })
-                );
-                break;
-            }
-            }
-        });
-
-        return $q.all(deletePromises).then(() => {
-            /*
-             TODO: Re-implement this logic to permanently delete the post
-             instead of just resetting `groups.refs` as this reserves the
-             posts in the system for no reason.
-            */
-
-            angular.extend(removeParams, {
-                groups: [
-                    {
-                        id: 'root',
-                        refs: [{ idRef: 'main' }],
-                        role: 'grpRole:NEP',
-                    }, {
-                        id: 'main',
-                        refs: [],
-                        role: 'grpRole:Main',
-                    },
-                ],
-            });
-
-            return api.posts.save(post, removeParams);
-        });
+        return savePost(post.blog, post, [], deleted);
     };
 
     const flagPost = (postId) => {

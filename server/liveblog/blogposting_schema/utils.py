@@ -1,5 +1,7 @@
 import json
 import logging
+from bs4 import BeautifulSoup
+
 from liveblog.posts.utils import (
     get_first_item,
     get_first_item_of_type,
@@ -47,6 +49,25 @@ def get_base_image(item):
         return media.get("renditions", {}).get("baseImage")
 
 
+def clean_html_text(html_text):
+    """
+    Cleans HTML text by converting <br> tags to newlines and stripping all other HTML tags.
+
+    This function uses BeautifulSoup with the lxml parser for efficient HTML parsing.
+    It preserves line breaks from <br> tags while removing all other HTML markup.
+
+    Args:
+        html_text (str): The HTML text to clean.
+
+    Returns:
+        str: The cleaned text with <br> tags converted to newlines and all other HTML tags removed.
+    """
+    soup = BeautifulSoup(html_text, "lxml")
+    for br in soup.find_all("br"):
+        br.replace_with("\n")
+    return soup.get_text().strip()
+
+
 def generate_blogupdate(blog, post, theme_settings):
     """
     Generates a BlogPosting object from a blog post.
@@ -77,7 +98,7 @@ def generate_blogupdate(blog, post, theme_settings):
 
     text_item = get_first_item_of_type(items, "text")
     if text_item:
-        blog_posting.article_body = text_item.get("text")
+        blog_posting.article_body = clean_html_text(text_item.get("text"))
 
     image_item = get_first_item_of_type(items, "image")
     if image_item:

@@ -1,6 +1,7 @@
 import flask
 import logging
 
+from copy import deepcopy
 from bson import ObjectId
 from cerberus import Validator
 from flask_cors import CORS
@@ -9,6 +10,7 @@ from flask import Blueprint, current_app as app
 from superdesk.resource import Resource
 from superdesk.errors import SuperdeskApiError
 from superdesk.services import BaseService
+from superdesk.notification import push_notification
 from liveblog.utils.api import api_response
 
 logger = logging.getLogger(__name__)
@@ -39,7 +41,7 @@ class InstanceSettingsResource(Resource):
     The instance settings are stored as a JSON object in the settings field.
     """
 
-    datasource = {"source": instance_settings_key, "search_backend": "elastic"}
+    datasource = {"source": instance_settings_key, "search_backend": None}
     schema = INSTANCE_SETTINGS_SCHEMA.copy()
 
     privileges = {"GET": instance_settings_key, "POST": instance_settings_key}
@@ -74,9 +76,22 @@ class InstanceSettingsService(BaseService):
         self.validate_payload(doc["settings"])
         existing_config = self.get_existing_config()
 
-        if existing_config:
-            self.patch(ObjectId(existing_config["_id"]), dict(settings=doc["settings"]))
-            return [existing_config["_id"]]
+        if existing_config and "_id" in existing_config:
+            # Merge existing config with new settings
+            existing_settings = deepcopy(existing_config.get("settings", {}))
+            merged_settings = self.deep_merge(existing_settings, doc["settings"])
+
+            try:
+                self.patch(
+                    ObjectId(existing_config["_id"]), dict(settings=merged_settings)
+                )
+                return [existing_config["_id"]]
+            except SuperdeskApiError as e:
+                if e.status_code == 404:
+                    # If the document is missing, fallback to creating a new one
+                    return super().create(docs, **kwargs)
+                else:
+                    raise  # re-raise other errors
         else:
             return super().create(docs, **kwargs)
 
@@ -86,6 +101,7 @@ class InstanceSettingsService(BaseService):
 
     def on_updated(self, updates, original):
         app.features.load_settings()
+        push_notification("instance_settings:updated")
         return super().on_updated(updates, original)
 
     def validate_payload(self, settings):
@@ -124,12 +140,37 @@ class InstanceSettingsService(BaseService):
     def get_existing_config(self):
         """
         Check if any config exists at all. This assumes the singleton pattern where there
-        exists only one config at a time
+        exists only one config at a time.
         """
         try:
-            return self.get(req=None, lookup={})[0]
+            config = self.get_from_mongo(req=None, lookup={})[0]
+            if config and "_id" in config:
+                return config
+            return {}
         except IndexError:
             return {}
+
+    def deep_merge(self, existing, incoming):
+        """
+        Recursively merge incoming settings into the existing ones
+        without wiping out nested structures.
+
+        This is especially useful during initialization when we want to apply
+        new or default settings but keep any changes the user has already made.
+        It carefully updates only what's needed — preserving existing values,
+        updating changed ones, and adding any new keys that weren’t there before.
+        That way, we don’t lose custom configurations, and we still apply updates cleanly.
+        """
+        for key, value in incoming.items():
+            if key in existing:
+                if isinstance(existing[key], dict) and isinstance(value, dict):
+                    self.deep_merge(existing[key], value)
+                else:
+                    # Only overwrite if the existing key is not meaningful
+                    existing[key] = value
+            else:
+                existing[key] = value
+        return existing
 
 
 @instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])

@@ -4,7 +4,10 @@ var path = require('path');
 
 function getChromeOptions() {
     var chromeOptions = {
-        args: ['no-sandbox'],
+        args: [
+            '--no-sandbox',
+            '--window-size=1920,1080',
+        ],
     };
 
     if (process.env.CHROME_BIN) {
