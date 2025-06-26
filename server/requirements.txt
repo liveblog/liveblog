@@ -13,6 +13,7 @@ google-auth-oauthlib==0.2.0
 elastic-apm==6.15.1
 marshmallow<3.15.0
 dataclasses==0.8
+slack-sdk==3.35.0
 
 # Superdesk
 -e git+https://github.com/vstinner/hachoir.git@3.0a2#egg=hachoir3
