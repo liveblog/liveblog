@@ -1,11 +1,9 @@
 import logging
 
 from flask import render_template, current_app as app
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
 from superdesk import get_resource_service
 from superdesk.emails import send_email
-from settings import LIVEBLOG_ZENDESK_EMAIL, SLACK_BOT_TOKEN, SLACK_ALERT_CHANNEL
+from settings import LIVEBLOG_ZENDESK_EMAIL
 from .tasks import send_slack_bandwidth_alert
 
 logger = logging.getLogger(__name__)
