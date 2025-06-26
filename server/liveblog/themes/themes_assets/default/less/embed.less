@@ -377,18 +377,29 @@
   .sorting-bar__order {
       float: left;
       margin-right: 25px;
-      padding-bottom: 8px;
       cursor: pointer;
       color: #999999;
       font-size: 1em;
       transition: color .1s ease-out;
-  }
 
-  .sorting-bar__order--active,
-  .sorting-bar__order:hover {
-      color: @black;
-      margin-bottom: -2px;
-      border-bottom: 2px solid @black;
+      button {
+        font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
+        padding: 0;
+        font-size: inherit;
+        color: #999;
+        transition: inherit;
+        padding-bottom: 10px;
+        font-weight: 500;
+      }
+
+      &:hover,
+      &--active {
+        button {
+          color: @black;
+          margin-bottom: -2px;
+          border-bottom: 2px solid @black;
+        }
+      }
   }
 
   .sorting-bar__dropdownBtn {
@@ -958,6 +969,7 @@ lb-producer__author:before {
   }
   .item--embed__title a {
     text-decoration: none;
+    color: #0066CC;
   }
   .item--embed__credit {
       text-align: right;
@@ -1012,7 +1024,6 @@ lb-producer__author:before {
   }
 
   .lb-post-actions > * {
-    width: 18px;
     display: inline-block;
     cursor: pointer;
   }
@@ -1040,16 +1051,18 @@ lb-producer__author:before {
 
   .lb-post-shareBox__item {
     display: inline-block;
-    width: 18px;
+    width: 24px;
     margin-right: 8px;
+  }
+
+  .lb-post-shareIcon,
+  .lb-post-linkIcon {
+    width: 24px;
+    height: 24px;
   }
 
   .lb-post-shareBox__item img {
     vertical-align: bottom;
-  }
-
-  .lb-post-permalink {
-
   }
 
   .lb-advertisement {
@@ -1064,8 +1077,8 @@ lb-producer__author:before {
   /* pinned posts */
   .pin-drawer-button {
     position: absolute;
-    width: 23px;
-    height: 23px;
+    width: 24px;
+    height: 24px;
     border: 0;
     padding: 0;
     left: 50%;
@@ -1074,7 +1087,7 @@ lb-producer__author:before {
     z-index: 2;
     margin-top: -10px;
     line-height: 0;
-    border-radius: 23px;
+    border-radius: 24px;
     box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
     transition: transform 0.5s;
   }
@@ -1160,6 +1173,20 @@ body .scorecard-top__info {
   font-weight: normal;
   margin-top: 10px;
 }
+
+// Hide elements visually but keep them accessible to screen readers
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+  white-space: nowrap;
+}
+
 
 
 /* adapt embed card to small screens
@@ -1259,13 +1286,14 @@ body .scorecard-top__info {
         margin-top: 10px;
         margin-left: 5px;
         box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.5);
+        min-width: 100px;
 
         &--active {
           display: block;
         }
       }
 
-      .sorting-bar__order {
+      .sorting-bar__order button {
         float: none;
         margin-right: 0px;
         padding-bottom: 12px;
@@ -1275,7 +1303,7 @@ body .scorecard-top__info {
         padding-bottom: 0px;
       }
 
-      .sorting-bar__order--active, .sorting-bar__order:hover {
+      .sorting-bar__order--active button, .sorting-bar__order:hover button {
         border: none;
         margin-bottom: 0px;
       }
