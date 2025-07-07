@@ -1,6 +1,7 @@
 import json
 import logging
 from bs4 import BeautifulSoup
+from datetime import timezone, timedelta
 
 from liveblog.posts.utils import (
     get_first_item,
@@ -11,6 +12,30 @@ from .schema import LiveBlogPostingSchema
 from .models import BlogPosting, ImageObject, LiveBlogPosting, MainEntityOfPage, Author
 
 logger = logging.getLogger("superdesk")
+
+
+def convert_to_configured_timezone(value, tz_offset=0):
+    """
+    Converts a datetime value to the given timezone offset.
+
+    Args:
+        value (datetime or None): The datetime to convert.
+        tz_offset (str or int): Timezone offset as hours (e.g. "3" for UTC+3).
+
+    Returns:
+        datetime or None: The timezone-aware datetime, or the original value if not applicable.
+    """
+    if value is None:
+        return None
+
+    if tz_offset == 0:
+        return value
+
+    try:
+        tz = timezone(timedelta(hours=tz_offset))
+        return value.astimezone(tz)
+    except (ValueError, TypeError):
+        return value
 
 
 def get_modified_date(blog):
@@ -176,13 +201,18 @@ def generate_schema_for(blog, posts, theme_settings={}):
     if not posts:
         return ""
 
+    tz_offset = theme_settings.get("jsonldTimeZone", 0)
+    start_date = convert_to_configured_timezone(blog.get("start_date"), tz_offset)
+    modified_date = convert_to_configured_timezone(get_modified_date(blog), tz_offset)
+    end_date = convert_to_configured_timezone(blog.get("end_date", None), tz_offset)
+
     liveblogposting = LiveBlogPosting(
         headline=blog["title"],
         description=blog["description"],
-        date_published=blog["start_date"],
-        date_modified=get_modified_date(blog),
-        coverage_start_time=blog["start_date"],
-        coverage_end_time=blog.get("end_date", None),
+        date_published=start_date,
+        date_modified=modified_date,
+        coverage_start_time=start_date,
+        coverage_end_time=end_date,
     )
 
     blog_image = blog.get("picture_renditions", {})
