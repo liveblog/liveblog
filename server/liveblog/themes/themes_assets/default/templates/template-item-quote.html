@@ -1,8 +1,8 @@
 <div class="item--embed-quote">
     <blockquote>
         <p>{{ ref.item.meta.quote }}</p>
-        {% if ref.item.meta.credit %}
-            <h4>{{ ref.item.meta.credit }}</h4>
-        {% endif %}
     </blockquote>
+    {% if ref.item.meta.credit %}
+        <p class="quote-credit">{{ ref.item.meta.credit }}</p>
+    {% endif %}
 </div>
