@@ -24,6 +24,10 @@ var pendingPosts;
 var sharedPostTimestamp;
 var selectedTags = [];
 
+// flag used to avoid adding duplicated `_items` to the viewmodel when initial
+// render is processing
+vm.isInitialRenderProcessing = false;
+
 /**
  * Get initial or reset viewmodel.
  * @returns {object} empty viewmodel store.
@@ -71,9 +75,6 @@ vm.sendComment = (name, comment) => {
         role: "grpRole:Main"}
       ]
     }));
-    //.catch((err) => {
-    //  console.error(err);
-    //});
 };
 
 /**
@@ -202,10 +203,13 @@ vm.updateViewModel = function(api_response) {
   // order has changed
   if (reqOpts.sort && reqOpts.sort !== settings.postOrder) {
     self.vm = getEmptyVm();
-    view.hideLoadMore(self.isTimelineEnd(api_response));
     Object.assign(self.vm, api_response);
+    view.hideLoadMore(self.isTimelineEnd(api_response));
   } else {
-    self.vm._items.push.apply(self.vm._items, api_response._items);
+    if (!vm.isInitialRenderProcessing)
+      self.vm._items = [...self.vm._items, ...api_response._items];
+
+    view.hideLoadMore(self.isTimelineEnd(api_response));
   }
 
   if (reqOpts.sort) {
@@ -241,11 +245,8 @@ vm.getSelectedTags = function() {
  * @returns {bool}
  */
 vm.isTimelineEnd = function(api_response) {
-  var itemsInView = this.vm._items.length + settings.postsPerPage;
-  // number of post loaded on top as updates
-  var extraPosts = itemsInView % settings.postsPerPage;
-
-  return api_response._meta.total <= itemsInView - extraPosts;
+  var itemsInView = this.vm._items.length;
+  return api_response._meta.total <= itemsInView;
 };
 
 
@@ -292,6 +293,7 @@ vm.handleSharedPost = function(postId) {
 }
 
 vm.initialRender = function() {
+  vm.isInitialRenderProcessing = true;
   vm.loadPosts({
     beforeDate: latestUpdate,
     tags: selectedTags,
@@ -299,7 +301,7 @@ vm.initialRender = function() {
   })
   .then(api_response => {
     view.hideLoadMore(api_response._meta.total <= settings.postsPerPage);
-    return api_response;  
+    return api_response;
   })
   .then(view.renderTimeline)
   .then(view.displayNewPosts)
@@ -312,6 +314,9 @@ vm.initialRender = function() {
     onYouTubeIframeAPIReady();
   })
   .then(vm.fetchLatestAndRender)
+  .then(() => {
+    vm.isInitialRenderProcessing = false;
+  })
   .catch(error => console.log(error))
 }
 
