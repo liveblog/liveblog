@@ -245,7 +245,15 @@ vm.getSelectedTags = function() {
  * @returns {bool}
  */
 vm.isTimelineEnd = function(api_response) {
-  var itemsInView = this.vm._items.length;
+  var itemsInView = view.getItemsInView();
+  
+  // In cases where fromDate is set, e.g polling for updates/shared posts,
+  // and meta.total isn't the accurate number of total posts from the blog
+  // but those returned for those specific requests, we ignore
+  if (api_response.requestOpts.fromDate) {
+    return false;
+  }
+  
   return api_response._meta.total <= itemsInView;
 };
 

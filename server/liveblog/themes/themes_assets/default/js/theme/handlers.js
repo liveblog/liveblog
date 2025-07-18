@@ -61,12 +61,20 @@ var isOrderChanged = (order) => {
 var buttons = {
   handlers: {
     "[data-load-more]": () => {
+      let api_response = null;
+      
       viewmodel.loadPostsPage({
         'tags': viewmodel.getSelectedTags()
-      }).then(view.renderPosts)
+      }).then((response) => {
+          api_response = response;
+          return view.renderPosts(api_response)
+        })
         .then(view.displayNewPosts)
         .then(view.consent.init)
         .then(view.updateTimestamps)
+        .then(() => {
+          view.hideLoadMore(api_response._meta.total <= view.getItemsInView());
+        })
         .catch(catchError);
     },
 
