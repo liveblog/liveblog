@@ -440,3 +440,11 @@ APM_SERVER_URL = env("APM_SERVER_URL")
 APM_SECRET_TOKEN = env("APM_SECRET_TOKEN")
 
 HIDE_USERS_SENSITIVE_DATA = env("HIDE_USERS_SENSITIVE_DATA", False)
+
+# Slack settings
+SLACK_BOT_TOKEN = env("SLACK_BOT_TOKEN", "")
+SLACK_ALERT_CHANNEL = env("SLACK_ALERT_CHANNEL", "#live_blog_support")
+
+# Bandwidth Limit Threshold in percentage e.g., 75 means 75% of the allocated bandwidth.
+# For example, if the allocated bandwidth is 30 GB, 75% would be 22.5 GB.
+BANDWIDTH_LIMIT_THRESHOLD = int(env("BANDWIDTH_LIMIT_THRESHOLD", 75))

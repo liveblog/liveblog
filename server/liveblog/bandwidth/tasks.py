@@ -6,26 +6,29 @@ from flask import current_app as app
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.utc import utcnow
-from settings import CLOUDFLARE_URL, CLOUDFLARE_AUTH, CLOUDFLARE_ZONE_TAG, SERVER_NAME
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from settings import (
+    CLOUDFLARE_URL,
+    CLOUDFLARE_AUTH,
+    CLOUDFLARE_ZONE_TAG,
+    SERVER_NAME,
+    SLACK_BOT_TOKEN,
+    SLACK_ALERT_CHANNEL,
+)
 
 logger = logging.getLogger("liveblog")
 
 
-def get_bandwidth_used(response):
+def get_bandwidth_used(json_response):
     """
-    Extract bandwidth usage from the Cloudflare API response
+    Extract bandwidth usage from a parsed Cloudflare API JSON response
     """
-    if response.status_code != 200:
-        logger.error("Failed to retrieve data from Cloudflare API: %s", response.text)
-        return None
-
-    json_response = response.json()
-
     if "errors" in json_response and json_response["errors"]:
         logger.error("Errors from Cloudflare API: %s", json_response["errors"])
         return None
 
-    zones = json_response["data"]["viewer"].get("zones")
+    zones = json_response.get("data", {}).get("viewer", {}).get("zones")
     if not zones or len(zones) == 0:
         logger.error("No zones data available in the response.")
         return None
@@ -37,7 +40,7 @@ def get_bandwidth_used(response):
 
     sum_data = http_requests_groups[0].get("sum")
     if not sum_data or "edgeResponseBytes" not in sum_data:
-        logger.info("No edgeResponseBytes data available in the response.")
+        logger.error("No edgeResponseBytes data available in the response.")
         return None
 
     bandwidth_used = sum_data["edgeResponseBytes"]
@@ -73,7 +76,9 @@ def fetch_bandwidth_usage():
     }
 
     # Calculate the date range for the last 1 hour
-    end_date = utcnow()
+    now = utcnow()
+    # Normalize to the top of the current hour
+    end_date = now.replace(minute=0, second=0, microsecond=0)
     start_date = end_date - timedelta(hours=1)
     start_date_str = start_date.strftime("%Y-%m-%dT%H:%M:%SZ")
     end_date_str = end_date.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -105,9 +110,65 @@ def fetch_bandwidth_usage():
 
     response = requests.post(url, headers=headers, json=data)
 
-    bandwidth_used = get_bandwidth_used(response)
+    try:
+        json_response = response.json()
+    except Exception as e:
+        logger.error("Failed to parse JSON from Cloudflare response: %s", e)
+        return
+
+    bandwidth_used = get_bandwidth_used(json_response)
+
+    # Save the Cloudflare bandwidth response for reference
+    history_service = get_resource_service("bandwidth_history")
+    history_service.post(
+        [
+            {
+                "raw_response": json_response,
+                "edge_response_bytes": (
+                    bandwidth_used if bandwidth_used is not None else 0
+                ),
+                "bandwidth_duration": {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
+            }
+        ]
+    )
+
     if bandwidth_used is None:
         return
 
     bandwidth_service = get_resource_service("bandwidth")
     bandwidth_service.compute_new_bandwidth_usage(bandwidth_used)
+
+
+@celery.task
+def send_slack_bandwidth_alert(upper_limit_gb, percentage_used):
+    logger.info("Sending bandwidth alert to Slack")
+
+    token = SLACK_BOT_TOKEN
+    channel = SLACK_ALERT_CHANNEL
+
+    if not token or not channel:
+        logger.warning("Slack configurations not set. Skipping Slack alert.")
+        return
+
+    client = WebClient(token=token)
+    server_name = app.config["SERVER_NAME"]
+    app_name = app.config["APPLICATION_NAME"]
+
+    message = (
+        f":warning: *{app_name} Bandwidth Alert* on `{server_name}`\n"
+        f"> *Usage:* {percentage_used:.2f}% of the {upper_limit_gb} GB limit reached."
+    )
+
+    try:
+        response = client.chat_postMessage(
+            channel=channel,
+            text=message,
+        )
+        logger.info("Slack alert sent: %s", response["ts"])
+    except SlackApiError as e:
+        logger.error("Slack API Error: %s", e.response["error"])
+    except Exception as err:
+        logger.error("Error occurred while sending Slack alert: %s", err)
