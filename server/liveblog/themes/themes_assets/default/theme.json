@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.90.7",
+    "version": "3.91.2",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,10 +17,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-94b365e023.css"],
-    "devScripts": ["dist/default-35c03db416.js"],
-    "styles": ["dist/default-94b365e023.css"],
-    "scripts": ["dist/default-35c03db416.js"],
+    "devStyles": ["dist/default-1e37171b95.css"],
+    "devScripts": ["dist/default-1330469a02.js"],
+    "styles": ["dist/default-1e37171b95.css"],
+    "scripts": ["dist/default-1330469a02.js"],
     "options": [
         {
             "name": "language",
@@ -453,47 +453,6 @@
             },
             "default": "twitter.com, facebook.com, instagram.com, youtube.com",
             "help": "Domains separated by comma that will require user's consent to display embeds"
-        },
-        {
-            "name": "jsonld-group",
-            "label": "JSON-LD Time Format",
-            "type": "groupheading"
-        },
-        {
-            "name": "jsonldTimeZone",
-            "label": "JSON-LD Timezone",
-            "type": "select",
-            "default": 0,
-            "help": "Sets the timezone offset used for JSON-LD date formatting",
-            "options": [
-                { "value": -12, "label": "GMT−12" },
-                { "value": -11, "label": "GMT−11" },
-                { "value": -10, "label": "GMT−10" },
-                { "value": -9, "label": "GMT−9" },
-                { "value": -8, "label": "GMT−8" },
-                { "value": -7, "label": "GMT−7" },
-                { "value": -6, "label": "GMT−6" },
-                { "value": -5, "label": "GMT−5" },
-                { "value": -4, "label": "GMT−4" },
-                { "value": -3, "label": "GMT−3" },
-                { "value": -2, "label": "GMT−2" },
-                { "value": -1, "label": "GMT−1" },
-                { "value": 0, "label": "GMT+0 (UTC)" },
-                { "value": 1, "label": "GMT+1" },
-                { "value": 2, "label": "GMT+2" },
-                { "value": 3, "label": "GMT+3" },
-                { "value": 4, "label": "GMT+4" },
-                { "value": 5, "label": "GMT+5" },
-                { "value": 6, "label": "GMT+6" },
-                { "value": 7, "label": "GMT+7" },
-                { "value": 8, "label": "GMT+8" },
-                { "value": 9, "label": "GMT+9" },
-                { "value": 10, "label": "GMT+10" },
-                { "value": 11, "label": "GMT+11" },
-                { "value": 12, "label": "GMT+12" },
-                { "value": 13, "label": "GMT+13" },
-                { "value": 14, "label": "GMT+14" }
-            ]
         }
     ],
     "supportStylesSettings": true,

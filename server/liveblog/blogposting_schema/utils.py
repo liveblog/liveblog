@@ -131,6 +131,14 @@ def generate_blogupdate(blog, post, theme_settings):
         image = ImageObject.from_rendition_image(main_image)
         blog_posting.set_image(image)
 
+    tz_offset = blog.get("json_ld_timezone_offset", 0)
+    blog_posting.date_published = convert_to_configured_timezone(
+        blog_posting.date_published, tz_offset
+    )
+    blog_posting.date_modified = convert_to_configured_timezone(
+        blog_posting.date_modified, tz_offset
+    )
+
     return blog_posting
 
 
@@ -201,7 +209,7 @@ def generate_schema_for(blog, posts, theme_settings={}):
     if not posts:
         return ""
 
-    tz_offset = theme_settings.get("jsonldTimeZone", 0)
+    tz_offset = blog.get("json_ld_timezone_offset", 0)
     start_date = convert_to_configured_timezone(blog.get("start_date"), tz_offset)
     modified_date = convert_to_configured_timezone(get_modified_date(blog), tz_offset)
     end_date = convert_to_configured_timezone(blog.get("end_date", None), tz_offset)
