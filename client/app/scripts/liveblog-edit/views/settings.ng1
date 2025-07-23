@@ -273,6 +273,21 @@
                                     </span>
                                 </div>
                             </div>
+                            
+                            <div class="form-group">
+                                <label for="jsonld_timezone" class="control-label" translate>Schema Timezone Offset</label>
+                                <div class="form-input">
+                                    <select 
+                                        name="jsonld_timezone"
+                                        ng-model="settings.newBlog.json_ld_timezone_offset"
+                                        ng-options="option.value as option.text for option in settings.timezoneOptions"
+                                        class="form-control">
+                                    </select>
+                                    <span class="form-input__hint" translate>
+                                        Use this to set the timezone offset in the dates generated in the LiveBlogPosting schema.
+                                    </span>
+                                </div>
+                            </div>
 
                             <div class="form-group" ng-if="isAdmin()">
                                 <label for="inputPostslimit" class="control-label" translate>Posts limit</label>
