@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from .utils import (
     get_base_image,
     get_modified_date,
     get_post_author,
     generate_schema_for,
+    convert_to_configured_timezone,
 )
 
 
@@ -235,3 +236,23 @@ class TestGenerateSchemaFor:
 
         # assert datePublished is 3 times (blog and two posts)
         assert result.count("datePublished") == 3
+
+
+class TestConvertToConfiguredTimezone:
+    def test_returns_none_if_value_is_none(self):
+        assert convert_to_configured_timezone(None, 3) is None
+
+    def test_returns_value_as_is_if_offset_is_zero(self):
+        dt = datetime(2022, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        result = convert_to_configured_timezone(dt, 0)
+        assert result is dt
+
+    def test_correctly_applies_positive_offset(self):
+        dt = datetime(2022, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        result = convert_to_configured_timezone(dt, 3)
+        assert result.utcoffset() == timedelta(hours=3)
+
+    def test_correctly_applies_negative_offset(self):
+        dt = datetime(2022, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        result = convert_to_configured_timezone(dt, -5)
+        assert result.utcoffset() == timedelta(hours=-5)
