@@ -716,6 +716,9 @@ export default function BlogEditController(
         // SirTrevor params that can be accessed using this.getOptions()
         // from inside of a sir trevor block
         stParams: {
+            currentThemeLanguage: function() {
+                return blog.blog_preferences.theme.settings.language || 'en';
+            },
             liveblogSettings: () => $scope.liveblogSettings,
             disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;

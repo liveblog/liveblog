@@ -63,6 +63,54 @@ function escapeUnderscore(htmlString) {
         .replace(tagAttrs, (match) => match.replace(/_/g, tripleBackslashEscape));
 }
 
+/**
+ * Simple function to replace straight ASCII quotes in editor content with
+ * German typographic quotes. Converts:
+ *   - " → „ (opening), “ (closing)
+ *   - ' → ‚ (opening), ‘ (closing)
+ *
+ * Works only on text nodes under the given root element, preserving HTML tags
+ * and attributes. Intended to run on paste/blur in Sir Trevor to localize text when "de" is the theme language
+ * Idempotent (won’t re-convert) but context-naïve (apostrophes and primes may be misclassified).
+ *
+ * @param {Node|HTMLElement} rootEl   Root element containing the editable content.
+ * @returns {boolean}                 True if any text node was modified.
+ */
+function convertToGermanQuotes(rootEl) {
+    if (!rootEl) return;
+
+    // Only replace ASCII straight quotes;
+    let dblOpen = true; // toggles „ “
+    let sngOpen = true; // toggles ‚ ‘
+
+    const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, null, false);
+
+    let node;
+
+    while ((node = walker.nextNode())) {
+        const src = node.nodeValue;
+
+        if (!src || (!src.includes('"') && !src.includes("'"))) continue; // eslint-disable-line
+
+        let out = '';
+
+        for (let i = 0; i < src.length; i++) {
+            const ch = src[i];
+
+            if (ch === '"') {
+                out += dblOpen ? '„' : '“'; // eslint-disable-line
+                dblOpen = !dblOpen;
+            } else if (ch === "'") { // eslint-disable-line
+                out += sngOpen ? '‚' : '‘';
+                sngOpen = !sngOpen;
+            } else {
+                out += ch;
+            }
+        }
+        if (out !== src) node.nodeValue = out;
+    }
+}
+
 angular
     .module('SirTrevorBlocks', [])
     .config(['SirTrevorProvider', 'config', function(SirTrevor, config) {
@@ -243,6 +291,14 @@ angular
             });
             this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                 const $this = $(this);
+
+                if (self.getOptions()) {
+                    const currentThemeLanguage = self.getOptions().currentThemeLanguage();
+
+                    if ((ev.type === 'paste' || ev.type === 'blur') && currentThemeLanguage === 'de') {
+                        convertToGermanQuotes(this);
+                    }
+                }
 
                 if ($this.data('before') !== $this.html()) {
                     $this.data('before', $this.html());
