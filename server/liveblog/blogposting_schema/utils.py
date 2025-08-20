@@ -3,15 +3,33 @@ import logging
 from bs4 import BeautifulSoup
 from datetime import timezone, timedelta
 
+from liveblog.core.constants import GENERAL_JSON_LD_TIMEZONE_OFFSET
 from liveblog.posts.utils import (
     get_first_item,
     get_first_item_of_type,
     get_related_items,
 )
+from superdesk import get_resource_service
 from .schema import LiveBlogPostingSchema
 from .models import BlogPosting, ImageObject, LiveBlogPosting, MainEntityOfPage, Author
 
 logger = logging.getLogger("superdesk")
+
+
+def get_configured_timezone_offset(blog):
+    """
+    Returns the timezone offset to be used in the JSON-LD schema.
+    The timezone offset can either come from the General Liveblog Settings or the specific blog settings.
+    If they are different, the blog settings take precedence.
+    """
+    global_serv = get_resource_service("global_preferences").get_global_prefs()
+    global_timezone_offset = global_serv.get(GENERAL_JSON_LD_TIMEZONE_OFFSET, 0)
+    blog_timezone_offset = blog.get("json_ld_timezone_offset", 0)
+
+    if blog_timezone_offset != global_timezone_offset:
+        return blog_timezone_offset
+
+    return global_timezone_offset
 
 
 def convert_to_configured_timezone(value, tz_offset=0):
@@ -131,7 +149,7 @@ def generate_blogupdate(blog, post, theme_settings):
         image = ImageObject.from_rendition_image(main_image)
         blog_posting.set_image(image)
 
-    tz_offset = blog.get("json_ld_timezone_offset", 0)
+    tz_offset = get_configured_timezone_offset(blog)
     blog_posting.date_published = convert_to_configured_timezone(
         blog_posting.date_published, tz_offset
     )
@@ -209,7 +227,7 @@ def generate_schema_for(blog, posts, theme_settings={}):
     if not posts:
         return ""
 
-    tz_offset = blog.get("json_ld_timezone_offset", 0)
+    tz_offset = get_configured_timezone_offset(blog)
     start_date = convert_to_configured_timezone(blog.get("start_date"), tz_offset)
     modified_date = convert_to_configured_timezone(get_modified_date(blog), tz_offset)
     end_date = convert_to_configured_timezone(blog.get("end_date", None), tz_offset)

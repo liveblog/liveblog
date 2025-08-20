@@ -26,6 +26,7 @@ from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
+from liveblog.core.constants import GENERAL_JSON_LD_TIMEZONE_OFFSET
 from liveblog.common import get_user, update_dates_for
 from settings import (
     DAYS_REMOVE_DELETED_BLOGS,
@@ -143,6 +144,11 @@ class BlogService(BaseService):
             # If "start_date" is set to None, change the value to utcnow().
             if doc["start_date"] is None:
                 doc["start_date"] = utcnow()
+
+            # Set blog JSON-LD timezone offset based on initial global_preferences
+            doc["json_ld_timezone_offset"] = global_prefs.get(
+                GENERAL_JSON_LD_TIMEZONE_OFFSET, 0
+            )
 
     def on_created(self, docs):
         for blog in docs:

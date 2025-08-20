@@ -79,6 +79,7 @@
                                     ng-model="liveblogSettings.youtube_privacy_status.value" class="form-control"></select>
                             </div>
                         </div>
+                        
                         <div class="form-group"">
                             <div class="lb-group-heading">
                                 <label for="quoteLanguage">Quote Style</label>
@@ -86,8 +87,24 @@
                             <div>
                                 <select name="quoteLanguage"
                                     class="row-td"
-                                    ng-options="language.language_code as language.displayName for language in languages"
+                                    ng-options="quoteStyle.value as quoteStyle.label for quoteStyle in quoteStyles"
                                     ng-model="liveblogSettings.quote_style.value" class="form-control"></select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="lb-group-heading">
+                                <label for="general_jsonld_timezone">General Schema Timezone Offset</label>
+                            </div>
+                            <div>
+                                <select name="general_jsonld_timezone"
+                                    class="row-td"
+                                    ng-options="option.value as option.text for option in timezoneOptions"
+                                    ng-model="liveblogSettings.general_json_ld_timezone_offset.value" class="form-control"></select>
+                                </select>
+                                <span class="form-input__hint" translate>
+                                    Use this to set the general timezone offset in the dates generated in the LiveBlogPosting schema.
+                                </span>
                             </div>
                         </div>
                     </div>

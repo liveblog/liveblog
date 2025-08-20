@@ -41,6 +41,20 @@
     }
 },
 {
+    "resource": "global_preferences",
+    "data": {
+        "key": "quote_style",
+        "value": "en"
+    }
+},
+{
+    "resource": "global_preferences",
+    "data": {
+        "key": "general_json_ld_timezone_offset",
+        "value": 0
+    }
+},
+{
     "resource": "themes",
     "id_name": "-id theme default-",
     "data": {

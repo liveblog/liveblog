@@ -284,7 +284,8 @@
                                         class="form-control">
                                     </select>
                                     <span class="form-input__hint" translate>
-                                        Use this to set the timezone offset in the dates generated in the LiveBlogPosting schema.
+                                        Use this to set the timezone offset in the dates generated in the LiveBlogPosting schema for this specific blog. <br/>
+                                        This will override the general timezone offset set in Liveblog Settings.
                                     </span>
                                 </div>
                             </div>

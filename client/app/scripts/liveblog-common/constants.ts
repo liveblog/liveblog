@@ -3,6 +3,7 @@ export const ALLOW_PICK_MULTI_TAGS = 'allow_multiple_tag_selection';
 export const YOUTUBE_PRIVACY_STATUS = 'youtube_privacy_status';
 export const EMBED_HEIGHT_RESPONSIVE_DEFAULT = 'embed_height_responsive_default';
 export const QUOTE_STYLE = 'quote_style';
+export const GENERAL_JSON_LD_TIMEZONE_OFFSET = 'general_json_ld_timezone_offset';
 
 export enum EventNames {
     Connected = 'connected',

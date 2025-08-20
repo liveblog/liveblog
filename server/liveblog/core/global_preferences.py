@@ -23,6 +23,7 @@ from .constants import (
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
     QUOTE_STYLE,
+    GENERAL_JSON_LD_TIMEZONE_OFFSET,
 )
 
 preferences_key = "global_preferences"
@@ -51,9 +52,10 @@ class GlobalPreferencesResource(Resource):
                 ALLOW_MULTIPLE_TAGS,
                 EMBED_HEIGHT_RESPONSIVE_DEFAULT,
                 QUOTE_STYLE,
+                GENERAL_JSON_LD_TIMEZONE_OFFSET,
             ],
         },
-        "value": {"type": ["string", "list", "boolean"]},
+        "value": {"type": ["string", "list", "boolean", "integer"]},
     }
 
     privileges = {

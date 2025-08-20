@@ -1,8 +1,7 @@
-/* eslint-disable */
 import _ from 'lodash';
 import {
     TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS,
-    EMBED_HEIGHT_RESPONSIVE_DEFAULT, QUOTE_STYLE,
+    EMBED_HEIGHT_RESPONSIVE_DEFAULT, QUOTE_STYLE, GENERAL_JSON_LD_TIMEZONE_OFFSET,
 } from './../../liveblog-common/constants';
 
 const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q) => {
@@ -22,6 +21,41 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         { value: 'unlisted', label: 'Unlisted' },
     ];
 
+    $scope.quoteStyles = [
+        { value: 'en', label: 'English' },
+        { value: 'de', label: 'Deutsch' },
+    ];
+
+    $scope.timezoneOptions = [
+        { text: 'GMT−12', value: -12 },
+        { text: 'GMT−11', value: -11 },
+        { text: 'GMT−10', value: -10 },
+        { text: 'GMT−9', value: -9 },
+        { text: 'GMT−8', value: -8 },
+        { text: 'GMT−7', value: -7 },
+        { text: 'GMT−6', value: -6 },
+        { text: 'GMT−5', value: -5 },
+        { text: 'GMT−4', value: -4 },
+        { text: 'GMT−3', value: -3 },
+        { text: 'GMT−2', value: -2 },
+        { text: 'GMT−1', value: -1 },
+        { text: 'GMT+0 (UTC)', value: 0 },
+        { text: 'GMT+1', value: 1 },
+        { text: 'GMT+2', value: 2 },
+        { text: 'GMT+3', value: 3 },
+        { text: 'GMT+4', value: 4 },
+        { text: 'GMT+5', value: 5 },
+        { text: 'GMT+6', value: 6 },
+        { text: 'GMT+7', value: 7 },
+        { text: 'GMT+8', value: 8 },
+        { text: 'GMT+9', value: 9 },
+        { text: 'GMT+10', value: 10 },
+        { text: 'GMT+11', value: 11 },
+        { text: 'GMT+12', value: 12 },
+        { text: 'GMT+13', value: 13 },
+        { text: 'GMT+14', value: 14 },
+    ];
+
     // settings allowed keys
     const allowedKeys = [
         'language',
@@ -31,12 +65,11 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         YOUTUBE_PRIVACY_STATUS,
         EMBED_HEIGHT_RESPONSIVE_DEFAULT,
         QUOTE_STYLE,
+        GENERAL_JSON_LD_TIMEZONE_OFFSET,
     ];
 
     api.languages.query().then((data) => {
-        const capFirst = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-
-        $scope.languages = data._items.map(l => ({ ...l, displayName: capFirst(l.name) }));
+        $scope.languages = data._items;
     });
 
     api.themes.query().then((data) => {

@@ -13,5 +13,10 @@
         "_id": "5641188a398d3f0088fbfb99",
         "key": "quote_style",
         "value": "en"
+    },
+    {
+        "_id": "5641188a398d3f0088fbfb96",
+        "key": "general_json_ld_timezone_offset",
+        "value": 0
     }
 ]
