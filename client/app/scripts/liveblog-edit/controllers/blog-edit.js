@@ -24,6 +24,7 @@ import {
     ALLOW_PICK_MULTI_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    QUOTE_STYLE,
     EventNames,
 } from '../../liveblog-common/constants';
 
@@ -106,7 +107,7 @@ export default function BlogEditController(
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
     const whereParams = {key: {$in: [
-        TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS, EMBED_HEIGHT_RESPONSIVE_DEFAULT]}};
+        TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS, EMBED_HEIGHT_RESPONSIVE_DEFAULT, QUOTE_STYLE]}};
 
     // let's get global tags and settings for post only once, when the controller loads
     api.global_preferences.query({where: whereParams})
@@ -716,8 +717,8 @@ export default function BlogEditController(
         // SirTrevor params that can be accessed using this.getOptions()
         // from inside of a sir trevor block
         stParams: {
-            currentThemeLanguage: function() {
-                return blog.blog_preferences.theme.settings.language || 'en';
+            generalQuoteStyle: function() {
+                return $scope.liveblogSettings[QUOTE_STYLE] || 'en';
             },
             liveblogSettings: () => $scope.liveblogSettings,
             disableSubmit: function(actionDisabled) {

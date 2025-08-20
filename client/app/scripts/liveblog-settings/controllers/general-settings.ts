@@ -1,7 +1,8 @@
+/* eslint-disable */
 import _ from 'lodash';
 import {
     TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS,
-    EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EMBED_HEIGHT_RESPONSIVE_DEFAULT, QUOTE_STYLE,
 } from './../../liveblog-common/constants';
 
 const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q) => {
@@ -29,10 +30,13 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         ALLOW_PICK_MULTI_TAGS,
         YOUTUBE_PRIVACY_STATUS,
         EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+        QUOTE_STYLE,
     ];
 
     api.languages.query().then((data) => {
-        $scope.languages = data._items;
+        const capFirst = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+        $scope.languages = data._items.map(l => ({ ...l, displayName: capFirst(l.name) }));
     });
 
     api.themes.query().then((data) => {

@@ -22,6 +22,7 @@ from .constants import (
     ALLOW_MULTIPLE_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    QUOTE_STYLE,
 )
 
 preferences_key = "global_preferences"
@@ -49,6 +50,7 @@ class GlobalPreferencesResource(Resource):
                 GLOBAL_TAGS,
                 ALLOW_MULTIPLE_TAGS,
                 EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+                QUOTE_STYLE,
             ],
         },
         "value": {"type": ["string", "list", "boolean"]},

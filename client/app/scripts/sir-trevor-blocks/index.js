@@ -293,9 +293,9 @@ angular
                 const $this = $(this);
 
                 if (self.getOptions()) {
-                    const currentThemeLanguage = self.getOptions().currentThemeLanguage();
+                    const generalQuoteStyle = self.getOptions().generalQuoteStyle();
 
-                    if ((ev.type === 'paste' || ev.type === 'blur') && currentThemeLanguage === 'de') {
+                    if ((ev.type === 'paste' || ev.type === 'blur') && generalQuoteStyle === 'de') {
                         convertToGermanQuotes(this);
                     }
                 }

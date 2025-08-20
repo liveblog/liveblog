@@ -79,6 +79,17 @@
                                     ng-model="liveblogSettings.youtube_privacy_status.value" class="form-control"></select>
                             </div>
                         </div>
+                        <div class="form-group"">
+                            <div class="lb-group-heading">
+                                <label for="quoteLanguage">Quote Style</label>
+                            </div>
+                            <div>
+                                <select name="quoteLanguage"
+                                    class="row-td"
+                                    ng-options="language.language_code as language.displayName for language in languages"
+                                    ng-model="liveblogSettings.quote_style.value" class="form-control"></select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
