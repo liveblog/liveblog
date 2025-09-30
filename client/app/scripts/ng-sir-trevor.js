@@ -1,6 +1,6 @@
 import angular from 'angular';
 import _ from 'lodash';
-import GermanQuotation from './german-quotation';
+import GermanQuotation from './sir-trevor-blocks/helpers/german-quotation';
 
 export default angular
     .module('SirTrevor', [])
