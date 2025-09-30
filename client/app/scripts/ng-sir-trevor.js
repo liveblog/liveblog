@@ -1,5 +1,6 @@
 import angular from 'angular';
 import _ from 'lodash';
+import GermanQuotation from './german-quotation';
 
 export default angular
     .module('SirTrevor', [])
@@ -68,6 +69,12 @@ export default angular
                 }
 
                 scope.editor = new SirTrevor.Editor(opts);
+
+                // Initialize German quotation handling
+                const germanQuotation = new GermanQuotation();
+
+                germanQuotation.attachToElement(element);
+
                 scope.editor.get = function() {
                     const list = [];
 
