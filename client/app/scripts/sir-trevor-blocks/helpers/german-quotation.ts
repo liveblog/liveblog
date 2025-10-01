@@ -151,6 +151,14 @@ class GermanQuotation {
         element.on('input blur', this.handleQuoteConversion);
         element.on('paste', this.handlePasteConversion);
     }
+
+    /**
+     * Detach German quotation conversion from an element
+     */
+    detachFromElement(element: JQuery<HTMLElement>) {
+        element.off('input blur', this.handleQuoteConversion);
+        element.off('paste', this.handlePasteConversion);
+    }
 }
 
 export default GermanQuotation;
