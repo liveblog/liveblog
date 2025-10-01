@@ -57,8 +57,10 @@ class GermanQuotation {
 
         const selection = window.getSelection();
 
-        selection.removeAllRanges();
-        selection.addRange(newRange);
+        if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+        }
     }
 
     /**
