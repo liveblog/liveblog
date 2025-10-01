@@ -24,6 +24,7 @@ import {
     ALLOW_PICK_MULTI_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EDITOR_QUOTATION_MARKS_LANGUAGE,
     EventNames,
 } from '../../liveblog-common/constants';
 
@@ -105,8 +106,17 @@ export default function BlogEditController(
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
-    const whereParams = {key: {$in: [
-        TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS, EMBED_HEIGHT_RESPONSIVE_DEFAULT]}};
+    const whereParams = {
+        key: {$in:
+            [
+                TAGS,
+                ALLOW_PICK_MULTI_TAGS,
+                YOUTUBE_PRIVACY_STATUS,
+                EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+                EDITOR_QUOTATION_MARKS_LANGUAGE,
+            ],
+        },
+    };
 
     // let's get global tags and settings for post only once, when the controller loads
     api.global_preferences.query({where: whereParams})
