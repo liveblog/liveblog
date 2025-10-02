@@ -46,6 +46,7 @@ class GermanQuotation {
         let node;
 
         // eslint-disable-next-line no-cond-assign
+        // tslint:disable-next-line:no-conditional-assignment
         while ((node = walker.nextNode())) {
             if (currentOffset + node.textContent.length >= caretOffset) {
                 newRange.setStart(node, caretOffset - currentOffset);
@@ -77,6 +78,8 @@ class GermanQuotation {
         const textNodes = [];
 
         // collect all text nodes first to avoid modifying while iterating
+        // eslint-disable-next-line no-cond-assign
+        // tslint:disable-next-line:no-conditional-assignment
         while ((node = walker.nextNode())) {
             textNodes.push(node);
         }
