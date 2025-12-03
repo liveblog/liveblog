@@ -19,28 +19,34 @@
         </template>
     {% endif %}
 {% elif provider_name == 'twitter' and meta.original_url  %}
-    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-        <div class="item--embed__element">
-            <blockquote class="twitter-tweet">
-                <p>{{ meta.description }}</p> &mdash; {{ meta.title }}
-                <a href="{{ meta.original_url|decode_uri|fix_x_domain_embed }}">{{ meta.original_url }}</a>
-            </blockquote>
-        </div>
-    </template>
+    <div class="item--embed__consent-wrapper">
+        <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+            <div class="item--embed__element">
+                <blockquote class="twitter-tweet">
+                    <p>{{ meta.description }}</p> &mdash; {{ meta.title }}
+                    <a href="{{ meta.original_url|decode_uri|fix_x_domain_embed }}">{{ meta.original_url }}</a>
+                </blockquote>
+            </div>
+        </template>
+    </div>
 {% elif provider_name == 'facebook' and meta.url %}
-    <template class="lb_consent--awaiting" data-provider-url="{{ meta.provider_url }}">
-        <div class="fb-post" data-href="{{ meta.url }}" data-show-text="true">
-            <blockquote cite="{{ meta.url }}" class="fb-xfbml-parse-ignore">
-                <h4><a href="{{ meta.url|decode_uri }}">{{ meta.credit }}</a></h4>
-                <p>{{ meta.title }}</p>
-                <div class="item--embed__description">{{ meta.description }}</div>
-            </blockquote>
-        </div>
-    </template>
+    <div class="item--embed__consent-wrapper">
+        <template class="lb_consent--awaiting" data-provider-url="{{ meta.provider_url }}">
+            <div class="fb-post" data-href="{{ meta.url }}" data-show-text="true">
+                <blockquote cite="{{ meta.url }}" class="fb-xfbml-parse-ignore">
+                    <h4><a href="{{ meta.url|decode_uri }}">{{ meta.credit }}</a></h4>
+                    <p>{{ meta.title }}</p>
+                    <div class="item--embed__description">{{ meta.description }}</div>
+                </blockquote>
+            </div>
+        </template>
+    </div
 {% elif provider_name == 'instagram' and ref.item.meta.original_url %}
-    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-        {% include "template-embed-instagram.html" %}
-    </template>
+    <div class="item--embed__consent-wrapper">
+        <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+            {% include "template-embed-instagram.html" %}
+        </template>
+    </div>
 {% elif provider_name == 'brightcove' and ref.item.meta.html %}
     <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
         <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
@@ -57,9 +63,11 @@
     </div>
 {% else %}
     {% if ref.item.meta.html %}
-    <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
-        <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
-    </template>
+    <div class="item--embed__consent-wrapper">
+        <template class="lb_consent--awaiting" data-provider-url="{{ ref.item.meta.provider_url }}">
+            <div class="item--embed__element item--embed__generic {{ref.item.meta.provider_url}}" >{{ ref.item.meta.html | safe }}</div>
+        </template>
+    </div>
     {% endif %}
 
     {% if (ref.item.meta.title or ref.item.meta.description or ref.item.meta.credit or (not ref.item.meta.html and ref.item.meta.thumbnail_url)) %}

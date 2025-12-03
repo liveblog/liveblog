@@ -975,6 +975,12 @@ lb-producer__author:before {
       text-align: right;
   }
 
+  // The intention of this wrapper is to reduce layout shifts because of the swapping effect
+  // when the consent placeholder is replaced by the actual embed.
+  .item--embed__consent-wrapper {
+      min-height: 350px;
+  }
+
   /* loading */
   .loading {
       color: @washedgreen;
