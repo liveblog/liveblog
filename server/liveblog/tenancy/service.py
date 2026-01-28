@@ -1,0 +1,273 @@
+"""
+Tenant-aware service base classes for multi-tenancy support.
+
+This module provides base service classes that automatically filter all
+database queries by tenant_id, ensuring complete data isolation between
+tenants.
+"""
+
+from superdesk.services import BaseService
+from apps.archive.archive import ArchiveService
+from bson.objectid import ObjectId
+from liveblog.tenancy import get_tenant_id
+
+
+class TenantAwareService(BaseService):
+    """
+    Base service class that automatically filters all queries by tenant_id.
+
+    All LiveBlog services should inherit from this instead of BaseService
+    to ensure tenant isolation. The service automatically adds tenant_id
+    filters to all query methods (find, find_one, get, etc.) and injects
+    tenant_id into new documents during creation.
+
+    Example Usage:
+        class BlogService(TenantAwareService):
+            notification_key = "blog"
+
+            def on_create(self, docs):
+                super().on_create(docs)
+
+    System Resources (DON'T use this):
+        For resources that should NOT be tenant-scoped (like tenants
+        themselves, or global system settings), inherit from BaseService
+        directly:
+
+        class TenantsService(BaseService):
+            pass
+    """
+
+    def _add_tenant_filter(self, lookup):
+        """
+        Add tenant filter to lookup dictionary.
+
+        This method is called by all query methods to inject the current
+        tenant's ID into the query filter. It converts string tenant IDs
+        to ObjectId format for MongoDB compatibility.
+
+        Args:
+            lookup (dict): MongoDB query lookup dictionary
+
+        Returns:
+            dict: lookup with tenant_id added (mutates input dict)
+
+        Note:
+            This method mutates the lookup dictionary in place and also
+            returns it for chaining convenience.
+        """
+        tenant_id = get_tenant_id(required=False)
+
+        if tenant_id:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+            lookup["tenant_id"] = tenant_id
+
+        return lookup
+
+    def find(self, where=None, **kwargs):
+        """
+        Override find to inject tenant filter.
+
+        Automatically adds tenant_id to the query before executing. This
+        ensures all cursor-based queries are tenant-filtered.
+
+        Args:
+            where (dict): MongoDB query filter
+            **kwargs: Additional arguments passed to parent
+
+        Returns:
+            Cursor: Filtered result cursor
+
+        Example:
+            blogs = self.find({'blog_status': 'open'})
+        """
+        if where is None:
+            where = {}
+        where = self._add_tenant_filter(where)
+        return super().find(where, **kwargs)
+
+    def find_one(self, req, **lookup):
+        """
+        Override find_one to inject tenant filter.
+
+        Automatically adds tenant_id to single document queries. Prevents
+        cross-tenant document access.
+
+        Args:
+            req: Request object (can be None)
+            **lookup: Query parameters
+
+        Returns:
+            dict: Single document or None
+
+        Example:
+            blog = self.find_one(req=None, _id=blog_id)
+        """
+        lookup = self._add_tenant_filter(lookup)
+        return super().find_one(req, **lookup)
+
+    def get(self, req, lookup):
+        """
+        Override get to inject tenant filter.
+
+        Automatically adds tenant_id to paginated query results. This is
+        the main method used by HTTP GET endpoints.
+
+        Args:
+            req: ParsedRequest object with query parameters
+            lookup (dict): Query filter from URL path
+
+        Returns:
+            dict: Paginated results with metadata
+        """
+        if lookup is None:
+            lookup = {}
+        lookup = self._add_tenant_filter(lookup)
+        return super().get(req, lookup)
+
+    def get_from_mongo(self, req, lookup, projection=None):
+        """
+        Override get_from_mongo to inject tenant filter.
+
+        This method bypasses Elasticsearch and queries MongoDB directly.
+        It's critical to filter here to prevent direct access bypasses.
+
+        Args:
+            req: Request object
+            lookup (dict): Query filter
+            projection (dict): Field projection
+
+        Returns:
+            Cursor: MongoDB cursor with results
+
+        Warning:
+            This method bypasses Elasticsearch filters, so tenant filtering
+            here is crucial for security.
+        """
+        if lookup is None:
+            lookup = {}
+        lookup = self._add_tenant_filter(lookup)
+        return super().get_from_mongo(req, lookup, projection)
+
+    def find_and_modify(self, query, update, **kwargs):
+        """
+        Override find_and_modify to inject tenant filter.
+
+        Ensures atomic read-modify-write operations are tenant-scoped.
+
+        Args:
+            query (dict): Find query
+            update (dict): Update specification
+            **kwargs: Additional arguments
+
+        Returns:
+            dict: Modified document
+        """
+        query = self._add_tenant_filter(query)
+        return super().find_and_modify(query, update, **kwargs)
+
+    def on_create(self, docs):
+        """
+        Automatically add tenant_id to new documents.
+
+        Called before documents are inserted into database. Injects the
+        current tenant's ID into all documents being created.
+
+        Args:
+            docs (list): List of documents to be created
+
+        Raises:
+            SuperdeskApiError: 403 Forbidden if no tenant context available
+
+        Note:
+            This method is called by the framework before database insertion.
+            It modifies the docs list in place.
+        """
+        tenant_id = get_tenant_id(required=True)
+
+        if tenant_id:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+
+            for doc in docs:
+                if "tenant_id" not in doc:
+                    doc["tenant_id"] = tenant_id
+
+        super().on_create(docs)
+
+
+class TenantAwareArchiveService(ArchiveService):
+    """
+    Tenant-aware version of ArchiveService for posts/items.
+
+    Posts and items are stored in the 'archive' collection and inherit
+    from ArchiveService (which provides additional archive-specific
+    functionality like versioning). This class extends ArchiveService
+    with tenant filtering.
+
+    Usage:
+        class PostsService(TenantAwareArchiveService):
+            pass
+
+        class ItemsService(TenantAwareArchiveService):
+            pass
+
+    Note:
+        The implementation is nearly identical to TenantAwareService, but
+        inherits from ArchiveService instead of BaseService to preserve
+        archive-specific functionality.
+    """
+
+    def _add_tenant_filter(self, lookup):
+        """Add tenant filter to lookup dict."""
+        tenant_id = get_tenant_id(required=False)
+
+        if tenant_id:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+            lookup["tenant_id"] = tenant_id
+
+        return lookup
+
+    def find(self, where=None, **kwargs):
+        """Override find to inject tenant filter."""
+        if where is None:
+            where = {}
+        where = self._add_tenant_filter(where)
+        return super().find(where, **kwargs)
+
+    def find_one(self, req, **lookup):
+        """Override find_one to inject tenant filter."""
+        lookup = self._add_tenant_filter(lookup)
+        return super().find_one(req, **lookup)
+
+    def get(self, req, lookup):
+        """Override get to inject tenant filter."""
+        if lookup is None:
+            lookup = {}
+        lookup = self._add_tenant_filter(lookup)
+        return super().get(req, lookup)
+
+    def get_from_mongo(self, req, lookup, projection=None):
+        """Override get_from_mongo to inject tenant filter."""
+        if lookup is None:
+            lookup = {}
+        lookup = self._add_tenant_filter(lookup)
+        return super().get_from_mongo(req, lookup, projection)
+
+    def on_create(self, docs):
+        """Automatically add tenant_id to new documents."""
+        tenant_id = get_tenant_id(required=True)
+
+        if tenant_id:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+
+            for doc in docs:
+                if "tenant_id" not in doc:
+                    doc["tenant_id"] = tenant_id
+
+        super().on_create(docs)
+
+
+__all__ = ["TenantAwareService", "TenantAwareArchiveService"]
