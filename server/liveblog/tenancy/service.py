@@ -149,22 +149,25 @@ class TenantAwareService(BaseService):
         lookup = self._add_tenant_filter(lookup)
         return super().get_from_mongo(req, lookup, projection)
 
-    def find_and_modify(self, query, update, **kwargs):
+    def find_and_modify(self, **kwargs):
         """
         Override find_and_modify to inject tenant filter.
 
         Ensures atomic read-modify-write operations are tenant-scoped.
 
         Args:
-            query (dict): Find query
-            update (dict): Update specification
-            **kwargs: Additional arguments
+            **kwargs: All arguments including 'query' and 'update'
 
         Returns:
             dict: Modified document
+
+        Note:
+            The query kwarg is extracted, modified to include tenant_id,
+            and passed to the parent's find_and_modify method.
         """
-        query = self._add_tenant_filter(query)
-        return super().find_and_modify(query, update, **kwargs)
+        if 'query' in kwargs:
+            kwargs['query'] = self._add_tenant_filter(kwargs['query'])
+        return super().find_and_modify(**kwargs)
 
     def on_create(self, docs):
         """
@@ -254,6 +257,12 @@ class TenantAwareArchiveService(ArchiveService):
             lookup = {}
         lookup = self._add_tenant_filter(lookup)
         return super().get_from_mongo(req, lookup, projection)
+
+    def find_and_modify(self, **kwargs):
+        """Override find_and_modify to inject tenant filter."""
+        if 'query' in kwargs:
+            kwargs['query'] = self._add_tenant_filter(kwargs['query'])
+        return super().find_and_modify(**kwargs)
 
     def on_create(self, docs):
         """Automatically add tenant_id to new documents."""

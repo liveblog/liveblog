@@ -5,8 +5,9 @@ This module provides a public REST API endpoint for user registration that
 automatically creates a tenant for each new user.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from liveblog.tenancy.registration import RegistrationService
+from liveblog.utils.api import api_response, api_error
 from superdesk.errors import SuperdeskApiError
 import logging
 
@@ -68,30 +69,25 @@ def register():
     missing = [field for field in required if field not in data]
 
     if missing:
-        return jsonify({"error": f'Missing required fields: {", ".join(missing)}'}), 400
+        return api_error(f'Missing required fields: {", ".join(missing)}', 400)
 
     # Basic validation
     if len(data["password"]) < 6:
-        return jsonify({"error": "Password must be at least 6 characters"}), 400
+        return api_error("Password must be at least 6 characters", 400)
 
     # Email format validation (basic)
     if "@" not in data["email"] or "." not in data["email"].split("@")[1]:
-        return jsonify({"error": "Invalid email format"}), 400
+        return api_error("Invalid email format", 400)
 
     # Username validation (alphanumeric, underscore, hyphen)
     username = data["username"]
     if not username.replace("_", "").replace("-", "").isalnum():
-        return (
-            jsonify(
-                {
-                    "error": "Username can only contain letters, numbers, underscore, and hyphen"
-                }
-            ),
-            400,
+        return api_error(
+            "Username can only contain letters, numbers, underscore, and hyphen", 400
         )
 
     if len(username) < 3:
-        return jsonify({"error": "Username must be at least 3 characters"}), 400
+        return api_error("Username must be at least 3 characters", 400)
 
     registration_service = RegistrationService()
 
@@ -103,25 +99,25 @@ def register():
             f"with tenant {result['tenant_id']}"
         )
 
-        return (
-            jsonify(
-                {
-                    "message": "Registration successful",
-                    "user_id": str(result["user_id"]),
-                    "tenant_id": str(result["tenant_id"]),
-                    "tenant_name": result["tenant_name"],
-                }
-            ),
+        return api_response(
+            {
+                "_id": str(result["user_id"]),
+                "_status": "OK",
+                "message": "Registration successful",
+                "user_id": str(result["user_id"]),
+                "tenant_id": str(result["tenant_id"]),
+                "tenant_name": result["tenant_name"],
+            },
             201,
         )
 
     except SuperdeskApiError as e:
         logger.warning(f"Registration failed: {e}")
-        return jsonify({"error": str(e)}), e.status_code or 400
+        return api_error(str(e), e.status_code or 400)
 
     except Exception as e:
         logger.error(f"Registration error: {e}", exc_info=True)
-        return jsonify({"error": "Internal server error"}), 500
+        return api_error("Internal server error", 500)
 
 
 __all__ = ["registration_blueprint"]

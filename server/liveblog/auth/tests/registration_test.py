@@ -55,6 +55,8 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
 
         data = json.loads(response.data)
+        self.assertEqual(data["_status"], "OK")
+        self.assertEqual(data["_id"], str(self.user_id))
         self.assertEqual(data["message"], "Registration successful")
         self.assertEqual(data["user_id"], str(self.user_id))
         self.assertEqual(data["tenant_id"], str(self.tenant_id))
@@ -74,8 +76,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("username", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("username", data["_error"].lower())
 
     def test_missing_email_returns_400(self):
         """Test missing email field returns 400 Bad Request."""
@@ -91,8 +94,8 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("email", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("email", data["_error"].lower())
 
     def test_missing_password_returns_400(self):
         """Test missing password field returns 400 Bad Request."""
@@ -108,8 +111,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("password", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("password", data["_error"].lower())
 
     def test_short_password_returns_400(self):
         """Test password shorter than 6 characters returns 400."""
@@ -125,8 +129,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("6 characters", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("6 characters", data["_error"].lower())
 
     def test_invalid_email_format_returns_400(self):
         """Test invalid email format returns 400."""
@@ -142,8 +147,8 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("email", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("email", data["_error"].lower())
 
     def test_short_username_returns_400(self):
         """Test username shorter than 3 characters returns 400."""
@@ -159,8 +164,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("3 characters", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("3 characters", data["_error"].lower())
 
     def test_invalid_username_characters_returns_400(self):
         """Test username with invalid characters returns 400."""
@@ -176,8 +182,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("letters", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("letters", data["_error"].lower())
 
     @patch("liveblog.auth.registration.RegistrationService")
     def test_duplicate_username_returns_400(self, mock_registration_service_class):
@@ -199,8 +206,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("already exists", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("already exists", data["_error"].lower())
 
     @patch("liveblog.auth.registration.RegistrationService")
     def test_internal_error_returns_500(self, mock_registration_service_class):
@@ -220,8 +228,9 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 500)
 
         data = json.loads(response.data)
-        self.assertIn("error", data)
-        self.assertIn("internal server error", data["error"].lower())
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("_error", data)
+        self.assertIn("internal server error", data["_error"].lower())
 
     def test_valid_username_with_underscore_accepted(self):
         """Test username with underscore is accepted."""
