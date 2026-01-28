@@ -27,6 +27,7 @@ from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
+from liveblog.tenancy.service import TenantAwareService
 from settings import (
     DAYS_REMOVE_DELETED_BLOGS,
     TRIGGER_HOOK_URLS,
@@ -105,7 +106,7 @@ def send_email_to_added_members(blog, recipients, blog_url):
             )
 
 
-class BlogService(BaseService):
+class BlogService(TenantAwareService):
     notification_key = "blog"
 
     def _update_theme_settings(self, doc, theme_name):
@@ -119,6 +120,7 @@ class BlogService(BaseService):
             doc["theme_settings"] = default_theme_settings
 
     def on_create(self, docs):
+        super().on_create(docs)
         self._check_max_active(len(docs))
         for doc in docs:
             update_dates_for(doc)

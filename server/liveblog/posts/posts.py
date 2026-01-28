@@ -15,6 +15,7 @@ from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareArchiveService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
@@ -22,6 +23,7 @@ from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length, get_user
 from liveblog.polls.polls import poll_calculations
+from liveblog.tenancy.filters import tenant_elastic_filter, combine_elastic_filters
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
@@ -113,7 +115,9 @@ class PostsResource(ArchiveResource):
     datasource = {
         "source": "archive",
         "search_backend": "elastic",
-        "elastic_filter_callback": private_draft_filter,
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, private_draft_filter
+        ),
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": DEFAULT_POSTS_ORDER,
     }
@@ -124,6 +128,7 @@ class PostsResource(ArchiveResource):
     schema.update(ArchiveResource.schema)
     schema.update(
         {
+            "tenant_id": Resource.rel("tenants", type="objectid"),
             "blog": Resource.rel("blogs", True),
             "particular_type": {
                 "type": "string",
@@ -168,6 +173,7 @@ class PostsResource(ArchiveResource):
         "order_-1": ([("order", -1)]),
         "blog_posts_optimized": (
             [
+                ("tenant_id", 1),
                 ("blog", 1),
                 ("post_status", 1),
                 ("deleted", 1),
@@ -230,7 +236,7 @@ class PostsResource(ArchiveResource):
             request.environ["HTTP_IF_MATCH"] = etag_in_mongo
 
 
-class PostsService(ArchiveService):
+class PostsService(TenantAwareArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         try:
@@ -345,6 +351,7 @@ class PostsService(ArchiveService):
                 raise not_allowed_ex
 
     def on_create(self, docs):
+        super().on_create(docs)
         for doc in docs:
             self.check_post_permission(doc)
             doc["type"] = "composite"
@@ -357,8 +364,6 @@ class PostsService(ArchiveService):
                     doc["published_date"] = utcnow()
                 doc["content_updated_date"] = doc["published_date"]
                 doc["publisher"] = get_publisher()
-
-        super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)
@@ -687,7 +692,7 @@ class BlogPostsResource(Resource):
     privileges = {"GET": "posts"}
 
 
-class BlogPostsService(ArchiveService, AuthorsMixin):
+class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
     custom_hateoas = {"self": {"title": "Posts", "href": "/{location}/{_id}"}}
 
     def get(self, req, lookup):

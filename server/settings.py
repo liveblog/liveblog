@@ -191,6 +191,7 @@ INSTALLED_APPS = [
     "apps.legal_archive",
     "apps.archive_broadcast",
     "apps.content_types",
+    "liveblog.tenancy",
     "liveblog.core",
     "liveblog.users",
     "liveblog.prepopulate",

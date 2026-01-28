@@ -11,6 +11,8 @@ from apps.archive.archive import (
     ArchiveVersionsResource,
 )
 from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareArchiveService
+from liveblog.tenancy.filters import tenant_elastic_filter, combine_elastic_filters
 from superdesk.filemeta import set_filemeta
 from werkzeug.datastructures import FileStorage
 from flask import Blueprint, request, make_response
@@ -57,9 +59,14 @@ class ItemsVersionsService(BaseService):
 
 
 class ItemsResource(ArchiveResource):
+    def _elastic_filter_by_type():
+        return {"term": {"particular_type": "item"}}
+
     datasource = {
         "source": "archive",
-        "elastic_filter": {"term": {"particular_type": "item"}},
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, _elastic_filter_by_type
+        ),
         "default_sort": [("_updated", -1)],
     }
 
@@ -69,6 +76,7 @@ class ItemsResource(ArchiveResource):
     schema.update(schema)
     schema.update(
         {
+            "tenant_id": Resource.rel("tenants", type="objectid"),
             "text": {"type": "string"},
             "blog": Resource.rel("blogs", True),
             "particular_type": {
@@ -96,7 +104,7 @@ class ItemsResource(ArchiveResource):
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
 
 
-class ItemsService(ArchiveService):
+class ItemsService(TenantAwareArchiveService):
     embed_providers = {
         "twitter": [
             re.compile(
@@ -181,16 +189,22 @@ class ItemsService(ArchiveService):
 class BlogItemsResource(ArchiveResource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/items'
     schema = ItemsResource.schema
+
+    def _elastic_filter_by_type():
+        return {"term": {"particular_type": "item"}}
+
     datasource = {
         "source": "archive",
-        "elastic_filter": {"term": {"particular_type": "item"}},
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, _elastic_filter_by_type
+        ),
         "default_sort": [("_updated", -1)],
     }
     resource_methods = ["GET"]
     privileges = {"GET": "posts"}
 
 
-class BlogItemsService(ArchiveService):
+class BlogItemsService(TenantAwareArchiveService):
     def get(self, req, lookup):
         if lookup.get("blog_id"):
             lookup["blog"] = ObjectId(lookup["blog_id"])

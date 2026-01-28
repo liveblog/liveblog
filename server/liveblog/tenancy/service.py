@@ -164,8 +164,8 @@ class TenantAwareService(BaseService):
             The query kwarg is extracted, modified to include tenant_id,
             and passed to the parent's find_and_modify method.
         """
-        if 'query' in kwargs:
-            kwargs['query'] = self._add_tenant_filter(kwargs['query'])
+        if "query" in kwargs:
+            kwargs["query"] = self._add_tenant_filter(kwargs["query"])
         return super().find_and_modify(**kwargs)
 
     def on_create(self, docs):
@@ -259,8 +259,8 @@ class TenantAwareArchiveService(ArchiveService):
 
     def find_and_modify(self, **kwargs):
         """Override find_and_modify to inject tenant filter."""
-        if 'query' in kwargs:
-            kwargs['query'] = self._add_tenant_filter(kwargs['query'])
+        if "query" in kwargs:
+            kwargs["query"] = self._add_tenant_filter(kwargs["query"])
         return super().find_and_modify(**kwargs)
 
     def on_create(self, docs):

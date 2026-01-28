@@ -97,4 +97,16 @@ def get_tenant(required=False):
     return tenant
 
 
-__all__ = ["get_tenant_id", "get_tenant"]
+def init_app(app):
+    """
+    Initialize tenancy resources and services.
+
+    Note: This delegates to liveblog.tenants.init_app() which properly
+    registers the tenants resource with TenantsService.
+    """
+    from liveblog.tenants import init_app as init_tenants_app
+
+    init_tenants_app(app)
+
+
+__all__ = ["get_tenant_id", "get_tenant", "init_app"]
