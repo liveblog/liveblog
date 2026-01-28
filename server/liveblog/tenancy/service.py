@@ -125,7 +125,7 @@ class TenantAwareService(BaseService):
         lookup = self._add_tenant_filter(lookup)
         return super().get(req, lookup)
 
-    def get_from_mongo(self, req, lookup, projection=None):
+    def get_from_mongo(self, req, lookup):
         """
         Override get_from_mongo to inject tenant filter.
 
@@ -135,7 +135,6 @@ class TenantAwareService(BaseService):
         Args:
             req: Request object
             lookup (dict): Query filter
-            projection (dict): Field projection
 
         Returns:
             Cursor: MongoDB cursor with results
@@ -147,7 +146,7 @@ class TenantAwareService(BaseService):
         if lookup is None:
             lookup = {}
         lookup = self._add_tenant_filter(lookup)
-        return super().get_from_mongo(req, lookup, projection)
+        return super().get_from_mongo(req, lookup)
 
     def find_and_modify(self, **kwargs):
         """
@@ -251,12 +250,12 @@ class TenantAwareArchiveService(ArchiveService):
         lookup = self._add_tenant_filter(lookup)
         return super().get(req, lookup)
 
-    def get_from_mongo(self, req, lookup, projection=None):
+    def get_from_mongo(self, req, lookup):
         """Override get_from_mongo to inject tenant filter."""
         if lookup is None:
             lookup = {}
         lookup = self._add_tenant_filter(lookup)
-        return super().get_from_mongo(req, lookup, projection)
+        return super().get_from_mongo(req, lookup)
 
     def find_and_modify(self, **kwargs):
         """Override find_and_modify to inject tenant filter."""
