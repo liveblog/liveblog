@@ -1,4 +1,5 @@
 from bson import ObjectId
+import json
 import pytest
 from unittest.mock import MagicMock, patch
 from flask import Flask
@@ -86,7 +87,7 @@ def test_get_instance_bandwidth(client, app):
         app.features.get_feature_limit = MagicMock(return_value=2)
 
         response = client.get("/api/bandwidth/current")
-        data = response.get_json()
+        data = json.loads(response.data)
 
         assert response.status_code == 200
         assert data["bandwidthUsageGB"] == 1.0
