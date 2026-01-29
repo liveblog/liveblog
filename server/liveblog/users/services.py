@@ -1,13 +1,53 @@
 import flask
 from flask import current_app as app
 from superdesk.users.services import DBUsersService
+from liveblog.tenancy.service import TenantAwareService
 
 
-class LiveBlogUserService(DBUsersService):
+class TenantAwareDBUsersService(TenantAwareService, DBUsersService):
+    def find_one_for_authentication(self, user_id):
+        """
+        Find user by ID for authentication only.
+
+        Bypasses tenant filtering since auth tokens are system-level.
+        ONLY use this for auth token validation.
+        """
+        from bson.objectid import ObjectId
+
+        if isinstance(user_id, str):
+            user_id = ObjectId(user_id)
+
+        return DBUsersService.find_one(self, req=None, _id=user_id)
+
+    def on_create(self, docs):
+        """
+        Make tenant_id optional for users.
+
+        Users can be created without tenant context (e.g., initial setup, registration).
+        """
+        from liveblog.tenancy import get_tenant_id
+        from bson.objectid import ObjectId
+
+        tenant_id = get_tenant_id(required=False)
+
+        if tenant_id:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+
+            for doc in docs:
+                if "tenant_id" not in doc:
+                    doc["tenant_id"] = tenant_id
+
+        DBUsersService.on_create(self, docs)
+
+
+class LiveBlogUserService(TenantAwareDBUsersService):
     """
     Extends superdesk.users default app to add some additional functionality
     only concerning Live Blog, like hiding users' sensitive information for users
     that do not have enough permissions to do so.
+
+    Now includes tenant isolation - users are automatically scoped to their tenant.
     """
 
     def on_fetched(self, document):

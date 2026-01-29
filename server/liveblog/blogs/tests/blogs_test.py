@@ -7,6 +7,7 @@ from superdesk.tests import TestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.instance_settings.features_service import FeaturesService
+from liveblog.common import run_once
 
 
 def db_service_mock():
@@ -17,12 +18,20 @@ def db_service_mock():
 
 
 class BlogsTestCase(TestCase):
-    def setUp(self):
-        self.app.features = FeaturesService(self.app, db_service_mock())
+    @run_once
+    def setup_test_case(self):
+        test_config = {
+            "LIVEBLOG_DEBUG": True,
+            "DEBUG": False,
+        }
+        self.app.config.update(test_config)
 
-        blog_app.init_app(self.app)
-        advert_app.init_app(self.app)
-        client_modules.init_app(self.app)
+        for lb_app in [blog_app, advert_app, client_modules]:
+            lb_app.init_app(self.app)
+
+    def setUp(self):
+        self.setup_test_case()
+        self.app.features = FeaturesService(self.app, db_service_mock())
 
         self.blog_with_output = {
             "title": "Test blog",

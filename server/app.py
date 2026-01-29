@@ -70,6 +70,10 @@ def get_app(config=None):
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
 
+    # Replace default auth with tenant-aware auth
+    from liveblog.auth.token_auth import LiveBlogTokenAuth
+    app.auth = LiveBlogTokenAuth()
+
     # Tenant context middleware
     @app.before_request
     def set_tenant_context():

@@ -1,12 +1,12 @@
-import datetime
 import json
+import flask
+import datetime
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import liveblog.tenants as tenants
 import superdesk.users as users_app
 import liveblog.items as items_app
 import liveblog.polls as polls_app
-import flask
 from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
