@@ -3,6 +3,13 @@ Unit tests for TenantAwareService.
 
 Tests the automatic tenant filtering functionality that ensures data isolation
 between tenants at the service layer.
+
+Note: This file tests the TenantAwareService BASE CLASS using unit tests with mocking,
+which is appropriate for testing abstract class contracts. Integration testing of
+actual tenant isolation with real services and database is covered by:
+- liveblog/tenancy/tests/registration_test.py
+- liveblog/auth/tests/token_auth_test.py
+- liveblog/auth/tests/registration_test.py
 """
 
 import flask
@@ -112,16 +119,20 @@ class TenantAwareServiceTestCase(TestCase):
         with self.app.app_context():
             flask.g.user = self.user_with_tenant
 
-            with patch(
-                "superdesk.services.BaseService.find_one"
-            ) as mock_parent_find_one:
-                mock_parent_find_one.return_value = {"_id": "doc_id"}
+            mock_backend = MagicMock()
+            mock_backend.find_one.return_value = {"_id": "doc_id"}
+
+            with patch("flask.current_app") as mock_app:
+                mock_app.data._backend.return_value = mock_backend
 
                 req = MagicMock()
-                self.service.find_one(req, _id="doc_id")
+                result = self.service.find_one(req, _id="doc_id")
 
                 mock_add_filter.assert_called_once()
-                mock_parent_find_one.assert_called_once()
+                mock_backend.find_one.assert_called_once_with(
+                    "test_resource", req=req, _id="doc_id", tenant_id=self.tenant_id
+                )
+                self.assertEqual(result, {"_id": "doc_id"})
 
     @patch.object(TenantAwareService, "_add_tenant_filter")
     def test_get_applies_tenant_filter(self, mock_add_filter):

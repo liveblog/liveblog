@@ -2,50 +2,58 @@
 Integration tests for registration blueprint endpoint.
 
 Tests the public /api/register endpoint that allows new users to sign up
-and automatically creates a tenant for them.
+and automatically creates a tenant for them using real HTTP → Service → DB flow.
 """
 
 import json
-from unittest.mock import patch, MagicMock
+import uuid
 from bson import ObjectId
 
 from superdesk.tests import TestCase
+from superdesk import get_resource_service
 from liveblog.auth.registration import registration_blueprint
+from liveblog import tenants, users
+from liveblog.common import run_once
 
 
 class RegistrationEndpointTestCase(TestCase):
     """Test /api/register endpoint."""
 
-    def setUp(self):
-        """Set up test fixtures."""
+    @run_once
+    def setup_test_case(self):
+        test_config = {
+            "LIVEBLOG_DEBUG": True,
+            "DEBUG": False,
+        }
+        self.app.config.update(test_config)
+
+        # Initialize required modules
+        for lb_app in [tenants, users]:
+            lb_app.init_app(self.app)
+
         # Register the blueprint with the test app
         if "registration" not in self.app.blueprints:
             self.app.register_blueprint(registration_blueprint)
 
+    def setUp(self):
+        """Set up test fixtures."""
+        super().setUp()
+        self.setup_test_case()
+
         self.client = self.app.test_client()
 
+        # Use unique identifiers to avoid test conflicts
+        unique_id = str(uuid.uuid4())[:8]
         self.valid_registration_data = {
-            "username": "newuser",
-            "email": "newuser@example.com",
+            "username": f"newuser_{unique_id}",
+            "email": f"newuser_{unique_id}@example.com",
             "password": "securepass123",
             "first_name": "New",
             "last_name": "User",
         }
 
-        self.tenant_id = ObjectId()
-        self.user_id = ObjectId()
-
-    @patch("liveblog.auth.registration.RegistrationService")
-    def test_successful_registration_returns_201(self, mock_registration_service_class):
-        """Test successful registration returns 201 Created with user and tenant info."""
-        mock_service = MagicMock()
-        mock_service.register_new_user.return_value = {
-            "user_id": self.user_id,
-            "tenant_id": self.tenant_id,
-            "tenant_name": "New User's LiveBlog",
-        }
-        mock_registration_service_class.return_value = mock_service
-
+    def test_successful_registration_returns_201(self):
+        """Test successful registration returns 201 Created with real user and tenant in database."""
         response = self.client.post(
             "/api/register",
             data=json.dumps(self.valid_registration_data),
@@ -56,11 +64,25 @@ class RegistrationEndpointTestCase(TestCase):
 
         data = json.loads(response.data)
         self.assertEqual(data["_status"], "OK")
-        self.assertEqual(data["_id"], str(self.user_id))
         self.assertEqual(data["message"], "Registration successful")
-        self.assertEqual(data["user_id"], str(self.user_id))
-        self.assertEqual(data["tenant_id"], str(self.tenant_id))
+        self.assertIn("user_id", data)
+        self.assertIn("tenant_id", data)
         self.assertIn("tenant_name", data)
+
+        # Verify user was created in database
+        users_service = get_resource_service("users")
+        user = users_service.find_one_for_authentication(data["user_id"])
+        self.assertIsNotNone(user)
+        self.assertEqual(user["username"], self.valid_registration_data["username"])
+        self.assertEqual(user["email"], self.valid_registration_data["email"])
+        self.assertEqual(user["user_type"], "administrator")
+
+        # Verify tenant was created in database
+        tenants_service = get_resource_service("tenants")
+        tenant = tenants_service.find_one(req=None, _id=ObjectId(data["tenant_id"]))
+        self.assertIsNotNone(tenant)
+        self.assertEqual(tenant["subscription_level"], "solo")
+        self.assertEqual(tenant["owner_user_id"], ObjectId(data["user_id"]))
 
     def test_missing_username_returns_400(self):
         """Test missing username field returns 400 Bad Request."""
@@ -186,17 +208,29 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertIn("_error", data)
         self.assertIn("letters", data["_error"].lower())
 
-    @patch("liveblog.auth.registration.RegistrationService")
-    def test_duplicate_username_returns_400(self, mock_registration_service_class):
+    def test_duplicate_username_returns_400(self):
         """Test duplicate username returns 400 with appropriate error."""
-        from superdesk.errors import SuperdeskApiError
+        # Create a real user first
+        users_service = get_resource_service("users")
+        tenants_service = get_resource_service("tenants")
 
-        mock_service = MagicMock()
-        mock_service.register_new_user.side_effect = SuperdeskApiError(
-            message="Username already exists", status_code=400
+        # Create tenant for existing user
+        existing_tenant_id = ObjectId(
+            tenants_service.post([{"name": "Existing Tenant"}])[0]
         )
-        mock_registration_service_class.return_value = mock_service
 
+        # Create existing user with same username
+        existing_user_data = {
+            "username": self.valid_registration_data["username"],
+            "email": "different@example.com",
+            "password": "password123",
+            "first_name": "Existing",
+            "last_name": "User",
+            "tenant_id": existing_tenant_id,
+        }
+        users_service.post([existing_user_data])
+
+        # Try to register with duplicate username
         response = self.client.post(
             "/api/register",
             data=json.dumps(self.valid_registration_data),
@@ -210,20 +244,26 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertIn("_error", data)
         self.assertIn("already exists", data["_error"].lower())
 
-    @patch("liveblog.auth.registration.RegistrationService")
-    def test_internal_error_returns_500(self, mock_registration_service_class):
-        """Test internal server error returns 500."""
-        mock_service = MagicMock()
-        mock_service.register_new_user.side_effect = Exception(
-            "Database connection failed"
-        )
-        mock_registration_service_class.return_value = mock_service
+    def test_internal_error_returns_500(self):
+        """Test internal server error returns 500 when unexpected errors occur."""
+        from unittest.mock import patch, MagicMock
 
-        response = self.client.post(
-            "/api/register",
-            data=json.dumps(self.valid_registration_data),
-            content_type="application/json",
-        )
+        # Use minimal mocking to simulate an unexpected error during tenant creation
+        with patch("liveblog.tenancy.registration.get_resource_service") as mock_get_service:
+            def get_service_side_effect(resource_name):
+                if resource_name == "tenants":
+                    mock_tenants = MagicMock()
+                    mock_tenants.post.side_effect = Exception("Database connection failed")
+                    return mock_tenants
+                return get_resource_service(resource_name)
+
+            mock_get_service.side_effect = get_service_side_effect
+
+            response = self.client.post(
+                "/api/register",
+                data=json.dumps(self.valid_registration_data),
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, 500)
 
@@ -233,53 +273,49 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertIn("internal server error", data["_error"].lower())
 
     def test_valid_username_with_underscore_accepted(self):
-        """Test username with underscore is accepted."""
+        """Test username with underscore is accepted and creates user in database."""
         valid_data = self.valid_registration_data.copy()
-        valid_data["username"] = "user_name"
+        valid_data["username"] = f"user_name_{uuid.uuid4().hex[:8]}"
+        valid_data["email"] = f"user_name_{uuid.uuid4().hex[:8]}@example.com"
 
-        # We just need to verify it doesn't return 400 for username validation
-        # (it might fail at service level, but not at validation)
-        with patch(
-            "liveblog.auth.registration.RegistrationService"
-        ) as mock_service_class:
-            mock_service = MagicMock()
-            mock_service.register_new_user.return_value = {
-                "user_id": self.user_id,
-                "tenant_id": self.tenant_id,
-                "tenant_name": "Test",
-            }
-            mock_service_class.return_value = mock_service
+        response = self.client.post(
+            "/api/register",
+            data=json.dumps(valid_data),
+            content_type="application/json",
+        )
 
-            response = self.client.post(
-                "/api/register",
-                data=json.dumps(valid_data),
-                content_type="application/json",
-            )
+        # Should succeed (201) not fail validation (400)
+        self.assertEqual(response.status_code, 201)
 
-            # Should not fail username validation
-            self.assertNotEqual(response.status_code, 400)
+        data = json.loads(response.data)
+        self.assertEqual(data["_status"], "OK")
+
+        # Verify user was created with underscore in username
+        users_service = get_resource_service("users")
+        user = users_service.find_one_for_authentication(data["user_id"])
+        self.assertIsNotNone(user)
+        self.assertIn("_", user["username"])
 
     def test_valid_username_with_hyphen_accepted(self):
-        """Test username with hyphen is accepted."""
+        """Test username with hyphen is accepted and creates user in database."""
         valid_data = self.valid_registration_data.copy()
-        valid_data["username"] = "user-name"
+        valid_data["username"] = f"user-name-{uuid.uuid4().hex[:8]}"
+        valid_data["email"] = f"user-name-{uuid.uuid4().hex[:8]}@example.com"
 
-        with patch(
-            "liveblog.auth.registration.RegistrationService"
-        ) as mock_service_class:
-            mock_service = MagicMock()
-            mock_service.register_new_user.return_value = {
-                "user_id": self.user_id,
-                "tenant_id": self.tenant_id,
-                "tenant_name": "Test",
-            }
-            mock_service_class.return_value = mock_service
+        response = self.client.post(
+            "/api/register",
+            data=json.dumps(valid_data),
+            content_type="application/json",
+        )
 
-            response = self.client.post(
-                "/api/register",
-                data=json.dumps(valid_data),
-                content_type="application/json",
-            )
+        # Should succeed (201) not fail validation (400)
+        self.assertEqual(response.status_code, 201)
 
-            # Should not fail username validation
-            self.assertNotEqual(response.status_code, 400)
+        data = json.loads(response.data)
+        self.assertEqual(data["_status"], "OK")
+
+        # Verify user was created with hyphen in username
+        users_service = get_resource_service("users")
+        user = users_service.find_one_for_authentication(data["user_id"])
+        self.assertIsNotNone(user)
+        self.assertIn("-", user["username"])
