@@ -28,6 +28,7 @@ from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
 from liveblog.tenancy.service import TenantAwareService
+from liveblog.tenancy.filters import tenant_elastic_filter
 from settings import (
     DAYS_REMOVE_DELETED_BLOGS,
     TRIGGER_HOOK_URLS,
@@ -51,6 +52,7 @@ class BlogsResource(Resource):
     datasource = {
         "source": "blogs",
         "search_backend": "elastic",
+        "elastic_filter_callback": tenant_elastic_filter,
         "default_sort": [("_updated", -1)],
     }
 
@@ -179,6 +181,10 @@ class BlogService(TenantAwareService):
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
+
+        if doc is None:
+            return None
+
         # check if the current user has permission to open a blog
         if checkUser and not is_admin(get_user()):
             # get members ids

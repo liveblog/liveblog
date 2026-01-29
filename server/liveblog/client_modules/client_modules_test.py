@@ -2,9 +2,11 @@ import datetime
 import json
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
+import liveblog.tenants as tenants
 import superdesk.users as users_app
 import liveblog.items as items_app
 import liveblog.polls as polls_app
+import flask
 from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
@@ -17,6 +19,7 @@ from liveblog.client_modules.client_modules import (
     _get_converted_item,
 )
 from liveblog.posts import utils as post_utils
+from liveblog.tests.helpers import setup_tenant_for_test
 
 
 class Foo:
@@ -42,6 +45,7 @@ class ClientModuleTestCase(TestCase):
             }
             self.app.config.update(test_config)
             foo.setup_called()
+            tenants.init_app(self.app)
             blogs.init_app(self.app)
             items_app.init_app(self.app)
             polls_app.init_app(self.app)
@@ -118,6 +122,9 @@ class ClientModuleTestCase(TestCase):
         self.client_blog_service = get_resource_service("client_blogs")
         self.users_service = get_resource_service("users")
 
+        # Create tenant for test
+        self.tenant_id = setup_tenant_for_test(self.app)
+
         self.user_list = [
             {
                 "_created": "2018-03-20T00:00:00+00:00",
@@ -131,6 +138,7 @@ class ClientModuleTestCase(TestCase):
                 "sign_off": "off",
                 "byline": "by",
                 "email": "abc@other.com",
+                "tenant_id": self.tenant_id,
             }
         ]
 
@@ -496,6 +504,9 @@ class ClientModuleTestCase(TestCase):
 
     def test_a_on_create_comment(self):
         with self.app.test_request_context("client_comments", method="POST"):
+            flask.g.user = get_resource_service("users").find_one(
+                req=None, username="admin"
+            )
             self.assertIsNone(self.client_comment_service.on_create(self.comment_docs))
             response = get_resource_service("archive").find_one(
                 req=None, client_blog=ObjectId("5ab90249fd16ad1752b39b74")

@@ -1,9 +1,11 @@
 # flake8: noqa
 import json
 import liveblog.items as items
+import liveblog.tenants as tenants
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
 from liveblog.items.items import drag_and_drop_blueprint
+from liveblog.tests.helpers import setup_tenant_for_test
 from bson import ObjectId
 import datetime
 from unittest.mock import patch
@@ -156,6 +158,7 @@ class ItemsTest(TestCase):
 
 class ClientModuleTest(TestCase):
     def setUp(self):
+        tenants.init_app(self.app)
         items.init_app(self.app)
         test_config = {"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://"}
         self.app.config.update(test_config)
@@ -217,6 +220,9 @@ class ClientModuleTest(TestCase):
             }
         ]
 
+        # Create tenant for test
+        tenant_id = setup_tenant_for_test(self.app)
+
         self.user_list = [
             {
                 "username": "admin",
@@ -228,6 +234,7 @@ class ClientModuleTest(TestCase):
                 "sign_off": "off",
                 "byline": "by",
                 "email": "abc@other.com",
+                "tenant_id": tenant_id,
             }
         ]
 

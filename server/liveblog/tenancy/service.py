@@ -42,8 +42,8 @@ class TenantAwareService(BaseService):
         Add tenant filter to lookup dictionary.
 
         This method is called by all query methods to inject the current
-        tenant's ID into the query filter. It converts string tenant IDs
-        to ObjectId format for MongoDB compatibility.
+        tenant's ID into the query filter. Converts string tenant IDs to
+        ObjectId format for MongoDB compatibility.
 
         Args:
             lookup (dict): MongoDB query lookup dictionary
@@ -58,6 +58,8 @@ class TenantAwareService(BaseService):
         tenant_id = get_tenant_id(required=False)
 
         if tenant_id:
+            # Convert to ObjectId for MongoDB query
+            # Eve stores tenant_id as ObjectId in MongoDB
             if isinstance(tenant_id, str):
                 tenant_id = ObjectId(tenant_id)
             lookup["tenant_id"] = tenant_id
@@ -93,6 +95,10 @@ class TenantAwareService(BaseService):
         Automatically adds tenant_id to single document queries. Prevents
         cross-tenant document access.
 
+        IMPORTANT: When tenant filtering is active, we query MongoDB directly
+        to avoid EveBackend's Elasticsearch fallback, which would bypass
+        tenant isolation.
+
         Args:
             req: Request object (can be None)
             **lookup: Query parameters
@@ -103,8 +109,18 @@ class TenantAwareService(BaseService):
         Example:
             blog = self.find_one(req=None, _id=blog_id)
         """
+        from flask import current_app as app
+
         lookup = self._add_tenant_filter(lookup)
-        return super().find_one(req, **lookup)
+
+        # If tenant_id is in the lookup, query MongoDB directly to avoid
+        # EveBackend's Elasticsearch fallback which ignores tenant_id
+        if "tenant_id" in lookup:
+            backend = app.data._backend(self.datasource)
+            return backend.find_one(self.datasource, req=req, **lookup)
+        else:
+            # No tenant filter, use normal flow (allows elastic fallback)
+            return super().find_one(req, **lookup)
 
     def get(self, req, lookup):
         """
@@ -188,6 +204,7 @@ class TenantAwareService(BaseService):
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
+            # Convert to ObjectId for MongoDB storage
             if isinstance(tenant_id, str):
                 tenant_id = ObjectId(tenant_id)
 
@@ -225,6 +242,7 @@ class TenantAwareArchiveService(ArchiveService):
         tenant_id = get_tenant_id(required=False)
 
         if tenant_id:
+            # Convert to ObjectId for MongoDB query
             if isinstance(tenant_id, str):
                 tenant_id = ObjectId(tenant_id)
             lookup["tenant_id"] = tenant_id
@@ -239,9 +257,25 @@ class TenantAwareArchiveService(ArchiveService):
         return super().find(where, **kwargs)
 
     def find_one(self, req, **lookup):
-        """Override find_one to inject tenant filter."""
+        """
+        Override find_one to inject tenant filter.
+
+        IMPORTANT: When tenant filtering is active, we query MongoDB directly
+        to avoid EveBackend's Elasticsearch fallback, which would bypass
+        tenant isolation.
+        """
+        from flask import current_app as app
+
         lookup = self._add_tenant_filter(lookup)
-        return super().find_one(req, **lookup)
+
+        # If tenant_id is in the lookup, query MongoDB directly to avoid
+        # EveBackend's Elasticsearch fallback which ignores tenant_id
+        if "tenant_id" in lookup:
+            backend = app.data._backend(self.datasource)
+            return backend.find_one(self.datasource, req=req, **lookup)
+        else:
+            # No tenant filter, use normal flow (allows elastic fallback)
+            return super().find_one(req, **lookup)
 
     def get(self, req, lookup):
         """Override get to inject tenant filter."""
@@ -268,6 +302,7 @@ class TenantAwareArchiveService(ArchiveService):
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
+            # Convert to ObjectId for MongoDB storage
             if isinstance(tenant_id, str):
                 tenant_id = ObjectId(tenant_id)
 
