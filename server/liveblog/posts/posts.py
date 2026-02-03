@@ -71,6 +71,7 @@ def get_publisher():
         "sign_off",
         "byline",
         "email",
+        "tenant_id",
     )
 
     return {k: publisher.get(k, None) for k in publisher_keys}

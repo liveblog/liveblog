@@ -72,6 +72,7 @@ def get_app(config=None):
 
     # Replace default auth with tenant-aware auth
     from liveblog.auth.token_auth import LiveBlogTokenAuth
+
     app.auth = LiveBlogTokenAuth()
 
     # Tenant context middleware

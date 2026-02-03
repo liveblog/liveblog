@@ -249,11 +249,16 @@ class RegistrationEndpointTestCase(TestCase):
         from unittest.mock import patch, MagicMock
 
         # Use minimal mocking to simulate an unexpected error during tenant creation
-        with patch("liveblog.tenancy.registration.get_resource_service") as mock_get_service:
+        with patch(
+            "liveblog.tenancy.registration.get_resource_service"
+        ) as mock_get_service:
+
             def get_service_side_effect(resource_name):
                 if resource_name == "tenants":
                     mock_tenants = MagicMock()
-                    mock_tenants.post.side_effect = Exception("Database connection failed")
+                    mock_tenants.post.side_effect = Exception(
+                        "Database connection failed"
+                    )
                     return mock_tenants
                 return get_resource_service(resource_name)
 

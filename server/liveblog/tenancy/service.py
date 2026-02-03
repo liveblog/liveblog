@@ -51,9 +51,13 @@ class TenantAwareService(BaseService):
         Returns:
             dict: lookup with tenant_id added (mutates input dict)
 
+        Raises:
+            SuperdeskApiError: 403 Forbidden if no tenant context available
+
         Note:
             This method mutates the lookup dictionary in place and also
-            returns it for chaining convenience.
+            returns it for chaining convenience. Tenant context is REQUIRED
+            for all query operations to prevent cross-tenant data leakage.
         """
         tenant_id = get_tenant_id(required=True)
 
@@ -238,8 +242,13 @@ class TenantAwareArchiveService(ArchiveService):
     """
 
     def _add_tenant_filter(self, lookup):
-        """Add tenant filter to lookup dict."""
-        tenant_id = get_tenant_id(required=False)
+        """
+        Add tenant filter to lookup dict.
+
+        Raises:
+            SuperdeskApiError: 403 Forbidden if no tenant context available
+        """
+        tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
             # Convert to ObjectId for MongoDB query

@@ -30,20 +30,24 @@ class LiveBlogTokenAuth(SuperdeskTokenAuth):
         Returns:
             bool: True if authorized, raises exception otherwise
         """
-        auth_service = get_resource_service('auth')
-        user_service = get_resource_service('users')
+        auth_service = get_resource_service("auth")
+        user_service = get_resource_service("users")
         auth_token = auth_service.find_one(token=token, req=None)
 
         if auth_token:
-            user_id = str(auth_token['user'])
+            user_id = str(auth_token["user"])
             flask.g.user = user_service.system_find_one(req=None, _id=user_id)
             flask.g.role = user_service.get_role(flask.g.user)
             flask.g.auth = auth_token
-            flask.g.auth_value = auth_token['user']
+            flask.g.auth_value = auth_token["user"]
 
-            if method in ('POST', 'PUT', 'PATCH') or method == 'GET' and not request.args.get('auto'):
+            if (
+                method in ("POST", "PUT", "PATCH")
+                or method == "GET"
+                and not request.args.get("auto")
+            ):
                 now = utcnow()
-                if auth_token[app.config['LAST_UPDATED']] + timedelta(seconds=30) < now:
-                    auth_service.update_session({app.config['LAST_UPDATED']: now})
+                if auth_token[app.config["LAST_UPDATED"]] + timedelta(seconds=30) < now:
+                    auth_service.update_session({app.config["LAST_UPDATED"]: now})
 
             return self.check_permissions(resource, method, flask.g.user)

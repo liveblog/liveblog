@@ -37,8 +37,8 @@ class TenantAwareDBUsersService(TenantAwareService, DBUsersService):
         from bson.objectid import ObjectId
 
         # Convert string IDs to ObjectId if needed
-        if '_id' in lookup and isinstance(lookup['_id'], str):
-            lookup['_id'] = ObjectId(lookup['_id'])
+        if "_id" in lookup and isinstance(lookup["_id"], str):
+            lookup["_id"] = ObjectId(lookup["_id"])
 
         return DBUsersService.find_one(self, req, **lookup)
 
@@ -84,36 +84,33 @@ class LiveBlogUserService(TenantAwareDBUsersService):
         from superdesk import get_resource_service
         from superdesk.errors import SuperdeskApiError
 
-        resetService = get_resource_service('reset_user_password')
-        activate_ttl = app.config['ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE']
+        resetService = get_resource_service("reset_user_password")
+        activate_ttl = app.config["ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE"]
 
         for user_doc in docs:
             # Add activity log for audit trail
             add_activity(
                 ACTIVITY_CREATE,
-                'created user {{user}}',
+                "created user {{user}}",
                 self.datasource,
-                user=user_doc.get('display_name', user_doc.get('username'))
+                user=user_doc.get("display_name", user_doc.get("username")),
             )
 
             # Send activation email if needed
             if self.user_is_waiting_activation(user_doc):
-                tokenDoc = {'user': user_doc['_id'], 'email': user_doc['email']}
+                tokenDoc = {"user": user_doc["_id"], "email": user_doc["email"]}
                 token_id = resetService.store_reset_password_token(
-                    tokenDoc,
-                    user_doc['email'],
-                    activate_ttl,
-                    user_doc['_id']
+                    tokenDoc, user_doc["email"], activate_ttl, user_doc["_id"]
                 )
 
                 if not token_id:
                     raise SuperdeskApiError.internalError(
-                        'Failed to send account activation email.'
+                        "Failed to send account activation email."
                     )
 
                 # tokenDoc now has 'token' field set by store_reset_password_token
                 # Send activation email without user lookup (we already have user_doc)
-                self._send_activation_email(user_doc, tokenDoc['token'], activate_ttl)
+                self._send_activation_email(user_doc, tokenDoc["token"], activate_ttl)
 
     def _send_activation_email(self, user, token, activate_ttl):
         """
@@ -126,11 +123,11 @@ class LiveBlogUserService(TenantAwareDBUsersService):
         from flask import render_template
         from superdesk.emails import send_email
 
-        first_name = user.get('first_name')
-        app_name = app.config['APPLICATION_NAME']
-        admins = app.config['ADMINS']
-        client_url = app.config['CLIENT_URL']
-        url = '{}/#/reset-password?token={}'.format(client_url, token)
+        first_name = user.get("first_name")
+        app_name = app.config["APPLICATION_NAME"]
+        admins = app.config["ADMINS"]
+        client_url = app.config["CLIENT_URL"]
+        url = "{}/#/reset-password?token={}".format(client_url, token)
         hours = activate_ttl * 24
 
         subject = render_template("account_created_subject.txt", app_name=app_name)
@@ -141,7 +138,7 @@ class LiveBlogUserService(TenantAwareDBUsersService):
             first_name=first_name,
             instance_url=client_url,
             expires=hours,
-            url=url
+            url=url,
         )
         html_body = render_template(
             "account_created.html",
@@ -150,15 +147,15 @@ class LiveBlogUserService(TenantAwareDBUsersService):
             first_name=first_name,
             instance_url=client_url,
             expires=hours,
-            url=url
+            url=url,
         )
 
         send_email.delay(
             subject=subject,
             sender=admins[0],
-            recipients=[user['email']],
+            recipients=[user["email"]],
             text_body=text_body,
-            html_body=html_body
+            html_body=html_body,
         )
 
     def on_fetched(self, document):

@@ -49,16 +49,19 @@ class TenantAwareServiceTestCase(TestCase):
             self.assertEqual(result["some_field"], "value")
 
     def test_add_tenant_filter_without_tenant(self):
-        """Test _add_tenant_filter does not modify lookup when no tenant."""
+        """Test _add_tenant_filter raises error when no tenant (prevents data leakage)."""
+        from superdesk.errors import SuperdeskApiError
+
         with self.app.app_context():
             if hasattr(flask.g, "user"):
                 delattr(flask.g, "user")
 
             lookup = {"some_field": "value"}
-            result = self.service._add_tenant_filter(lookup)
 
-            self.assertNotIn("tenant_id", result)
-            self.assertEqual(result["some_field"], "value")
+            with self.assertRaises(SuperdeskApiError) as context:
+                self.service._add_tenant_filter(lookup)
+
+            self.assertEqual(context.exception.status_code, 403)
 
     def test_add_tenant_filter_converts_string_to_objectid(self):
         """Test _add_tenant_filter converts string tenant_id to ObjectId."""

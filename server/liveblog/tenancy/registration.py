@@ -82,15 +82,18 @@ class RegistrationService:
         users_service = get_resource_service("users")
         tenants_service = get_resource_service("tenants")
 
-
         # TODO: think carefully if we want uniqueness across all tenants
         # Check for duplicate username across all tenants
-        existing = users_service.system_find_one(req=None, username=user_data["username"])
+        existing = users_service.system_find_one(
+            req=None, username=user_data["username"]
+        )
         if existing:
             raise SuperdeskApiError.badRequestError(message="Username already exists")
 
         # Check for duplicate email across all tenants
-        existing_email = users_service.system_find_one(req=None, email=user_data["email"])
+        existing_email = users_service.system_find_one(
+            req=None, email=user_data["email"]
+        )
         if existing_email:
             raise SuperdeskApiError.badRequestError(message="Email already exists")
 
@@ -106,7 +109,7 @@ class RegistrationService:
 
         logger.info(f"Created tenant {tenant_id} for new user registration")
 
-        user_data["tenant_id"] = ObjectId(tenant_id)
+        user_data["tenant_id"] = tenant_id
         user_data["user_type"] = "administrator"
 
         try:
@@ -115,7 +118,7 @@ class RegistrationService:
 
             logger.info(f"Created user {user_id} for tenant {tenant_id}")
 
-            tenants_service.patch(tenant_id, {"owner_user_id": ObjectId(user_id)})
+            tenants_service.patch(tenant_id, {"owner_user_id": user_id})
 
             return {
                 "user_id": user_id,

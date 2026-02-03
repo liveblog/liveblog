@@ -1,10 +1,10 @@
 import datetime
-import flask
 
 import liveblog.blogs as blogs
 import liveblog.items as items
 import liveblog.polls as polls
 import liveblog.posts as posts
+import liveblog.tenants as tenants
 import superdesk.users as users_app
 import liveblog.themes as themes
 import liveblog.client_modules as client_modules_app
@@ -13,7 +13,7 @@ import liveblog.advertisements as advertisements
 from bson import ObjectId
 from unittest.mock import patch
 
-from superdesk.tests import TestCase
+from liveblog.tests.tenant_test_case import TenantAwareTestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import get_publisher, private_draft_filter
@@ -26,7 +26,7 @@ from liveblog.posts.utils import check_content_diff
 from liveblog.common import run_once
 
 
-class PostsModuleTestCase(TestCase):
+class PostsModuleTestCase(TenantAwareTestCase):
     @run_once
     def setup_test_case(self):
         test_config = {
@@ -38,6 +38,7 @@ class PostsModuleTestCase(TestCase):
         self.app.config.update(test_config)
 
         init_apps = [
+            tenants,
             blogs,
             posts,
             client_modules_app,
@@ -53,24 +54,31 @@ class PostsModuleTestCase(TestCase):
         self.client = self.app.test_client()
 
     def setUp(self):
+        super().setUp()
         self.setup_test_case()
+        self.setup_tenant_and_user()
         self.posts_service = get_resource_service("posts")
         self.blog_posts_service = get_resource_service("blog_posts")
 
+        # Use the tenant-aware user from parent class
         self.user_list = [
             {
-                "_id": "0",
+                "_id": self.user["_id"],
+                "tenant_id": self.tenant_id,
                 "_etag": "hash",
                 "_created": "now",
                 "_updated": "nowish",
-                "username": "admin",
+                "username": self.user["username"],
                 "display_name": "admin",
                 "sign_off": "off",
                 "byline": "by",
                 "email": "admin@example.com",
             }
         ]
-        self.user_ids = self.app.data.insert("users", self.user_list)
+
+        self.user_ids = [self.user["_id"]]
+        self.user["privileges"] = {"publish_post": 1, "submit_post": 1}
+        self.set_user_context(self.user)
 
         self.private_draft_filter = {
             "bool": {
@@ -86,6 +94,7 @@ class PostsModuleTestCase(TestCase):
         self.blogs_list = [
             {
                 "_id": "blog_one",
+                "tenant_id": self.tenant_id,
                 "_created": "2018-03-27T12:04:58+00:00",
                 "_etag": "b962afec2413ddf43fcf0273a1a422a2fec1e34d",
                 "_type": "blogs",
@@ -235,6 +244,7 @@ class PostsModuleTestCase(TestCase):
 
         self.items = [
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-03T05:42:43+00:00",
                 "_current_version": 1,
                 "_id": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
@@ -281,6 +291,7 @@ class PostsModuleTestCase(TestCase):
                 "versioncreated": "2018-04-03T05:42:43+00:00",
             },
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-13T06:48:23+00:00",
                 "_current_version": 1,
                 "_etag": "544b8670ad6e16154e4d71730ae01cd68cb6b539",
@@ -392,6 +403,7 @@ class PostsModuleTestCase(TestCase):
 
         self.blog_posts = [
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-03T05:42:43+00:00",
                 "_current_version": 1,
                 "_etag": "0ad2b3f00e13ebad62e74d8d9a500991ba09f1b7",
@@ -523,26 +535,26 @@ class PostsModuleTestCase(TestCase):
         self.themes_ids = self.app.data.insert("themes", self.themes)
 
     def test_get_publisher_clean(self):
-        with self.app.app_context():
-            with_session = self.user_list[0].copy()
-            with_session.update({"session": "nothing"})
-            flask.g.user = with_session
-            publisher = get_publisher()
-            self.assertEqual(publisher, self.user_list[0])
+        with_session = self.user_list[0].copy()
+        with_session["session"] = "nothing"
+        self.set_user_context(with_session)
+        publisher = get_publisher()
+        # Publisher should match user_list[0] (without session, already has tenant_id)
+        self.assertEqual(publisher, self.user_list[0])
 
     def test_get_publisher_none(self):
-        with self.app.app_context():
-            publisher = get_publisher()
-            self.assertEqual(publisher, None)
+        # Clear user to test case where no user is set
+        self.cleanup_user_context()
+        publisher = get_publisher()
+        self.assertEqual(publisher, None)
 
     def test_private_draft_filter_with_user(self):
-        with self.app.app_context():
-            flask.g.user = self.user_list[0]
-            private_filter = self.private_draft_filter.copy()
-            private_filter["bool"]["should"].append(
-                {"term": {"original_creator": str(self.user_list[0]["_id"])}}
-            )
-            self.assertEqual(private_draft_filter(), self.private_draft_filter)
+        self.set_user_context(self.user_list[0])
+        private_filter = self.private_draft_filter.copy()
+        private_filter["bool"]["should"].append(
+            {"term": {"original_creator": str(self.user_list[0]["_id"])}}
+        )
+        self.assertEqual(private_draft_filter(), self.private_draft_filter)
 
     def test_get_next_order_sequence(self):
         blog_id = str(self.blogs_ids[0])
@@ -680,17 +692,15 @@ class PostsModuleTestCase(TestCase):
         `related_items_map` should fetch from related locations and from
         archive by default if location attribute is not present
         """
+        related_items = self.blog_posts_service.related_items_map(self.blog_posts)
 
-        with self.app.app_context():
-            related_items = self.blog_posts_service.related_items_map(self.blog_posts)
+        assert len(related_items.keys()) == 4
 
-            assert len(related_items.keys()) == 4
+        # default archieve item should be fetched
+        assert self.items[0]["_id"] in related_items
 
-            # default archieve item should be fetched
-            assert self.items[0]["_id"] in related_items
-
-            # item from `post_comment` should be also fetched
-            assert str(self.post_comments[0]["_id"]) in related_items
+        # item from `post_comment` should be also fetched
+        assert str(self.post_comments[0]["_id"]) in related_items
 
     def test_check_content_diff_missing_groups(self):
         updates = {}

@@ -1,11 +1,12 @@
 import liveblog.blogs as blog_app
 import liveblog.advertisements as advert_app
 import liveblog.client_modules as client_modules
+import liveblog.tenants as tenants_app
 
 from unittest.mock import MagicMock
-from superdesk.tests import TestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
+from liveblog.tests.tenant_test_case import TenantAwareTestCase
 from liveblog.instance_settings.features_service import FeaturesService
 from liveblog.common import run_once
 
@@ -17,7 +18,7 @@ def db_service_mock():
     return db_service
 
 
-class BlogsTestCase(TestCase):
+class BlogsTestCase(TenantAwareTestCase):
     @run_once
     def setup_test_case(self):
         test_config = {
@@ -26,11 +27,13 @@ class BlogsTestCase(TestCase):
         }
         self.app.config.update(test_config)
 
-        for lb_app in [blog_app, advert_app, client_modules]:
+        for lb_app in [tenants_app, blog_app, advert_app, client_modules]:
             lb_app.init_app(self.app)
 
     def setUp(self):
+        super().setUp()
         self.setup_test_case()
+        self.setup_tenant_and_user()
         self.app.features = FeaturesService(self.app, db_service_mock())
 
         self.blog_with_output = {

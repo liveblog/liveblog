@@ -89,9 +89,7 @@ class RegistrationServiceTestCase(TestCase):
         tenants_service = get_resource_service("tenants")
 
         # Create a tenant first
-        existing_tenant_id = ObjectId(
-            tenants_service.post([{"name": "Existing Tenant"}])[0]
-        )
+        existing_tenant_id = tenants_service.post([{"name": "Existing Tenant"}])[0]
 
         # Create existing user with same username
         existing_user_data = {
@@ -119,9 +117,7 @@ class RegistrationServiceTestCase(TestCase):
         tenants_service = get_resource_service("tenants")
 
         # Create a tenant first
-        existing_tenant_id = ObjectId(
-            tenants_service.post([{"name": "Existing Tenant"}])[0]
-        )
+        existing_tenant_id = tenants_service.post([{"name": "Existing Tenant"}])[0]
 
         # Create existing user with same email
         import uuid

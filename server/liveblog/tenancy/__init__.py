@@ -45,7 +45,9 @@ def get_tenant_id(required=False):
 
     if not isinstance(user, dict):
         if required:
-            raise SuperdeskApiError.forbiddenError(message="User context not fully initialized")
+            raise SuperdeskApiError.forbiddenError(
+                message="User context not fully initialized"
+            )
         return None
 
     tenant_id = user.get("tenant_id")
