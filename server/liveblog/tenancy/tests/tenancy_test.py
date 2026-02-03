@@ -42,54 +42,49 @@ class TenancyContextTestCase(TestCase):
 
     def test_get_tenant_id_with_authenticated_user(self):
         """Test get_tenant_id returns tenant_id from authenticated user."""
-        with self.app.app_context():
-            flask.g.user = self.user_with_tenant
+        flask.g.user = self.user_with_tenant
 
-            tenant_id = get_tenant_id()
+        tenant_id = get_tenant_id()
 
-            self.assertEqual(tenant_id, self.tenant_id)
+        self.assertEqual(tenant_id, self.tenant_id)
 
     def test_get_tenant_id_without_user_not_required(self):
         """Test get_tenant_id returns None when no user and not required."""
-        with self.app.app_context():
-            # Ensure no user in flask.g
-            if hasattr(flask.g, "user"):
-                delattr(flask.g, "user")
+        # Ensure no user in flask.g
+        if hasattr(flask.g, "user"):
+            delattr(flask.g, "user")
 
-            tenant_id = get_tenant_id(required=False)
+        tenant_id = get_tenant_id(required=False)
 
-            self.assertIsNone(tenant_id)
+        self.assertIsNone(tenant_id)
 
     def test_get_tenant_id_without_user_required(self):
         """Test get_tenant_id raises SuperdeskApiError when no user and required."""
-        with self.app.app_context():
-            # Ensure no user in flask.g
-            if hasattr(flask.g, "user"):
-                delattr(flask.g, "user")
+        # Ensure no user in flask.g
+        if hasattr(flask.g, "user"):
+            delattr(flask.g, "user")
 
-            with self.assertRaises(SuperdeskApiError) as context:
-                get_tenant_id(required=True)
+        with self.assertRaises(SuperdeskApiError) as context:
+            get_tenant_id(required=True)
 
-            self.assertEqual(context.exception.status_code, 403)
+        self.assertEqual(context.exception.status_code, 403)
 
     def test_get_tenant_id_user_without_tenant_not_required(self):
         """Test get_tenant_id returns None when user has no tenant_id and not required."""
-        with self.app.app_context():
-            flask.g.user = self.user_without_tenant
+        flask.g.user = self.user_without_tenant
 
-            tenant_id = get_tenant_id(required=False)
+        tenant_id = get_tenant_id(required=False)
 
-            self.assertIsNone(tenant_id)
+        self.assertIsNone(tenant_id)
 
     def test_get_tenant_id_user_without_tenant_required(self):
         """Test get_tenant_id raises SuperdeskApiError when user has no tenant_id and required."""
-        with self.app.app_context():
-            flask.g.user = self.user_without_tenant
+        flask.g.user = self.user_without_tenant
 
-            with self.assertRaises(SuperdeskApiError) as context:
-                get_tenant_id(required=True)
+        with self.assertRaises(SuperdeskApiError) as context:
+            get_tenant_id(required=True)
 
-            self.assertEqual(context.exception.status_code, 403)
+        self.assertEqual(context.exception.status_code, 403)
 
     @patch("superdesk.get_resource_service")
     def test_get_tenant_with_valid_tenant_id(self, mock_get_service):
@@ -98,16 +93,15 @@ class TenancyContextTestCase(TestCase):
         mock_tenants_service.find_one.return_value = self.tenant_doc
         mock_get_service.return_value = mock_tenants_service
 
-        with self.app.app_context():
-            flask.g.user = self.user_with_tenant
+        flask.g.user = self.user_with_tenant
 
-            tenant = get_tenant()
+        tenant = get_tenant()
 
-            self.assertEqual(tenant, self.tenant_doc)
-            mock_get_service.assert_called_once_with("tenants")
-            mock_tenants_service.find_one.assert_called_once_with(
-                req=None, _id=self.tenant_id
-            )
+        self.assertEqual(tenant, self.tenant_doc)
+        mock_get_service.assert_called_once_with("tenants")
+        mock_tenants_service.find_one.assert_called_once_with(
+            req=None, _id=self.tenant_id
+        )
 
     @patch("superdesk.get_resource_service")
     def test_get_tenant_caching(self, mock_get_service):
@@ -116,37 +110,34 @@ class TenancyContextTestCase(TestCase):
         mock_tenants_service.find_one.return_value = self.tenant_doc
         mock_get_service.return_value = mock_tenants_service
 
-        with self.app.app_context():
-            flask.g.user = self.user_with_tenant
+        flask.g.user = self.user_with_tenant
 
-            # First call should hit database
-            tenant1 = get_tenant()
+        # First call should hit database
+        tenant1 = get_tenant()
 
-            # Second call should use cache
-            tenant2 = get_tenant()
+        # Second call should use cache
+        tenant2 = get_tenant()
 
-            # Should only call database once
-            self.assertEqual(mock_tenants_service.find_one.call_count, 1)
-            self.assertEqual(tenant1, tenant2)
-            self.assertEqual(tenant1, self.tenant_doc)
+        # Should only call database once
+        self.assertEqual(mock_tenants_service.find_one.call_count, 1)
+        self.assertEqual(tenant1, tenant2)
+        self.assertEqual(tenant1, self.tenant_doc)
 
     def test_get_tenant_without_user_not_required(self):
         """Test get_tenant returns None when no user and not required."""
-        with self.app.app_context():
-            if hasattr(flask.g, "user"):
-                delattr(flask.g, "user")
+        if hasattr(flask.g, "user"):
+            delattr(flask.g, "user")
 
-            tenant = get_tenant(required=False)
+        tenant = get_tenant(required=False)
 
-            self.assertIsNone(tenant)
+        self.assertIsNone(tenant)
 
     def test_get_tenant_without_user_required(self):
         """Test get_tenant raises SuperdeskApiError when no user and required."""
-        with self.app.app_context():
-            if hasattr(flask.g, "user"):
-                delattr(flask.g, "user")
+        if hasattr(flask.g, "user"):
+            delattr(flask.g, "user")
 
-            with self.assertRaises(SuperdeskApiError) as context:
-                get_tenant(required=True)
+        with self.assertRaises(SuperdeskApiError) as context:
+            get_tenant(required=True)
 
-            self.assertEqual(context.exception.status_code, 403)
+        self.assertEqual(context.exception.status_code, 403)
