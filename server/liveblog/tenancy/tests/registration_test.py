@@ -72,7 +72,7 @@ class RegistrationServiceTestCase(TestCase):
 
         # Verify user was created with tenant_id
         users_service = get_resource_service("users")
-        user = users_service.find_one_for_authentication(str(result["user_id"]))
+        user = users_service.system_find_one(req=None, _id=str(result["user_id"]))
         self.assertIsNotNone(user)
         self.assertEqual(user["tenant_id"], result["tenant_id"])
         self.assertEqual(user["username"], self.valid_user_data["username"])
@@ -160,8 +160,8 @@ class RegistrationServiceTestCase(TestCase):
                 if resource_name == "users":
                     # Mock the users service completely
                     mock_users = MagicMock()
-                    # Username/email checks pass
-                    mock_users.find_one.return_value = None
+                    # Username/email checks pass (now uses system_find_one)
+                    mock_users.system_find_one.return_value = None
                     # But post fails
                     mock_users.post.side_effect = Exception(
                         "Database error during user creation"
@@ -204,7 +204,7 @@ class RegistrationServiceTestCase(TestCase):
 
         # Verify user_type is set to administrator in database
         users_service = get_resource_service("users")
-        user = users_service.find_one_for_authentication(str(result["user_id"]))
+        user = users_service.system_find_one(req=None, _id=str(result["user_id"]))
 
         self.assertIsNotNone(user)
         self.assertEqual(user["user_type"], "administrator")

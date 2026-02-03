@@ -141,23 +141,28 @@ def step_create_user_for_current_tenant(context, username):
     tenant_id = context.current_tenant["_id"]
     user_data = create_user_fixture(context, username, tenant_id)
 
-    # Create the user in the database
-    context.execute_steps(
-        f'''
-        Given "users" with objectid
-        """
-        [{{
-            "_id": "{user_data['_id']}",
-            "username": "{user_data['username']}",
-            "email": "{user_data['email']}",
-            "password": "{user_data['password']}",
-            "is_active": true,
-            "user_type": "{user_data['user_type']}",
-            "tenant_id": "{user_data['tenant_id']}"
-        }}]
-        """
-    '''
-    )
+    # Use users service to create user (handles password hashing in on_create hook)
+    from bson import ObjectId
+    from superdesk import get_resource_service
+
+    user_doc = {
+        # Don't pass _id - let service generate it
+        "username": user_data['username'],
+        "email": user_data['email'],
+        "password": user_data['password'],  # Plaintext - will be hashed by DBUsersService.on_create
+        "is_active": True,
+        "needs_activation": False,  # Skip activation email for tests
+        "user_type": user_data['user_type'],
+        "tenant_id": ObjectId(user_data['tenant_id']),
+        "first_name": user_data.get('first_name', username),
+        "last_name": user_data.get('last_name', 'Test')
+    }
+
+    with context.app.app_context():
+        users_service = get_resource_service('users')
+        created_ids = users_service.post([user_doc])
+        # Update the stored user_data with the actual generated _id
+        user_data['_id'] = str(created_ids[0])
 
 
 @given('a user "{username}" for tenant "{tenant_name}"')
@@ -175,23 +180,28 @@ def step_create_user_for_tenant(context, username, tenant_name):
     tenant_id = context.tenants[tenant_name]["_id"]
     user_data = create_user_fixture(context, username, tenant_id)
 
-    # Create the user in the database
-    context.execute_steps(
-        f'''
-        Given "users" with objectid
-        """
-        [{{
-            "_id": "{user_data['_id']}",
-            "username": "{user_data['username']}",
-            "email": "{user_data['email']}",
-            "password": "{user_data['password']}",
-            "is_active": true,
-            "user_type": "{user_data['user_type']}",
-            "tenant_id": "{user_data['tenant_id']}"
-        }}]
-        """
-    '''
-    )
+    # Use users service to create user (handles password hashing in on_create hook)
+    from bson import ObjectId
+    from superdesk import get_resource_service
+
+    user_doc = {
+        # Don't pass _id - let service generate it
+        "username": user_data['username'],
+        "email": user_data['email'],
+        "password": user_data['password'],  # Plaintext - will be hashed by DBUsersService.on_create
+        "is_active": True,
+        "needs_activation": False,  # Skip activation email for tests
+        "user_type": user_data['user_type'],
+        "tenant_id": ObjectId(user_data['tenant_id']),
+        "first_name": user_data.get('first_name', username),
+        "last_name": user_data.get('last_name', 'Test')
+    }
+
+    with context.app.app_context():
+        users_service = get_resource_service('users')
+        created_ids = users_service.post([user_doc])
+        # Update the stored user_data with the actual generated _id
+        user_data['_id'] = str(created_ids[0])
 
 
 @given("multiple tenants")
@@ -282,6 +292,8 @@ def step_create_user_same_tenant(context, username):
     # Get test_user's tenant_id from flask.g (set by @auth fixture)
     from flask import g
     from liveblog.tenancy import get_tenant_id
+    from bson import ObjectId
+    from superdesk import get_resource_service
 
     tenant_id = get_tenant_id(required=False)
 
@@ -294,23 +306,25 @@ def step_create_user_same_tenant(context, username):
 
     user_data = create_user_fixture(context, username, str(tenant_id))
 
-    # Create the user in the database
-    context.execute_steps(
-        f'''
-        Given "users" with objectid
-        """
-        [{{
-            "_id": "{user_data['_id']}",
-            "username": "{user_data['username']}",
-            "email": "{user_data['email']}",
-            "password": "{user_data['password']}",
-            "is_active": true,
-            "user_type": "{user_data['user_type']}",
-            "tenant_id": "{user_data['tenant_id']}"
-        }}]
-        """
-    '''
-    )
+    # Use users service to create user (handles password hashing in on_create hook)
+    user_doc = {
+        # Don't pass _id - let service generate it
+        "username": user_data['username'],
+        "email": user_data['email'],
+        "password": user_data['password'],  # Plaintext - will be hashed by DBUsersService.on_create
+        "is_active": True,
+        "needs_activation": False,  # Skip activation email for tests
+        "user_type": user_data['user_type'],
+        "tenant_id": ObjectId(user_data['tenant_id']),
+        "first_name": user_data.get('first_name', username),
+        "last_name": user_data.get('last_name', 'Test')
+    }
+
+    with context.app.app_context():
+        users_service = get_resource_service('users')
+        created_ids = users_service.post([user_doc])
+        # Update the stored user_data with the actual generated _id
+        user_data['_id'] = str(created_ids[0])
 
 
 @given('a user "{username}" in same tenant with role "{role_id}"')

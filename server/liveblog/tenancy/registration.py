@@ -82,11 +82,15 @@ class RegistrationService:
         users_service = get_resource_service("users")
         tenants_service = get_resource_service("tenants")
 
-        existing = users_service.find_one(req=None, username=user_data["username"])
+
+        # TODO: think carefully if we want uniqueness across all tenants
+        # Check for duplicate username across all tenants
+        existing = users_service.system_find_one(req=None, username=user_data["username"])
         if existing:
             raise SuperdeskApiError.badRequestError(message="Username already exists")
 
-        existing_email = users_service.find_one(req=None, email=user_data["email"])
+        # Check for duplicate email across all tenants
+        existing_email = users_service.system_find_one(req=None, email=user_data["email"])
         if existing_email:
             raise SuperdeskApiError.badRequestError(message="Email already exists")
 

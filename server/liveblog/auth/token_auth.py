@@ -18,7 +18,7 @@ class LiveBlogTokenAuth(SuperdeskTokenAuth):
         """
         Validate auth token and set request context.
 
-        Uses find_one_for_authentication to avoid circular dependency:
+        Uses system_find_one to avoid circular dependency:
         tenant filtering needs flask.g.user, but we're setting it here.
 
         Args:
@@ -36,7 +36,7 @@ class LiveBlogTokenAuth(SuperdeskTokenAuth):
 
         if auth_token:
             user_id = str(auth_token['user'])
-            flask.g.user = user_service.find_one_for_authentication(user_id)
+            flask.g.user = user_service.system_find_one(req=None, _id=user_id)
             flask.g.role = user_service.get_role(flask.g.user)
             flask.g.auth = auth_token
             flask.g.auth_value = auth_token['user']

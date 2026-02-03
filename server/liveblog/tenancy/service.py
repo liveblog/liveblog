@@ -55,7 +55,7 @@ class TenantAwareService(BaseService):
             This method mutates the lookup dictionary in place and also
             returns it for chaining convenience.
         """
-        tenant_id = get_tenant_id(required=False)
+        tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
             # Convert to ObjectId for MongoDB query

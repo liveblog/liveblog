@@ -2,7 +2,7 @@
 Integration tests for LiveBlogTokenAuth.
 
 Tests that the custom token authentication properly uses the
-find_one_for_authentication method to bypass tenant filtering
+system_find_one method to bypass tenant filtering
 during auth token validation.
 
 These tests use real database operations instead of mocking to
@@ -126,7 +126,7 @@ class LiveBlogTokenAuthTestCase(TestCase):
 
     def test_check_auth_bypasses_tenant_filtering(self):
         """
-        Test that authentication uses find_one_for_authentication
+        Test that authentication uses system_find_one
         to bypass tenant filtering during user lookup.
 
         This is critical because tenant filtering requires flask.g.user
