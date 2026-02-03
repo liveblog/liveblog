@@ -67,13 +67,9 @@ def get_app(config=None):
     config["SENTRY_CONFIG"] = {"release": __version__}
     config["SENTRY_NAME"] = settings.ELASTICSEARCH_INDEX
 
-    # Create superdesk app instance.
+    # Note: liveblog.auth.init_app() overrides app.auth with LiveBlogTokenAuth
+    # as superdesk does it too to override Eve's default TokenAuth
     app = superdesk_app(config, media_storage)
-
-    # Replace default auth with tenant-aware auth
-    from liveblog.auth.token_auth import LiveBlogTokenAuth
-
-    app.auth = LiveBlogTokenAuth()
 
     # Tenant context middleware
     @app.before_request
