@@ -32,7 +32,6 @@ class TenantsResource(Resource):
 
     mongo_indexes = {"owner_user_id_1": ([("owner_user_id", 1)], {})}
 
-    # Restrict access to tenants resource
     # Only users with specific privileges can manage tenants
     privileges = {
         "GET": "tenants_read",
@@ -40,6 +39,9 @@ class TenantsResource(Resource):
         "PATCH": "tenants_manage",
         "DELETE": "tenants_manage",
     }
+
+    # There is no reason to expose tenants via the public API
+    internal_resource = True
 
 
 class TenantsService(BaseService):
