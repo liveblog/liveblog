@@ -48,7 +48,7 @@ def send_email_to_owner(doc, owner, origin):
     prefs_service = get_resource_service("preferences")
 
     if prefs_service.email_notification_is_enabled(user_id=owner):
-        user_doc = get_resource_service("users").find_one(req=None, _id=owner)
+        user_doc = get_resource_service("liveblog_users").find_one(req=None, _id=owner)
         if user_doc:
             recipients = [user_doc["email"]]
         else:

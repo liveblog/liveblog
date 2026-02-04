@@ -164,7 +164,7 @@ class ClientModuleTest(TestCase):
         self.app.config.update(test_config)
         self.client = self.app.test_client()
         self.items_service = get_resource_service("items")
-        self.users_service = get_resource_service("users")
+        self.users_service = get_resource_service("liveblog_users")
         self.app.register_blueprint(drag_and_drop_blueprint)
 
         self.item_meta_doc = {
@@ -251,7 +251,7 @@ class ClientModuleTest(TestCase):
         self.assertTrue(mock_logger.info.called)
 
     def test_c_item_on_create(self):
-        flask.g.user = get_resource_service("users").find_one(
+        flask.g.user = get_resource_service("liveblog_users").find_one(
             req=None, username="admin"
         )
         self.assertIsNone(self.item_doc[0].get("original_creator"), True)

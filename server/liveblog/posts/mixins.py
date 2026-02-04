@@ -75,7 +75,7 @@ class AuthorsMixin:
         """
         ids = set(self.authors_list)
 
-        for user in get_resource_service("users").find({"_id": {"$in": ids}}):
+        for user in get_resource_service("liveblog_users").find({"_id": {"$in": ids}}):
             author_id = str(user.get("_id"))
             self.authors_map[author_id] = user
 

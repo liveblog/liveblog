@@ -8,18 +8,19 @@ from superdesk.utc import utcnow
 
 class LiveBlogTokenAuth(SuperdeskTokenAuth):
     """
-    Tenant-aware token authentication.
+    Token authentication for LiveBlog.
 
-    Overrides user lookup during authentication to bypass tenant filtering,
-    since auth tokens are system-level (not tenant-scoped).
+    Uses the system-level users service (no tenant filtering) to look up
+    users during authentication. This is necessary because authentication
+    happens before tenant context exists (before flask.g.user is set).
     """
 
     def check_auth(self, token, allowed_roles, resource, method):
         """
         Validate auth token and set request context.
 
-        Uses system_find_one to avoid circular dependency:
-        tenant filtering needs flask.g.user, but we're setting it here.
+        Uses the system users service which has no tenant filtering,
+        allowing authentication to work before tenant context is established.
 
         Args:
             token: Authentication token
@@ -36,7 +37,7 @@ class LiveBlogTokenAuth(SuperdeskTokenAuth):
 
         if auth_token:
             user_id = str(auth_token["user"])
-            flask.g.user = user_service.system_find_one(req=None, _id=user_id)
+            flask.g.user = user_service.find_one(req=None, _id=user_id)
             flask.g.role = user_service.get_role(flask.g.user)
             flask.g.auth = auth_token
             flask.g.auth_value = auth_token["user"]

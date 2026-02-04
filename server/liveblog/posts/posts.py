@@ -644,7 +644,7 @@ class PostFlagService(BaseService):
         if "users" in flag:
             for userId in flag["users"]:
                 users.append(
-                    get_resource_service("users").find_one(req=None, _id=userId)
+                    get_resource_service("liveblog_users").find_one(req=None, _id=userId)
                 )
             flag["users"] = users
 
@@ -854,7 +854,7 @@ class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
             users = []
             for userId in flag["users"]:
                 users.append(
-                    get_resource_service("users").find_one(req=None, _id=userId)
+                    get_resource_service("liveblog_users").find_one(req=None, _id=userId)
                 )
             flag["users"] = users
 

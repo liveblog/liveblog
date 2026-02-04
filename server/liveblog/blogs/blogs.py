@@ -81,7 +81,7 @@ def send_email_to_added_members(blog, recipients, blog_url):
         # If user want to receive email notification, we add him as recipient.
         if prefs_service.email_notification_is_enabled(user_id=user):
             user_id = user if isinstance(user, ObjectId) else user["user"]
-            user_doc = get_resource_service("users").find_one(
+            user_doc = get_resource_service("liveblog_users").find_one(
                 req=None, _id=ObjectId(user_id)
             )
             recipients_email.append(user_doc["email"])
@@ -169,7 +169,7 @@ class BlogService(TenantAwareService):
 
             # trigger hooks if there are any hook configured
             if TRIGGER_HOOK_URLS:
-                author = get_resource_service("users").find_one(
+                author = get_resource_service("liveblog_users").find_one(
                     req=None, _id=ObjectId(blog["original_creator"])
                 )
                 hook_data = build_hook_data(

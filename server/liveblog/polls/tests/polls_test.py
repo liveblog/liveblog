@@ -18,7 +18,7 @@ class PollsTest(TestCase):
         self.app.config.update(test_config)
         self.client = self.app.test_client()
         self.polls_service = get_resource_service("polls")
-        self.users_service = get_resource_service("users")
+        self.users_service = get_resource_service("liveblog_users")
 
         self.blogId = ObjectId("65bb5f908531ef64e85c801f")
 
@@ -54,7 +54,7 @@ class PollsTest(TestCase):
         self.app.data.insert("users", self.user_list)
 
     def test_poll_create_with_valid_data(self):
-        flask.g.user = get_resource_service("users").find_one(
+        flask.g.user = get_resource_service("liveblog_users").find_one(
             req=None, username="admin"
         )
         response = self.polls_service.on_create(self.poll_doc)

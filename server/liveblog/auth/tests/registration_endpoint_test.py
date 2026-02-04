@@ -71,7 +71,7 @@ class RegistrationEndpointTestCase(TestCase):
 
         # Verify user was created in database
         users_service = get_resource_service("users")
-        user = users_service.system_find_one(req=None, _id=data["user_id"])
+        user = users_service.find_one(req=None, _id=data["user_id"])
         self.assertIsNotNone(user)
         self.assertEqual(user["username"], self.valid_registration_data["username"])
         self.assertEqual(user["email"], self.valid_registration_data["email"])
@@ -297,7 +297,7 @@ class RegistrationEndpointTestCase(TestCase):
 
         # Verify user was created with underscore in username
         users_service = get_resource_service("users")
-        user = users_service.system_find_one(req=None, _id=data["user_id"])
+        user = users_service.find_one(req=None, _id=data["user_id"])
         self.assertIsNotNone(user)
         self.assertIn("_", user["username"])
 
@@ -321,6 +321,6 @@ class RegistrationEndpointTestCase(TestCase):
 
         # Verify user was created with hyphen in username
         users_service = get_resource_service("users")
-        user = users_service.system_find_one(req=None, _id=data["user_id"])
+        user = users_service.find_one(req=None, _id=data["user_id"])
         self.assertIsNotNone(user)
         self.assertIn("-", user["username"])

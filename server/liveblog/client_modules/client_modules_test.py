@@ -120,7 +120,7 @@ class ClientModuleTestCase(TestCase):
         self.blog_post_service = get_resource_service("client_blog_posts")
         self.blogs_service = get_resource_service("blogs")
         self.client_blog_service = get_resource_service("client_blogs")
-        self.users_service = get_resource_service("users")
+        self.users_service = get_resource_service("liveblog_users")
 
         # Create tenant for test
         self.tenant_id = setup_tenant_for_test(self.app)
@@ -504,7 +504,7 @@ class ClientModuleTestCase(TestCase):
 
     def test_a_on_create_comment(self):
         with self.app.test_request_context("client_comments", method="POST"):
-            flask.g.user = get_resource_service("users").find_one(
+            flask.g.user = get_resource_service("liveblog_users").find_one(
                 req=None, username="admin"
             )
             self.assertIsNone(self.client_comment_service.on_create(self.comment_docs))

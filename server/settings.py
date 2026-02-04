@@ -194,6 +194,7 @@ INSTALLED_APPS = [
     "liveblog.tenancy",
     "liveblog.core",
     "liveblog.users",
+    "liveblog.liveblog_users",
     "liveblog.prepopulate",
     "liveblog.blogs",
     "liveblog.posts",

@@ -64,7 +64,7 @@ def _trigger_embed_hook(blog_id, url):
         blog = get_resource_service("blogs").find_one(
             req=None, checkUser=False, _id=blog_id
         )
-        author = get_resource_service("users").find_one(
+        author = get_resource_service("liveblog_users").find_one(
             req=None, _id=ObjectId(blog["original_creator"])
         )
 
