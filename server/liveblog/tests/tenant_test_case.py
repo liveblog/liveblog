@@ -18,18 +18,45 @@ class TenantAwareTestCase(TestCase):
     Automatically manages tenant and user context setup, providing a clean
     interface for tests that need to work with tenant-isolated data.
 
+    This test case automatically provides a Flask request context for all tests,
+    which is required for TenantAwareService to apply tenant filtering. This
+    mimics how Superdesk's TestCase provides app_context.
+
     Usage:
         class MyServiceTestCase(TenantAwareTestCase):
             def setUp(self):
                 super().setUp()
                 # Tenant and user are already created
                 # self.tenant_id and self.user are available
+                # Flask request context is automatically active
 
             def test_something(self):
                 # flask.g.user is already set
+                # flask.has_request_context() returns True
                 service = get_resource_service('my_resource')
                 service.post([{'title': 'Test'}])
     """
+
+    def setUpForChildren(self):
+        """
+        Set up request context for tenant-aware tests.
+
+        Overrides Superdesk's setUpForChildren to use test_request_context
+        instead of app_context. Request context includes app context and
+        allows flask.g to work properly for tenant filtering.
+        """
+        from superdesk.tests import setup
+        setup(self)
+
+        # Use request context instead of app context for tenant-aware tests
+        # This allows flask.g.user to work and ensures tenant filtering is active
+        self.ctx = self.app.test_request_context()
+        self.ctx.push()
+
+        def clean_ctx():
+            if self.ctx:
+                self.ctx.pop()
+        self.addCleanup(clean_ctx)
 
     def tearDown(self):
         self.cleanup_user_context()

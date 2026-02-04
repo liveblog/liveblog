@@ -42,7 +42,7 @@ def set_logged_user(username, password):
         user = {"username": username, "password": password}
         get_resource_service("auth_db").post([user])
         auth_token = get_resource_service("auth").find_one(username=username, req=None)
-    flask.g.user = get_resource_service("users").find_one(req=None, username=username)
+    flask.g.user = get_resource_service("liveblog_users").find_one(req=None, username=username)
     flask.g.auth = auth_token
 
 
@@ -165,11 +165,11 @@ class PrepopulateService(BaseService):
             if doc.get("remove_first"):
                 clean_dbs(superdesk.app, force=True)
 
-            user = get_resource_service("users").find_one(
+            user = get_resource_service("liveblog_users").find_one(
                 username=get_default_user()["username"], req=None
             )
             if not user:
-                get_resource_service("users").post([get_default_user()])
+                get_resource_service("liveblog_users").post([get_default_user()])
             prepopulate_data(doc.get("profile") + ".json", get_default_user())
 
     def create(self, docs, **kwargs):
@@ -190,11 +190,11 @@ class AppPrepopulateCommand(superdesk.Command):
     ]
 
     def run(self, prepopulate_file):
-        user = get_resource_service("users").find_one(
+        user = get_resource_service("liveblog_users").find_one(
             username=get_default_user()["username"], req=None
         )
         if not user:
-            get_resource_service("users").post([get_default_user()])
+            get_resource_service("liveblog_users").post([get_default_user()])
         prepopulate_data(prepopulate_file, get_default_user())
 
 

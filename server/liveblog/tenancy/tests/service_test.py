@@ -16,11 +16,11 @@ import flask
 from bson import ObjectId
 from unittest.mock import patch, MagicMock
 
-from superdesk.tests import TestCase
+from liveblog.tests.tenant_test_case import TenantAwareTestCase
 from liveblog.tenancy.service import TenantAwareService
 
 
-class TenantAwareServiceTestCase(TestCase):
+class TenantAwareServiceTestCase(TenantAwareTestCase):
     """Test TenantAwareService filtering behavior."""
 
     def setUp(self):
@@ -48,9 +48,10 @@ class TenantAwareServiceTestCase(TestCase):
         self.assertEqual(result["some_field"], "value")
 
     def test_add_tenant_filter_without_tenant(self):
-        """Test _add_tenant_filter raises error when no tenant (prevents data leakage)."""
+        """Test _add_tenant_filter raises error when no tenant in request context."""
         from superdesk.errors import SuperdeskApiError
 
+        # In request context (tests), tenant is required
         if hasattr(flask.g, "user"):
             delattr(flask.g, "user")
 
@@ -183,9 +184,10 @@ class TenantAwareServiceTestCase(TestCase):
             self.assertEqual(docs[0]["tenant_id"], self.tenant_id)
 
     def test_on_create_without_tenant_raises_forbidden(self):
-        """Test on_create raises SuperdeskApiError when no tenant context (required=True)."""
+        """Test on_create raises SuperdeskApiError when no tenant in request context."""
         from superdesk.errors import SuperdeskApiError
 
+        # In request context (tests), tenant is required
         if hasattr(flask.g, "user"):
             delattr(flask.g, "user")
 

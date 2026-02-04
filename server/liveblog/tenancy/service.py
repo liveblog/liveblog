@@ -5,6 +5,7 @@ This module provides base service classes that automatically filter all
 database queries by tenant_id, ensuring complete data isolation between
 tenants.
 """
+import flask
 
 from superdesk.services import BaseService
 from apps.archive.archive import ArchiveService
@@ -51,14 +52,17 @@ class TenantAwareService(BaseService):
         Returns:
             dict: lookup with tenant_id added (mutates input dict)
 
-        Raises:
-            SuperdeskApiError: 403 Forbidden if no tenant context available
-
         Note:
-            This method mutates the lookup dictionary in place and also
-            returns it for chaining convenience. Tenant context is REQUIRED
-            for all query operations to prevent cross-tenant data leakage.
+            During HTTP requests, tenant filtering is ALWAYS required.
+            During system operations (indexing, migrations), tenant filtering
+            is skipped to allow system-wide access.
         """
+        # During system operations (no request context), skip tenant filtering
+        # This allows rebuild_elastic_index and other management commands to work
+        if not flask.has_request_context():
+            return lookup
+
+        # In request context (HTTP requests), ALWAYS require tenant filtering
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
@@ -198,13 +202,17 @@ class TenantAwareService(BaseService):
         Args:
             docs (list): List of documents to be created
 
-        Raises:
-            SuperdeskApiError: 403 Forbidden if no tenant context available
-
         Note:
-            This method is called by the framework before database insertion.
-            It modifies the docs list in place.
+            During HTTP requests with authenticated users, tenant_id is required.
+            During system operations, documents are created as-is (useful for
+            migrations and data imports).
         """
+        # Skip tenant injection during system operations (no request context)
+        if not flask.has_request_context():
+            super().on_create(docs)
+            return
+
+        # In request context, require and inject tenant_id
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
@@ -245,9 +253,14 @@ class TenantAwareArchiveService(ArchiveService):
         """
         Add tenant filter to lookup dict.
 
-        Raises:
-            SuperdeskApiError: 403 Forbidden if no tenant context available
+        During HTTP requests, tenant filtering is ALWAYS required.
+        During system operations, tenant filtering is skipped.
         """
+        # During system operations (no request context), skip tenant filtering
+        if not flask.has_request_context():
+            return lookup
+
+        # In request context (HTTP requests), ALWAYS require tenant filtering
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
@@ -308,6 +321,13 @@ class TenantAwareArchiveService(ArchiveService):
 
     def on_create(self, docs):
         """Automatically add tenant_id to new documents."""
+
+        # Skip tenant injection during system operations (no request context)
+        if not flask.has_request_context():
+            super().on_create(docs)
+            return
+
+        # In request context, require and inject tenant_id
         tenant_id = get_tenant_id(required=True)
 
         if tenant_id:
