@@ -1,13 +1,52 @@
 import os
 
+from bson import ObjectId
 from apps.io.tests import setup_providers
-from superdesk import tests
+from superdesk import tests, get_resource_service
 from superdesk.tests import setup_auth_user
 from superdesk.tests.environment import setup_search_provider
 from superdesk.vocabularies.commands import VocabulariesPopulateCommand
 from liveblog.tests import setup_auth_consumer, test_consumer
 from .test_settings import DATE_FORMAT
 from superdesk.default_settings import CORE_APPS
+
+
+def setup_auth_user_with_tenant(context):
+    """
+    Set up authenticated user with tenant assignment for tests.
+
+    Creates a default tenant and assigns the test_user to it, then
+    calls the standard setup_auth_user to create authentication.
+    """
+    # First call the standard setup_auth_user to create the user
+    setup_auth_user(context)
+
+    # Create a default tenant for tests
+    with context.app.app_context():
+        tenants_service = get_resource_service("tenants")
+
+        # Check if default tenant already exists
+        existing_tenant = tenants_service.find_one(req=None, name="Test Tenant")
+
+        if not existing_tenant:
+            # Create default tenant
+            tenant_id = tenants_service.post([{"name": "Test Tenant"}])[0]
+        else:
+            tenant_id = existing_tenant["_id"]
+
+        # Update test_user with tenant_id
+        if hasattr(context, "user") and context.user:
+            users_service = get_resource_service("users")
+            user_id = context.user.get("_id")
+
+            if user_id:
+                # Get the user document
+                user_doc = users_service.find_one(req=None, _id=user_id)
+                if user_doc:
+                    # Update user with tenant_id
+                    users_service.patch(user_id, {"tenant_id": tenant_id})
+                    # Update context.user as well
+                    context.user["tenant_id"] = tenant_id
 
 
 def setup_before_scenario(context, scenario, config, app_factory):
@@ -39,7 +78,7 @@ def setup_before_scenario(context, scenario, config, app_factory):
     setup_search_provider(context.app)
 
     if scenario.status != "skipped" and "auth" in scenario.tags:
-        setup_auth_user(context)
+        setup_auth_user_with_tenant(context)
 
     if scenario.status != "skipped" and "consumer_auth" in scenario.tags:
         setup_auth_consumer(context, test_consumer)

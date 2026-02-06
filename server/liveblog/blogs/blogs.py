@@ -84,7 +84,8 @@ def send_email_to_added_members(blog, recipients, blog_url):
             user_doc = get_resource_service("liveblog_users").find_one(
                 req=None, _id=ObjectId(user_id)
             )
-            recipients_email.append(user_doc["email"])
+            if user_doc:
+                recipients_email.append(user_doc["email"])
 
     if recipients_email:
         title = blog["title"]
@@ -172,12 +173,13 @@ class BlogService(TenantAwareService):
                 author = get_resource_service("liveblog_users").find_one(
                     req=None, _id=ObjectId(blog["original_creator"])
                 )
-                hook_data = build_hook_data(
-                    events.BLOG_CREATED,
-                    blog_url=blog_url,
-                    user_email=author.get("email", ""),
-                )
-                trigger_hooks(hook_data)
+                if author:
+                    hook_data = build_hook_data(
+                        events.BLOG_CREATED,
+                        blog_url=blog_url,
+                        user_email=author.get("email", ""),
+                    )
+                    trigger_hooks(hook_data)
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)

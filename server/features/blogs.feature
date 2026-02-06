@@ -2,17 +2,17 @@ Feature: Blog operations
 
     @auth
     Scenario: List empty blogs
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we get "/blogs"
         Then we get list with 0 items
 
     @auth
     Scenario: Add blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"title": "title One", "description": "description", "blog_status": "open", "blog_preferences": {"theme": "forest", "language": "fr"}}]
@@ -25,7 +25,7 @@ Feature: Blog operations
 
     @auth
     Scenario: Update blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """	
@@ -45,20 +45,20 @@ Feature: Blog operations
 
     @auth
     Scenario: Update blog without being the owner
-        Given "themes"
+        Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given "roles"
+        Given tenant aware "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
         When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Update blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -72,11 +72,11 @@ Feature: Blog operations
 
     @auth
     Scenario: Check blog_status
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"title": "testBlog", "blog_status": "closed", "blog_preferences": {"theme": "forest", "language": "fr"}}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog2", "blog_status": "closed"}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog3", "blog_status": "open"}]
         """
@@ -93,11 +93,11 @@ Feature: Blog operations
 
     @auth
     Scenario: Search for blogs
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [
          {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "title One", "description": "Description", "blog_status": "open"},
@@ -124,11 +124,11 @@ Feature: Blog operations
 
        @auth
     	Scenario: Delete blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"title": "test_blog1", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
@@ -149,20 +149,20 @@ Feature: Blog operations
 
 		@auth
     	Scenario: Delete blog without being the owner
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-    	Given "roles"
+    	Given tenant aware "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
         When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -173,17 +173,17 @@ Feature: Blog operations
 
         @auth
         Scenario: Adding blogs with or without members
-        Given "themes"
+        Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given empty "users"
+        Given empty tenant aware "users"
         When we post to "users"
             """
             {"first_name": "foo", "username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
             """
         When we find for "users" the id as "user_foo" by "where={"username": "foo_user"}"
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "/blogs"
         """
         [
@@ -205,12 +205,12 @@ Feature: Blog operations
     @auth
     @notification
     Scenario: Create new blog and get notification
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given empty "users"
-        Given empty "blogs"
+        Given empty tenant aware "users"
+        Given empty tenant aware "blogs"
         When we post to "users"
             """
             {"first_name": "foo", "username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
@@ -231,11 +231,11 @@ Feature: Blog operations
 
 	@auth
     Scenario: Permission to open blogs
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"title": "first blog", "members": [], "blog_preferences": {"theme": "forest", "language": "fr"}}
@@ -249,21 +249,21 @@ Feature: Blog operations
 	@auth
     @notification
     Scenario: Create new request for blog access and get notification
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-    	Given "roles"
+    	Given tenant aware "roles"
         """
         [{"name": "Contributor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "request_membership": 1}}]
         """
-        Given "users"
+        Given tenant aware "users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
         When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         When we login as user "foo" with password "barbar"
-        Given empty "blogs"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"title": "Sports blog", "blog_status": "open", "blog_preferences": {"theme": "forest", "language": "fr"}}]
@@ -273,7 +273,7 @@ Feature: Blog operations
         """
         {"_items": [{"title": "Sports blog", "original_creator": "#user_foo#"}]}
         """
-        Given empty "request_membership"
+        Given empty tenant aware "request_membership"
 		When we post to "/request_membership"
 		"""
         {"blog": "#blogs._id#", "original_creator": "#user_foo#"}
@@ -294,11 +294,11 @@ Feature: Blog operations
 
     @auth
     Scenario: Check syndication_enabled
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [
            {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog1", "syndication_enabled": true},

@@ -16,7 +16,7 @@ class LiveBlogUsersResource(UsersResource):
     """
 
     # Set as class attribute - both /api/users and /api/liveblog_users use 'users' collection
-    datasource = {'source': 'users'}
+    datasource = {"source": "users"}
 
     def __init__(self, endpoint_name, app, service, endpoint_schema=None):
         # Call parent init first to set up schema
@@ -26,4 +26,4 @@ class LiveBlogUsersResource(UsersResource):
         # The difference is that LiveBlogUsersService adds tenant filtering
         if self.datasource is None:
             self.datasource = {}
-        self.datasource['source'] = 'users'
+        self.datasource["source"] = "users"

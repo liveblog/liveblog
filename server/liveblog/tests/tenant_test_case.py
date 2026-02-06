@@ -46,6 +46,7 @@ class TenantAwareTestCase(TestCase):
         allows flask.g to work properly for tenant filtering.
         """
         from superdesk.tests import setup
+
         setup(self)
 
         # Use request context instead of app context for tenant-aware tests
@@ -56,6 +57,7 @@ class TenantAwareTestCase(TestCase):
         def clean_ctx():
             if self.ctx:
                 self.ctx.pop()
+
         self.addCleanup(clean_ctx)
 
     def tearDown(self):

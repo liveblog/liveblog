@@ -16,4 +16,5 @@ class LiveBlogUsersService(TenantAwareService, DBUsersService):
     - /api/users → system service (internal_resource, used by superdesk-core)
     - /api/liveblog_users → this service (public API, tenant-filtered)
     """
+
     pass

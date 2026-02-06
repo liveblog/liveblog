@@ -11,11 +11,59 @@
 
 import superdesk.tests as tests
 from behave import given, when  # @UnresolvedImport
-from flask import json
+from flask import json, g
 from superdesk.tests import set_placeholder
+from superdesk.tests.steps import apply_placeholders, parse, is_user_resource
 from superdesk import get_resource_service
 
 external_url = "http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg"
+
+
+@given('tenant aware "{resource}"')
+def given_tenant_aware_resource(context, resource):
+    """Create test fixtures with proper tenant context for tenant-aware services."""
+    data = apply_placeholders(context, context.text)
+
+    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+        # Set tenant context for tenant-aware services
+        if hasattr(context, "user") and context.user:
+            g.user = context.user
+
+        if not is_user_resource(resource):
+            get_resource_service(resource).delete_action()
+
+        items = [parse(item, resource) for item in json.loads(data)]
+
+        if is_user_resource(resource):
+            for item in items:
+                item.setdefault("needs_activation", False)
+                # Ensure users inherit tenant from test user
+                if (
+                    hasattr(context, "user")
+                    and context.user
+                    and "tenant_id" in context.user
+                ):
+                    item["tenant_id"] = context.user["tenant_id"]
+
+        get_resource_service(resource).post(items)
+        context.data = items
+        context.resource = resource
+        try:
+            setattr(context, resource, items[-1])
+        except KeyError:
+            pass
+
+
+@given('empty tenant aware "{resource}"')
+def given_empty_tenant_aware_resource(context, resource):
+    """Delete all test fixtures with proper tenant context for tenant-aware services."""
+    if not is_user_resource(resource):
+        with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+            # Set tenant context for tenant-aware services
+            if hasattr(context, "user") and context.user:
+                g.user = context.user
+
+            get_resource_service(resource).delete_action()
 
 
 @when("we switch to user of type user")
@@ -27,11 +75,16 @@ def when_we_switch_user_of_type_user(context):
         "needs_activation": False,
         "user_type": "user",
     }
+    # Set tenant_id from context if available
+    if hasattr(context, "user") and context.user and "tenant_id" in context.user:
+        user["tenant_id"] = context.user["tenant_id"]
+
     tests.setup_auth_user(context, user)
     set_placeholder(context, "USERS_ID", str(context.user["_id"]))
 
 
 def login_as(context, username, password):
+    """Login as a user, preserving their tenant_id if they were created in the same tenant."""
     user = {
         "username": username,
         "password": password,
@@ -42,6 +95,17 @@ def login_as(context, username, password):
 
     if context.text:
         user.update(json.loads(context.text))
+
+    # If logging in as a user created in this test, get their tenant_id from the database
+    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+        # Set original user context to query
+        if hasattr(context, "user") and context.user and "tenant_id" in context.user:
+            g.user = context.user
+
+        users_service = get_resource_service("users")
+        existing_user = users_service.find_one(req=None, username=username)
+        if existing_user and "tenant_id" in existing_user:
+            user["tenant_id"] = existing_user["tenant_id"]
 
     tests.setup_auth_user(context, user)
 

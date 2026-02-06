@@ -84,16 +84,12 @@ class RegistrationService:
 
         # Check for duplicate username globally (across all tenants)
         # The 'users' service has no tenant filtering, so this checks all users
-        existing = users_service.find_one(
-            req=None, username=user_data["username"]
-        )
+        existing = users_service.find_one(req=None, username=user_data["username"])
         if existing:
             raise SuperdeskApiError.badRequestError(message="Username already exists")
 
         # Check for duplicate email globally (across all tenants)
-        existing_email = users_service.find_one(
-            req=None, email=user_data["email"]
-        )
+        existing_email = users_service.find_one(req=None, email=user_data["email"])
         if existing_email:
             raise SuperdeskApiError.badRequestError(message="Email already exists")
 

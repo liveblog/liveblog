@@ -42,7 +42,9 @@ def set_logged_user(username, password):
         user = {"username": username, "password": password}
         get_resource_service("auth_db").post([user])
         auth_token = get_resource_service("auth").find_one(username=username, req=None)
-    flask.g.user = get_resource_service("liveblog_users").find_one(req=None, username=username)
+    flask.g.user = get_resource_service("liveblog_users").find_one(
+        req=None, username=username
+    )
     flask.g.auth = auth_token
 
 

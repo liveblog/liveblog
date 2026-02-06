@@ -138,4 +138,3 @@ class LiveBlogTokenAuthTestCase(TestCase):
             self.assertTrue(result)
             self.assertEqual(flask.g.user["_id"], user_id)
             self.assertEqual(flask.g.user["tenant_id"], tenant_a_id)
-
