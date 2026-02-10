@@ -7,23 +7,29 @@ tenant isolation across the LiveBlog application.
 
 import flask
 from superdesk.errors import SuperdeskApiError
+from liveblog.tenancy.context import get_current_tenant_id, SYSTEM_MODE
 
 
 def get_tenant_id(required=False):
     """
-    Get current tenant ID from authenticated user's JWT claims.
+    Get current tenant ID from execution context or authenticated user.
 
-    The tenant_id is extracted from the authenticated user stored in
-    flask.g.user, which is populated by Superdesk's authentication
-    middleware during request processing.
+    Resolution order:
+    1. Check ContextVar (Celery tasks, explicit context)
+    2. Check flask.g.user (HTTP requests)
+    3. Return None or raise error if required
+
+    The tenant_id is extracted from either:
+    - Execution context (ContextVar) set by TenantAwareTask for Celery tasks
+    - Authenticated user in flask.g.user for HTTP requests
 
     Args:
         required (bool): If True, raises Forbidden if no tenant found.
                         If False, returns None when no tenant is available.
 
     Returns:
-        ObjectId or str: tenant_id from flask.g.user
-        None: if no user or no tenant_id (when required=False)
+        ObjectId or str: tenant_id from context or flask.g.user
+        None: if no tenant context (or if in SYSTEM_MODE)
 
     Raises:
         SuperdeskApiError: 403 Forbidden if required=True and no tenant available
@@ -36,6 +42,17 @@ def get_tenant_id(required=False):
         if tenant_id:
             lookup['tenant_id'] = tenant_id
     """
+    # Priority 1: Check execution context (Celery tasks, system mode)
+    tenant_id = get_current_tenant_id()
+
+    if tenant_id == SYSTEM_MODE:
+        # System operations bypass tenant filtering
+        return None
+
+    if tenant_id is not None:
+        return tenant_id
+
+    # Priority 2: Check flask.g.user (HTTP requests)
     user = flask.g.get("user")
 
     if not user:

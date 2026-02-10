@@ -53,9 +53,9 @@ class TenantAwareService(BaseService):
             dict: lookup with tenant_id added (mutates input dict)
 
         Note:
-            During HTTP requests, tenant filtering is ALWAYS required.
-            During system operations (indexing, migrations), tenant filtering
-            is skipped to allow system-wide access.
+            During HTTP requests with authenticated users, tenant filtering is ALWAYS required.
+            During system operations (no request context or no user), tenant filtering
+            is skipped to allow system-wide access (management commands, Celery tasks).
         """
         # During system operations (no request context), skip tenant filtering
         # This allows rebuild_elastic_index and other management commands to work
@@ -204,8 +204,8 @@ class TenantAwareService(BaseService):
 
         Note:
             During HTTP requests with authenticated users, tenant_id is required.
-            During system operations, documents are created as-is (useful for
-            migrations and data imports).
+            During system operations (no request context or no user), documents
+            are created as-is (useful for migrations, data imports, Celery tasks).
         """
         # Skip tenant injection during system operations (no request context)
         if not flask.has_request_context():
@@ -253,8 +253,8 @@ class TenantAwareArchiveService(ArchiveService):
         """
         Add tenant filter to lookup dict.
 
-        During HTTP requests, tenant filtering is ALWAYS required.
-        During system operations, tenant filtering is skipped.
+        During HTTP requests with authenticated users, tenant filtering is ALWAYS required.
+        During system operations (no request context or no user), tenant filtering is skipped.
         """
         # During system operations (no request context), skip tenant filtering
         if not flask.has_request_context():

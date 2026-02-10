@@ -352,7 +352,10 @@ class PostsService(TenantAwareArchiveService):
                 raise not_allowed_ex
 
     def on_create(self, docs):
-        super().on_create(docs)
+        # CRITICAL: Must set doc["type"] = "composite" BEFORE calling super().on_create()
+        # The parent ArchiveService.on_create() checks doc[ITEM_TYPE] == CONTENT_TYPE.COMPOSITE
+        # to decide whether to call packageService.on_create() which generates the "groups" field.
+        # If type is not set before super() call, groups won't be created, causing KeyError later.
         for doc in docs:
             self.check_post_permission(doc)
             doc["type"] = "composite"
@@ -365,6 +368,8 @@ class PostsService(TenantAwareArchiveService):
                     doc["published_date"] = utcnow()
                 doc["content_updated_date"] = doc["published_date"]
                 doc["publisher"] = get_publisher()
+
+        super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)

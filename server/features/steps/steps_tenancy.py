@@ -33,12 +33,12 @@ def step_attempt_patch_cross_tenant(context, url):
     data = apply_placeholders(context, context.text)
 
     # Build headers starting with auth headers from context
-    headers = list(context.headers) if hasattr(context, 'headers') else []
-    headers.append(('Content-Type', 'application/json'))
+    headers = list(context.headers) if hasattr(context, "headers") else []
+    headers.append(("Content-Type", "application/json"))
 
     # Add If-Match header only if IF_MATCH_VALUE placeholder is set
-    if hasattr(context, 'placeholders') and 'IF_MATCH_VALUE' in context.placeholders:
-        headers.append(('If-Match', context.placeholders['IF_MATCH_VALUE']))
+    if hasattr(context, "placeholders") and "IF_MATCH_VALUE" in context.placeholders:
+        headers.append(("If-Match", context.placeholders["IF_MATCH_VALUE"]))
 
     full_url = get_prefixed_url(context.app, url)
     context.response = context.client.patch(full_url, data=data, headers=headers)
@@ -54,8 +54,8 @@ def step_attempt_delete_cross_tenant(context, url):
     url = apply_placeholders(context, url)
 
     # Build headers starting with auth headers from context
-    headers = list(context.headers) if hasattr(context, 'headers') else []
-    headers.append(('Content-Type', 'application/json'))
+    headers = list(context.headers) if hasattr(context, "headers") else []
+    headers.append(("Content-Type", "application/json"))
 
     full_url = get_prefixed_url(context.app, url)
     context.response = context.client.delete(full_url, headers=headers)

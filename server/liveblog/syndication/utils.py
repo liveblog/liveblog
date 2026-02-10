@@ -136,9 +136,7 @@ def extract_creator_data(doc):
 
     users_service = get_resource_service("liveblog_users")
     # Use system_find_one to allow cross-tenant syndication
-    original_creator = users_service.system_find_one(
-        req=None, _id=doc.get("original_creator")
-    )
+    original_creator = users_service.find_one(req=None, _id=doc.get("original_creator"))
 
     if not original_creator:
         return None

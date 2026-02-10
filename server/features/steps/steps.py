@@ -24,17 +24,20 @@ def given_tenant_aware_resource(context, resource):
     """Create test fixtures with proper tenant context for tenant-aware services."""
     data = apply_placeholders(context, context.text)
 
+    # Check if this is a user resource (users or liveblog_users)
+    is_user_res = is_user_resource(resource) or resource == "liveblog_users"
+
     with context.app.test_request_context(context.app.config["URL_PREFIX"]):
         # Set tenant context for tenant-aware services
         if hasattr(context, "user") and context.user:
             g.user = context.user
 
-        if not is_user_resource(resource):
+        if not is_user_res:
             get_resource_service(resource).delete_action()
 
         items = [parse(item, resource) for item in json.loads(data)]
 
-        if is_user_resource(resource):
+        if is_user_res:
             for item in items:
                 item.setdefault("needs_activation", False)
                 # Ensure users inherit tenant from test user
@@ -98,14 +101,16 @@ def login_as(context, username, password):
 
     # If logging in as a user created in this test, get their tenant_id from the database
     with context.app.test_request_context(context.app.config["URL_PREFIX"]):
-        # Set original user context to query
-        if hasattr(context, "user") and context.user and "tenant_id" in context.user:
-            g.user = context.user
-
+        # Check system users service (no tenant filtering, username is globally unique)
         users_service = get_resource_service("users")
         existing_user = users_service.find_one(req=None, username=username)
+
         if existing_user and "tenant_id" in existing_user:
             user["tenant_id"] = existing_user["tenant_id"]
+        elif hasattr(context, "user") and context.user and "tenant_id" in context.user:
+            # If user doesn't exist but there's a tenant context, inherit it
+            # This allows temporary test users to work within tenant-aware tests
+            user["tenant_id"] = context.user["tenant_id"]
 
     tests.setup_auth_user(context, user)
 

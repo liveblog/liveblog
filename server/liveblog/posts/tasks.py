@@ -8,12 +8,13 @@ from superdesk.notification import push_notification
 from celery.exceptions import SoftTimeLimitExceeded
 from liveblog.blogs.tasks import publish_blog_embeds_on_s3
 from liveblog.blogs.utils import is_seo_enabled
+from liveblog.tenancy.celery import TenantAwareTask
 from eve.io.base import DataLayer
 
 logger = logging.getLogger("superdesk")
 
 
-@celery.task()
+@celery.task(base=TenantAwareTask)
 def update_post_blog_data(post, action="created"):
     """
     Update blog data num_post and last created or updated post.

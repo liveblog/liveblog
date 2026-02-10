@@ -6,18 +6,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -57,13 +57,13 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         When we login as user "foo" with password "bar"
         """
         {"user_type": "user", "email": "foo.bar@foobar.org"}
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"title": "TEST_BLOG", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
@@ -79,18 +79,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"title": "Delete blog without being the owner", "blog_preferences": {"theme": "forest", "language": "fr"}, "members": [{"user": "#user_foo#"}]}]
@@ -134,18 +134,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -191,18 +191,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -247,18 +247,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -325,18 +325,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -425,18 +425,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -510,17 +510,17 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
+        Given empty tenant aware "posts"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -559,18 +559,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -642,22 +642,22 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
     	"""
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog1"}]
         """
-    	Given "users"
+    	Given tenant aware "liveblog_users"
     	"""
         [{"username": "admin"}]
         """
-        When we get "/users"
+        When we get "/liveblog_users"
         Then we get list with 2 items
         """
         {"_items": [{"username":"admin"}, {"username": "test_user"}]}
         """
-        When we find for "users" the id as "user_admin" by "where={"username": "admin"}"
+        When we find for "liveblog_users" the id as "user_admin" by "where={"username": "admin"}"
 
-        Given "posts"
+        Given tenant aware "posts"
         """
         [
             {"headline": "first post", "blog": "#blogs._id#", "post_status": "open", "original_creator": "#user_admin#"},
@@ -681,18 +681,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
@@ -738,11 +738,11 @@ Feature: Post operations
         """
         Given we have "Editor" role
         Given we have "user" as type of user
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog3"}]
         """
-        Given "posts"
+        Given tenant aware "posts"
         """
         [{"headline": "my draft will be published", "post_status": "draft", "blog": "#blogs._id#"}]
         """
@@ -780,11 +780,11 @@ Feature: Post operations
         """
         Given we have "Editor" role
         Given we have "user" as type of user
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog3"}]
         """
-        Given "posts"
+        Given tenant aware "posts"
         """
         [{"headline": "my contribution will be published", "post_status": "submitted", "blog": "#blogs._id#"}]
         """
@@ -805,18 +805,18 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given empty "posts"
-        Given empty "items"
+        Given empty tenant aware "posts"
+        Given empty tenant aware "items"
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
-        Given empty "blogs"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty tenant aware "blogs"
         When we post to "blogs"
         """
         [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "StickyBlog", "members": [{"user": "#user_foo#"}]}]
@@ -859,7 +859,7 @@ Feature: Post operations
         """
         [{"name": "forest"}]
         """
-        Given "blogs"
+        Given tenant aware "blogs"
         """
         [{"title": "test_blog3", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
