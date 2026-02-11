@@ -108,6 +108,67 @@ Feature: Items operations
         Then we get deleted response
 
     @auth
+    Scenario: Retrieve items from blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+    	Given "roles"
+        """
+        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
+        """
+        Given tenant aware "liveblog_users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Test Blog", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
+        Given empty "items"
+        When we post to "items"
+        """
+        [{"text": "first item", "blog": "#blogs._id#"}]
+        """
+        When we post to "items"
+        """
+        [{"text": "second item", "blog": "#blogs._id#"}]
+        """
+        When we post to "items"
+        """
+        [{"text": "third item", "blog": "#blogs._id#"}]
+        """
+        When we get "/blogs/#blogs._id#/items"
+        Then we get list with 3 items
+        """
+        {"_items": [{"text": "third item"}, {"text": "second item"}, {"text": "first item"}]}
+        """
+
+    @auth
+    Scenario: Create items without permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+        Given empty "items"
+        When we login as user "foo" with password "bar"
+        """
+        {"user_type": "user", "email": "foo.bar@foobar.org"}
+        """
+        Given tenant aware "blogs"
+        """
+        [{"title": "Test Blog", "blog_preferences": {"theme": "forest", "language": "fr"}}]
+        """
+        When we post to "items"
+        """
+        [{"text": "unauthorized item", "blog": "#blogs._id#"}]
+        """
+        Then we get response code 403
+
+    @auth
     Scenario: Items from different tenants are isolated
         Given "themes"
         """
