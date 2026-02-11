@@ -316,3 +316,43 @@ Feature: Blog operations
         """
         {"_items": [{"title": "testBlog3"}]}
         """
+
+    @auth
+    Scenario: Blogs from different tenants are isolated
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+        Given a tenant "Tenant One"
+        And a user "tenant1_admin" for current tenant
+        Given a tenant "Tenant Two"
+        And a user "tenant2_admin" for current tenant
+
+        # Tenant 1 creates a blog
+        When we login as tenant user "tenant1_admin"
+        When we post to "blogs"
+        """
+        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "forest", "language": "en"}}]
+        """
+        Then we get OK response
+        When we save "tenant1_blog_id" from last response "_id"
+
+        # Tenant 2 cannot see Tenant 1's blogs in list
+        When we login as tenant user "tenant2_admin"
+        When we get "/blogs"
+        Then we get list with 0 items
+
+        # Tenant 2 cannot access Tenant 1's blog by ID
+        When we get "/blogs/#tenant1_blog_id#"
+        Then we get error 404
+
+        # Tenant 2 cannot update Tenant 1's blog
+        When we attempt to patch "/blogs/#tenant1_blog_id#"
+        """
+        {"title": "Hacked"}
+        """
+        Then we get error 404
+
+        # Tenant 2 cannot delete Tenant 1's blog
+        When we attempt to delete "/blogs/#tenant1_blog_id#"
+        Then we get error 404
