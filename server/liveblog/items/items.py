@@ -207,7 +207,16 @@ class BlogItemsResource(ArchiveResource):
 class BlogItemsService(TenantAwareArchiveService):
     def get(self, req, lookup):
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            blog_id = ObjectId(lookup["blog_id"])
+
+            # Validate that the blog exists in the current tenant before querying items
+            from superdesk.errors import SuperdeskApiError
+            blogs_service = get_resource_service("blogs")
+            blog = blogs_service.find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+            lookup["blog"] = blog_id
             del lookup["blog_id"]
         return super().get(req, lookup)
 
