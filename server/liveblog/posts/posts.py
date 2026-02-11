@@ -712,7 +712,15 @@ class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
                     del lookup["blog_id"]
 
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            blog_id = ObjectId(lookup["blog_id"])
+
+            # Validate that the blog exists in the current tenant before querying posts
+            blogs_service = get_resource_service("blogs")
+            blog = blogs_service.find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+            lookup["blog"] = blog_id
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)

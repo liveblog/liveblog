@@ -50,12 +50,17 @@ def step_attempt_delete_cross_tenant(context, url):
     Attempt to DELETE a resource without pre-fetching it.
 
     Used for testing cross-tenant scenarios where GET would fail.
+    If IF_MATCH_VALUE placeholder is set, it will be used for the If-Match header.
     """
     url = apply_placeholders(context, url)
 
     # Build headers starting with auth headers from context
     headers = list(context.headers) if hasattr(context, "headers") else []
     headers.append(("Content-Type", "application/json"))
+
+    # Add If-Match header only if IF_MATCH_VALUE placeholder is set
+    if hasattr(context, "placeholders") and "IF_MATCH_VALUE" in context.placeholders:
+        headers.append(("If-Match", context.placeholders["IF_MATCH_VALUE"]))
 
     full_url = get_prefixed_url(context.app, url)
     context.response = context.client.delete(full_url, headers=headers)
