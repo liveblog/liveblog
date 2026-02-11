@@ -70,8 +70,13 @@ class TenantAwareTask(Task):
         tenant_id = None
 
         # Extract from headers (set during dispatch)
-        if hasattr(self, "request") and hasattr(self.request, "headers"):
-            tenant_id = self.request.headers.get("tenant_id")
+        request_headers = (self.request or {}).get("headers", {})
+        if request_headers:
+            tenant_id = request_headers.get("tenant_id")
+
+        # Fallback: Extract from first arg if it's a document (for direct calls in tests)
+        if not tenant_id and args and isinstance(args[0], dict):
+            tenant_id = args[0].get("tenant_id")
 
         if not tenant_id:
             raise RuntimeError(
