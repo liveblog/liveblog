@@ -21,6 +21,7 @@ from math import ceil
 
 from bson.objectid import ObjectId
 from eve.io.mongo import MongoJSONEncoder
+from eve.utils import ParsedRequest
 from flask_cors import cross_origin
 from flask import make_response, request, current_app as app
 
@@ -31,8 +32,9 @@ from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 from liveblog.utils.api import api_error
+from liveblog.tenancy import get_tenant_id
+from liveblog.tenancy.service import TenantAwareService
 
-from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
 from .template.filters import (
@@ -44,6 +46,7 @@ from .template.filters import (
     fix_x_domain_embed,
 )
 from .template.loaders import ThemeTemplateLoader
+from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 
 
 logger = logging.getLogger("superdesk")
@@ -81,7 +84,8 @@ class UndefinedVar(jinja2.Undefined):
 
 class ThemesResource(Resource):
     schema = {
-        "name": {"type": "string", "unique": True},
+        "name": {"type": "string"},
+        "tenant_id": Resource.rel("tenants", required=False, nullable=True),
         "label": {"type": "string"},
         "extends": {"type": "string"},
         "abstract": {"type": "boolean"},
@@ -121,8 +125,27 @@ class ThemesResource(Resource):
         "template": {"type": "string", "default": ""},
         "files": {"type": "dict", "mapping": {"type": "object", "enabled": False}},
     }
-    datasource = {"source": "themes", "default_sort": [("_updated", -1)]}
+    datasource = {
+        "source": "themes",
+        "default_sort": [("_updated", -1)],
+        "search_backend": None,
+    }
     additional_lookup = {"url": 'regex("[\w\-]+")', "field": "name"}
+
+    mongo_indexes = {
+        # System themes: name must be globally unique (tenant_id = null)
+        "system_theme_name_unique": {
+            "key": [("name", 1)],
+            "unique": True,
+            "partialFilterExpression": {"tenant_id": {"$eq": None}},
+        },
+        # User themes: (name, tenant_id) must be unique per tenant
+        "user_theme_name_tenant_unique": {
+            "key": [("name", 1), ("tenant_id", 1)],
+            "unique": True,
+            "partialFilterExpression": {"tenant_id": {"$ne": None}},
+        },
+    }
 
     etag_ignore_fields = ["_type", "template"]
 
@@ -140,17 +163,75 @@ class UnknownTheme(Exception):
     pass
 
 
-class ThemesService(BaseService):
-    def get(self, req, lookup):
+class ThemesService(TenantAwareService, BaseService):
+    def get(self, req, lookup={}):
         """
-        Simply override just because we don't have pagination in themes ui
-        so we set max_results to 50 expecting clients won't have more than 50
-        themes (at least for now)
+        Get themes: includes system themes (tenant_id=null) and current tenant's themes.
+        Overrides the default TenantAwareService behavior that only filters by tenant_id.
+        Sets max_results to 50 expecting clients won't have more than 50 themes.
         """
+        if req is None:
+            req = ParsedRequest()
 
-        if req:
-            req.max_results = THEMES_MAX_RESULTS
-        return super().get(req, lookup)
+        req.max_results = THEMES_MAX_RESULTS
+
+        if self.is_system_request():
+            return super(TenantAwareService, self).get(req, lookup)
+
+        # Include system themes (tenant_id=null) along with tenant-specific themes
+        tenant_id = get_tenant_id(required=True)
+        if "$or" not in lookup:
+            lookup["$or"] = [
+                {"tenant_id": None},  # System themes
+                {"tenant_id": tenant_id}  # Tenant-specific themes
+            ]
+
+        return self.backend.get(self.datasource, req=req, lookup=lookup)
+
+    def find_one(self, req, **lookup):
+        """
+        Override find_one to include system themes.
+
+        Allows tenants to access system themes by ID (for viewing, but not modifying).
+        """
+        if self.is_system_request():
+            return super(TenantAwareService, self).find_one(req, **lookup)
+
+        tenant_id = get_tenant_id(required=True)
+
+        # Include both system themes and tenant-specific themes
+        if "$or" not in lookup:
+            lookup["$or"] = [
+                {"tenant_id": None},  # System themes
+                {"tenant_id": tenant_id}  # Tenant-specific themes
+            ]
+
+        return self.backend.find_one(self.datasource, req=req, **lookup)
+
+    def get_from_mongo(self, req, lookup):
+        """
+        Override get_from_mongo to include system themes.
+
+        This method is used by Eve for some item lookups.
+        """
+        if lookup is None:
+            lookup = {}
+
+        if self.is_system_request():
+            return super(TenantAwareService, self).get_from_mongo(req, lookup)
+
+        tenant_id = get_tenant_id(required=True)
+
+        # Include both system themes and tenant-specific themes
+        if "$or" not in lookup:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+            lookup["$or"] = [
+                {"tenant_id": None},  # System themes
+                {"tenant_id": tenant_id}  # Tenant-specific themes
+            ]
+
+        return self.backend.get(self.datasource, req=req, lookup=lookup)
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
@@ -548,7 +629,16 @@ class ThemesService(BaseService):
         self._save_theme_files(theme)
 
         is_local_theme = self.is_local_theme(theme_name)
-        previous_theme = self.find_one(req=None, name=theme_name)
+
+        # Set tenant_id: None for system themes, current tenant for user-uploaded themes
+        if is_local_theme:
+            theme["tenant_id"] = None
+            previous_theme = self.find_one(req=None, name=theme_name)
+        else:
+            # User-uploaded themes belong to current tenant
+            tenant_id = get_tenant_id(required=False)
+            theme["tenant_id"] = tenant_id
+            previous_theme = self.find_one(req=None, name=theme_name, tenant_id=tenant_id)
 
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
@@ -660,13 +750,61 @@ class ThemesService(BaseService):
             countdown += delay
 
     def check_themes_limit(self, docs=[]):
-        current_themes_count = self.find({}).count() + len(docs)
+        """
+        Check if creating new themes would exceed the tenant's quota.
+
+        Counts both system themes (globally available) and tenant-specific themes
+        against the tenant's custom_themes limit.
+
+        Args:
+            docs: List of theme documents being created
+
+        Raises:
+            SuperdeskApiError: 403 Forbidden if quota would be exceeded
+        """
+        # Skip limit check for system operations (no request context)
+        if self.is_system_request():
+            return
+
+        tenant_id = get_tenant_id(required=True)
+
+        # Convert to ObjectId for MongoDB query
+        if isinstance(tenant_id, str):
+            tenant_id = ObjectId(tenant_id)
+
+        # Count all accessible themes (system + tenant-specific)
+        # Must query MongoDB directly to bypass TenantAwareService filtering
+        where = {
+            "$or": [
+                {"tenant_id": None},  # System themes
+                {"tenant_id": tenant_id}  # Tenant-specific themes
+            ]
+        }
+
+        # Bypass TenantAwareService's query filtering
+        cursor = self.backend.find(self.datasource, where)
+        current_themes_count = cursor.count() + len(docs)
 
         if app.features.is_limit_reached("custom_themes", current_themes_count):
             raise SuperdeskApiError.forbiddenError(message="Cannot add another theme.")
 
     def on_create(self, docs):
-        self.check_themes_limit(docs)
+        # For system themes, explicitly set tenant_id = None
+        # For user themes, leave tenant_id unset and let parent class set it
+        for doc in docs:
+            if "tenant_id" not in doc:
+                theme_name = doc.get("name")
+                if theme_name and self.is_local_theme(theme_name):
+                    doc["tenant_id"] = None  # System theme
+
+        # Only check limits for user themes (not system themes)
+        # A system theme has tenant_id explicitly set to None (not just missing)
+        has_system_themes = any("tenant_id" in doc and doc["tenant_id"] is None for doc in docs)
+
+        if not has_system_themes:
+            self.check_themes_limit(docs)
+
+        super().on_create(docs)
 
     def on_updated(self, updates, original):
         # Republish the related blogs if the settings have been changed.
@@ -674,6 +812,12 @@ class ThemesService(BaseService):
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
+        # Prevent deletion of system themes (tenant_id = null)
+        if deleted_theme.get("tenant_id") is None:
+            raise SuperdeskApiError.forbiddenError(
+                "System themes cannot be deleted"
+            )
+
         global_default_theme = get_resource_service(
             "global_preferences"
         ).get_global_prefs()["theme"]

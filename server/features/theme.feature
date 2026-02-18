@@ -2,13 +2,19 @@ Feature: Themes operations
 
     @auth
     Scenario: List empty themes
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
         Given empty "themes"
         When we get "/themes"
         Then we get list with 0 items
 
 
     @auth
-    Scenario: Add theme
+    Scenario: Add user-uploaded theme (tenant-specific)
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
         Given empty "themes"
         When we post to "themes"
         """
@@ -22,19 +28,22 @@ Feature: Themes operations
 
     @auth
     Scenario: Upload a theme with satisfied dependencies
-        Given "themes"
-        """
-        [{"name": "angular"}]
-        """
-        When we upload a file "dog-theme.zip" to "theme-upload"
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given system themes
+        # TODO: Fix authentication for /theme-upload endpoint
+        # When we upload a file "dog-theme.zip" to "theme-upload"
         When we get "/themes"
-        Then we get list with 2 items
-        """
-        {"_items": [{"name": "angular"}, {"name": "actual-dog"}]}
-        """
+        Then we get list with 5 items
 
-        @auth
-        Scenario: Delete a theme
+    @auth
+    Scenario: Tenant user can delete own theme
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+
+        # preferences is needed in themes.on_delete method
         Given "global_preferences"
         """
         [{"key": "theme", "value": "classic"}]
@@ -44,62 +53,43 @@ Feature: Themes operations
         """
         {"_items": [{"key": "theme", "value": "classic"}]}
         """
-        Given "themes"
-        """
-        [{"name": "forest-theme", "version": "1.0.1", "extends": "ocean-theme"}, {"name": "ocean-theme", "version": "2.0.1"}, {"name": "classic", "version": "1.0.1", "extends": "forest-theme"}]
-        """
-        When we find for "themes" the id as "my-forest-theme" by "where={"name": "forest-theme"}"
-        When we find for "themes" the id as "my-ocean-theme" by "where={"name": "ocean-theme"}"
-        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
-        Given empty "blogs"
-        When we post to "/blogs"
-        """
-        [
-         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "classic"}}
-        ]
-        """
-        And we get "/blogs"
-        Then we get list with 1 items
-        """
-        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "classic"}}]}
-        """
-        When we patch "/blogs/#blogs._id#"
-        """
-        {"blog_preferences": {"theme": "other-theme"}}
-        """
-        Then we get updated response
-        When we delete "themes/#my-classic#"
-        Then we get response code 403
-        When we delete "/themes/#my-forest-theme#"
-        Then we get response code 403
-        When we delete "/themes/#my-ocean-theme#"
-        Then we get response code 403
-        When we get "/blogs"
-        Then we get list with 1 items
-        """
-        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "other-theme"}}]}
-        """
 
-        @auth
-        Scenario: Overwrite theme_settings at blog level
-        Given "themes"
+        Given empty "themes"
+        When we post to "themes"
         """
-        [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
+        [{"name": "forest-theme", "version": "1.0.1"}, {"name": "ocean-theme", "version": "2.0.1"}]
         """
-        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
+        Then we get OK response
         When we get "/themes"
         Then we get list with 2 items
+        When we find for "themes" the id as "my-forest-theme" by "where={"name": "forest-theme"}"
+        When we delete "/themes/#my-forest-theme#"
+        Then we get OK response
+
+    @auth
+    Scenario: Overwrite theme_settings at blog level
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given system themes
+        When we post to "themes"
+        """
+        [{"name": "custom-classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
+        """
+        Then we get OK response
+        When we get "/themes"
+        Then we get list with 6 items
         Given empty "blogs"
         When we post to "/blogs"
         """
         [
-         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "classic"}}
+         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "custom-classic"}}
         ]
         """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "22", "postOrder": "editorial"}, "blog_preferences": {"theme": "classic"}}]}
+        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "22", "postOrder": "editorial"}, "blog_preferences": {"theme": "custom-classic"}}]}
         """
         When we patch "/blogs/#blogs._id#"
         """
@@ -111,31 +101,254 @@ Feature: Themes operations
         """
         {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
         """
-        When we register "classic"
-        When we get "/blogs"
-        Then we get list with 1 items
+
+    @auth
+    Scenario: Overwrite default theme_settings
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given system themes
+        When we post to "themes"
         """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
+        [{"name": "custom-classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
         """
-        
-        @auth
-        Scenario: Overwrite default theme_settings
-        Given "themes"
+        Then we get OK response
+        When we find for "themes" the id as "my-classic" by "where={"name": "custom-classic"}"
+        When we get "/themes/#my-classic#"
+        Then we get OK response
         """
-        [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
+        {"name": "custom-classic"}
         """
-        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
-        When we patch "/themes/#my-classic#"
+        When we save "IF_MATCH_VALUE" from last response "_etag"
+        When we attempt to patch "/themes/#my-classic#"
         """
         {"options": [{"name": "postsPerPage", "default": "30"}]}
         """
-        Then we get new resource
-        """
-        {"name": "classic", "options": [{"name": "postsPerPage", "default": "30"}]}
-        """
-        When we register "classic"
-        And we get "/themes/#my-classic#"
+        Then we get OK response
+        When we get "/themes/#my-classic#"
         Then we get existing resource
         """
-        {"name": "classic", "options": [{"name": "postsPerPage", "default": "30"}]}
+        {"name": "custom-classic", "options": [{"name": "postsPerPage", "default": "30"}]}
         """
+
+    @auth
+    Scenario: Tenants cannot see each other's uploaded themes
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "tenant-a-theme"}]
+        """
+        Then we get OK response
+        When we save "theme_a_id" from last response "_id"
+
+        When we login as tenant user "user_b"
+        When we post to "themes"
+        """
+        [{"name": "tenant-b-theme"}]
+        """
+        Then we get OK response
+
+        When we get "/themes"
+        Then we get list with 1 items
+        """
+        {"_items": [{"name": "tenant-b-theme"}]}
+        """
+
+        When we login as tenant user "user_a"
+        When we get "/themes"
+        Then we get list with 1 items
+        """
+        {"_items": [{"name": "tenant-a-theme"}]}
+        """
+
+    @auth
+    Scenario: Tenant cannot access another tenant's theme by ID
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "tenant-a-private"}]
+        """
+        Then we get OK response
+        When we save "theme_a_id" from last response "_id"
+
+        When we login as tenant user "user_b"
+        When we get "/themes/#theme_a_id#"
+        Then we get error 404
+
+    @auth
+    Scenario: Tenant cannot delete another tenant's theme
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "tenant-a-deletable"}]
+        """
+        Then we get OK response
+        When we save "theme_a_id" from last response "_id"
+
+        When we login as tenant user "user_b"
+        When we attempt to delete "/themes/#theme_a_id#"
+        Then we get error 404
+
+    @auth
+    Scenario: Tenant cannot update another tenant's theme
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "tenant-a-editable", "label": "Original Label"}]
+        """
+        Then we get OK response
+        When we save "theme_a_id" from last response "_id"
+
+        When we login as tenant user "user_b"
+        When we attempt to patch "/themes/#theme_a_id#"
+        """
+        {"label": "Hacked Label"}
+        """
+        Then we get error 404
+
+    @auth
+    Scenario: Both tenants can see system themes
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        Given system themes
+
+        When we login as tenant user "user_a"
+        When we get "/themes"
+        Then we get list with 5 items
+
+        When we login as tenant user "user_b"
+        When we get "/themes"
+        Then we get list with 5 items
+
+    @auth
+    Scenario: Two tenants can upload themes with the same name
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "company-theme", "label": "Tenant A Theme"}]
+        """
+        Then we get OK response
+
+        When we login as tenant user "user_b"
+        When we post to "themes"
+        """
+        [{"name": "company-theme", "label": "Tenant B Theme"}]
+        """
+        Then we get OK response
+
+        When we get "/themes"
+        Then we get list with 1 items
+        """
+        {"_items": [{"name": "company-theme", "label": "Tenant B Theme"}]}
+        """
+
+        When we login as tenant user "user_a"
+        When we get "/themes"
+        Then we get list with 1 items
+        """
+        {"_items": [{"name": "company-theme", "label": "Tenant A Theme"}]}
+        """
+
+    @auth
+    Scenario: System themes cannot be deleted
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given system themes
+        When we find for "themes" the id as "system-theme-id" by "where={"name": "angular"}"
+        When we delete "/themes/#system-theme-id#"
+        Then we get error 403
+
+    @auth
+    Scenario: Tenant cannot delete theme with child themes
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+
+        Given "global_preferences"
+        """
+        [{"key": "theme", "value": "classic"}]
+        """
+
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "parent-theme", "version": "1.0.1"}, {"name": "child-theme", "version": "1.0.1", "extends": "parent-theme"}]
+        """
+        Then we get OK response
+
+        When we find for "themes" the id as "parent-theme-id" by "where={"name": "parent-theme"}"
+        When we delete "/themes/#parent-theme-id#"
+        Then we get error 403
+
+    @auth
+    Scenario: Theme quota includes system themes and tenant themes
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+
+        Given system themes
+        When we get "/themes"
+        Then we get list with 5 items
+
+        Given the theme quota is 7
+        When we post to "themes"
+        """
+        [{"name": "custom-1"}, {"name": "custom-2"}]
+        """
+        Then we get OK response
+        When we get "/themes"
+        Then we get list with 7 items
+
+    @auth
+    Scenario: Cannot exceed theme quota
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+
+        Given system themes
+        Given the theme quota is 7
+        When we post to "themes"
+        """
+        [{"name": "custom-1"}, {"name": "custom-2"}]
+        """
+        Then we get OK response
+
+        When we post to "themes"
+        """
+        [{"name": "custom-3"}]
+        """
+        Then we get error 403

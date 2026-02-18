@@ -202,6 +202,7 @@ INSTALLED_APPS = [
     "liveblog.polls",
     "liveblog.languages",
     "liveblog.themes",
+    "liveblog.theme_settings",
     "liveblog.client_modules",
     "liveblog.syndication",
     "liveblog.freetypes",

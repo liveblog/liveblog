@@ -36,3 +36,15 @@ def before_scenario(context, scenario):
         "MAIL_SUPPRESS_SEND": True,
     }
     setup_before_scenario(context, scenario, config, app_factory=get_app)
+
+    # Ensure FeaturesService is always initialized for tests
+    if not hasattr(context.app, 'features'):
+        from unittest.mock import MagicMock
+        from liveblog.instance_settings.features_service import FeaturesService
+
+        def db_service_mock():
+            db_service = MagicMock()
+            db_service.get_existing_config = MagicMock()
+            return db_service
+
+        context.app.features = FeaturesService(context.app, db_service_mock())

@@ -357,6 +357,54 @@ def step_create_user_same_tenant_with_role(context, username, role_id):
     )
 
 
+@given("system themes")
+def step_load_system_themes(context):
+    """
+    Load system themes (angular, classic, default, amp, simple) as fixtures.
+
+    System themes have tenant_id = null and are globally visible to all tenants.
+
+    Example:
+        Given system themes
+        When we get "/themes"
+        Then we get list with 5 items
+    """
+    from liveblog.system_themes import system_themes
+    from liveblog.tenancy.context import set_system_mode, reset_system_mode
+    from superdesk import get_resource_service
+
+    # Create minimal theme fixtures for each system theme
+    themes_list = [
+        {"name": theme_name, "tenant_id": None, "version": "1.0.0"}
+        for theme_name in system_themes
+    ]
+
+    # Enter system mode to bypass tenant requirements when creating system themes
+    token = set_system_mode()
+    try:
+        with context.app.app_context():
+            themes_service = get_resource_service("themes")
+            themes_service.post(themes_list)
+    finally:
+        reset_system_mode(token)
+
+
+@given('the theme quota is {limit:d}')
+def step_set_theme_quota(context, limit):
+    """
+    Set the theme quota limit for the current subscription plan.
+
+    Example:
+        Given the theme quota is 10
+    """
+    from unittest.mock import MagicMock
+
+    # Set the theme limit in the mocked settings
+    plan = "test_plan"
+    context.app.features._settings = {plan: {"limits": {"custom_themes": limit}}}
+    context.app.features.current_sub_level = MagicMock(return_value=plan)
+
+
 __all__ = [
     "create_tenant_fixture",
     "create_user_fixture",

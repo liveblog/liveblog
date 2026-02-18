@@ -11,6 +11,7 @@ from superdesk.services import BaseService
 from apps.archive.archive import ArchiveService
 from bson.objectid import ObjectId
 from liveblog.tenancy import get_tenant_id
+from liveblog.tenancy.context import SYSTEM_MODE, get_current_tenant_id
 
 
 class TenantAwareService(BaseService):
@@ -59,7 +60,7 @@ class TenantAwareService(BaseService):
         """
         # During system operations (no request context), skip tenant filtering
         # This allows rebuild_elastic_index and other management commands to work
-        if not flask.has_request_context():
+        if self.is_system_request():
             return lookup
 
         # In request context (HTTP requests), ALWAYS require tenant filtering
@@ -73,6 +74,21 @@ class TenantAwareService(BaseService):
             lookup["tenant_id"] = tenant_id
 
         return lookup
+
+    def is_system_request(self):
+        """
+        Determine if the current execution context is a system operation.
+
+        System operations have no tenant context and bypass tenant filtering.
+        This includes management commands, Celery tasks, and any code
+        executed outside of an authenticated HTTP request.
+
+        Returns:
+            bool: True if system operation (no tenant context), False otherwise
+        """
+        tenant_id = get_current_tenant_id()
+
+        return tenant_id == SYSTEM_MODE or not flask.has_request_context()
 
     def find(self, where=None, **kwargs):
         """
