@@ -3,7 +3,9 @@ Theme Settings Resource and Service
 
 Manages tenant-specific theme customizations.
 """
+from bson.objectid import ObjectId
 from superdesk.resource import Resource
+from superdesk import get_resource_service
 from liveblog.tenancy.service import TenantAwareService
 
 
@@ -99,11 +101,9 @@ class ThemeSettingsService(TenantAwareService):
             update_doc["style_settings"] = style_settings
 
         if existing:
-            # Update existing
             self.patch(existing["_id"], update_doc)
             return existing["_id"]
         else:
-            # Create new
             doc = {
                 "tenant_id": tenant_id,
                 "theme_name": theme_name,
@@ -156,3 +156,93 @@ class ThemeSettingsService(TenantAwareService):
             lookup["tenant_id"] = tenant_id
 
         self.delete(lookup=lookup)
+
+    def save_or_update_settings(self, theme_name, tenant_id, settings_payload, style_settings_payload=None):
+        """
+        Save or update theme settings for a tenant.
+
+        Wrapper around save_settings_for_tenant() for convenience.
+
+        Args:
+            theme_name: Theme name string
+            tenant_id: Tenant ObjectId or string
+            settings_payload: Settings dict from frontend
+            style_settings_payload: Optional style settings dict from frontend
+
+        Returns:
+            ObjectId: ID of created/updated document
+        """
+        if isinstance(tenant_id, str):
+            tenant_id = ObjectId(tenant_id)
+
+        return self.save_settings_for_tenant(
+            tenant_id=tenant_id,
+            theme_name=theme_name,
+            settings=settings_payload,
+            style_settings=style_settings_payload
+        )
+
+    def get_effective_settings(self, theme_name, tenant_id):
+        """
+        Get effective settings for a theme by merging defaults with tenant customizations.
+
+        Merge order: theme defaults ← tenant customizations (tenant wins)
+
+        Args:
+            theme_name: Theme name string
+            tenant_id: Tenant ObjectId or string
+
+        Returns:
+            dict: Merged settings (theme defaults + tenant customizations)
+        """
+        if isinstance(tenant_id, str):
+            tenant_id = ObjectId(tenant_id)
+
+        themes_service = get_resource_service("themes")
+        theme = themes_service.find_one(req=None, name=theme_name)
+
+        if not theme:
+            return {}
+
+        defaults = themes_service.get_default_settings(theme)
+        tenant_settings = self.get_settings_for_tenant(tenant_id, theme_name)
+
+        effective = defaults.copy()
+        effective.update(tenant_settings)
+
+        return effective
+
+    def get_effective_style_settings(self, theme_name, tenant_id):
+        """
+        Get effective style settings for a theme by merging defaults with tenant customizations.
+
+        Merge order: theme default styleSettings ← tenant style customizations (tenant wins)
+
+        Args:
+            theme_name: Theme name string
+            tenant_id: Tenant ObjectId or string
+
+        Returns:
+            dict: Merged style settings (theme defaults + tenant customizations)
+        """
+        if isinstance(tenant_id, str):
+            tenant_id = ObjectId(tenant_id)
+
+        themes_service = get_resource_service("themes")
+        theme = themes_service.find_one(req=None, name=theme_name)
+
+        if not theme:
+            return {}
+
+        defaults = themes_service.get_default_style_settings(theme)
+        tenant_style_settings = self.get_style_settings_for_tenant(tenant_id, theme_name)
+
+        effective = defaults.copy()
+
+        for group_name, group_settings in tenant_style_settings.items():
+            if group_name in effective:
+                effective[group_name].update(group_settings)
+            else:
+                effective[group_name] = group_settings
+
+        return effective

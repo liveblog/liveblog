@@ -178,12 +178,11 @@ class ThemesService(TenantAwareService, BaseService):
         if self.is_system_request():
             return super(TenantAwareService, self).get(req, lookup)
 
-        # Include system themes (tenant_id=null) along with tenant-specific themes
         tenant_id = get_tenant_id(required=True)
         if "$or" not in lookup:
             lookup["$or"] = [
-                {"tenant_id": None},  # System themes
-                {"tenant_id": tenant_id}  # Tenant-specific themes
+                {"tenant_id": None},
+                {"tenant_id": tenant_id}
             ]
 
         return self.backend.get(self.datasource, req=req, lookup=lookup)
@@ -199,11 +198,10 @@ class ThemesService(TenantAwareService, BaseService):
 
         tenant_id = get_tenant_id(required=True)
 
-        # Include both system themes and tenant-specific themes
         if "$or" not in lookup:
             lookup["$or"] = [
-                {"tenant_id": None},  # System themes
-                {"tenant_id": tenant_id}  # Tenant-specific themes
+                {"tenant_id": None},
+                {"tenant_id": tenant_id}
             ]
 
         return self.backend.find_one(self.datasource, req=req, **lookup)
@@ -222,13 +220,12 @@ class ThemesService(TenantAwareService, BaseService):
 
         tenant_id = get_tenant_id(required=True)
 
-        # Include both system themes and tenant-specific themes
         if "$or" not in lookup:
             if isinstance(tenant_id, str):
                 tenant_id = ObjectId(tenant_id)
             lookup["$or"] = [
-                {"tenant_id": None},  # System themes
-                {"tenant_id": tenant_id}  # Tenant-specific themes
+                {"tenant_id": None},
+                {"tenant_id": tenant_id}
             ]
 
         return self.backend.get(self.datasource, req=req, lookup=lookup)
@@ -236,8 +233,25 @@ class ThemesService(TenantAwareService, BaseService):
     def on_fetched(self, docs):
         super().on_fetched(docs)
 
+        tenant_id = get_tenant_id(required=False)
+        theme_settings_service = get_resource_service('theme_settings') if tenant_id else None
+
         for doc in docs["_items"]:
             theme_name = doc.get("name")
+
+            if tenant_id and theme_settings_service:
+                effective_settings = theme_settings_service.get_effective_settings(
+                    theme_name, tenant_id
+                )
+                effective_style_settings = theme_settings_service.get_effective_style_settings(
+                    theme_name, tenant_id
+                )
+
+                if effective_settings:
+                    doc["settings"] = effective_settings
+                if effective_style_settings:
+                    doc["styleSettings"] = effective_style_settings
+
             blogs_service = get_resource_service("blogs")
             blogs = blogs_service.get_from_mongo(
                 req=None, lookup={"blog_preferences.theme": theme_name}
@@ -245,6 +259,30 @@ class ThemesService(TenantAwareService, BaseService):
             blogs_list = list(blogs)
             blogs_count = len(blogs_list)
             doc["blogs_data"] = {"_items": blogs_list, "total": blogs_count}
+
+    def on_fetched_item(self, doc):
+        """
+        Merge effective settings when fetching a single theme.
+        """
+        super().on_fetched_item(doc)
+
+        tenant_id = get_tenant_id(required=False)
+
+        if tenant_id:
+            theme_name = doc.get("name")
+            theme_settings_service = get_resource_service('theme_settings')
+
+            effective_settings = theme_settings_service.get_effective_settings(
+                theme_name, tenant_id
+            )
+            effective_style_settings = theme_settings_service.get_effective_style_settings(
+                theme_name, tenant_id
+            )
+
+            if effective_settings:
+                doc["settings"] = effective_settings
+            if effective_style_settings:
+                doc["styleSettings"] = effective_style_settings
 
     def get_options(self, theme, options=None, parents=[], optionsKey="options"):
         """
@@ -762,13 +800,11 @@ class ThemesService(TenantAwareService, BaseService):
         Raises:
             SuperdeskApiError: 403 Forbidden if quota would be exceeded
         """
-        # Skip limit check for system operations (no request context)
         if self.is_system_request():
             return
 
         tenant_id = get_tenant_id(required=True)
 
-        # Convert to ObjectId for MongoDB query
         if isinstance(tenant_id, str):
             tenant_id = ObjectId(tenant_id)
 
@@ -776,8 +812,8 @@ class ThemesService(TenantAwareService, BaseService):
         # Must query MongoDB directly to bypass TenantAwareService filtering
         where = {
             "$or": [
-                {"tenant_id": None},  # System themes
-                {"tenant_id": tenant_id}  # Tenant-specific themes
+                {"tenant_id": None},
+                {"tenant_id": tenant_id}
             ]
         }
 
@@ -795,7 +831,7 @@ class ThemesService(TenantAwareService, BaseService):
             if "tenant_id" not in doc:
                 theme_name = doc.get("name")
                 if theme_name and self.is_local_theme(theme_name):
-                    doc["tenant_id"] = None  # System theme
+                    doc["tenant_id"] = None
 
         # Only check limits for user themes (not system themes)
         # A system theme has tenant_id explicitly set to None (not just missing)
@@ -806,13 +842,42 @@ class ThemesService(TenantAwareService, BaseService):
 
         super().on_create(docs)
 
+    def on_update(self, updates, original):
+        """
+        Intercept settings/styleSettings updates and route to theme_settings collection.
+
+        When a tenant updates theme settings via PATCH /themes/:id, we store the
+        customizations in theme_settings collection (normalized design) instead of
+        modifying the theme document itself.
+
+        This keeps theme definitions clean and separates tenant customizations.
+        """
+        settings = updates.pop('settings', None)
+        style_settings = updates.pop('styleSettings', None)
+
+        settings_updated = settings is not None or style_settings is not None
+
+        if settings_updated:
+            if not self.is_system_request():
+                tenant_id = get_tenant_id(required=True)
+                theme_settings_service = get_resource_service('theme_settings')
+
+                theme_settings_service.save_or_update_settings(
+                    theme_name=original['name'],
+                    tenant_id=tenant_id,
+                    settings_payload=settings if settings is not None else {},
+                    style_settings_payload=style_settings if style_settings is not None else {}
+                )
+
+                updates['_settings_updated'] = True
+
+        super().on_update(updates, original)
+
     def on_updated(self, updates, original):
-        # Republish the related blogs if the settings have been changed.
-        if "settings" in updates:
+        if updates.pop('_settings_updated', False):
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
-        # Prevent deletion of system themes (tenant_id = null)
         if deleted_theme.get("tenant_id") is None:
             raise SuperdeskApiError.forbiddenError(
                 "System themes cannot be deleted"
