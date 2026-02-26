@@ -12,7 +12,9 @@ import liveblog.liveblog_users as liveblog_users_app
 class PollsTest(TenantAwareTestCase):
     @run_once
     def setup_test_case(self):
-        self.app.config.update({"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://", "DEBUG": False})
+        self.app.config.update(
+            {"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://", "DEBUG": False}
+        )
         for app in [tenants_app, liveblog_users_app, polls]:
             app.init_app(self.app)
 

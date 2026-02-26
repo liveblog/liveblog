@@ -1,6 +1,8 @@
 import json
+import flask
 import logging
 
+from bson import ObjectId
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
 from flask_cors import CORS
@@ -15,6 +17,8 @@ from superdesk.services import BaseService
 from superdesk.errors import SuperdeskApiError
 from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
+from liveblog.tenancy import get_tenant_id
+from liveblog.tenancy.context import tenant_context_from_blog
 
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
@@ -26,14 +30,14 @@ from liveblog.advertisements.advertisements import (
 from liveblog.posts.posts import (
     PostsService,
     PostsResource,
-    BlogPostsService,
     BlogPostsResource,
 )
+from liveblog.tenancy.service import TenantAwareArchiveService
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
-from liveblog.posts.mixins import AuthorsMixin
+from liveblog.posts.mixins import AuthorsMixin, BlogPostsMixin
 from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
@@ -92,7 +96,7 @@ class ClientUsersService(BaseService):
 
 class ClientBlogsResource(BlogsResource):
     datasource = {"source": "blogs", "default_sort": [("_updated", -1)]}
-    public_methods = ["GET"]
+    public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -110,7 +114,7 @@ class ClientPostsResource(PostsResource):
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET"]
+    public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -120,10 +124,27 @@ class ClientPostsResource(PostsResource):
 
 class ClientPostsService(PostsService, AuthorsMixin):
     def find_one(self, req, **lookup):
-        post = super().find_one(req, **lookup)
-        if not post:
-            return None
+        post_id = lookup.get("_id")
+        if (
+            post_id
+            and flask.has_request_context()
+            and not get_tenant_id(required=False)
+        ):
+            # No tenant context yet. Bootstrap from the post's blog reference so
+            # enrichment (including the liveblog_users query) runs under the right tenant.
+            post = self.backend.find_one(self.datasource, req=None, _id=post_id)
+            if not post:
+                return None
+            blog = get_resource_service("client_blogs").find_one(
+                req=None, _id=post["blog"]
+            )
+            with tenant_context_from_blog(blog):
+                return self._enrich_post(post)
 
+        post = super().find_one(req, **lookup)
+        return self._enrich_post(post) if post else None
+
+    def _enrich_post(self, post):
         post_utils.calculate_post_type(post)
         post_utils.attach_syndication(post)
         self.complete_posts_info([post])
@@ -190,6 +211,17 @@ class ClientItemsService(ItemsService):
     def on_create(self, docs):
         for doc in docs:
             check_comment_length(doc["text"])
+
+        if docs and not get_tenant_id(required=False):
+            blog_id = docs[0].get("client_blog")
+            if blog_id:
+                blog = get_resource_service("client_blogs").find_one(
+                    req=None, _id=blog_id
+                )
+                with tenant_context_from_blog(blog):
+                    super().on_create(docs)
+                    return
+
         super().on_create(docs)
 
 
@@ -217,8 +249,8 @@ class ClientCommentsResource(PostsResource):
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "POST"]
-    public_item_methods = ["GET", "POST"]
+    public_methods = ["POST"]
+    public_item_methods = []
     item_methods = ["GET"]
     resource_methods = ["GET", "POST"]
     schema = {
@@ -236,7 +268,20 @@ class ClientCommentsService(PostsService):
                 # blog_id is kept also under the name blog as a string
                 # so that it can be further used to auto-refresh the back-office
                 doc["blog"] = str(doc["client_blog"])
+        if docs and not get_tenant_id(required=False):
+            blog_id = docs[0].get("client_blog")
+            if blog_id:
+                blog = get_resource_service("client_blogs").find_one(
+                    req=None, _id=blog_id
+                )
+                with tenant_context_from_blog(blog):
+                    super().on_create(docs)
+                    return
         super().on_create(docs)
+
+    def on_created(self, docs):
+        """Overrides parent to avoid logic that we don't need in the public endpoint"""
+        pass
 
 
 class ClientBlogPostsResource(BlogPostsResource):
@@ -255,7 +300,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     item_url = item_url
 
 
-class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
+class ClientBlogPostsService(TenantAwareArchiveService, BlogPostsMixin, AuthorsMixin):
     def get(self, req, lookup):
         allowed_params = {
             "start_date",
@@ -279,43 +324,53 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             "source",
         }
 
-        # check for unknown query parameters
         _check_for_unknown_params(request, allowed_params)
 
         sufix = hash(json.dumps(req.__dict__, sort_keys=True))
         cache_key = "lb_ClientBlogPostsService_get_%s" % sufix
         blog_id = lookup.get("blog_id")
 
-        # ElasticCursor is returned so we can loop and modify docs inside
         blog_posts = app.blog_cache.get(blog_id, cache_key)
 
         if blog_posts is None:
-            new_args = req.args.copy()
-            query_source = json.loads(new_args.get("source", "{}"))
+            blog = get_resource_service("client_blogs").find_one(
+                req=None, _id=ObjectId(blog_id)
+            )
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
 
-            post_filter = query_source.setdefault("post_filter", {})
-            filter_must = post_filter.setdefault("bool", {}).setdefault("must", [])
+            with tenant_context_from_blog(blog):
+                lookup["blog"] = ObjectId(blog_id)
+                del lookup["blog_id"]
 
-            for must_el in filter_must:
-                if "range" in must_el:
-                    must_el["range"]["published_date"] = {"lte": date_to_str(utcnow())}
-                    break
-            else:
-                filter_must.append(
-                    {"range": {"published_date": {"lte": date_to_str(utcnow())}}}
-                )
+                new_args = req.args.copy()
+                query_source = json.loads(new_args.get("source", "{}"))
 
-            new_args["source"] = json.dumps(query_source)
-            req.args = new_args
+                post_filter = query_source.setdefault("post_filter", {})
+                filter_must = post_filter.setdefault("bool", {}).setdefault("must", [])
 
-            blog_posts = super().get(req, lookup)
+                for must_el in filter_must:
+                    if "range" in must_el:
+                        must_el["range"]["published_date"] = {
+                            "lte": date_to_str(utcnow())
+                        }
+                        break
+                else:
+                    filter_must.append(
+                        {"range": {"published_date": {"lte": date_to_str(utcnow())}}}
+                    )
 
-            # let's complete the post info before cache
-            for post in blog_posts.docs:
-                post_utils.calculate_post_type(post)
-                post_utils.attach_syndication(post)
+                new_args["source"] = json.dumps(query_source)
+                req.args = new_args
 
-            app.blog_cache.set(blog_id, cache_key, blog_posts)
+                blog_posts = super().get(req, lookup)
+                self._enrich_blog_posts(blog_posts)
+
+                for post in blog_posts.docs:
+                    post_utils.calculate_post_type(post)
+                    post_utils.attach_syndication(post)
+
+                app.blog_cache.set(blog_id, cache_key, blog_posts)
 
         return blog_posts
 
@@ -432,26 +487,33 @@ def create_amp_comment():
     data = request.values
     check_comment_length(data["text"])
 
-    item_data = dict()
-    item_data["text"] = data["text"]
-    item_data["commenter"] = data["commenter"]
-    item_data["blog"] = item_data["client_blog"] = data["client_blog"]
-    item_data["item_type"] = "comment"
-    items = get_resource_service("client_items")
-    item_id = items.post([item_data])[0]
+    blog = get_resource_service("client_blogs").find_one(
+        req=None, _id=ObjectId(data["client_blog"])
+    )
+    if not blog:
+        return api_error("Blog not found", 404)
 
-    comment_data = dict()
-    comment_data["post_status"] = "comment"
-    comment_data["blog"] = comment_data["client_blog"] = item_data["blog"]
-    comment_data["groups"] = [
-        {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-        {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
-    ]
+    with tenant_context_from_blog(blog):
+        item_data = dict()
+        item_data["text"] = data["text"]
+        item_data["commenter"] = data["commenter"]
+        item_data["blog"] = item_data["client_blog"] = data["client_blog"]
+        item_data["item_type"] = "comment"
+        items = get_resource_service("client_items")
+        item_id = items.post([item_data])[0]
 
-    post_comments = get_resource_service("client_posts")
-    post_comment = post_comments.post([comment_data])[0]
+        comment_data = dict()
+        comment_data["post_status"] = "comment"
+        comment_data["blog"] = comment_data["client_blog"] = item_data["blog"]
+        comment_data["groups"] = [
+            {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+            {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
+        ]
 
-    comment = post_comments.find_one(req=None, _id=post_comment)
+        post_comments = get_resource_service("client_posts")
+        post_comment = post_comments.post([comment_data])[0]
+
+        comment = post_comments.find_one(req=None, _id=post_comment)
 
     resp = api_response(comment, 201)
     resp.headers["Access-Control-Allow-Credentials"] = "true"

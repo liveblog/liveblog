@@ -31,6 +31,7 @@ from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 from .embeds_utils import generate_theme_styles, google_fonts_url
 from settings import TRIGGER_HOOK_URLS, ACTIVATE_WATERMARK
+from liveblog.tenancy.context import tenant_context_from_blog
 
 logger = logging.getLogger("superdesk")
 embed_blueprint = superdesk.Blueprint(
@@ -135,16 +136,21 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 @embed_blueprint.route("/embed/<blog_id>/theme/<theme>", defaults={"output": None})
 @embed_blueprint.route("/embed/<blog_id>/<output>/theme/<theme>/")
 def embed(blog_id, theme=None, output=None, api_host=None):
+    api_host = api_host or request.url_root
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
+    if not blog:
+        return "blog not found", 404
+
+    with tenant_context_from_blog(blog):
+        return _embed(blog, blog_id, theme, output, api_host)
+
+
+def _embed(blog, blog_id, theme, output, api_host):
     from liveblog.themes import UnknownTheme
 
     # adding import here to avoid circular references
     from liveblog.advertisements.utils import get_advertisements_list
     from liveblog.advertisements.amp import AdsSettings, inject_advertisements
-
-    api_host = api_host or request.url_root
-    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
-    if not blog:
-        return "blog not found", 404
 
     # if the `output` is the `_id` get the data.
     if output:
@@ -382,16 +388,18 @@ def embed_iframe(blog_id):
     blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
     if not blog:
         return "blog not found", 404
-    theme_name = blog["blog_preferences"].get("theme")
-    theme_service = get_resource_service("themes")
-    theme = theme_service.find_one(req=None, name=theme_name)
-    if not theme:
-        return "theme not found", 404
-    theme_settings_service = get_resource_service("theme_settings")
-    settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
-    return render_template(
-        "embed_iframe.html", blog=blog, theme=theme, settings=settings
-    )
+
+    with tenant_context_from_blog(blog):
+        theme_name = blog["blog_preferences"].get("theme")
+        theme_service = get_resource_service("themes")
+        theme = theme_service.find_one(req=None, name=theme_name)
+        if not theme:
+            return "theme not found", 404
+        theme_settings_service = get_resource_service("theme_settings")
+        settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
+        return render_template(
+            "embed_iframe.html", blog=blog, theme=theme, settings=settings
+        )
 
 
 @embed_blueprint.route("/embed/<blog_id>/overview")

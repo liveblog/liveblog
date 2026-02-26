@@ -1,9 +1,9 @@
 """
 Tenant-aware Celery task base classes.
 """
-from celery import Task
 import flask
 from bson.objectid import ObjectId
+from superdesk.celery_app import AppContextTask
 from liveblog.tenancy.context import (
     set_current_tenant_id,
     reset_current_tenant_id,
@@ -12,7 +12,7 @@ from liveblog.tenancy.context import (
 )
 
 
-class TenantAwareTask(Task):
+class TenantAwareTask(AppContextTask):
     """
     Base task that automatically captures tenant_id at dispatch time
     and restores it at execution time.
@@ -88,16 +88,14 @@ class TenantAwareTask(Task):
         if isinstance(tenant_id, str):
             tenant_id = ObjectId(tenant_id)
 
-        # Set execution context
         token = set_current_tenant_id(tenant_id)
-
         try:
             return super().__call__(*args, **kwargs)
         finally:
             reset_current_tenant_id(token)
 
 
-class SystemTask(Task):
+class SystemTask(AppContextTask):
     """
     Base task for system operations that bypass tenant filtering.
 

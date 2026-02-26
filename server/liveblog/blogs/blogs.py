@@ -359,6 +359,9 @@ class BlogService(TenantAwareService):
             post_auto_output_creation.apply_async(args=[output_data], countdown=3)
 
 
+# TODO(multi-tenancy): UserBlogsResource/UserBlogsService appear to be unused — no backend
+# callers, no frontend references, no feature tests. Before the multi-tenancy release, decide
+# whether to remove this endpoint entirely or migrate it to TenantAwareService.
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema

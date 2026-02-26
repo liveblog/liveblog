@@ -1,10 +1,14 @@
 import logging
-from flask import request
+from flask import request, current_app as app
 from bson.objectid import ObjectId
 
+from eve_elastic.elastic import ElasticCursor
 from superdesk import get_resource_service
+from superdesk.resource import build_custom_hateoas
 from settings import MOBILE_APP_WORKAROUND
+from liveblog.polls.polls import poll_calculations
 from . import utils as post_utils
+from .utils import get_associations
 
 logger = logging.getLogger("superdesk")
 
@@ -173,3 +177,112 @@ class AuthorsMixin:
                     item["original_creator"] = (
                         author_id if is_mobile_app else self.authors_map.get(author_id)
                     )
+
+
+class BlogPostsMixin:
+    """
+    Shared post-enrichment logic for both the authenticated (BlogPostsService)
+    and public (ClientBlogPostsService) blog posts endpoints.
+    """
+
+    custom_hateoas = {"self": {"title": "Posts", "href": "/{location}/{_id}"}}
+
+    def related_items_map(self, docs):
+        """
+        Receives an array of posts, extracts their associations' IDs, hits the
+        database once per resource and returns them as a {residRef: item} dict.
+        """
+        items_map = {}
+        ids_by_service = {}
+
+        for doc in docs:
+            for assoc in self.packageService._get_associations(doc):
+                item_ref_id = assoc.get("residRef")
+                if item_ref_id:
+                    service_name = assoc.get("location", "archive")
+                    ids = ids_by_service.get(service_name, [])
+                    ids.append(item_ref_id)
+                    ids_by_service[service_name] = ids
+
+        for service_name, ids in ids_by_service.items():
+            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
+                items_map[str(item.get("_id"))] = item
+
+        return items_map
+
+    def remove_post_from_list_and_db(self, docs, post):
+        if app.config.get("SUPERDESK_TESTING", False):
+            return
+
+        self.delete(lookup={"_id": post["_id"]})
+
+        try:
+            if isinstance(docs, ElasticCursor):
+                docs.docs.remove(post)
+            else:
+                docs.remove(post)
+        except Exception as e:
+            logger.warning(f"Failed to remove orphan doc: {post}. Error: {e}")
+
+    def remove_orphan_items(self, docs):
+        """Removes posts whose items are missing from the related_items map."""
+        for post in docs:
+            posts_items = []
+
+            for group in post.get("groups", []):
+                if group.get("id") == "main":
+                    posts_items = group.get("refs", [])
+
+            if len(posts_items) == 0:
+                self.remove_post_from_list_and_db(docs, post)
+
+            for assoc in get_associations(post):
+                if "deleted" in assoc:
+                    if (
+                        len(post["groups"]) > 0
+                        and "refs" in post["groups"][1]
+                        and len(post["groups"][1]["refs"]) == 1
+                    ):
+                        self.remove_post_from_list_and_db(docs, post)
+
+                    try:
+                        post["groups"][1]["refs"].remove(assoc)
+                    except Exception as e:
+                        logger.warning(
+                            f"Failed to remove orphan item: {assoc}. Error: {e}"
+                        )
+
+    def _enrich_blog_posts(self, docs):
+        """
+        Attach related items, resolve poll calculations, and enrich author
+        information for all posts in docs. Mutates docs in place.
+        """
+        related_items = self.related_items_map(docs)
+
+        for doc in docs:
+            build_custom_hateoas(self.custom_hateoas, doc, location="posts")
+
+            for assoc in get_associations(doc):
+                ref_id = assoc.get("residRef", None)
+
+                # not in related_items means it's a deleted item — mark it so
+                # remove_orphan_items can clean it up
+                if ref_id and ref_id not in related_items:
+                    assoc["deleted"] = True
+                    continue
+
+                if ref_id:
+                    assoc["item"] = related_items[ref_id]
+                    if assoc.get("type") == "poll":
+                        assoc["item"]["poll_body"] = poll_calculations(
+                            assoc["item"]["poll_body"]
+                        )
+
+            self.extract_author_ids(doc)
+
+        # NOTE: temporary workaround for broken references
+        # TODO: remove this after two releases from now
+        self.remove_orphan_items(docs)
+
+        self.generate_authors_map()
+        self.attach_authors(docs)

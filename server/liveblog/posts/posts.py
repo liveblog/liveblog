@@ -33,7 +33,7 @@ from .tasks import (
     notify_scheduled_post,
     update_scheduled_post_blog_data,
 )
-from .mixins import AuthorsMixin
+from .mixins import AuthorsMixin, BlogPostsMixin
 from .utils import get_associations, check_content_diff
 
 
@@ -700,9 +700,7 @@ class BlogPostsResource(Resource):
     privileges = {"GET": "posts"}
 
 
-class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
-    custom_hateoas = {"self": {"title": "Posts", "href": "/{location}/{_id}"}}
-
+class BlogPostsService(TenantAwareArchiveService, BlogPostsMixin, AuthorsMixin):
     def get(self, req, lookup):
         imd = req.args.items()
         for key in imd:
@@ -715,8 +713,7 @@ class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
             blog_id = ObjectId(lookup["blog_id"])
 
             # Validate that the blog exists in the current tenant before querying posts
-            blogs_service = get_resource_service("blogs")
-            blog = blogs_service.find_one(req=None, _id=blog_id)
+            blog = get_resource_service("blogs").find_one(req=None, _id=blog_id)
             if not blog:
                 raise SuperdeskApiError.notFoundError(message="Blog not found")
 
@@ -724,119 +721,8 @@ class BlogPostsService(TenantAwareArchiveService, AuthorsMixin):
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)
-        related_items = self.related_items_map(docs)
-
-        for doc in docs:
-            build_custom_hateoas(self.custom_hateoas, doc, location="posts")
-
-            for assoc in get_associations(doc):
-                ref_id = assoc.get("residRef", None)
-
-                # NOTE: not in related_items means it's a deleted item
-                # then let's mark it as deleted to later remove it in `remove_orphan_items`
-                if ref_id and ref_id not in related_items:
-                    assoc["deleted"] = True
-                    continue
-
-                if ref_id:
-                    assoc["item"] = related_items[ref_id]
-                    if assoc.get("type") == "poll":
-                        assoc["item"]["poll_body"] = poll_calculations(
-                            assoc["item"]["poll_body"]
-                        )
-
-            self.extract_author_ids(doc)
-
-        # NOTE: temporary workaround for broken references
-        # TODO: remove this after two releases from now
-        self.remove_orphan_items(docs)
-
-        # now that we have authors id, let's hit db once
-        self.generate_authors_map()
-        self.attach_authors(docs)
-
+        self._enrich_blog_posts(docs)
         return docs
-
-    def remove_post_from_list_and_db(self, docs, post):
-        """
-        Removes the post from the list and the database
-        """
-        # skip in tests as we use posts without items for testing purposes
-        if app.config.get("SUPERDESK_TESTING", False):
-            return
-
-        self.delete(lookup={"_id": post["_id"]})
-
-        try:
-            if isinstance(docs, ElasticCursor):
-                docs.docs.remove(post)
-            else:
-                docs.remove(post)
-        except Exception as e:
-            logger.warning(f"Failed to remove orphan doc: {post}. Error: {e}")
-
-    def remove_orphan_items(self, docs):
-        """This tries to remove the items that are not present in the related_items map"""
-
-        for post in docs:
-            posts_items = []
-
-            # we only get the refs from the main group (meaning child items of the post)
-            for group in post.get("groups", []):
-                if group.get("id") == "main":
-                    posts_items = group.get("refs", [])
-
-            # if the post has no items, we nuke it from db
-            if len(posts_items) == 0:
-                self.remove_post_from_list_and_db(docs, post)
-
-            for assoc in get_associations(post):
-                # if `deleted` is found in the item, it means it's a deleted item
-                if "deleted" in assoc:
-                    # if the post only has one item, we nuke it from db
-                    if (
-                        len(post["groups"]) > 0
-                        and "refs" in post["groups"][1]
-                        and len(post["groups"][1]["refs"]) == 1
-                    ):
-                        self.remove_post_from_list_and_db(docs, post)
-
-                    # finally remove the item from the references of the post
-                    try:
-                        post["groups"][1]["refs"].remove(assoc)
-                    except Exception as e:
-                        logger.warning(
-                            f"Failed to remove orphan item: {assoc}. Error: {e}"
-                        )
-
-    def related_items_map(self, docs):
-        """
-        It receives an array of posts and extracts the associations' ID
-        then it hits the database just 1 time per resource and return them as dictionary.
-
-        It should fetch the items from the respective resource service according to the
-        location attribute. Otherwise, it should fetch from `archive` resource by default
-        """
-
-        items_map = {}
-        ids_by_service = {}
-
-        for doc in docs:
-            for assoc in self.packageService._get_associations(doc):
-                item_ref_id = assoc.get("residRef")
-
-                if item_ref_id:
-                    service_name = assoc.get("location", "archive")
-                    ids = ids_by_service.get(service_name, [])
-                    ids.append(item_ref_id)
-                    ids_by_service[service_name] = ids
-
-        # let's get all the items at once and turn it into a dict
-        for service_name, ids in ids_by_service.items():
-            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
-                items_map[str(item.get("_id"))] = item
-
-        return items_map
 
     def on_fetched(self, blog):
         super().on_fetched(blog)
