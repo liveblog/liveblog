@@ -212,6 +212,7 @@ class PostsModuleTestCase(TenantAwareTestCase):
                 },
                 "text": "Sample poll",
                 "versioncreated": "2024-02-07T07:18:11+00:00",
+                "tenant_id": self.tenant_id,
             },
             {
                 "_created": "2024-02-07T07:18:11+00:00",
@@ -239,6 +240,7 @@ class PostsModuleTestCase(TenantAwareTestCase):
                 },
                 "text": "Sample poll",
                 "versioncreated": "2024-02-07T07:18:11+00:00",
+                "tenant_id": self.tenant_id,
             },
         ]
 
@@ -396,6 +398,7 @@ class PostsModuleTestCase(TenantAwareTestCase):
                 "_created": "2024-02-09T21:42:09.000Z",
                 "item_type": "post_comment",
                 "_etag": "680f7656e1ea09eae89bee39d370f9594d9c6e18",
+                "tenant_id": self.tenant_id,
             }
         ]
 
