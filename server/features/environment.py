@@ -38,7 +38,7 @@ def before_scenario(context, scenario):
     setup_before_scenario(context, scenario, config, app_factory=get_app)
 
     # Ensure FeaturesService is always initialized for tests
-    if not hasattr(context.app, 'features'):
+    if not hasattr(context.app, "features"):
         from unittest.mock import MagicMock
         from liveblog.instance_settings.features_service import FeaturesService
 

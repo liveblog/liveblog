@@ -79,7 +79,9 @@ class ThemeSettingsService(TenantAwareService):
         existing = self.find_one(req=None, tenant_id=tenant_id, theme_name=theme_name)
         return existing if existing else {}
 
-    def save_settings_for_tenant(self, tenant_id, theme_name, settings, style_settings=None):
+    def save_settings_for_tenant(
+        self, tenant_id, theme_name, settings, style_settings=None
+    ):
         """
         Upsert theme settings for tenant.
 
@@ -157,7 +159,9 @@ class ThemeSettingsService(TenantAwareService):
 
         self.delete(lookup=lookup)
 
-    def save_or_update_settings(self, theme_name, tenant_id, settings_payload, style_settings_payload=None):
+    def save_or_update_settings(
+        self, theme_name, tenant_id, settings_payload, style_settings_payload=None
+    ):
         """
         Save or update theme settings for a tenant.
 
@@ -179,7 +183,7 @@ class ThemeSettingsService(TenantAwareService):
             tenant_id=tenant_id,
             theme_name=theme_name,
             settings=settings_payload,
-            style_settings=style_settings_payload
+            style_settings=style_settings_payload,
         )
 
     def get_effective_settings(self, theme_name, tenant_id):
@@ -235,7 +239,9 @@ class ThemeSettingsService(TenantAwareService):
             return {}
 
         defaults = themes_service.get_default_style_settings(theme)
-        tenant_style_settings = self.get_style_settings_for_tenant(tenant_id, theme_name)
+        tenant_style_settings = self.get_style_settings_for_tenant(
+            tenant_id, theme_name
+        )
 
         effective = defaults.copy()
 

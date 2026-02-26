@@ -389,7 +389,7 @@ def step_load_system_themes(context):
         reset_system_mode(token)
 
 
-@given('the theme quota is {limit:d}')
+@given("the theme quota is {limit:d}")
 def step_set_theme_quota(context, limit):
     """
     Set the theme quota limit for the current subscription plan.
