@@ -1,27 +1,27 @@
+import datetime
 from bson import ObjectId
 from superdesk import get_resource_service
-from superdesk.tests import TestCase
 from liveblog.polls.polls import poll_calculations
-import datetime
-import flask
+from liveblog.tests.tenant_test_case import TenantAwareTestCase
+from liveblog.common import run_once
 import liveblog.polls as polls
+import liveblog.tenants as tenants_app
+import liveblog.liveblog_users as liveblog_users_app
 
 
-class PollsTest(TestCase):
+class PollsTest(TenantAwareTestCase):
+    @run_once
+    def setup_test_case(self):
+        self.app.config.update({"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://", "DEBUG": False})
+        for app in [tenants_app, liveblog_users_app, polls]:
+            app.init_app(self.app)
+
     def setUp(self):
-        polls.init_app(self.app)
-        test_config = {
-            "LIVEBLOG_DEBUG": True,
-            "EMBED_PROTOCOL": "http://",
-            "DEBUG": False,
-        }
-        self.app.config.update(test_config)
-        self.client = self.app.test_client()
+        super().setUp()
+        self.setup_test_case()
+        self.setup_tenant_and_user()
         self.polls_service = get_resource_service("polls")
-        self.users_service = get_resource_service("liveblog_users")
-
         self.blogId = ObjectId("65bb5f908531ef64e85c801f")
-
         self.poll_doc = [
             {
                 "blog": self.blogId,
@@ -37,26 +37,7 @@ class PollsTest(TestCase):
             }
         ]
 
-        self.user_list = [
-            {
-                "username": "admin",
-                "display_name": "Edwin the admin",
-                "first_name": "Edwin",
-                "is_active": True,
-                "is_enabled": True,
-                "last_name": "the admin",
-                "sign_off": "off",
-                "byline": "by",
-                "email": "abc@other.com",
-            }
-        ]
-
-        self.app.data.insert("users", self.user_list)
-
     def test_poll_create_with_valid_data(self):
-        flask.g.user = get_resource_service("liveblog_users").find_one(
-            req=None, username="admin"
-        )
         response = self.polls_service.on_create(self.poll_doc)
         self.assertIsNotNone(response.get("original_creator"), True)
         self.assertIsNotNone(response.get("firstcreated"), True)
