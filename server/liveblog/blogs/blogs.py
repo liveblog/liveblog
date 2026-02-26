@@ -112,16 +112,6 @@ def send_email_to_added_members(blog, recipients, blog_url):
 class BlogService(TenantAwareService):
     notification_key = "blog"
 
-    def _update_theme_settings(self, doc, theme_name):
-        theme = get_resource_service("themes").find_one(req=None, name=theme_name)
-        if theme:
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service(
-                "themes"
-            ).get_default_settings(theme)
-            # save the theme settings on the blog level
-            doc["theme_settings"] = default_theme_settings
-
     def on_create(self, docs):
         super().on_create(docs)
         self._check_max_active(len(docs))
@@ -135,11 +125,6 @@ class BlogService(TenantAwareService):
             preferences.update(doc.get("blog_preferences", {}))
 
             doc["blog_preferences"] = preferences
-
-            # find the theme that is assigned to the blog
-            theme_name = doc["blog_preferences"].get("theme")
-            if theme_name:
-                self._update_theme_settings(doc, theme_name)
 
             embed_height_key = "embed_height_responsive_default"
             if embed_height_key not in preferences:
@@ -237,11 +222,6 @@ class BlogService(TenantAwareService):
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get("start_date") and original["start_date"] is None:
             updates["start_date"] = original["_created"]
-
-        if "blog_preferences" in updates:
-            theme_name = updates["blog_preferences"].get("theme")
-            if theme_name:
-                self._update_theme_settings(updates, theme_name)
 
     def on_updated(self, updates, original):
         original_id = str(original["_id"])
@@ -358,15 +338,21 @@ class BlogService(TenantAwareService):
                 )
 
     def _auto_create_output(self, blog):
-        # Create output channel automatically
-        blog_theme = blog.get("theme_settings")
-        if blog_theme and blog_theme.get("outputChannel"):
-            output_name = blog_theme.get("outputChannelName", "Default output")
+        # Create output channel automatically using runtime theme settings
+        theme_name = blog.get("blog_preferences", {}).get("theme")
+        if not theme_name:
+            return
+
+        theme_settings_service = get_resource_service("theme_settings")
+        theme_settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
+
+        if theme_settings and theme_settings.get("outputChannel"):
+            output_name = theme_settings.get("outputChannelName", "Default output")
             output_data = [
                 {
                     "name": output_name,
                     "blog": ObjectId(str(blog["_id"])),
-                    "theme": blog_theme.get("outputChannelTheme", "amp"),
+                    "theme": theme_settings.get("outputChannelTheme", "amp"),
                 }
             ]
 

@@ -45,10 +45,7 @@ class ThemeSettingsResource(Resource):
 
     mongo_indexes = {
         # Unique constraint: one entry per theme per tenant
-        "tenant_theme_unique": {
-            "key": [("tenant_id", 1), ("theme_name", 1)],
-            "unique": True,
-        }
+        "tenant_theme_unique": ([("tenant_id", 1), ("theme_name", 1)], {"unique": True})
     }
 
     # No API endpoints - this is an internal resource
@@ -252,3 +249,30 @@ class ThemeSettingsService(TenantAwareService):
                 effective[group_name] = group_settings
 
         return effective
+
+    def get_settings_for_blog(self, blog, theme_name):
+        """
+        Get effective theme settings for blog rendering.
+
+        Uses tenant customizations merged with theme defaults.
+
+        Args:
+            blog: Blog document with tenant_id (required)
+            theme_name: Name of the theme
+
+        Returns:
+            dict: Effective settings (defaults + tenant customizations)
+
+        Raises:
+            SuperdeskApiError: If blog is missing tenant_id
+        """
+        from superdesk.errors import SuperdeskApiError
+
+        tenant_id = blog.get("tenant_id")
+
+        if not tenant_id:
+            raise SuperdeskApiError.badRequestError(
+                message="Blog missing tenant_id - data integrity issue"
+            )
+
+        return self.get_effective_settings(theme_name, tenant_id)

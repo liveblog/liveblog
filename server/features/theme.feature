@@ -67,42 +67,6 @@ Feature: Themes operations
         Then we get OK response
 
     @auth
-    Scenario: Overwrite theme_settings at blog level
-        Given a tenant "Tenant A"
-        And a user "user_a" for current tenant
-        When we login as tenant user "user_a"
-        Given system themes
-        When we post to "themes"
-        """
-        [{"name": "custom-classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
-        """
-        Then we get OK response
-        When we get "/themes"
-        Then we get list with 6 items
-        Given empty "blogs"
-        When we post to "/blogs"
-        """
-        [
-         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "custom-classic"}}
-        ]
-        """
-        And we get "/blogs"
-        Then we get list with 1 items
-        """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "22", "postOrder": "editorial"}, "blog_preferences": {"theme": "custom-classic"}}]}
-        """
-        When we patch "/blogs/#blogs._id#"
-        """
-        {"theme_settings": {"postsPerPage": "25"}}
-        """
-        Then we get updated response
-        When we get "/blogs"
-        Then we get list with 1 items
-        """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
-        """
-
-    @auth
     Scenario: Overwrite default theme_settings
         Given a tenant "Tenant A"
         And a user "user_a" for current tenant
@@ -352,3 +316,22 @@ Feature: Themes operations
         [{"name": "custom-3"}]
         """
         Then we get error 403
+
+    @auth
+    Scenario: Tenant cannot create duplicate themes with same name
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "unique-theme", "label": "First Theme"}]
+        """
+        Then we get OK response
+
+        When we post to "themes"
+        """
+        [{"name": "unique-theme", "label": "Duplicate Theme"}]
+        """
+        Then we get error 409

@@ -12,6 +12,7 @@ import os
 import glob
 import json
 import magic
+import flask
 import jinja2
 import superdesk
 import zipfile
@@ -134,17 +135,22 @@ class ThemesResource(Resource):
 
     mongo_indexes = {
         # System themes: name must be globally unique (tenant_id = null)
-        "system_theme_name_unique": {
-            "key": [("name", 1)],
-            "unique": True,
-            "partialFilterExpression": {"tenant_id": {"$eq": None}},
-        },
+        "system_theme_name_unique": (
+            [("name", 1)],
+            {
+                "unique": True,
+                "partialFilterExpression": {"tenant_id": {"$eq": None}},
+            },
+        ),
         # User themes: (name, tenant_id) must be unique per tenant
-        "user_theme_name_tenant_unique": {
-            "key": [("name", 1), ("tenant_id", 1)],
-            "unique": True,
-            "partialFilterExpression": {"tenant_id": {"$ne": None}},
-        },
+        # Uses $type to match only documents where tenant_id exists and is an ObjectId
+        "user_theme_name_tenant_unique": (
+            [("name", 1), ("tenant_id", 1)],
+            {
+                "unique": True,
+                "partialFilterExpression": {"tenant_id": {"$type": "objectId"}},
+            },
+        ),
     }
 
     etag_ignore_fields = ["_type", "template"]
@@ -225,32 +231,40 @@ class ThemesService(TenantAwareService, BaseService):
         super().on_fetched(docs)
 
         tenant_id = get_tenant_id(required=False)
-        theme_settings_service = (
-            get_resource_service("theme_settings") if tenant_id else None
-        )
+
+        # Only enrich themes when there's a tenant context
+        # Without tenant, return raw theme documents (for tests, system operations)
+        if not tenant_id:
+            return
+
+        theme_settings_service = get_resource_service("theme_settings")
 
         for doc in docs["_items"]:
             theme_name = doc.get("name")
 
-            if tenant_id and theme_settings_service:
-                effective_settings = theme_settings_service.get_effective_settings(
+            # Merge tenant-specific customizations
+            effective_settings = theme_settings_service.get_effective_settings(
+                theme_name, tenant_id
+            )
+            effective_style_settings = (
+                theme_settings_service.get_effective_style_settings(
                     theme_name, tenant_id
                 )
-                effective_style_settings = (
-                    theme_settings_service.get_effective_style_settings(
-                        theme_name, tenant_id
-                    )
-                )
-
-                if effective_settings:
-                    doc["settings"] = effective_settings
-                if effective_style_settings:
-                    doc["styleSettings"] = effective_style_settings
-
-            blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get_from_mongo(
-                req=None, lookup={"blog_preferences.theme": theme_name}
             )
+
+            if effective_settings:
+                doc["settings"] = effective_settings
+            if effective_style_settings:
+                doc["styleSettings"] = effective_style_settings
+
+            # Count blogs in current tenant using this theme
+            blogs_service = get_resource_service("blogs")
+            lookup = {
+                "blog_preferences.theme": theme_name,
+                "tenant_id": tenant_id,
+            }
+
+            blogs = blogs_service.find(lookup)
             blogs_list = list(blogs)
             blogs_count = len(blogs_list)
             doc["blogs_data"] = {"_items": blogs_list, "total": blogs_count}
@@ -610,28 +624,6 @@ class ThemesService(TenantAwareService, BaseService):
             theme_settings.update(default_prev_theme_settings)
             theme["settings"] = theme_settings
 
-            # Set theme settings for blogs using previous theme.
-            blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get(
-                req=None, lookup={"blog_preferences.theme": previous_theme["name"]}
-            )
-            for blog in blogs:
-                # Create new settings values for the blog based on uploaded theme settings.
-                new_theme_settings = default_theme_settings.copy()
-                for key, value in blog.get("theme_settings", {}).items():
-                    # If values of theme setting from blog level are the same as previous update the settings.
-                    if value == default_prev_theme_settings.get(key, None):
-                        new_theme_settings[key] = value
-                    # Otherwise we keep the value that is already available.
-                    else:
-                        default_theme_settings[key] = value
-
-                new_theme_settings.update(default_theme_settings)
-                # Save the blog with the new settings
-                blogs_service.system_update(
-                    ObjectId(blog["_id"]), {"theme_settings": new_theme_settings}, blog
-                )
-
         return theme_settings, default_theme_settings
 
     def _set_style_settings(self, theme, previous_theme):
@@ -845,6 +837,10 @@ class ThemesService(TenantAwareService, BaseService):
         modifying the theme document itself.
 
         This keeps theme definitions clean and separates tenant customizations.
+
+        TODO MIGRATION: For existing single-tenant instances upgrading to multi-tenancy:
+        Migrate existing theme customizations from themes.settings/styleSettings to
+        theme_settings collection. See MIGRATION_GUIDE.md for details.
         """
         settings = updates.pop("settings", None)
         style_settings = updates.pop("styleSettings", None)
@@ -892,12 +888,19 @@ class ThemesService(TenantAwareService, BaseService):
                 "This theme has child themes and cannot be removed"
             )
 
-        # Update all the blogs using the removed theme and assign the default theme.
+        # Update blogs in the same tenant using the removed theme
+        # Only tenant themes can be deleted (checked above), so we only need to
+        # reassign blogs in the same tenant
         blogs_service = get_resource_service("blogs")
-        blogs = blogs_service.get(
-            req=None, lookup={"blog_preferences.theme": deleted_theme["name"]}
-        )
+        theme_tenant_id = deleted_theme.get("tenant_id")
 
+        # Query only blogs with same tenant_id as the deleted theme
+        lookup = {
+            "blog_preferences.theme": deleted_theme["name"],
+            "tenant_id": theme_tenant_id,
+        }
+
+        blogs = blogs_service.find(lookup)
         for blog in blogs:
             blog["blog_preferences"]["theme"] = global_default_theme
             blogs_service.system_update(

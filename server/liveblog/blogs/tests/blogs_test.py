@@ -2,6 +2,8 @@ import liveblog.blogs as blog_app
 import liveblog.advertisements as advert_app
 import liveblog.client_modules as client_modules
 import liveblog.tenants as tenants_app
+import liveblog.theme_settings as theme_settings_app
+import liveblog.themes as themes_app
 
 from unittest.mock import MagicMock
 from superdesk import get_resource_service
@@ -27,7 +29,14 @@ class BlogsTestCase(TenantAwareTestCase):
         }
         self.app.config.update(test_config)
 
-        for lb_app in [tenants_app, blog_app, advert_app, client_modules]:
+        for lb_app in [
+            tenants_app,
+            themes_app,
+            theme_settings_app,
+            blog_app,
+            advert_app,
+            client_modules,
+        ]:
             lb_app.init_app(self.app)
 
     def setUp(self):
@@ -35,6 +44,22 @@ class BlogsTestCase(TenantAwareTestCase):
         self.setup_test_case()
         self.setup_tenant_and_user()
         self.app.features = FeaturesService(self.app, db_service_mock())
+
+        # Create a "default" theme with outputChannel options
+        themes_service = get_resource_service("themes")
+        themes_service.post(
+            [
+                {
+                    "name": "default",
+                    "tenant_id": None,
+                    "options": [
+                        {"name": "outputChannel", "default": False},
+                        {"name": "outputChannelName", "default": "Default output"},
+                        {"name": "outputChannelTheme", "default": "amp"},
+                    ],
+                }
+            ]
+        )
 
         self.blog_with_output = {
             "title": "Test blog",
@@ -48,11 +73,7 @@ class BlogsTestCase(TenantAwareTestCase):
             "total_posts": 0,
             "original_creator": "5b1a6935fd16ad1ce83822da",
             "blog_preferences": {"language": "en", "theme": "default"},
-            "theme_settings": {
-                "outputChannel": True,
-                "outputChannelName": "Test channel",
-                "outputChannelTheme": "amp",
-            },
+            "tenant_id": self.tenant_id,
             "_etag": "853b12bef642b42b67f8e2273b19f4cba5c88ac3",
             "_id": "5b35df76fd16ad23840abb70",
             "_links": {
@@ -73,11 +94,7 @@ class BlogsTestCase(TenantAwareTestCase):
             "total_posts": 0,
             "original_creator": "5b1a6935fd16ad1ce83822da",
             "blog_preferences": {"language": "en", "theme": "default"},
-            "theme_settings": {
-                "outputChannel": False,
-                "outputChannelName": "Test channel",
-                "outputChannelTheme": "amp",
-            },
+            "tenant_id": self.tenant_id,
             "_etag": "853b12bef642b42b67f8e2273b19f4cba5c88ac3",
             "_id": "5b35df76fd16ad23840abb70",
             "_links": {
@@ -103,6 +120,23 @@ class BlogsTestCase(TenantAwareTestCase):
 
     def test_auto_create_output(self):
         self.app.features.current_sub_level = MagicMock(return_value="network")
+
+        # Create theme_settings with outputChannel=True for this tenant
+        theme_settings_service = get_resource_service("theme_settings")
+        theme_settings_service.post(
+            [
+                {
+                    "tenant_id": self.tenant_id,
+                    "theme_name": "default",
+                    "settings": {
+                        "outputChannel": True,
+                        "outputChannelName": "Test channel",
+                        "outputChannelTheme": "amp",
+                    },
+                }
+            ]
+        )
+
         get_resource_service("blogs")._auto_create_output(self.blog_with_output)
         self.assertIsNotNone(
             get_resource_service("outputs").find(
@@ -112,6 +146,23 @@ class BlogsTestCase(TenantAwareTestCase):
 
     def test_not_auto_create_output(self):
         self.app.features.current_sub_level = MagicMock(return_value="network")
+
+        # Create theme_settings with outputChannel=False for this tenant
+        theme_settings_service = get_resource_service("theme_settings")
+        theme_settings_service.post(
+            [
+                {
+                    "tenant_id": self.tenant_id,
+                    "theme_name": "default",
+                    "settings": {
+                        "outputChannel": False,
+                        "outputChannelName": "Test channel",
+                        "outputChannelTheme": "amp",
+                    },
+                }
+            ]
+        )
+
         get_resource_service("blogs")._auto_create_output(self.blog_without_output)
         with self.assertRaises(IndexError):
             get_resource_service("outputs").find(

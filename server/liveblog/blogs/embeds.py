@@ -205,7 +205,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     else:
         assets_root = theme_service.get_theme_assets_url(theme_name)
 
-    theme_settings = theme_service.get_default_settings(theme)
+    theme_settings_service = get_resource_service("theme_settings")
+    theme_settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
     i18n = theme.get("i18n", {})
 
     # the blog level setting overrides the one in theme level
@@ -386,7 +387,8 @@ def embed_iframe(blog_id):
     theme = theme_service.find_one(req=None, name=theme_name)
     if not theme:
         return "theme not found", 404
-    settings = theme_service.get_default_settings(theme)
+    theme_settings_service = get_resource_service("theme_settings")
+    settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
     return render_template(
         "embed_iframe.html", blog=blog, theme=theme, settings=settings
     )

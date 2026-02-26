@@ -48,3 +48,8 @@ def before_scenario(context, scenario):
             return db_service
 
         context.app.features = FeaturesService(context.app, db_service_mock())
+
+    # Initialize MongoDB indexes after database cleanup
+    # This ensures unique constraints are enforced during tests
+    with context.app.app_context():
+        context.app.init_indexes()
