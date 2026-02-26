@@ -93,10 +93,7 @@ Feature: Multi-tenancy and tenant isolation
 
     @auth
     Scenario: Users in different tenants cannot see each other's blogs
-        Given "themes"
-        """
-        [{"name": "classic"}]
-        """
+        Given system themes
         Given a tenant "Tenant One"
         And a user "tenant1_user" for current tenant
         Given a tenant "Tenant Two"
@@ -137,10 +134,7 @@ Feature: Multi-tenancy and tenant isolation
 
     @auth
     Scenario: User cannot access blog from different tenant
-        Given "themes"
-        """
-        [{"name": "classic"}]
-        """
+        Given system themes
         Given a tenant "Tenant One"
         And a user "tenant1_user" for current tenant
         Given a tenant "Tenant Two"

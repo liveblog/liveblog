@@ -9,10 +9,7 @@ Feature: Items operations
 
     @auth
     Scenario: Add item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -45,10 +42,7 @@ Feature: Items operations
 
 	@auth
     Scenario: Update item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -80,10 +74,7 @@ Feature: Items operations
 
 	@auth
     Scenario: Delete item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -109,10 +100,7 @@ Feature: Items operations
 
     @auth
     Scenario: Retrieve items from blog
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -149,10 +137,7 @@ Feature: Items operations
 
     @auth
     Scenario: Create items without permissions
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
         Given empty "items"
         When we login as user "foo" with password "bar"
         """
@@ -170,10 +155,7 @@ Feature: Items operations
 
     @auth
     Scenario: Items from different tenants are isolated
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+        Given system themes
         Given a tenant "Tenant One"
         And a user "tenant1_admin" for current tenant
         Given a tenant "Tenant Two"
@@ -183,7 +165,7 @@ Feature: Items operations
         When we login as tenant user "tenant1_admin"
         When we post to "blogs"
         """
-        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "forest", "language": "en"}}]
+        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "classic", "language": "en"}}]
         """
         Then we get OK response
         When we save "tenant1_blog_id" from last response "_id"

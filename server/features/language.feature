@@ -31,7 +31,7 @@ Feature: Language operations
 
     @auth
     Scenario: Assign a language to a blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """

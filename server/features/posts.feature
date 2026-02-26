@@ -2,7 +2,7 @@ Feature: Post operations
 
     @auth
     Scenario: Create and publish a posts with Editor permissions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -53,7 +53,7 @@ Feature: Post operations
 
     @auth
     Scenario: Create posts without permissions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -75,7 +75,7 @@ Feature: Post operations
 
     @auth
     Scenario: Create and publish a post with Contributor permissions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -130,7 +130,7 @@ Feature: Post operations
 
     @auth
     Scenario: Create posts and save it as draft with Contributor permissions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -187,7 +187,7 @@ Feature: Post operations
 
     @auth
     Scenario: Submit posts with Contributor permissions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -243,7 +243,7 @@ Feature: Post operations
 
     @auth
     Scenario: Retrieve posts from blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -321,7 +321,7 @@ Feature: Post operations
 
     @auth
     Scenario: Patch created post
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -421,7 +421,7 @@ Feature: Post operations
 
     @auth
     Scenario: Full scenario to prove cid is working
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -508,7 +508,7 @@ Feature: Post operations
 
     @auth
     Scenario: Delete post
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -557,7 +557,7 @@ Feature: Post operations
 
     @auth
     Scenario: Delete item from post i.e. update post
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -640,7 +640,7 @@ Feature: Post operations
 
 	@auth
     Scenario: Cannot retrieve private drafts
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -677,7 +677,7 @@ Feature: Post operations
 
 	@auth
     Scenario: Users can only see their own private drafts
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -745,7 +745,7 @@ Feature: Post operations
 
 	@auth
     Scenario: Post published date
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -796,7 +796,7 @@ Feature: Post operations
 
     @auth
     Scenario: Published date on posts that were drafts
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -838,7 +838,7 @@ Feature: Post operations
 
 	@auth
     Scenario: Published date on posts comming from submitted contributions
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -869,7 +869,7 @@ Feature: Post operations
 
  	@auth
     Scenario: Create a sticky post
-        Given "themes"
+        Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -923,7 +923,7 @@ Feature: Post operations
 
     @auth
     Scenario: Update sticky post and order according to timestamp
-        Given "themes"
+        Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -1022,10 +1022,7 @@ Feature: Post operations
 
     @auth
     Scenario: Posts from different tenants are isolated
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+        Given system themes
         Given a tenant "Tenant One"
         And a user "tenant1_admin" for current tenant
         Given a tenant "Tenant Two"
@@ -1035,7 +1032,7 @@ Feature: Post operations
         When we login as tenant user "tenant1_admin"
         When we post to "blogs"
         """
-        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "forest", "language": "en"}}]
+        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "classic", "language": "en"}}]
         """
         Then we get OK response
         When we save "tenant1_blog_id" from last response "_id"

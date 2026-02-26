@@ -211,6 +211,7 @@ class BlogItemsService(TenantAwareArchiveService):
 
             # Validate that the blog exists in the current tenant before querying items
             from superdesk.errors import SuperdeskApiError
+
             blogs_service = get_resource_service("blogs")
             blog = blogs_service.find_one(req=None, _id=blog_id)
             if not blog:

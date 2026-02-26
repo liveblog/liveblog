@@ -21,7 +21,22 @@ external_url = "http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg"
 
 @given('tenant aware "{resource}"')
 def given_tenant_aware_resource(context, resource):
-    """Create test fixtures with proper tenant context for tenant-aware services."""
+    """Create test fixtures scoped to the current tenant context.
+
+    Parses JSON from the step's text body, resolves placeholders, and posts
+    the resulting items via the named resource service. For non-user resources
+    all existing documents are deleted before insertion. For user resources
+    (``users`` or ``liveblog_users``) the tenant_id is inherited from the
+    currently authenticated context user so that documents are correctly
+    isolated within the tenant.
+
+    Sets ``context.data``, ``context.resource``, and an attribute named after
+    the resource pointing to the last inserted item.
+
+    Args:
+        context: Behave context. ``context.text`` must contain a JSON array.
+        resource: Eve resource name (e.g. ``"blogs"``, ``"liveblog_users"``).
+    """
     data = apply_placeholders(context, context.text)
 
     # Check if this is a user resource (users or liveblog_users)
