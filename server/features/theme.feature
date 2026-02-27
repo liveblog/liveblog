@@ -318,6 +318,87 @@ Feature: Themes operations
         Then we get error 403
 
     @auth
+    Scenario: PATCH settings response reflects effective settings not theme defaults
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "custom-theme", "options": [{"name": "postsPerPage", "default": "10"}, {"name": "postOrder", "default": "editorial"}]}]
+        """
+        Then we get OK response
+        When we find for "themes" the id as "theme_id" by "where={"name": "custom-theme"}"
+        When we get "/themes/#theme_id#"
+        Then we get OK response
+        When we save "IF_MATCH_VALUE" from last response "_etag"
+        When we attempt to patch "/themes/#theme_id#"
+        """
+        {"settings": {"postsPerPage": "25", "postOrder": "editorial"}}
+        """
+        Then we get existing resource
+        """
+        {"settings": {"postsPerPage": "25", "postOrder": "editorial"}}
+        """
+        When we get "/themes/#theme_id#"
+        Then we get existing resource
+        """
+        {"settings": {"postsPerPage": "25", "postOrder": "editorial"}}
+        """
+
+    @auth
+    Scenario: Theme settings are isolated between tenants
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        Given a tenant "Tenant B"
+        And a user "user_b" for current tenant
+
+        When we login as tenant user "user_a"
+        Given empty "themes"
+        When we post to "themes"
+        """
+        [{"name": "shared-theme", "options": [{"name": "postsPerPage", "default": "10"}]}]
+        """
+        Then we get OK response
+        When we find for "themes" the id as "theme_a_id" by "where={"name": "shared-theme"}"
+        When we get "/themes/#theme_a_id#"
+        When we save "IF_MATCH_VALUE" from last response "_etag"
+        When we attempt to patch "/themes/#theme_a_id#"
+        """
+        {"settings": {"postsPerPage": "25"}}
+        """
+        Then we get OK response
+
+        When we login as tenant user "user_b"
+        When we post to "themes"
+        """
+        [{"name": "shared-theme", "options": [{"name": "postsPerPage", "default": "10"}]}]
+        """
+        Then we get OK response
+        When we find for "themes" the id as "theme_b_id" by "where={"name": "shared-theme"}"
+        When we get "/themes/#theme_b_id#"
+        When we save "IF_MATCH_VALUE" from last response "_etag"
+        When we attempt to patch "/themes/#theme_b_id#"
+        """
+        {"settings": {"postsPerPage": "50"}}
+        """
+        Then we get OK response
+
+        When we login as tenant user "user_a"
+        When we get "/themes/#theme_a_id#"
+        Then we get existing resource
+        """
+        {"settings": {"postsPerPage": "25"}}
+        """
+
+        When we login as tenant user "user_b"
+        When we get "/themes/#theme_b_id#"
+        Then we get existing resource
+        """
+        {"settings": {"postsPerPage": "50"}}
+        """
+
+    @auth
     Scenario: Tenant cannot create duplicate themes with same name
         Given a tenant "Tenant A"
         And a user "user_a" for current tenant

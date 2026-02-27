@@ -830,13 +830,12 @@ class ThemesService(TenantAwareService, BaseService):
 
     def on_update(self, updates, original):
         """
-        Intercept settings/styleSettings updates and route to theme_settings collection.
+        Route settings/styleSettings to theme_settings collection instead of the theme document.
 
-        When a tenant updates theme settings via PATCH /themes/:id, we store the
-        customizations in theme_settings collection (normalized design) instead of
-        modifying the theme document itself.
-
-        This keeps theme definitions clean and separates tenant customizations.
+        Theme documents are effectively read-only after upload — only tenant customizations
+        change. Popping settings here prevents them being written to the theme document.
+        The _settings_updated flag signals on_updated to inject the effective merged
+        settings into the PATCH response.
 
         TODO MIGRATION: For existing single-tenant instances upgrading to multi-tenancy:
         Migrate existing theme customizations from themes.settings/styleSettings to
@@ -844,29 +843,42 @@ class ThemesService(TenantAwareService, BaseService):
         """
         settings = updates.pop("settings", None)
         style_settings = updates.pop("styleSettings", None)
-
         settings_updated = settings is not None or style_settings is not None
 
-        if settings_updated:
-            if not self.is_system_request():
-                tenant_id = get_tenant_id(required=True)
-                theme_settings_service = get_resource_service("theme_settings")
-
-                theme_settings_service.save_or_update_settings(
-                    theme_name=original["name"],
-                    tenant_id=tenant_id,
-                    settings_payload=settings if settings is not None else {},
-                    style_settings_payload=style_settings
-                    if style_settings is not None
-                    else {},
-                )
-
-                updates["_settings_updated"] = True
+        if settings_updated and not self.is_system_request():
+            tenant_id = get_tenant_id(required=True)
+            theme_settings_service = get_resource_service("theme_settings")
+            theme_settings_service.save_or_update_settings(
+                theme_name=original["name"],
+                tenant_id=tenant_id,
+                settings_payload=settings or {},
+                style_settings_payload=style_settings or {},
+            )
+            updates["_settings_updated"] = True
 
         super().on_update(updates, original)
 
     def on_updated(self, updates, original):
+        """
+        Inject effective settings into the PATCH response after the DB write.
+
+        Eve builds the response from {**original, **updates}. Since settings were
+        popped in on_update (to avoid writing them to the theme document), we re-fetch
+        the freshly saved effective settings here and add them back to updates so the
+        response reflects the tenant's customizations rather than theme-level defaults.
+        """
         if updates.pop("_settings_updated", False):
+            tenant_id = get_tenant_id(required=False)
+            if tenant_id and not self.is_system_request():
+                theme_settings_service = get_resource_service("theme_settings")
+                updates["settings"] = theme_settings_service.get_effective_settings(
+                    original["name"], tenant_id
+                )
+                updates["styleSettings"] = (
+                    theme_settings_service.get_effective_style_settings(
+                        original["name"], tenant_id
+                    )
+                )
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
