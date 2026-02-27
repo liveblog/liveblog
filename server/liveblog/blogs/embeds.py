@@ -213,6 +213,18 @@ def _embed(blog, blog_id, theme, output, api_host):
 
     theme_settings_service = get_resource_service("theme_settings")
     theme_settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
+
+    # Overlay effective style settings so generate_theme_styles() and google_fonts_url()
+    # use tenant customizations rather than the raw theme document defaults.
+    # (find_one above doesn't trigger on_fetched_item, so styleSettings is never merged.)
+    tenant_id = blog.get("tenant_id")
+    if tenant_id:
+        effective_style_settings = theme_settings_service.get_effective_style_settings(
+            theme_name, tenant_id
+        )
+        if effective_style_settings:
+            theme["styleSettings"] = effective_style_settings
+
     i18n = theme.get("i18n", {})
 
     # the blog level setting overrides the one in theme level
