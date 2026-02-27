@@ -38,6 +38,14 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             });
     }])
     .config(['apiProvider', function(apiProvider) {
+        // Override superdesk-core's 'users' endpoint so every api('users') call
+        // in the UI (user list, user edit, profile) hits the tenant-isolated
+        // liveblog_users backend instead of the system-wide /users endpoint.
+        // See ARCHITECTURAL_CONCERNS.md #7 for the long-term replacement plan.
+        apiProvider.api('users', {
+            type: 'http',
+            backend: {rel: 'liveblog_users'},
+        });
         apiProvider.api('themes', {
             type: 'http',
             backend: {rel: 'themes'},
