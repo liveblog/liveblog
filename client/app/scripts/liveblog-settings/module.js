@@ -6,6 +6,7 @@ import LiveblogSettingsController from './controllers/general-settings.ts';
 import LiveblogInstanceSettingsController from './controllers/instance-settings.ts';
 import {renderTagsManager} from './components/tagsManager';
 import {lbSettingsView} from './directives/lbSettingsView';
+import loginScreenTpl from '../liveblog-registration/login-screen.html';
 
 const liveblogSettings = angular.module('liveblog.settings', [])
     .config(['superdeskProvider', function(superdesk) {
@@ -36,6 +37,12 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 liveblogSetting: true,
                 liveblogSupportTools: true,
             });
+    }])
+    .config(['$provide', function($provide) {
+        $provide.decorator('sdLoginModalDirective', ['$delegate', function($delegate) {
+            $delegate[0].template = loginScreenTpl;
+            return $delegate;
+        }]);
     }])
     .config(['apiProvider', function(apiProvider) {
         // Override superdesk-core's 'users' endpoint so every api('users') call

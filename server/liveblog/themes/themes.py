@@ -12,7 +12,6 @@ import os
 import glob
 import json
 import magic
-import flask
 import jinja2
 import superdesk
 import zipfile
@@ -874,11 +873,12 @@ class ThemesService(TenantAwareService, BaseService):
                 updates["settings"] = theme_settings_service.get_effective_settings(
                     original["name"], tenant_id
                 )
-                updates["styleSettings"] = (
-                    theme_settings_service.get_effective_style_settings(
-                        original["name"], tenant_id
-                    )
+                updates[
+                    "styleSettings"
+                ] = theme_settings_service.get_effective_style_settings(
+                    original["name"], tenant_id
                 )
+
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):

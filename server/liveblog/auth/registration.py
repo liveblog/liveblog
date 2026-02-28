@@ -6,6 +6,7 @@ automatically creates a tenant for each new user.
 """
 
 from flask import Blueprint, request
+from flask_cors import cross_origin
 from liveblog.tenancy.registration import RegistrationService
 from liveblog.utils.api import api_response, api_error
 from superdesk.errors import SuperdeskApiError
@@ -16,7 +17,8 @@ logger = logging.getLogger(__name__)
 registration_blueprint = Blueprint("registration", __name__)
 
 
-@registration_blueprint.route("/api/register", methods=["POST"])
+@registration_blueprint.route("/api/register", methods=["POST", "OPTIONS"])
+@cross_origin()
 def register():
     """
     Public registration endpoint for new users.
