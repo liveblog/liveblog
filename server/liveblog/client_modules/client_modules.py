@@ -153,7 +153,6 @@ class ClientPostsService(PostsService, AuthorsMixin):
 
 class ClientCollectionsResource(CollectionsResource):
     datasource = {"source": "collections", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -162,12 +161,12 @@ class ClientCollectionsResource(CollectionsResource):
 
 
 class ClientCollectionsService(CollectionsService):
-    pass
+    def find_one(self, req, **lookup):
+        return self.backend.find_one(self.datasource, req=req, **lookup)
 
 
 class ClientOutputsResource(OutputsResource):
     datasource = {"source": "outputs", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -176,12 +175,12 @@ class ClientOutputsResource(OutputsResource):
 
 
 class ClientOutputsService(OutputsService):
-    pass
+    def find_one(self, req, **lookup):
+        return self.backend.find_one(self.datasource, req=req, **lookup)
 
 
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {"source": "advertisements", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -190,7 +189,8 @@ class ClientAdvertisementsResource(AdvertisementsResource):
 
 
 class ClientAdvertisementsService(AdvertisementsService):
-    pass
+    def find_one(self, req, **lookup):
+        return self.backend.find_one(self.datasource, req=req, **lookup)
 
 
 class ClientItemsResource(ItemsResource):

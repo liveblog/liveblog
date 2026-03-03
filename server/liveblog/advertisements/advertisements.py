@@ -10,10 +10,11 @@
 from flask import Blueprint
 from flask_cors import CORS
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from superdesk import get_resource_service
 
 from liveblog.utils.api import api_response, api_error
+from liveblog.tenancy.service import TenantAwareService
+from liveblog.tenancy.context import tenant_context_from_blog
 
 from .utils import get_advertisements_list
 
@@ -23,7 +24,8 @@ CORS(advertisements_blueprint)
 
 class AdvertisementsResource(Resource):
     schema = {
-        "name": {"type": "string", "unique": True},
+        "name": {"type": "string"},
+        "tenant_id": Resource.rel("tenants"),
         "type": {
             "type": "string",
             "allowed": [
@@ -42,6 +44,12 @@ class AdvertisementsResource(Resource):
         "deleted": {"type": "boolean", "default": False},
     }
     datasource = {"source": "advertisements", "default_sort": [("name", 1)]}
+    mongo_indexes = {
+        "advertisement_name_tenant_unique": (
+            [("name", 1), ("tenant_id", 1)],
+            {"unique": True},
+        ),
+    }
 
     privileges = {
         "GET": "advertisements_read",
@@ -51,7 +59,7 @@ class AdvertisementsResource(Resource):
     }
 
 
-class AdvertisementsService(BaseService):
+class AdvertisementsService(TenantAwareService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         collections_service = get_resource_service("collections")
@@ -67,23 +75,28 @@ class AdvertisementsService(BaseService):
 @advertisements_blueprint.route("/api/advertisements/<blog_id>/<output>/")
 def get_advertisements(blog_id, output):
     """
-    Returns the list of advertisements for a given output id
+    Returns the list of advertisements for a given output id.
+    Used by the default theme's client-side ads-manager.js for ad refresh.
 
     Args:
         :blog_id: string
         :output: string of the desired output channel
     """
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
+    if not blog:
+        return api_error("blog not found", 404)
 
-    if output:
-        if isinstance(output, str):
-            output = get_resource_service("outputs").find_one(req=None, _id=output)
-        if not output:
-            return api_error("output not found", 404)
-        else:
+    with tenant_context_from_blog(blog):
+        if output:
+            if isinstance(output, str):
+                output = get_resource_service("outputs").find_one(req=None, _id=output)
+            if not output:
+                return api_error("output not found", 404)
             collection = get_resource_service("collections").find_one(
                 req=None, _id=output.get("collection")
             )
             output["collection"] = collection
 
-    ads = get_advertisements_list(output)
+        ads = get_advertisements_list(output)
+
     return api_response(ads, 200)
