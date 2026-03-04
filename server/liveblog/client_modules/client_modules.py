@@ -78,7 +78,7 @@ class ClientUsersResource(Resource):
     public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(UsersResource.schema)
     schema.update(
@@ -99,7 +99,7 @@ class ClientBlogsResource(BlogsResource):
     public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(BlogsResource.schema)
 
@@ -199,15 +199,18 @@ class ClientItemsResource(ItemsResource):
         "elastic_filter": {"term": {"particular_type": "item"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "POST"]
+    public_methods = ["POST"]
     public_item_methods = ["GET", "POST"]
     item_methods = ["GET"]
-    resource_methods = ["GET", "POST"]
-    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    resource_methods = ["POST"]
+    schema = {"client_blog": Resource.rel("client_blogs")}
     schema.update(ItemsResource.schema)
 
 
 class ClientItemsService(ItemsService):
+    def find_one(self, req, **lookup):
+        return self.backend.find_one(self.datasource, req=req, **lookup)
+
     def on_create(self, docs):
         for doc in docs:
             check_comment_length(doc["text"])
@@ -225,6 +228,7 @@ class ClientItemsService(ItemsService):
         super().on_create(docs)
 
 
+# TODO: remove this resource and service as it is not needed/used
 class ClientPollsResource(PollsResource):
     datasource = {
         "source": "polls",
@@ -234,8 +238,8 @@ class ClientPollsResource(PollsResource):
     public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
-    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    resource_methods = []
+    schema = {"client_blog": Resource.rel("client_blogs")}
     schema.update(PollsResource.schema)
 
 
@@ -252,9 +256,9 @@ class ClientCommentsResource(PostsResource):
     public_methods = ["POST"]
     public_item_methods = []
     item_methods = ["GET"]
-    resource_methods = ["GET", "POST"]
+    resource_methods = ["POST"]
     schema = {
-        "client_blog": Resource.rel("client_blogs", True),
+        "client_blog": Resource.rel("client_blogs"),
         "blog": {"type": "string"},
     }
     schema.update(PostsResource.schema)

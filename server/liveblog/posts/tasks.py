@@ -57,7 +57,7 @@ def update_post_blog_data(post, action="created"):
     logger.warning('Blog "{}" post data has been updated.'.format(blog_id))
 
 
-@celery.task()
+@celery.task(base=TenantAwareTask)
 def update_post_blog_embed(post):
     """
     Update post blog embed.

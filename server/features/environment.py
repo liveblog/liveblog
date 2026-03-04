@@ -26,7 +26,22 @@ def before_all(context):
     setup_before_all(context, config, app_factory=get_app)
 
 
+def _get_skip_reason(scenario):
+    """Return the skip reason from a @skip or @skip.<reason> tag, or None if absent."""
+    for tag in scenario.tags:
+        if tag == "skip":
+            return "No reason provided"
+        if tag.startswith("skip."):
+            return tag[5:].replace("_", " ")
+    return None
+
+
 def before_scenario(context, scenario):
+    reason = _get_skip_reason(scenario)
+    if reason is not None:
+        scenario.skip(reason)
+        return
+
     config = {
         "INSTALLED_APPS": INSTALLED_APPS,
         "ELASTICSEARCH_FORCE_REFRESH": True,

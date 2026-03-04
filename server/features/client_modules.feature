@@ -1,35 +1,17 @@
 Feature: Client modules operations
 
-    Scenario: List empty client_blogs
-        Given empty "blogs"
-        When we get "/client_blogs"
-        Then we get list with 0 items
-
-    Scenario: List blogs without needing auth
-    	Given "themes"
+    @auth
+    Scenario: List a single client_blog
+        Given system themes
+        Given a tenant "Test Tenant"
+        And a user "test_admin" for current tenant
+        When we login as tenant user "test_admin"
+        When we post to "blogs"
         """
-        [{"name": "forest"}]
+        [{"blog_preferences": {"theme": "classic", "language": "fr"}, "title": "test_blog"}]
         """
-        Given "blogs"
-        """
-        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog two"}]
-        """
-        When we get "/client_blogs"
-        Then we get list with 2 items
-        """
-        {"_items": [{"title": "testBlog one", "blog_status": "open"}, {"title": "testBlog two"}]}
-        """
-
-	Scenario: List a single client_blog
-		Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        Given "blogs"
-        """
-        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "guid": "blog-1", "title": "test_blog"}]
-        """
-        When we get "/client_blogs/#blogs._id#"
+        When we save "blog_id" from last response "_id"
+        When we get "/client_blogs/#blog_id#"
         Then we get existing resource
         """
         {"title": "test_blog"}
@@ -43,16 +25,18 @@ Feature: Client modules operations
     #     When we get "/client_posts"
     #     Then we get list with 0 items
 
-    Scenario: List posts without needing auth
-    	Given "themes"
+    @auth
+    Scenario: List posts as authenticated tenant user
+        Given empty "archive"
+        Given system themes
+        Given a tenant "Test Tenant"
+        And a user "test_admin" for current tenant
+        When we login as tenant user "test_admin"
+        When we post to "blogs"
         """
-        [{"name": "forest"}]
+        [{"title": "testBlog one", "blog_preferences": {"theme": "classic", "language": "fr"}}]
         """
-    	Given "blogs"
-        """
-        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}]
-        """
-        Given "posts"
+        When we post to "posts"
         """
         [{"headline": "testPost one", "blog": "#blogs._id#"}, {"headline": "testPost two", "blog": "#blogs._id#"}]
         """
@@ -62,16 +46,17 @@ Feature: Client modules operations
         {"_items": [{"headline": "testPost one"}, {"headline": "testPost two"}]}
         """
 
+    @auth
     Scenario: List a single client_post
-    	Given "themes"
+        Given system themes
+        Given a tenant "Test Tenant"
+        And a user "test_admin" for current tenant
+        When we login as tenant user "test_admin"
+        When we post to "blogs"
         """
-        [{"name": "forest"}]
+        [{"title": "testBlog one", "blog_preferences": {"theme": "classic", "language": "fr"}}]
         """
-    	Given "blogs"
-        """
-        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}]
-        """
-        Given "posts"
+        When we post to "posts"
         """
         [{"guid": "post-1", "headline": "test_post", "blog": "#blogs._id#"}]
         """
@@ -108,45 +93,45 @@ Feature: Client modules operations
         {"display_name": "Foo Bar"}
         """
 
+    @auth
     Scenario: Posting a comment
-        Given "client_blogs"
+        Given system themes
+        Given a tenant "Test Tenant"
+        And a user "test_admin" for current tenant
+        When we login as tenant user "test_admin"
+        When we post to "blogs"
         """
-        [{"guid": "blog-1", "title": "test_blog_comment"}]
+        [{"title": "test_blog_comment", "blog_preferences": {"theme": "classic", "language": "en"}}]
         """
         Given empty "client_items"
-       	When we post to "/client_items"
+        When we post to "/client_items"
         """
         [
-         {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
+            {"text": "test item comment", "commenter": "ana", "client_blog": "#blogs._id#"}
         ]
         """
         And we get "/client_items/#client_items._id#"
         Then we get existing resource
         """
-        {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
+        {"text": "test item comment", "commenter": "ana", "client_blog": "#blogs._id#"}
         """
         When we post to "/client_comments"
         """
-        {"client_blog": "#client_blogs._id#",
+        {
+            "post_status": "comment",
+            "client_blog": "#blogs._id#",
         	"groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
                     "id": "main",
                     "refs": [
                         {
-                            "headline": "comment post",
-                            "residRef": "#client_items._id#",
-                            "slugline": "awesome comment"
+                            "residRef": "#client_items._id#"
                         }
                     ],
                     "role": "grpRole:Main"
                 }
-            ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            ]
         }
         """
-        When we get "/client_comments"
-        Then we get list with 1 items
-        """
-        {"_items": [{"original_creator": "", "post_status": "comment", "client_blog": "#client_blogs._id#"}]}
-        """
+        Then we get OK response

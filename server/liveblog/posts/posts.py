@@ -443,7 +443,7 @@ class PostsService(TenantAwareArchiveService):
         the blog ID from updates into the original. This seems unnecessary
         and should be investigated further.
         Also, if the comment is marked as deleted in updates, we can safely skip
-        this block since we don’t need to access the comment item anymore thus
+        this block since we don't need to access the comment item anymore thus
         not causing a key error.
         """
         if original["post_status"] == "comment" and not updates.get("deleted", False):
