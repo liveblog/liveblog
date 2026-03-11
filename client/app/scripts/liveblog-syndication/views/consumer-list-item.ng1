@@ -11,7 +11,7 @@
     </figure>
 
     <div class="row-wrapper four-col">
-        <div class="name">{{ consumer.name }}</div>
+        <div class="name" data-testid="consumer-name">{{ consumer.name }}</div>
         <div class="email">
             <i
                 class="icon-close-small webhook-status off"

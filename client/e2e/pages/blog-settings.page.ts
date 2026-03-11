@@ -29,7 +29,7 @@ export class BlogSettingsPage {
     }
 
     async toggleStatus(): Promise<void> {
-        await this.page.locator('[ng-model="settings.blog_switch"][data-blog-status-switch]').click();
+        await this.page.getByTestId('blog-status-switch').click();
     }
 
     async removeBlog(): Promise<void> {

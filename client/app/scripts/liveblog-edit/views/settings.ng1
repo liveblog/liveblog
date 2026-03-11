@@ -59,7 +59,7 @@
                                 <div class="form-input relative" ng-if="!settings.deactivateStatus">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span style="display: block" sd-tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" data-flow="right">
-                                        <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
+                                        <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch data-testid="blog-status-switch"></span>
                                     </span>
                                 </div>
                             </div>

@@ -27,7 +27,7 @@ export class ConsumersPage extends BasePage {
     }
 
     firstConsumerName(): Locator {
-        return this.rows.first().locator('div.name:not(.api-key):not([lb-first-contact])');
+        return this.rows.first().getByTestId('consumer-name');
     }
 
     firstConsumerEmail(): Locator {
