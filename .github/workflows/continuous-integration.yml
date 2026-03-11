@@ -131,9 +131,19 @@ jobs:
         sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         chromedriver --port=4444 --url-base=/wd/hub &
         $CHROME_BIN --version
-        npm run e2e
+        npm run e2e:protractor
 
-    - name: Run Cypress e2e tests
-      working-directory: ./client
+    - name: Setup Node 24 for Playwright
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+
+    - name: Install Playwright dependencies
+      working-directory: ./client/e2e
       run: |
-        npm run cy:run
+        npm ci
+        npx playwright install chromium --with-deps
+
+    - name: Run Playwright e2e tests
+      working-directory: ./client/e2e
+      run: npx playwright test
