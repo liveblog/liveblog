@@ -71,6 +71,25 @@ export class BlogPage extends BasePage {
         await this.page.locator('.panel--editor .scorecard-top').waitFor();
     }
 
+    async openCommentsPanel(): Promise<void> {
+        await this.page.locator('button.navbtn[ng-click="openPanel(\'comments\')"]').dispatchEvent('click');
+        await this.page.locator('.panel--comments').waitFor();
+    }
+
+    commentPosts(): Locator {
+        return this.page.locator('.panel--comments lb-post');
+    }
+
+    async publishCommentPost(index: number): Promise<void> {
+        await this.commentPosts().nth(index).hover();
+        await this.commentPosts().nth(index).locator('a[ng-click="publishPost(post)"]').click();
+    }
+
+    async editCommentPost(index: number): Promise<void> {
+        await this.commentPosts().nth(index).hover();
+        await this.commentPosts().nth(index).locator('a[ng-click="onEditClick(post)"]').click();
+    }
+
     publishButton(): Locator {
         return this.page.locator('[ng-click="publish()"]');
     }

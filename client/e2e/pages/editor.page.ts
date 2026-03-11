@@ -95,4 +95,38 @@ export class EditorPage {
     async addHomeScorerRow(): Promise<void> {
         await this.page.locator('freetype-collection-add[vector="freetypeData.home.scorers"] button').click();
     }
+
+    async addPollBlock(): Promise<void> {
+        await this.page.locator('.st-block-controls__top').click();
+        await this.page.locator('[data-type="poll"]').click();
+        await this.page.locator('#poll_days_input').waitFor();
+    }
+
+    pollAnswerInputs(): Locator {
+        return this.page.locator('.poll_option_container input[type="text"]');
+    }
+
+    async pollAddOption(): Promise<void> {
+        await this.page.locator('.poll_option_add_button').click();
+    }
+
+    async pollRemoveOption(index: number): Promise<void> {
+        await this.page.locator('.poll_option_remove_container').nth(index).click();
+    }
+
+    pollDaysInput(): Locator {
+        return this.page.locator('#poll_days_input');
+    }
+
+    pollHoursInput(): Locator {
+        return this.page.locator('#poll_hours_input');
+    }
+
+    pollMinutesInput(): Locator {
+        return this.page.locator('#poll_minutes_input');
+    }
+
+    async pollReset(): Promise<void> {
+        await this.page.locator('.poll_reset_button').click();
+    }
 }
