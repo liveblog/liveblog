@@ -45,16 +45,21 @@ export class EditorPage {
 
     async saveAsDraft(): Promise<void> {
         await this.page.locator('[ng-click="saveAsDraft()"]:not([disabled])').waitFor();
+        // Set up response listener before clicking — avoids stale-notification race for sequential
+        // saves. Accepts PATCH too: updating an existing post uses PATCH, not POST.
+        const responsePromise = this.page.waitForResponse(
+            r => r.url().includes('/api/posts') && ['POST', 'PATCH'].includes(r.request().method())
+        );
         await this.page.locator('[ng-click="saveAsDraft()"]').click();
-        await this.page.locator('.notification-holder .alert:has-text("Draft saved")').waitFor();
+        await responsePromise;
     }
 
     async saveAsContribution(): Promise<void> {
         await this.page.locator('[ng-click="saveAsContribution()"]:not([disabled])').waitFor();
-        // Set up response listener before clicking so each call captures its own response,
-        // not a stale notification from a previous save still visible in the DOM.
+        // Set up response listener before clicking — avoids stale-notification race for sequential
+        // saves. Accepts PATCH too: updating an existing contribution uses PATCH, not POST.
         const responsePromise = this.page.waitForResponse(
-            r => r.url().includes('/api/posts') && r.request().method() === 'POST'
+            r => r.url().includes('/api/posts') && ['POST', 'PATCH'].includes(r.request().method())
         );
         await this.page.locator('[ng-click="saveAsContribution()"]').click();
         await responsePromise;
@@ -66,11 +71,15 @@ export class EditorPage {
         await this.page.locator('.notification-holder .alert:has-text("Post saved")').waitFor();
     }
 
+    async resetEditor(): Promise<void> {
+        await this.page.locator('[ng-click="askAndResetEditor()"]').click();
+    }
+
     async openScorecardFreetype(): Promise<void> {
         await this.page.locator('[ng-click="toggleTypePostDialog()"]').click();
         await this.page.locator('.freetype-selector').waitFor();
         await this.page.locator('.freetype-selector li').filter({ hasText: 'Scorecard' }).click();
-        await this.page.locator('.scorecard-top').waitFor();
+        await this.page.locator('.panel--editor .scorecard-top').waitFor();
     }
 
     scorecardInput(fieldPath: string): Locator {

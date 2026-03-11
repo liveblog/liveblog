@@ -67,7 +67,8 @@ export class BlogPage extends BasePage {
 
     async openEditorPanelForFreetype(): Promise<void> {
         await this.page.locator('button.navbtn[ng-click="openPanel(\'editor\')"]').dispatchEvent('click');
-        await this.page.locator('.scorecard-top').waitFor();
+        // Scope to .panel--editor to avoid matching .scorecard-top in timeline post previews.
+        await this.page.locator('.panel--editor .scorecard-top').waitFor();
     }
 
     publishButton(): Locator {

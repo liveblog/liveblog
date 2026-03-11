@@ -95,6 +95,43 @@ test('opens a contribution in the editor and publishes it', async ({ authenticat
     await expect(blog.contributionPosts()).toHaveCount(0);
 });
 
+test('updates a contribution from the editor', async ({ authenticatedPage }) => {
+    const blog = new BlogPage(authenticatedPage);
+    const editor = new EditorPage(authenticatedPage);
+
+    await blog.open(0);
+    await blog.openEditorPanel();
+    await editor.typeText('original text');
+    await editor.saveAsContribution();
+
+    await blog.openContributionsPanel();
+    await blog.editContributionPost(0);
+
+    await blog.openEditorPanel();
+    // Wait for the original content to be loaded into the text block before selecting.
+    await authenticatedPage.locator('.st-text-block').filter({ hasText: 'original text' }).waitFor();
+    await editor.textBlock().click();
+    await authenticatedPage.keyboard.press('Control+a');
+    await authenticatedPage.keyboard.type('updated text');
+    await editor.saveAsContribution();
+
+    await blog.openContributionsPanel();
+    await expect(blog.contributionPosts()).toHaveCount(1);
+    await expect(blog.contributionPosts().first().locator('[lb-bind-html]').first()).toContainText('updated text');
+});
+
+test('contributor cannot edit other users contributions', async ({ contributorPage }) => {
+    const blog = new BlogPage(contributorPage);
+
+    // Blog 3 has a pre-seeded contribution from admin. A contributor should not
+    // see the edit button on posts they did not author.
+    await blog.open(3);
+    await blog.openContributionsPanel();
+
+    await blog.contributionPosts().first().hover();
+    await expect(blog.hasEditButtonOnContribution(0)).not.toBeVisible();
+});
+
 test('filter contributions by member', async ({ authenticatedPage }) => {
     const blog = new BlogPage(authenticatedPage);
 

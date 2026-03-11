@@ -35,6 +35,24 @@ test('creates a draft and finds it in the drafts panel', async ({ authenticatedP
     await expect(blog.draftPosts().first().locator('[lb-bind-html]').first()).toContainText('draft post text');
 });
 
+test('creates two drafts and shows them newest first', async ({ authenticatedPage }) => {
+    const blog = new BlogPage(authenticatedPage);
+    const editor = new EditorPage(authenticatedPage);
+
+    await blog.open(0);
+    await blog.openEditorPanel();
+    await editor.typeText('first draft');
+    await editor.saveAsDraft();
+
+    await editor.typeText('second draft');
+    await editor.saveAsDraft();
+
+    await blog.openDraftsPanel();
+    await expect(blog.draftPosts()).toHaveCount(2);
+    await expect(blog.draftPosts().nth(0).locator('[lb-bind-html]').first()).toContainText('second draft');
+    await expect(blog.draftPosts().nth(1).locator('[lb-bind-html]').first()).toContainText('first draft');
+});
+
 test('opens a draft in the editor and publishes it', async ({ authenticatedPage }) => {
     const blog = new BlogPage(authenticatedPage);
     const editor = new EditorPage(authenticatedPage);

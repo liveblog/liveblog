@@ -4,6 +4,7 @@ import { PREPOPULATE_URL } from '../config';
 
 type Fixtures = {
     authenticatedPage: Page;
+    contributorPage: Page;
     resetDb: void;
 };
 
@@ -19,6 +20,17 @@ export const test = base.extend<Fixtures>({
         await login.login('admin', 'admin');
         await login.waitForReady();
         await use(page);
+    },
+
+    contributorPage: async ({ browser }, use) => {
+        const ctx = await browser.newContext();
+        const page = await ctx.newPage();
+        const login = new LoginPage(page);
+        await page.goto('/');
+        await login.login('contributor', 'contributor');
+        await login.waitForReady();
+        await use(page);
+        await ctx.close();
     },
 });
 
