@@ -129,10 +129,12 @@ jobs:
 
     - name: Install Playwright dependencies
       working-directory: ./client/e2e
+      shell: bash
       run: |
         npm ci
         npx playwright install chromium --with-deps
 
     - name: Run Playwright e2e tests
       working-directory: ./client/e2e
+      shell: bash
       run: npx playwright test
