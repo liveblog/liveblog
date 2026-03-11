@@ -1,6 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { ConsumersPage, Consumer, Contact } from '../../pages/consumers.page';
-import { PREPOPULATE_URL } from '../../config';
+
 const ORIGINAL_COUNT = 25;
 const INITIAL_FIRST_CONSUMER = 'John Deere';
 
@@ -20,13 +20,6 @@ const contact2: Contact = {
     lastName: 'Sabatier',
     email: 'paul.sabatier@gmail.com',
 };
-
-test.beforeEach(async ({ request }) => {
-    await request.post(PREPOPULATE_URL, {
-        data: { profile: 'test' },
-        timeout: 40000,
-    });
-});
 
 test('displays the consumers list', async ({ authenticatedPage }) => {
     const consumers = new ConsumersPage(authenticatedPage);

@@ -1,6 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = process.env.SUPERDESK_URL ?? 'http://127.0.0.1:5001/api';
 
 export class LiveblogApiClient {
     constructor(private request: APIRequestContext) {}
