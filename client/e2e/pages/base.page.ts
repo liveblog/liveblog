@@ -5,6 +5,6 @@ export class BasePage {
 
     async openSection(href: string) {
         await this.page.locator('[ng-click="toggleMenu()"]').click();
-        await this.page.locator(`[href="${href}"][title]`).click();
+        await this.page.locator(`[href="${href}"][title]`).dispatchEvent('click');
     }
 }

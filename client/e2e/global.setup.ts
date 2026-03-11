@@ -1,6 +1,5 @@
 import { request } from '@playwright/test';
-
-const PREPOPULATE_URL = 'http://127.0.0.1:5001/api/prepopulate';
+import { PREPOPULATE_URL } from './config';
 
 async function globalSetup() {
     const apiContext = await request.newContext();
