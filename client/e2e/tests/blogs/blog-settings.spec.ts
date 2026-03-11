@@ -8,7 +8,6 @@ const ARCHIVED_COUNT = 1;
 const TEST_IMAGE = path.resolve(__dirname, '../../../../server/features/steps/fixtures/bike.jpg');
 
 test('uploads a blog image', async ({ authenticatedPage }) => {
-    test.setTimeout(60000);
     const list = new BlogsListPage(authenticatedPage);
     const settings = new BlogSettingsPage(authenticatedPage);
 
