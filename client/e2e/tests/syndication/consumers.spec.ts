@@ -85,9 +85,8 @@ test('deletes a consumer', async ({ authenticatedPage }) => {
 
     await expect(consumers.firstConsumerName()).toHaveText(INITIAL_FIRST_CONSUMER);
 
-    const countBefore = await consumers.rows.count();
     await consumers.deleteFirstConsumer();
-    await expect(consumers.rows).toHaveCount(countBefore - 1);
+    await expect(consumers.rows).toHaveCount(ORIGINAL_COUNT - 1);
 });
 
 test('adds a contact to an existing consumer', async ({ authenticatedPage }) => {
