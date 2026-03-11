@@ -1,4 +1,5 @@
 import { test as base, Page } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
 
 type Fixtures = {
     authenticatedPage: Page;
@@ -6,11 +7,10 @@ type Fixtures = {
 
 export const test = base.extend<Fixtures>({
     authenticatedPage: async ({ page }, use) => {
+        const login = new LoginPage(page);
         await page.goto('/');
-        await page.locator('[ng-model="username"]').fill('admin');
-        await page.locator('[ng-model="password"]').fill('admin');
-        await page.locator('#login-btn').click();
-        await page.waitForFunction(() => (window as Window & { superdeskIsReady?: boolean }).superdeskIsReady === true);
+        await login.login('admin', 'admin');
+        await login.waitForReady();
         await use(page);
     },
 });
