@@ -72,3 +72,20 @@ test('removes a blog', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/#/liveblog');
     await expect(list.blogItems).toHaveCount(ACTIVE_COUNT - 1);
 });
+
+test('can do CRUD operations on output channels', async ({ authenticatedPage }) => {
+    const list = new BlogsListPage(authenticatedPage);
+    const settings = new BlogSettingsPage(authenticatedPage);
+
+    await list.open();
+    await list.openBlogSettings(0);
+    await settings.openOutputsTab();
+
+    await expect(settings.outputItems).toHaveCount(0);
+
+    await settings.createOutput('Test Output');
+    await expect(settings.outputItems).toHaveCount(1);
+
+    await settings.deleteFirstOutput();
+    await expect(settings.outputItems).toHaveCount(0);
+});
