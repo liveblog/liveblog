@@ -1,24 +1,21 @@
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
-    "plugins": ["@typescript-eslint", "cypress"],
+    "plugins": ["@typescript-eslint"],
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:cypress/recommended"
+        "plugin:@typescript-eslint/recommended"
     ],
     "parserOptions": {
         "project": "./tsconfig.json",
-        "ecmaVersion": 2020,
+        "ecmaVersion": 2022,
         "sourceType": "module"
     },
     "env": {
-        "browser": true,
-        "es6": true,
-        "cypress/globals": true
+        "node": true,
+        "es2022": true
     },
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-namespace": "off"
+        "@typescript-eslint/no-explicit-any": "warn"
     }
 }

@@ -3,23 +3,20 @@
   "version": "1.0.0",
   "description": "End-to-end tests for LiveBlog",
   "scripts": {
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
-    "test": "cypress run",
-    "test:open": "cypress open"
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:codegen": "playwright codegen http://localhost:9000"
   },
   "dependencies": {
-    "cypress": "^13.6.0",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.5",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "eslint": "^8.56.0",
-    "eslint-plugin-cypress": "^2.15.1"
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24.0.0"
+  },
+  "volta": {
+    "node": "24.0.0"
   }
 }

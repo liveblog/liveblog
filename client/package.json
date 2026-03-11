@@ -11,9 +11,10 @@
     "tslint": "tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
     "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome $CHROMEDRIVER_VERSION",
-    "e2e": "./node_modules/.bin/protractor protractor-conf.js",
-    "cy:open": "./node_modules/.bin/cypress open",
-    "cy:run": "./node_modules/.bin/cypress run"
+    "e2e": "cd e2e && npm test",
+    "e2e:ui": "cd e2e && npm run test:ui",
+    "e2e:debug": "cd e2e && npm run test:debug",
+    "e2e:protractor": "./node_modules/.bin/protractor protractor-conf.js"
   },
   "licenses": [
     {
