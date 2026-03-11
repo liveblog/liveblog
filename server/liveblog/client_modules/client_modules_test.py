@@ -664,7 +664,9 @@ class ClientModuleTestCase(TestCase):
             self.assertEqual(response_data["message"], "Vote placed successfully")
 
             # Validate that the vote count has been incremented in the poll
-            updated_poll = get_resource_service("client_polls").find_one(req=None, _id=poll_id)
+            updated_poll = get_resource_service("client_polls").find_one(
+                req=None, _id=poll_id
+            )
             updated_answers = updated_poll["poll_body"]["answers"]
             for answer in updated_answers:
                 if answer["option"] == option_selected:

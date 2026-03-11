@@ -12,6 +12,7 @@ from flask import current_app as app
 from celery.exceptions import SoftTimeLimitExceeded
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from liveblog.tenancy.celery import TenantAwareTask
 from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
@@ -424,7 +425,7 @@ def publish_bloglist_embed_on_s3():
         publish_bloglist_assets("styles")
 
 
-@celery.task
+@celery.task(base=TenantAwareTask)
 def post_auto_output_creation(output_data):
     """
     Dummy task to trigger the automatic creation of

@@ -26,6 +26,7 @@ class BlogsTestCase(TenantAwareTestCase):
         test_config = {
             "LIVEBLOG_DEBUG": True,
             "DEBUG": False,
+            "CELERY_ALWAYS_EAGER": True,
         }
         self.app.config.update(test_config)
 
