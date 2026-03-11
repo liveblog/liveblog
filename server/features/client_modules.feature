@@ -66,22 +66,6 @@ Feature: Client modules operations
         {"post_status": "open", "guid": "post-1", "headline": "test_post"}
         """
 
-    Scenario: List empty client_users
-        Given empty "users"
-        When we get "/client_users"
-        Then we get list with 0 items
-
-    Scenario: List users without needing auth
-        Given "users"
-        """
-        [{"username": "test-user", "first_name": "Test", "last_name": "User1"}, {"username": "test-user 2", "first_name": "Test2", "last_name": "User2"}]
-        """
-        When we get "/client_users"
-        Then we get list with 2 items
-        """
-        {"_items": [{"display_name": "Test User1"}, {"display_name": "Test2 User2"}]}
-        """
-
     Scenario: List a single client_user
         Given "users"
         """

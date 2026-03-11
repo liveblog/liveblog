@@ -244,7 +244,8 @@ class ClientPollsResource(PollsResource):
 
 
 class ClientPollsService(PollsService):
-    pass
+    def find_one(self, req, **lookup):
+        return self.backend.find_one(self.datasource, req=req, **lookup)
 
 
 class ClientCommentsResource(PostsResource):
@@ -571,8 +572,9 @@ def get_blog_posts(blog_id):
     if app.config.get("SUPERDESK_TESTING", False) and all_posts:
         kwargs["all_posts"] = True
 
-    response_data = blog.posts(wrap=True, **kwargs)
-    result_data = convert_posts(response_data, blog)
+    with tenant_context_from_blog(blog._blog):
+        response_data = blog.posts(wrap=True, **kwargs)
+        result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
 
 
@@ -602,8 +604,7 @@ def client_poll_vote(poll_id):
     if option_selected is None:
         return api_error("Please select a voting option.", 400)
 
-    polls = get_resource_service("polls")
-    poll = polls.find_one(req=None, _id=poll_id)
+    poll = get_resource_service("client_polls").find_one(req=None, _id=poll_id)
     if poll is None:
         return api_error("Error: Poll not found", 404)
 
@@ -615,17 +616,19 @@ def client_poll_vote(poll_id):
             f"Error: Option '{option_selected}' not found in poll answers", 404
         )
 
-    result = polls.find_and_modify(
-        query={"_id": poll_id, "poll_body.answers.option": option_selected},
-        update={"$inc": {"poll_body.answers.$.votes": 1}},
-        new=True,
-    )
+    with tenant_context_from_blog(poll):
+        polls = get_resource_service("polls")
+        result = polls.find_and_modify(
+            query={"_id": poll_id, "poll_body.answers.option": option_selected},
+            update={"$inc": {"poll_body.answers.$.votes": 1}},
+            new=True,
+        )
 
-    if result is None:
-        return api_error("Error: Unable to update poll votes", 422)
+        if result is None:
+            return api_error("Error: Unable to update poll votes", 422)
 
-    blog_id = poll.get("blog")
-    post_utils.update_associated_post(blog_id, poll_id)
+        blog_id = poll.get("blog")
+        post_utils.update_associated_post(blog_id, poll_id)
 
     return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
 
