@@ -141,7 +141,7 @@ class LiveBlogPostingSchema(Schema):
 
     # we can use blog creation datetime and last updated post datetime
     date_published = fields.DateTime(data_key="datePublished")
-    data_modified = fields.DateTime(data_key="dateModified")
+    data_modified = fields.DateTime(data_key="dateModified", attribute="date_modified")
 
     coverage_start_time = fields.DateTime(data_key="coverageStartTime")
     coverage_end_time = fields.DateTime(data_key="coverageEndTime")

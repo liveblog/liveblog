@@ -21,6 +21,8 @@ import sanitizeConfig from './sanitizer-config';
 
 function createCaretPlacer(atStart) {
     return function(el) {
+        if (!el) return;
+
         el.focus();
         if (typeof window.getSelection !== 'undefined'
                 && typeof document.createRange !== 'undefined') {

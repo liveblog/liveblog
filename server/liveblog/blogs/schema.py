@@ -90,4 +90,5 @@ blogs_schema = {
         "type": "dict",
         "mapping": {"type": "object", "enabled": False},
     },
+    "json_ld_timezone_offset": {"type": "integer", "default": 0},
 }

@@ -1,5 +1,7 @@
 import angular from 'angular';
 import _ from 'lodash';
+import GermanQuotation from './sir-trevor-blocks/helpers/german-quotation';
+import {EDITOR_QUOTATION_MARKS_LANGUAGE} from 'liveblog-common/constants';
 
 export default angular
     .module('SirTrevor', [])
@@ -68,6 +70,23 @@ export default angular
                 }
 
                 scope.editor = new SirTrevor.Editor(opts);
+
+                // watch for changes in settings as the load from server is async
+                scope.$watch(() => {
+                    const settings = scope.params.liveblogSettings ? scope.params.liveblogSettings() : {};
+
+                    return settings[EDITOR_QUOTATION_MARKS_LANGUAGE];
+                }, (newLanguage) => {
+                    if (newLanguage === 'de' && !scope.germanQuotation) {
+                        scope.germanQuotation = new GermanQuotation();
+                        scope.germanQuotation.attachToElement(element);
+                    } else if (scope.germanQuotation) {
+                        // detach if attached and language is not 'de'
+                        scope.germanQuotation.detachFromElement(element);
+                        scope.germanQuotation = null;
+                    }
+                });
+
                 scope.editor.get = function() {
                     const list = [];
 

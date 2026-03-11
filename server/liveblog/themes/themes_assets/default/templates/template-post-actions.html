@@ -2,42 +2,63 @@
     <div class="lb-post-actions {% if settings.authorPosition == 'bottom'  %}lb-post-actions--top{% endif %}">
 
         {% if settings.showSharingButtons %}
-            <div class="lb-post-share">
-                <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+            <div class="lb-post-share" title="Share">
+                <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" alt="Share" />
                 <div class="lb-post-shareBox">
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//www.facebook.com/sharer.php?u="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                        data-link-base="//www.facebook.com/sharer.php?u="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_facebook.svg"
+                    />
+                        <span class="sr-only">Share on Facebook</span>
                     </a>
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                        data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_linkedin.svg"
+                    />
+                        <span class="sr-only">Share on LinkedIn</span>
                     </a>
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//wa.me/?text="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_whatsapp.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                        data-link-base="//wa.me/?text="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_whatsapp.svg"
+                    />
+                        <span class="sr-only">Share on WhatsApp</span>
                     </a>
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//telegram.me/share/url?url="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_telegram.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                        data-link-base="//telegram.me/share/url?url="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_telegram.svg"
+                    />
+                        <span class="sr-only">Share on Telegram</span>
                     </a>
-                    <a class="lb-post-shareBox__item share_viber-hidden-desktop"
-                    data-link-base="viber://forward?text="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_viber.svg"/>
+                    <a
+                        class="lb-post-shareBox__item share_viber-hidden-desktop"
+                        data-link-base="viber://forward?text="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_viber.svg"
+                    />
+                        <span class="sr-only">Share on Viber</span>
                     </a>
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-                    data-link-base="//twitter.com/intent/tweet?text="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                        data-link-base="//twitter.com/intent/tweet?text="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_twitter.svg"
+                    />
+                        <span class="sr-only">Share on Twitter</span>
                     </a>
-                    <a class="lb-post-shareBox__item"
-                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
-                    data-link-base="mailto:?to=&subject=Liveblog&body="
-                    data-link-id={{post._id}}><img src="{{ assets_root }}images/share_email.svg"/>
+                    <a
+                        class="lb-post-shareBox__item"
+                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
+                        data-link-base="mailto:?to=&subject=Liveblog&body="
+                        data-link-id={{post._id}}><img src="{{ assets_root }}images/share_email.svg"
+                    />
+                        <span class="sr-only">Share via Email</span>
                     </a>
                     <span> | </span>
                 </div>
@@ -47,8 +68,9 @@
         {% if settings.showPermalinkButton %}
             <!-- permalink -->
             <div class="lb-post-permalink">
-                <a id="{{ post._id }}" target="_blank">
+                <a id="{{ post._id }}" target="_blank" title="Permalink">
                     <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
+                    <span class="sr-only">Permalink</span>
                 </a>
             </div>
             <!-- end permalink -->

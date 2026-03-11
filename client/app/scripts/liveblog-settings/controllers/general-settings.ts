@@ -1,7 +1,10 @@
 import _ from 'lodash';
 import {
-    TAGS, ALLOW_PICK_MULTI_TAGS, YOUTUBE_PRIVACY_STATUS,
+    TAGS,
+    ALLOW_PICK_MULTI_TAGS,
+    YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EDITOR_QUOTATION_MARKS_LANGUAGE,
 } from './../../liveblog-common/constants';
 
 const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q) => {
@@ -15,10 +18,17 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         embed_height_responsive_default: { value: true },
     };
 
+    $scope.liveblogSettings[EDITOR_QUOTATION_MARKS_LANGUAGE] = { value: 'en' };
+
     $scope.privacyStatuses = [
         { value: 'private', label: 'Private' },
         { value: 'public', label: 'Public' },
         { value: 'unlisted', label: 'Unlisted' },
+    ];
+
+    $scope.quotationMarksOptions = [
+        { value: 'en', label: 'English' },
+        { value: 'de', label: 'Deutsch' },
     ];
 
     // settings allowed keys
@@ -29,6 +39,7 @@ const LiveblogSettingsController = ($scope, api, $location, notify, gettext, $q)
         ALLOW_PICK_MULTI_TAGS,
         YOUTUBE_PRIVACY_STATUS,
         EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+        EDITOR_QUOTATION_MARKS_LANGUAGE,
     ];
 
     api.languages.query().then((data) => {

@@ -79,6 +79,18 @@
                                     ng-model="liveblogSettings.youtube_privacy_status.value" class="form-control"></select>
                             </div>
                         </div>
+
+                        <div class="form-group"">
+                            <div class="lb-group-heading">
+                                <label for="quotationMarksLanguage">Quotation Marks Language</label>
+                            </div>
+                            <div>
+                                <select name="quotationMarksLanguage"
+                                    class="row-td"
+                                    ng-options="quoteMarkOption.value as quoteMarkOption.label for quoteMarkOption in quotationMarksOptions"
+                                    ng-model="liveblogSettings.editor_quotation_marks_language.value" class="form-control"></select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

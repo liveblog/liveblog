@@ -46,7 +46,7 @@
     {% if not settings.hidePostOrder %}
       <div class="sorting-bar">
         <div class="sorting-bar__orders">
-          <div class="sorting-bar__dropdownBtn" data-js-sort_dropdown_button>
+          <button class="sorting-bar__dropdownBtn" data-js-sort_dropdown_button>
             {% if settings.postOrder == 'editorial' %}
               {{  translate("Editorial") }}
             {% elif settings.postOrder == 'newest_first' %}
@@ -54,22 +54,19 @@
             {% elif settings.postOrder == 'oldest_first' %}
               {{ translate("Oldest first") }}
             {% endif %}
-          </div>
-          <div class="sorting-bar__dropdownContent">
+          </button>
+          <div class="sorting-bar__dropdownContent" role="menu">
             <div
-              class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
-              data-js-orderby_editorial>
-              {{  translate("Editorial") }}
+              class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}">
+              <button role="menuitem" data-js-orderby_editorial>{{  translate("Editorial") }}</button>
             </div>
             <div
-              class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
-              data-js-orderby_descending>
-              {{  translate("Newest first") }}
+              class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}">
+              <button role="menuitem" data-js-orderby_descending>{{  translate("Newest first") }}</button>
             </div>
             <div
-              class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
-              data-js-orderby_ascending>
-              {{ translate("Oldest first") }}
+              class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}">
+              <button role="menuitem" data-js-orderby_ascending>{{ translate("Oldest first") }}</button>
             </div>
           </div>
         </div>

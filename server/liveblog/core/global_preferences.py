@@ -1,13 +1,3 @@
-# -*- coding: utf-8; -*-
-#
-# This file is part of Superdesk.
-#
-# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
-#
-# For the full copyright and license information, please see the
-# AUTHORS and LICENSE files distributed with this source code, or
-# at https://www.sourcefabric.org/superdesk/license
-
 import logging
 from superdesk import get_resource_service
 from superdesk.resource import Resource
@@ -22,6 +12,7 @@ from .constants import (
     ALLOW_MULTIPLE_TAGS,
     YOUTUBE_PRIVACY_STATUS,
     EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+    EDITOR_QUOTATION_MARKS_LANGUAGE,
 )
 
 preferences_key = "global_preferences"
@@ -49,6 +40,7 @@ class GlobalPreferencesResource(Resource):
                 GLOBAL_TAGS,
                 ALLOW_MULTIPLE_TAGS,
                 EMBED_HEIGHT_RESPONSIVE_DEFAULT,
+                EDITOR_QUOTATION_MARKS_LANGUAGE,
             ],
         },
         "value": {"type": ["string", "list", "boolean"]},
@@ -82,6 +74,3 @@ class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
         res = get_resource_service(preferences_key).get(req=None, lookup={})
         return dict([v["key"], v["value"]] for v in res if "value" in v and "key" in v)
-
-
-# EOF

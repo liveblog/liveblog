@@ -302,12 +302,12 @@ function toggleCommentDialog() {
  * @param {string} name - liveblog API response JSON.
  */
 function toggleSortBtn(name) {
-  var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+  var sortingBtns = document.querySelectorAll('.sorting-bar__order button');
 
   sortingBtns.forEach((el) => {
     var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name);
 
-    el.classList.toggle('sorting-bar__order--active', shouldBeActive);
+    el.parentElement.classList.toggle('sorting-bar__order--active', shouldBeActive);
     if (shouldBeActive) {
       document.querySelector('.sorting-bar__dropdownBtn').innerHTML = el.innerHTML;
     }
@@ -504,6 +504,16 @@ function initGdprConsentAndRefreshAds(api_response) {
   }
 }
 
+/**
+ * Count visible posts within [data-timeline-normal]
+ * Filters out elements with class 'mod--displaynone'
+ */
+function getItemsInView() {
+  if (!els.timelineNormal) return 0;
+  const postElems = els.timelineNormal.querySelectorAll('[data-post-id]');
+  return postElems.length;
+}
+
 module.exports = {
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
@@ -534,4 +544,5 @@ module.exports = {
   reloadScripts: reloadScripts,
   renderSinglePost: renderSinglePost,
   updatePost: updatePost,
+  getItemsInView: getItemsInView,
 };

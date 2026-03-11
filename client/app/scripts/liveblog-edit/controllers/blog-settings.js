@@ -157,6 +157,35 @@ function BlogSettingsController(
             {text: 'Enabled', value: 'enabled'},
             {text: 'Disabled', value: 'disabled'},
         ],
+        timezoneOptions: [
+            {text: 'GMT−12', value: -12},
+            {text: 'GMT−11', value: -11},
+            {text: 'GMT−10', value: -10},
+            {text: 'GMT−9', value: -9},
+            {text: 'GMT−8', value: -8},
+            {text: 'GMT−7', value: -7},
+            {text: 'GMT−6', value: -6},
+            {text: 'GMT−5', value: -5},
+            {text: 'GMT−4', value: -4},
+            {text: 'GMT−3', value: -3},
+            {text: 'GMT−2', value: -2},
+            {text: 'GMT−1', value: -1},
+            {text: 'GMT+0 (UTC)', value: 0},
+            {text: 'GMT+1', value: 1},
+            {text: 'GMT+2', value: 2},
+            {text: 'GMT+3', value: 3},
+            {text: 'GMT+4', value: 4},
+            {text: 'GMT+5', value: 5},
+            {text: 'GMT+6', value: 6},
+            {text: 'GMT+7', value: 7},
+            {text: 'GMT+8', value: 8},
+            {text: 'GMT+9', value: 9},
+            {text: 'GMT+10', value: 10},
+            {text: 'GMT+11', value: 11},
+            {text: 'GMT+12', value: 12},
+            {text: 'GMT+13', value: 13},
+            {text: 'GMT+14', value: 14},
+        ],
         // used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
         // users to remove from the pending queue once the changes are saved
@@ -612,6 +641,10 @@ function BlogSettingsController(
     blogSecurityService.showUpgradeModal().then((showUpgradeModal) => {
         vm.deactivateStatus = vm.blog_switch ? false : showUpgradeModal;
     });
+
+    if (!vm.newBlog.json_ld_timezone_offset) {
+        vm.newBlog.json_ld_timezone_offset = 0;
+    }
 }
 
 export default BlogSettingsController;
