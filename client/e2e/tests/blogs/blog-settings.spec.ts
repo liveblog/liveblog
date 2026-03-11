@@ -1,9 +1,38 @@
+import path from 'path';
 import { test, expect } from '../../fixtures';
 import { BlogsListPage } from '../../pages/blogs-list.page';
 import { BlogSettingsPage } from '../../pages/blog-settings.page';
 
 const ACTIVE_COUNT = 4;
 const ARCHIVED_COUNT = 1;
+const TEST_IMAGE = path.resolve(__dirname, '../../../../server/features/steps/fixtures/bike.jpg');
+
+test('uploads a blog image', async ({ authenticatedPage }) => {
+    test.setTimeout(60000);
+    const list = new BlogsListPage(authenticatedPage);
+    const settings = new BlogSettingsPage(authenticatedPage);
+
+    await list.open();
+    await list.openBlogSettings(1); // blog without a pre-existing image
+    await settings.uploadBlogImage(TEST_IMAGE);
+    await settings.saveAndClose();
+
+    await settings.reopenSettings();
+    await expect(settings.blogImage()).toBeVisible();
+});
+
+test('removes a blog image', async ({ authenticatedPage }) => {
+    const list = new BlogsListPage(authenticatedPage);
+    const settings = new BlogSettingsPage(authenticatedPage);
+
+    await list.open();
+    await list.openBlogSettings(0); // 'title: end to end image' has a seeded picture_url
+    await settings.removeBlogImage();
+    await settings.saveAndClose();
+
+    await settings.reopenSettings();
+    await expect(settings.blogImage()).not.toBeVisible();
+});
 
 test('modifies blog title', async ({ authenticatedPage }) => {
     const list = new BlogsListPage(authenticatedPage);
@@ -16,6 +45,37 @@ test('modifies blog title', async ({ authenticatedPage }) => {
 
     await authenticatedPage.goto('/#/liveblog');
     await expect(list.blogTitles().first()).toHaveText('updated title');
+});
+
+test('modifies blog description', async ({ authenticatedPage }) => {
+    const list = new BlogsListPage(authenticatedPage);
+    const settings = new BlogSettingsPage(authenticatedPage);
+
+    await list.open();
+    await list.openBlogSettings(0);
+    await settings.updateDescription('Test description');
+    await settings.saveAndClose();
+
+    await list.open();
+    await list.openBlogSettings(0);
+    expect(await settings.getDescription()).toBe('Test description');
+});
+
+test('adds a team member', async ({ authenticatedPage }) => {
+    const list = new BlogsListPage(authenticatedPage);
+    const settings = new BlogSettingsPage(authenticatedPage);
+
+    await list.open();
+    await list.openBlogSettings(0);
+    await settings.openTeamTab();
+    await settings.editTeam();
+    await settings.searchAndAddMember('g');
+    await settings.doneTeamEdit();
+    await settings.saveAndClose();
+
+    await settings.reopenSettings();
+    await settings.openTeamTab();
+    await expect(settings.teamMembers()).toHaveCount(1);
 });
 
 test('shows original creator name and username', async ({ authenticatedPage }) => {

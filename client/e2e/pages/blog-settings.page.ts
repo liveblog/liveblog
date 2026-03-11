@@ -23,13 +23,65 @@ export class BlogSettingsPage {
         await this.titleInput().fill(title);
     }
 
+    async updateDescription(text: string): Promise<void> {
+        await this.page.locator('textarea[name="inputDescription"]').fill(text);
+    }
+
+    async getDescription(): Promise<string> {
+        return this.page.locator('textarea[name="inputDescription"]').inputValue();
+    }
+
     async saveAndClose(): Promise<void> {
         await this.page.locator('[ng-click="settings.saveAndClose()"]').click();
         await this.page.locator('a.settings-link').waitFor();
     }
 
+    async reopenSettings(): Promise<void> {
+        await this.page.locator('a.settings-link').click();
+        await this.page.locator('[ng-model="settings.newBlog.title"]').waitFor();
+    }
+
+    blogImage(): Locator {
+        return this.page.locator('figure.blog-media');
+    }
+
+    async uploadBlogImage(filePath: string): Promise<void> {
+        await this.page.getByTestId('upload-blog-image').click();
+        await this.page.locator('#images-input').waitFor({ state: 'attached' });
+        await this.page.locator('#images-input').setInputFiles(filePath);
+        await this.page.locator('button[ng-click="save()"]:not([disabled])').waitFor();
+        await this.page.locator('button[ng-click="save()"]').click();
+        await this.page.locator('#images-input').waitFor({ state: 'detached' });
+    }
+
+    async removeBlogImage(): Promise<void> {
+        await this.page.getByTestId('remove-blog-image').click();
+        await this.page.locator('button[ng-click="ok()"]').click();
+    }
+
+    teamMembers(): Locator {
+        return this.page.getByTestId('team-member');
+    }
+
     async openTeamTab(): Promise<void> {
         await this.page.locator('[data="blog-settings-team"] a').click();
+    }
+
+    async editTeam(): Promise<void> {
+        await this.page.locator('a[ng-click="settings.editTeam()"]').click();
+        await this.page.locator('div.team-edit input.searchbar').waitFor();
+    }
+
+    async searchAndAddMember(query: string): Promise<void> {
+        await this.page.locator('div.team-edit input.searchbar').fill(query);
+        const firstResult = this.page.locator('div.team-edit ul.users-list-embed li').first();
+        await firstResult.waitFor();
+        await firstResult.click();
+    }
+
+    async doneTeamEdit(): Promise<void> {
+        await this.page.locator('button[ng-click="settings.doneTeamEdit()"]').click();
+        await this.page.locator('div.team-edit input.searchbar').waitFor({ state: 'hidden' });
     }
 
     async toggleStatus(): Promise<void> {
