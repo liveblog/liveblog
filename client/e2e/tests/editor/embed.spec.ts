@@ -8,6 +8,7 @@ import { EditorPage } from '../../pages/editor.page';
 const YOUTUBE_URL = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
 
 test('adds a youtube embed in the editor', async ({ authenticatedPage }) => {
+    test.skip(!process.env.IFRAMELY_KEY, 'IFRAMELY_KEY not set');
     // Iframely fetch can be slow. If flaky with timeout, consider uncommenting the line below.
     // test.setTimeout(60000);
 
