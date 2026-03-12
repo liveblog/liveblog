@@ -71,6 +71,15 @@ export class BlogPage extends BasePage {
         await this.page.locator('.panel--editor .scorecard-top').waitFor();
     }
 
+    async openIngestPanel(): Promise<void> {
+        await this.page.locator('button.navbtn[ng-click="openPanel(\'ingest\')"]').dispatchEvent('click');
+        await this.page.locator('.syndicated-blogs-list').waitFor();
+    }
+
+    syndicatedBlogItems(): Locator {
+        return this.page.locator('.syndicated-blogs-list .blog-item');
+    }
+
     async openCommentsPanel(): Promise<void> {
         await this.page.locator('button.navbtn[ng-click="openPanel(\'comments\')"]').dispatchEvent('click');
         await this.page.locator('.panel--comments').waitFor();
