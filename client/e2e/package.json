@@ -1,0 +1,22 @@
+{
+  "name": "liveblog-e2e",
+  "version": "1.0.0",
+  "description": "End-to-end tests for LiveBlog",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:codegen": "playwright codegen http://localhost:9000"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "volta": {
+    "node": "24.0.0"
+  }
+}

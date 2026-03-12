@@ -4,7 +4,12 @@
             <li
                 ng-class="{active: activeState === state.name}"
                 ng-repeat="state in states">
-                <button ng-click="changeState(state)" translate>{{ ::state.text }}</button>
+                <button
+                    ng-click="changeState(state)"
+                    data-testid="syndication-tab-{{ state.name }}"
+                    translate>
+                    {{ ::state.text }}
+                </button>
             </li>
         </ul>
     </div>

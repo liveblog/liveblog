@@ -45,7 +45,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: nanasess/setup-chromedriver@master
 
     - name: Cache Conda environment
       uses: actions/cache@v3
@@ -123,17 +122,19 @@ jobs:
         while [ ! -f index.html ]; do sleep .5; done
         (nohup python -m http.server 9000 &)
 
-    - name: Run Protractor e2e tests
-      working-directory: ./client
-      run: |
-        export DISPLAY=:99
-        export SELENIUM_ADDRESS='http://localhost:4444/wd/hub'
-        sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-        chromedriver --port=4444 --url-base=/wd/hub &
-        $CHROME_BIN --version
-        npm run e2e
+    - name: Setup Node 24 for Playwright
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
 
-    - name: Run Cypress e2e tests
-      working-directory: ./client
+    - name: Install Playwright dependencies
+      working-directory: ./client/e2e
+      shell: bash
       run: |
-        npm run cy:run
+        npm ci
+        npx playwright install chromium --with-deps
+
+    - name: Run Playwright e2e tests
+      working-directory: ./client/e2e
+      shell: bash
+      run: npx playwright test --reporter=line
