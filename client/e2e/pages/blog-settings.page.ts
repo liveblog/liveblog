@@ -107,6 +107,12 @@ export class BlogSettingsPage {
         await this.page.locator('[ng-model="self.output.name"]').waitFor({ state: 'hidden' });
     }
 
+    async acceptPendingMember(): Promise<void> {
+        await this.page.locator('.pending-blog-member').hover();
+        await this.page.locator('[data-button="ACCEPT-NEW-MEMBER"]').click();
+        await this.page.locator('.pending-blog-member').waitFor({ state: 'detached' });
+    }
+
     async deleteFirstOutput(): Promise<void> {
         await this.outputItems.first().hover();
         await this.outputItems.first().locator('button[ng-click="settings.removeOutput(output, $index);"]').click();

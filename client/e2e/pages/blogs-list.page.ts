@@ -54,4 +54,40 @@ export class BlogsListPage extends BasePage {
         await this.page.locator('a.navbtn.homebtn').click();
         await this.blogItems.first().waitFor();
     }
+
+    async createBlogWithImage(title: string, imagePath: string): Promise<void> {
+        await this.createButton.click();
+        await this.page.locator('[ng-model="newBlog.title"]').fill(title);
+        const fileInput = this.page.locator('.modal--tabs input[type="file"]');
+        await fileInput.waitFor({ state: 'attached' });
+        await fileInput.setInputFiles(imagePath);
+        await this.page.locator('.modal--tabs img.preview-target-1').waitFor();
+        await this.page.getByRole('button', { name: 'Next' }).click();
+        await this.page.locator('button[ng-click="createBlog()"]').click();
+        await this.page.locator('a.navbtn.homebtn').click();
+        await this.blogItems.first().waitFor();
+    }
+
+    async createBlogWithMember(title: string, searchQuery: string): Promise<void> {
+        await this.createButton.click();
+        await this.page.locator('[ng-model="newBlog.title"]').fill(title);
+        await this.page.getByRole('button', { name: 'Next' }).click();
+        await this.page.locator('div[lb-user-select-list] input.searchbar').fill(searchQuery);
+        const firstResult = this.page.locator('div[lb-user-select-list] ul.users-list-embed li').first();
+        await firstResult.waitFor();
+        await firstResult.click();
+        await this.page.locator('button[ng-click="createBlog()"]').click();
+        await this.page.locator('a.navbtn.homebtn').click();
+        await this.blogItems.first().waitFor();
+    }
+
+    async requestBlogAccess(index: number): Promise<void> {
+        await this.blogItems.nth(index).click();
+        await this.page.locator('button[ng-click="requestAccess(accessRequestedTo)"]').waitFor();
+        const responsePromise = this.page.waitForResponse(
+            r => r.url().includes('/api/') && r.request().method() === 'POST'
+        );
+        await this.page.locator('button[ng-click="requestAccess(accessRequestedTo)"]').click();
+        await responsePromise;
+    }
 }

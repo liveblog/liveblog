@@ -96,6 +96,22 @@ export class EditorPage {
         await this.page.locator('freetype-collection-add[vector="freetypeData.home.scorers"] button').click();
     }
 
+    async addEmbedBlock(): Promise<void> {
+        await this.page.locator('.st-block-controls__top').click();
+        await this.page.locator('[data-type="embed"]').click();
+        await this.page.locator('.st-embed-block.embed-input').waitFor();
+    }
+
+    async typeEmbed(url: string): Promise<void> {
+        await this.page.locator('.st-embed-block.embed-input').click();
+        await this.page.keyboard.type(url);
+        await this.page.keyboard.press('Enter');
+    }
+
+    embedPreviewIframe(): Locator {
+        return this.page.locator('.embed-preview iframe');
+    }
+
     async addPollBlock(): Promise<void> {
         await this.page.locator('.st-block-controls__top').click();
         await this.page.locator('[data-type="poll"]').click();
