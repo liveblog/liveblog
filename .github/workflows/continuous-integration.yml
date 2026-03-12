@@ -137,4 +137,4 @@ jobs:
     - name: Run Playwright e2e tests
       working-directory: ./client/e2e
       shell: bash
-      run: npx playwright test
+      run: npx playwright test --reporter=line
