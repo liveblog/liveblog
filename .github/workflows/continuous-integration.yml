@@ -22,6 +22,7 @@ jobs:
       MAIL_SUPPRESS_SEND: true
       IFRAMELY_KEY: ${{ secrets.IFRAMELY_KEY }}
       SUPERDESK_URL: 'http://localhost:5000/api'
+      SUPERDESK_WS_URL: 'ws://localhost:5100'
       SUPERDESK_CLIENT_URL: 'http://localhost:9000'
       WEB_CONCURRENCY: 3
       WEB_TIMEOUT: 8
@@ -62,16 +63,6 @@ jobs:
         python-version: 3.6
         auto-activate-base: false
 
-    - name: Cache Node.js modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.npm
-          client/node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - name: Cache Python packages
       uses: actions/cache@v3
       with:
@@ -91,12 +82,23 @@ jobs:
         pytest --ignore=src/ --disable-pytest-warnings -v
         behave --format progress2 --logging-level ERROR
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: 'client/package.json'
+        cache: 'npm'
+        cache-dependency-path: 'client/package-lock.json'
+
     - name: Install Nodejs dependencies and lint
       working-directory: ./client
+      shell: bash
       run: |
+        git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+        git config --global --add url."https://github.com/".insteadOf git+ssh://git@github.com/
+        node --version
+        npm --version
         npm config set loglevel warn
-        npm install -g grunt-cli
-        npm ci
+        npm ci --ignore-scripts
         npm run lint
 
     - name: Initialize app data
@@ -116,14 +118,14 @@ jobs:
 
     - name: Build client
       working-directory: ./client
+      shell: bash
       run: |
-        grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+        npm run build
         cd dist
-        while [ ! -f index.html ]; do sleep .5; done
         (nohup python -m http.server 9000 &)
 
     - name: Setup Node 24 for Playwright
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '24'
 
