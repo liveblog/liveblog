@@ -6,7 +6,7 @@
  */
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function() {
     return {
         defaultRoute: '/liveblog',
         requiredMediaMetadata: ['headline', 'description_text', 'alt_text']
