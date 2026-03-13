@@ -6,8 +6,9 @@
     "url": "git@github.com:liveblog/liveblog.git"
   },
   "scripts": {
-    "build": "grunt build",
-    "eslint": "grunt eslint",
+    "build": "webpack --mode production",
+    "start": "DEBUG_MODE=true webpack serve",
+    "eslint": "eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "tslint": "tslint -c tslint.json 'app/**/*.{ts,tsx}'",
     "lint": "npm run eslint && npm run tslint",
     "e2e": "cd e2e && npm test",
@@ -23,55 +24,34 @@
   "devDependencies": {
     "@types/angular": "^1.6.54",
     "@types/bootstrap": "^3.3.42",
-    "@types/jquery": "^3.3.29",
-    "@types/lodash": "^4.14.137",
+    "@types/jquery": "3.3.29",
+    "@types/lodash": "4.14.137",
     "@types/react": "^16.8.18",
     "@types/react-select": "3.0.9",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "bootstrap": "^4.5.0",
-    "btoa": "1.1.2",
     "classnames": "2.2.5",
-    "css-loader": "0.28.7",
+    "copy-webpack-plugin": "^10.2.4",
+    "css-loader": "^6.11.0",
     "eslint": "^6.7.2",
     "eslint-plugin-angular": "3.1.1",
     "eslint-plugin-react": "^7.5.1",
-    "fork-ts-checker-webpack-plugin": "^0.5.2",
-    "grunt": "^1.4.1",
-    "grunt-angular-gettext": "2.3.6",
-    "grunt-angular-templates": "1.1.0",
-    "grunt-contrib-clean": "1.1.0",
-    "grunt-contrib-concat": "1.0.1",
-    "grunt-contrib-connect": "1.0.2",
-    "grunt-contrib-copy": "1.0.0",
-    "grunt-contrib-cssmin": "2.2.1",
-    "grunt-contrib-less": "1.4.1",
-    "grunt-contrib-watch": "1.0.0",
-    "grunt-eslint": "^21.0.0",
-    "grunt-filerev": "2.3.1",
-    "grunt-open": "0.2.3",
-    "grunt-template": "0.2.3",
-    "grunt-usemin": "3.1.1",
-    "grunt-webpack": "3.1.1",
-    "json-loader": "0.5.4",
-    "load-grunt-config": "0.19.2",
-    "load-grunt-tasks": "3.5.2",
+    "fork-ts-checker-webpack-plugin": "^6.5.3",
+    "html-loader": "^1.3.2",
     "ngtemplate-loader": "2.0.1",
-    "phantomjs": "^2.1.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "request": "^2.79.0",
-    "sass": "^1.26.0",
-    "sass-loader": "^7.3.1",
-    "style-loader": "0.19.0",
+    "sass": "^1.50.0",
+    "sass-loader": "^10.5.2",
+    "style-loader": "^3.3.4",
     "superdesk-code-style": "^1.2.0",
-    "superdesk-ui-framework": "^1.8.14",
-    "terser-webpack-plugin-legacy": "^1.2.5",
-    "ts-loader": "^3.5.0",
+    "ts-loader": "^9.5.1",
     "tslint": "^5.16.0",
     "typescript": "^3.9.6",
-    "webpack": "3.11.0",
-    "webpack-dev-server": "2.11.5"
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.2"
   },
   "dependencies": {
     "@atlaskit/calendar": "10.1.0",
@@ -90,7 +70,6 @@
     "angular-resource": "1.6.6",
     "angular-route": "1.6.9",
     "angular-vs-repeat": "1.1.7",
-    "eslint-loader": "^2.1.2",
     "gridster": "github:superdesk/gridster.js#885d0c9",
     "jquery": "^3.5.1",
     "jquery-jcrop": "0.9.13",
@@ -116,11 +95,14 @@
     "superdesk-core": "github:liveblog/superdesk-client-core#v1.17.0-liveblog",
     "superdesk-ui-framework": "^1.8.13"
   },
+  "overrides": {
+    "node-sass": "npm:sass@^1.26.0",
+    "styled-components": "^5.1.1"
+  },
   "engines": {
-    "node": ">=6.6.0 <7.0.0",
-    "npm": ">=3.10 <4.0.0"
+    "node": ">=16.0.0"
   },
   "volta": {
-    "node": "10.24.1"
+    "node": "16.20.2"
   }
 }
