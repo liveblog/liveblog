@@ -5,7 +5,6 @@ channels:
   - conda-forge
 dependencies:
   - python=3.6
-  - nodejs=10
   - pip
   - libmagic
   - libffi
