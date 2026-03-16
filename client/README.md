@@ -3,27 +3,40 @@ Liveblog Client is a javascript client for Liveblog REST API server.
 
 ## Setup
 
-Client requires `nodejs` installed and a few steps:
+Requires Node.js 22+ (managed via [Volta](https://volta.sh/), see `package.json` for pinned version).
+
 ```
-npm install -g grunt-cli
-npm install # install other node dependencies
-```
-After you can start local dev server on port `9000`:
-```
-grunt server
+npm install
 ```
 
-### Running with docker
-This also will start frontend on localhost:9000.
-Change `http://localhost:5000` to an actual backend server.
+### Development
+
+Start a local dev server on port `9000` with live reload:
+```
+npm start
+```
+
+### Production build
+
+```
+npm run build
+```
+
+Output goes to `dist/`.
+
+### Linting
+
+```
+npm run lint
+```
+
+### Running with Docker
+
+> **Note:** Docker commands need to be updated for the current build setup.
+
 ```
 docker build -t liveblog-client:devel ./
-docker run -i -p 9000:9000 -t liveblog-client:devel grunt server --server=http://localhost:5000 --force
-```
-
-Also u can start it with default parameters using vagrant:
-```
-vagrant up --provider=docker
+docker run -i -p 9000:9000 -t liveblog-client:devel
 ```
 
 ## Info for contributors
@@ -46,4 +59,4 @@ For trivial changes you can ommit JIRA ref or Description or both: ```Fix typo i
 
 ### CI
 
-You can test your code before sending a PR via: ```grunt ci```
+CI runs via GitHub Actions on push and pull requests. The pipeline runs linting, builds the client, and executes Playwright e2e tests. See `.github/workflows/continuous-integration.yml`.
