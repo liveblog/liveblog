@@ -5,10 +5,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -el {0}
-
     env:
       CI: true
       SYNDICATION_VALIDATE_AUTH: 0
@@ -47,37 +43,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Cache Conda environment
-      uses: actions/cache@v3
+    - name: Setup Python
+      uses: actions/setup-python@v5
       with:
-        path: /usr/share/miniconda/envs/liveblog-ci-env
-        key: ${{ runner.os }}-conda-${{ hashFiles('environment.yml') }}
-        restore-keys: |
-          ${{ runner.os }}-conda-
-
-    - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        activate-environment: liveblog-ci-env
-        environment-file: environment.yml
-        python-version: 3.6
-        auto-activate-base: false
-
-    - name: Cache Python packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/pip
-          /usr/share/miniconda/envs/liveblog-ci-env/lib/python3.6/site-packages
-        key: ${{ runner.os }}-pip-${{ hashFiles('server/dev-requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        python-version: '3.8'
+        cache: 'pip'
+        cache-dependency-path: 'server/dev-requirements.txt'
 
     - name: Install Python dependencies and run tests
       working-directory: ./server
       run: |
-        pip install 'pip<=20.2.3'
-        pip install 'setuptools<50'
         pip install -r dev-requirements.txt
         pytest --ignore=src/ --disable-pytest-warnings -v
         behave --format progress2 --logging-level ERROR
