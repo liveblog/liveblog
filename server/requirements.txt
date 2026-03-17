@@ -19,8 +19,9 @@ marshmallow<3.15.0
 
 redis>=3.2,<3.6
 elasticsearch>=2.0.0,<3.0.0
-kombu>=4.4,<4.7
+kombu>=4.6,<4.7
 websockets>=7.0,<10.0
 werkzeug<1.0
 jinja2>=2.10,<3.1
 markupsafe>=1.1,<2.1
+itsdangerous>=1.1,<2.1

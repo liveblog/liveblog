@@ -55,7 +55,7 @@ jobs:
       run: |
         pip install 'pip<=20.2.3'
         pip install 'setuptools<50'
-        pip install -r dev-requirements.txt
+        PYYAML_FORCE_PYTHON=1 pip install -r dev-requirements.txt
         pytest --ignore=src/ --disable-pytest-warnings -v
         behave --format progress2 --logging-level ERROR
 
