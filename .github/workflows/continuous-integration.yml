@@ -53,6 +53,7 @@ jobs:
     - name: Install Python dependencies and run tests
       working-directory: ./server
       run: |
+        pip install 'pip<24.1'
         pip install -r dev-requirements.txt
         pytest --ignore=src/ --disable-pytest-warnings -v
         behave --format progress2 --logging-level ERROR
