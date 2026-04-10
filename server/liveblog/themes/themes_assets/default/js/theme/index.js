@@ -19,8 +19,13 @@ require('iframe-resizer/js/iframeResizer.contentWindow.min.js');
 module.exports = {
   /**
    * On document loaded, do the following:
+   * @param {Object} opts - Options object
+   * @param {boolean} opts.force - Force re-initialization even if already initialized
    */
-  init: function() {
+  init: function(opts) {
+    opts = opts || {};
+    if (!opts.force && window.LB && window.LB._initialized) return;
+
     gdpr.init();
     handlers.buttons.attach(); // Register Buttons Handlers
     handlers.events.attach(); // Register Event, Message Handlers
@@ -36,5 +41,8 @@ module.exports = {
     setInterval(() => {
       view.updateTimestamps(); // Convert ISO dates to timeago
     }, 1000);
-  }
+
+    window.LB._initialized = true;
+  },
+  loadEmbeds: view.loadEmbeds
 };
