@@ -370,23 +370,18 @@ def step_load_system_themes(context):
         Then we get list with 5 items
     """
     from liveblog.system_themes import system_themes
-    from liveblog.tenancy.context import set_system_mode, reset_system_mode
+    from liveblog.tenancy.context import system_context
     from superdesk import get_resource_service
 
-    # Create minimal theme fixtures for each system theme
     themes_list = [
         {"name": theme_name, "tenant_id": None, "version": "1.0.0"}
         for theme_name in system_themes
     ]
 
-    # Enter system mode to bypass tenant requirements when creating system themes
-    token = set_system_mode()
-    try:
+    with system_context():
         with context.app.app_context():
             themes_service = get_resource_service("themes")
             themes_service.post(themes_list)
-    finally:
-        reset_system_mode(token)
 
 
 @given("the theme quota is {limit:d}")

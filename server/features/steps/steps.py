@@ -10,23 +10,14 @@
 
 
 import superdesk.tests as tests
-from contextlib import contextmanager
 from behave import given, when  # @UnresolvedImport
-from flask import json, g
+from flask import json
 from superdesk.tests import set_placeholder
 from superdesk.tests.steps import apply_placeholders, parse, is_user_resource
 from superdesk import get_resource_service
+from liveblog.tests import tenant_request_context
 
 external_url = "http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg"
-
-
-@contextmanager
-def tenant_request_context(context):
-    """Open a test request context with tenant identity from the behave context user."""
-    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
-        if hasattr(context, "user") and context.user:
-            g.user = context.user
-        yield
 
 
 @given('tenant aware "{resource}"')

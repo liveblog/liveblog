@@ -11,7 +11,7 @@ from superdesk.tests.steps import (
     set_user_default,
     store_placeholder,
 )
-from steps import tenant_request_context
+from liveblog.tests import tenant_request_context
 
 
 @given("config consumer api_key")

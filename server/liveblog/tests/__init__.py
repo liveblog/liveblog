@@ -1,5 +1,17 @@
+from contextlib import contextmanager
+
+from flask import g
 from superdesk import get_resource_service
 from superdesk.tests import set_placeholder
+
+
+@contextmanager
+def tenant_request_context(context):
+    """Open a test request context with tenant identity from the behave context user."""
+    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+        if hasattr(context, "user") and context.user:
+            g.user = context.user
+        yield
 
 
 test_consumer = {
@@ -39,7 +51,7 @@ def setup_auth_consumer(context, consumer):
     :param dict consumer: consumer
     """
     consumer = consumer or test_consumer
-    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+    with tenant_request_context(context):
         api_key = consumer["api_key"]
 
         if not get_resource_service("consumers").find_one(api_key=api_key, req=None):

@@ -7,8 +7,7 @@ from superdesk.celery_app import AppContextTask
 from liveblog.tenancy.context import (
     set_current_tenant_id,
     reset_current_tenant_id,
-    set_system_mode,
-    reset_system_mode,
+    system_context,
 )
 
 
@@ -107,11 +106,8 @@ class SystemTask(AppContextTask):
     """
 
     def __call__(self, *args, **kwargs):
-        token = set_system_mode()
-        try:
+        with system_context():
             return super().__call__(*args, **kwargs)
-        finally:
-            reset_system_mode(token)
 
 
 __all__ = ["TenantAwareTask", "SystemTask"]

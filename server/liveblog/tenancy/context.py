@@ -71,6 +71,25 @@ def reset_system_mode(token):
 
 
 @contextmanager
+def system_context():
+    """Bypass tenant filtering for system-wide operations.
+
+    Use when code needs to query across all tenants — e.g., looking up
+    a globally unique token, running a CLI command, or accessing a
+    resource that isn't scoped to any single tenant.
+
+    Usage:
+        with system_context():
+            consumer = service.find_one(req=None, api_key=token)
+    """
+    token = set_system_mode()
+    try:
+        yield
+    finally:
+        reset_system_mode(token)
+
+
+@contextmanager
 def tenant_context_from_blog(blog):
     """
     Context manager for public endpoints that need tenant context but have no authenticated user.
@@ -101,6 +120,7 @@ __all__ = [
     "reset_current_tenant_id",
     "set_system_mode",
     "reset_system_mode",
+    "system_context",
     "tenant_context_from_blog",
     "SYSTEM_MODE",
 ]

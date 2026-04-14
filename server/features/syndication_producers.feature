@@ -2,7 +2,7 @@ Feature: Producer Resource
 
     @auth
     Scenario: Create a producer
-        Given empty "producers"
+        Given empty tenant aware "producers"
         When we post to "producers"
         """
         [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
@@ -15,7 +15,7 @@ Feature: Producer Resource
 
     @auth
     Scenario: Check if api_url is unique
-        Given empty "producers"
+        Given empty tenant aware "producers"
         When we post to "producers"
         """
         [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
@@ -25,16 +25,16 @@ Feature: Producer Resource
         """
         [{"name": "Producer 2", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
         """
-        Then we get response code 400
+        Then we get response code 409
         When we post to "producers"
         """
         [{"name": "Producer 3", "api_url": "http://localhost:5000/api", "consumer_api_key": "__any_value__"}]
         """
-        Then we get response code 400
+        Then we get response code 409
 
     @auth
     Scenario: List producers
-        Given "producers"
+        Given tenant aware "producers"
         """
         [
             {"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"},
@@ -50,7 +50,7 @@ Feature: Producer Resource
 
     @auth
     Scenario: Update producer
-        Given "producers"
+        Given tenant aware "producers"
         """
         [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
         """
@@ -63,7 +63,7 @@ Feature: Producer Resource
 
     @auth
     Scenario: Update producer with unsecure url
-        Given "producers"
+        Given tenant aware "producers"
         """
         [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
         """
@@ -76,7 +76,7 @@ Feature: Producer Resource
 
     @auth
     Scenario: Delete producer
-        Given "producers"
+        Given tenant aware "producers"
         """
         [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
         """
@@ -104,13 +104,13 @@ Feature: Producer Resource
             }
         ]
         """
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [
             {"name": "Consumer", "api_url": "http://localhost:5000/api", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}], "api_key": "__any_value__"}
         ]
         """
-        Given "producers"
+        Given tenant aware "producers"
         """
         [
             {"name": "Producer", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}

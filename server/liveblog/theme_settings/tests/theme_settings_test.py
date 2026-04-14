@@ -232,7 +232,7 @@ class ThemeSettingsTestCase(TenantAwareTestCase):
     def test_tenant_isolation(self):
         """Test tenant isolation - different tenants have separate settings."""
         # Create second tenant
-        from liveblog.tenancy.context import set_system_mode, reset_system_mode
+        from liveblog.tenancy.context import system_context
 
         tenants_service = get_resource_service("tenants")
         tenant2_id = tenants_service.post([{"name": "Tenant 2"}])[0]
@@ -244,16 +244,13 @@ class ThemeSettingsTestCase(TenantAwareTestCase):
             settings_payload={"postsPerPage": "20"},
         )
 
-        # Tenant 2 customization - need to use system mode to bypass tenant filtering
-        token = set_system_mode()
-        try:
+        # Tenant 2 customization - bypass tenant filtering to write for another tenant
+        with system_context():
             self.theme_settings_service.save_or_update_settings(
                 theme_name=self.theme_name,
                 tenant_id=tenant2_id,
                 settings_payload={"postsPerPage": "30"},
             )
-        finally:
-            reset_system_mode(token)
 
         # Verify tenant 1 sees their own settings
         settings1 = self.theme_settings_service.get_effective_settings(
@@ -261,12 +258,9 @@ class ThemeSettingsTestCase(TenantAwareTestCase):
         )
         self.assertEqual(settings1["postsPerPage"], "20")
 
-        # Verify tenant 2 sees their own settings (use system mode to bypass filtering)
-        token = set_system_mode()
-        try:
+        # Verify tenant 2 sees their own settings
+        with system_context():
             settings2 = self.theme_settings_service.get_effective_settings(
                 self.theme_name, tenant2_id
             )
             self.assertEqual(settings2["postsPerPage"], "30")
-        finally:
-            reset_system_mode(token)
