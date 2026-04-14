@@ -1,6 +1,5 @@
 import os
 
-from bson import ObjectId
 from apps.io.tests import setup_providers
 from superdesk import tests, get_resource_service
 from superdesk.tests import setup_auth_user

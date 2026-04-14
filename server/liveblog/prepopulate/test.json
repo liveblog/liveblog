@@ -40,7 +40,8 @@
             "user_type": "administrator",
             "email": "abc@other.com",
             "sign_off": "abc",
-            "needs_activation": false
+            "needs_activation": false,
+            "tenant_id": "-id default-tenant-"
         },
         "id_name": "-id admin-"
     },
@@ -55,7 +56,8 @@
             "password": "editor",
             "email": "editor@other.com",
             "sign_off": "eo",
-            "needs_activation": false
+            "needs_activation": false,
+            "tenant_id": "-id default-tenant-"
         }
     },
     {
@@ -69,7 +71,8 @@
             "password": "contributor",
             "email": "contributor@other.com",
             "sign_off": "co",
-            "needs_activation": false
+            "needs_activation": false,
+            "tenant_id": "-id default-tenant-"
         },
         "id_name": "-id contributor-"
     },

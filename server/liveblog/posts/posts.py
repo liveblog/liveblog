@@ -9,11 +9,10 @@ from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
-from eve_elastic.elastic import ElasticCursor
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive import ArchiveVersionsResource
-from apps.archive.archive import ArchiveResource, ArchiveService
+from apps.archive.archive import ArchiveResource
 from superdesk.services import BaseService
 from liveblog.tenancy.service import TenantAwareArchiveService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
@@ -34,7 +33,7 @@ from .tasks import (
     update_scheduled_post_blog_data,
 )
 from .mixins import AuthorsMixin, BlogPostsMixin
-from .utils import get_associations, check_content_diff
+from .utils import check_content_diff
 
 
 logger = logging.getLogger("superdesk")

@@ -5,9 +5,8 @@ Tests the theme_settings service methods, particularly the new get_settings_for_
 helper method that supports blog rendering with tenant customizations.
 """
 
-import flask
 from bson import ObjectId
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 import liveblog.themes as themes_app
 import liveblog.tenants as tenants_app

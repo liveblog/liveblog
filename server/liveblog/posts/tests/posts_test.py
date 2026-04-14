@@ -1012,7 +1012,7 @@ class PostsModuleTestCase(TenantAwareTestCase):
             }
             for i in range(2)
         ]
-        post_b_ids = self.app.data.insert("client_blog_posts", posts_b)
+        self.app.data.insert("client_blog_posts", posts_b)
 
         # Query all posts - should only see Tenant B's posts
         all_posts_b = list(self.posts_service.find({}))

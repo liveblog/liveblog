@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-from bson import ObjectId
 from eve.utils import str_to_date
 from flask import Blueprint, abort, g, request
 from flask_cors import CORS

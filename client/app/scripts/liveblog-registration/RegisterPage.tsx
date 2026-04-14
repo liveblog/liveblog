@@ -135,7 +135,7 @@ export class RegisterPage extends React.Component<{}, IState> {
         this.setState((prev) => ({
             form: { ...prev.form, [name]: value },
         }));
-    };
+    }
 
     private startSession = async(username: string, password: string) => {
         const apiUrl = __SUPERDESK_CONFIG__.server.url;
@@ -167,7 +167,7 @@ export class RegisterPage extends React.Component<{}, IState> {
         }
 
         window.location.href = '/';
-    };
+    }
 
     private handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
@@ -203,7 +203,7 @@ export class RegisterPage extends React.Component<{}, IState> {
         } catch (_err) {
             this.setState({ globalError: 'Cannot reach the server. Please try again later.', submitting: false });
         }
-    };
+    }
 
     private inputStyle(name: string) {
         const { focusedField } = this.state;

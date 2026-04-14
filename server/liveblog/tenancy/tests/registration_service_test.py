@@ -7,10 +7,8 @@ and internal methods. End-to-end validation is covered by
 registration_endpoint_test.py.
 """
 
-from bson import ObjectId
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
-from superdesk.errors import SuperdeskApiError
 from liveblog.tenancy.registration import RegistrationService
 from liveblog import tenants, users
 from liveblog.common import run_once

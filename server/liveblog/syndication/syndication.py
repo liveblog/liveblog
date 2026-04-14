@@ -3,6 +3,7 @@ import logging
 from bson import ObjectId
 from flask.views import MethodView
 from flask import Blueprint, abort, request
+from flask import current_app as app
 from flask_cors import CORS
 from superdesk import get_resource_service
 from superdesk.notification import push_notification

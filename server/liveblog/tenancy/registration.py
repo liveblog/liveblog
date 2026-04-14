@@ -8,7 +8,6 @@ relationship between users and tenants.
 
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
-from bson.objectid import ObjectId
 import logging
 
 logger = logging.getLogger(__name__)

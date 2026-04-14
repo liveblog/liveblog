@@ -15,7 +15,6 @@ Usage:
 
 from behave import given, when
 from bson.objectid import ObjectId
-from superdesk.tests import set_placeholder
 
 
 # Default test credentials
@@ -294,7 +293,6 @@ def step_create_user_same_tenant(context, username):
             When we login as tenant user "editor"
     """
     # Get test_user's tenant_id from flask.g (set by @auth fixture)
-    from flask import g
     from liveblog.tenancy import get_tenant_id
     from bson import ObjectId
     from superdesk import get_resource_service

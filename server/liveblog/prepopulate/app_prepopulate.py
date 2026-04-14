@@ -42,9 +42,7 @@ def set_logged_user(username, password):
         user = {"username": username, "password": password}
         get_resource_service("auth_db").post([user])
         auth_token = get_resource_service("auth").find_one(username=username, req=None)
-    flask.g.user = get_resource_service("users").find_one(
-        req=None, username=username
-    )
+    flask.g.user = get_resource_service("users").find_one(req=None, username=username)
     flask.g.auth = auth_token
 
 
@@ -61,8 +59,27 @@ def get_default_user():
     return user
 
 
-def prepopulate_data(file_name, default_user=get_default_user()):
+def _register_default_user(default_user):
+    """Register the default user via RegistrationService, creating a tenant automatically.
+
+    Returns the tenant_id so it can be used as a placeholder in prepopulate data.
+    """
+    from liveblog.tenancy.registration import RegistrationService
+
+    users_service = get_resource_service("users")
+    user = users_service.find_one(req=None, username=default_user["username"])
+    if user:
+        return str(user.get("tenant_id", ""))
+
+    reg = RegistrationService()
+    result = reg.register_new_user(dict(default_user))
+    return str(result["tenant_id"])
+
+
+def prepopulate_data(file_name, default_user=get_default_user(), tenant_id=None):
     placeholders = {"NOW()": date_to_str(utcnow())}
+    if tenant_id:
+        placeholders["-id default-tenant-"] = tenant_id
     users = {default_user["username"]: default_user["password"]}
     default_username = default_user["username"]
     file = os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)
@@ -167,12 +184,11 @@ class PrepopulateService(BaseService):
             if doc.get("remove_first"):
                 clean_dbs(superdesk.app, force=True)
 
-            user = get_resource_service("users").find_one(
-                username=get_default_user()["username"], req=None
+            default_user = get_default_user()
+            tenant_id = _register_default_user(default_user)
+            prepopulate_data(
+                doc.get("profile") + ".json", default_user, tenant_id=tenant_id
             )
-            if not user:
-                get_resource_service("users").post([get_default_user()])
-            prepopulate_data(doc.get("profile") + ".json", get_default_user())
 
     def create(self, docs, **kwargs):
         use_snapshot(superdesk.app, "prepopulate")(self._create)(docs)
@@ -192,12 +208,9 @@ class AppPrepopulateCommand(superdesk.Command):
     ]
 
     def run(self, prepopulate_file):
-        user = get_resource_service("users").find_one(
-            username=get_default_user()["username"], req=None
-        )
-        if not user:
-            get_resource_service("users").post([get_default_user()])
-        prepopulate_data(prepopulate_file, get_default_user())
+        default_user = get_default_user()
+        tenant_id = _register_default_user(default_user)
+        prepopulate_data(prepopulate_file, default_user, tenant_id=tenant_id)
 
 
 superdesk.command("app:prepopulate", AppPrepopulateCommand())

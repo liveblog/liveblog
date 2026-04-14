@@ -7,7 +7,6 @@ from superdesk.resource import Resource
 from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import (
     ArchiveResource,
-    ArchiveService,
     ArchiveVersionsResource,
 )
 from superdesk.services import BaseService
