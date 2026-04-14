@@ -10,6 +10,7 @@
 
 
 import superdesk.tests as tests
+from contextlib import contextmanager
 from behave import given, when  # @UnresolvedImport
 from flask import json, g
 from superdesk.tests import set_placeholder
@@ -17,6 +18,15 @@ from superdesk.tests.steps import apply_placeholders, parse, is_user_resource
 from superdesk import get_resource_service
 
 external_url = "http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg"
+
+
+@contextmanager
+def tenant_request_context(context):
+    """Open a test request context with tenant identity from the behave context user."""
+    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+        if hasattr(context, "user") and context.user:
+            g.user = context.user
+        yield
 
 
 @given('tenant aware "{resource}"')
@@ -42,11 +52,7 @@ def given_tenant_aware_resource(context, resource):
     # Check if this is a user resource (users or liveblog_users)
     is_user_res = is_user_resource(resource) or resource == "liveblog_users"
 
-    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
-        # Set tenant context for tenant-aware services
-        if hasattr(context, "user") and context.user:
-            g.user = context.user
-
+    with tenant_request_context(context):
         if not is_user_res:
             get_resource_service(resource).delete_action()
 
@@ -72,15 +78,28 @@ def given_tenant_aware_resource(context, resource):
             pass
 
 
+@given('tenant aware "{resource}" as item list')
+def given_tenant_aware_resource_as_item_list(context, resource):
+    """Like 'tenant aware' but stores each item as resource[0], resource[1], etc."""
+    data = apply_placeholders(context, context.text)
+
+    with tenant_request_context(context):
+        if not is_user_resource(resource):
+            get_resource_service(resource).delete_action()
+
+        items = [parse(item, resource) for item in json.loads(data)]
+        get_resource_service(resource).post(items)
+        context.data = items
+        context.resource = resource
+        for i, item in enumerate(items):
+            setattr(context, "{}[{}]".format(resource, i), item)
+
+
 @given('empty tenant aware "{resource}"')
 def given_empty_tenant_aware_resource(context, resource):
     """Delete all test fixtures with proper tenant context for tenant-aware services."""
     if not is_user_resource(resource):
-        with context.app.test_request_context(context.app.config["URL_PREFIX"]):
-            # Set tenant context for tenant-aware services
-            if hasattr(context, "user") and context.user:
-                g.user = context.user
-
+        with tenant_request_context(context):
             get_resource_service(resource).delete_action()
 
 

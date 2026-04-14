@@ -86,24 +86,21 @@ Feature: Producer Resource
 
     @auth
     Scenario: List producer blogs
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        Given "blogs"
+        Given system themes
+        Given tenant aware "blogs"
         """
         [
             {
                 "title": "testBlog",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             },
             {
                 "title": "testBlog2",
                 "blog_status": "open",
                 "syndication_enabled": false,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             }
         ]
         """
