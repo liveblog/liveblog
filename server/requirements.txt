@@ -14,6 +14,7 @@ elastic-apm==6.15.1
 marshmallow<3.15.0
 dataclasses==0.8
 contextvars==2.4;python_version<"3.7"
+email-validator<2
 
 # Superdesk
 -e git+https://github.com/vstinner/hachoir.git@3.0a2#egg=hachoir3

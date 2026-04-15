@@ -77,13 +77,17 @@ def register():
     if len(data["password"]) < 6:
         return api_error("Password must be at least 6 characters", 400)
 
-    # Email format validation (basic)
-    if "@" not in data["email"] or "." not in data["email"].split("@")[1]:
-        return api_error("Invalid email format", 400)
+    # Email format validation
+    from email_validator import validate_email, EmailNotValidError
 
-    # Username validation (alphanumeric, underscore, hyphen)
+    try:
+        validate_email(data["email"], check_deliverability=False)
+    except EmailNotValidError as e:
+        return api_error(str(e), 400)
+
+    # Username validation (alphanumeric, underscore, hyphen, dot)
     username = data["username"]
-    if not username.replace("_", "").replace("-", "").isalnum():
+    if not username.replace("_", "").replace("-", "").replace(".", "").isalnum():
         return api_error(
             "Username can only contain letters, numbers, underscore, and hyphen", 400
         )

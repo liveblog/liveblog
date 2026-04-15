@@ -92,12 +92,15 @@ class RegistrationService:
         if existing_email:
             raise SuperdeskApiError.badRequestError(message="Email already exists")
 
+        organization_name = user_data.pop("organization_name", None)
         tenant_name = self._generate_tenant_name(user_data)
         tenant_data = {
             "name": tenant_name,
             "subscription_level": "solo",
             "settings": {},
         }
+        if organization_name:
+            tenant_data["organization_name"] = organization_name
 
         tenant_ids = tenants_service.post([tenant_data])
         tenant_id = tenant_ids[0]

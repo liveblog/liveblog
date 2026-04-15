@@ -14,6 +14,11 @@ tenants_schema = {
         "maxlength": 100,
         "unique": False,
     },
+    "organization_name": {
+        "type": "string",
+        "maxlength": 200,
+        "nullable": True,
+    },
     "subscription_level": {
         "type": "string",
         "allowed": ["solo", "team", "network"],

@@ -3,6 +3,7 @@ import React from 'react';
 interface IFormState {
     firstName: string;
     lastName: string;
+    organizationName: string;
     username: string;
     email: string;
     password: string;
@@ -13,11 +14,13 @@ interface IState {
     globalError: string | null;
     submitting: boolean;
     focusedField: string | null;
+    orgNameManuallyEdited: boolean;
 }
 
 const INITIAL_FORM: IFormState = {
     firstName: '',
     lastName: '',
+    organizationName: '',
     username: '',
     email: '',
     password: '',
@@ -127,14 +130,33 @@ export class RegisterPage extends React.Component<{}, IState> {
         globalError: null,
         submitting: false,
         focusedField: null,
+        orgNameManuallyEdited: false,
     };
+
+    private generateOrgName(firstName: string): string {
+        return firstName.trim() ? `${firstName.trim()}'s LiveBlog` : '';
+    }
 
     private handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
 
-        this.setState((prev) => ({
-            form: { ...prev.form, [name]: value },
-        }));
+        if (name === 'organizationName') {
+            this.setState((prev) => ({
+                form: { ...prev.form, organizationName: value },
+                orgNameManuallyEdited: value.length > 0,
+            }));
+            return;
+        }
+
+        this.setState((prev) => {
+            const updated: Partial<IFormState> = { [name]: value };
+
+            if (name === 'firstName' && !prev.orgNameManuallyEdited) {
+                updated.organizationName = this.generateOrgName(value);
+            }
+
+            return { form: { ...prev.form, ...updated } };
+        });
     }
 
     private startSession = async(username: string, password: string) => {
@@ -174,13 +196,17 @@ export class RegisterPage extends React.Component<{}, IState> {
         this.setState({ submitting: true, globalError: null });
 
         const { form } = this.state;
-        const payload = {
+        const payload: Record<string, string> = {
             first_name: form.firstName,
             last_name: form.lastName,
             username: form.username,
             email: form.email,
             password: form.password,
         };
+
+        if (form.organizationName.trim()) {
+            payload.organization_name = form.organizationName.trim();
+        }
 
         try {
             const apiUrl = __SUPERDESK_CONFIG__.server.url;
@@ -255,6 +281,7 @@ export class RegisterPage extends React.Component<{}, IState> {
                     </div>
 
                     {([
+                        { name: 'organizationName', label: 'Organization name (optional)', type: 'text' },
                         { name: 'username', label: 'Username', type: 'text' },
                         { name: 'email', label: 'Email', type: 'email' },
                         { name: 'password', label: 'Password', type: 'password' },
