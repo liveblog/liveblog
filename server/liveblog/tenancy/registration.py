@@ -113,17 +113,6 @@ class RegistrationService:
         try:
             user_ids = users_service.post([user_data])
             user_id = user_ids[0]
-
-            logger.info(f"Created user {user_id} for tenant {tenant_id}")
-
-            tenants_service.patch(tenant_id, {"owner_user_id": user_id})
-
-            return {
-                "user_id": user_id,
-                "tenant_id": tenant_id,
-                "tenant_name": tenant_name,
-            }
-
         except Exception as e:
             logger.error(
                 f"User creation failed for tenant {tenant_id}, "
@@ -131,10 +120,46 @@ class RegistrationService:
             )
             try:
                 tenants_service.delete_action({"_id": tenant_id})
-                logger.info(f"Successfully rolled back tenant {tenant_id}")
-            except Exception as rollback_error:
-                logger.error(f"Failed to rollback tenant {tenant_id}: {rollback_error}")
+            except Exception:
+                logger.error(f"Failed to rollback tenant {tenant_id}")
             raise e
+
+        logger.info(f"Created user {user_id} for tenant {tenant_id}")
+
+        tenant_updates = {"owner_user_id": user_id}
+
+        # Stripe customer creation is best-effort at registration time.
+        # If it fails, the customer will be created lazily when the user
+        # first hits a billing endpoint (checkout, portal).
+        #
+        # TODO: Move Stripe customer creation to a background Celery task
+        # (event-driven approach). Registration would fire a task that:
+        #   1. Creates the Stripe Customer via API
+        #   2. Updates tenant.stripe_customer_id on success
+        #   3. Retries with exponential backoff on failure
+        # This decouples registration speed from Stripe availability and
+        # makes the retry policy explicit (vs the current lazy approach
+        # which only retries when the user hits a billing endpoint).
+        # The lazy creation in endpoints._get_tenant_for_request() should
+        # remain as a fallback even with background tasks.
+        stripe_key = self._get_stripe_key()
+        if stripe_key:
+            stripe_customer_id = self._create_stripe_customer(
+                stripe_key,
+                user_data.get("email", ""),
+                tenant_name,
+                tenant_id,
+            )
+            if stripe_customer_id:
+                tenant_updates["stripe_customer_id"] = stripe_customer_id
+
+        tenants_service.patch(tenant_id, tenant_updates)
+
+        return {
+            "user_id": user_id,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant_name,
+        }
 
     def _generate_tenant_name(self, user_data):
         """
@@ -152,6 +177,27 @@ class RegistrationService:
         """
         first_name = user_data.get("first_name", user_data["username"])
         return f"{first_name}'s LiveBlog"
+
+    def _get_stripe_key(self):
+        from flask import current_app
+
+        return current_app.config.get("STRIPE_SECRET_KEY")
+
+    def _create_stripe_customer(self, api_key, email, tenant_name, tenant_id):
+        try:
+            import stripe
+
+            stripe.api_key = api_key
+            customer = stripe.Customer.create(
+                email=email,
+                name=tenant_name,
+                metadata={"tenant_id": str(tenant_id)},
+            )
+            logger.info(f"Created Stripe customer {customer.id} for tenant {tenant_id}")
+            return customer.id
+        except Exception as e:
+            logger.error(f"Failed to create Stripe customer: {e}")
+            return None
 
 
 __all__ = ["RegistrationService"]

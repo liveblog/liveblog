@@ -29,7 +29,14 @@ def setup_auth_user_with_tenant(context):
 
         if not existing_tenant:
             # Create default tenant
-            tenant_id = tenants_service.post([{"name": "Test Tenant"}])[0]
+            tenant_id = tenants_service.post(
+                [
+                    {
+                        "name": "Test Tenant",
+                        "subscription_level": "network",
+                    }
+                ]
+            )[0]
         else:
             tenant_id = existing_tenant["_id"]
 

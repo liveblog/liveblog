@@ -15,14 +15,12 @@ from superdesk.validator import SuperdeskValidator
 
 class LiveblogValidator(SuperdeskValidator):
     def _validate_maxmembers(self, meta, field, value):
-        subscription = app.config.get("SUBSCRIPTION_LEVEL")
-        members = app.config.get("SUBSCRIPTION_MAX_BLOG_MEMBERS", {})
-        if subscription in members:
-            if len(value) > members[subscription]:
-                return self._error(
-                    field,
-                    "Maximum of {} allowed on this blog".format(members[subscription]),
-                )
+        limit = app.features.get_feature_limit("blog_members")
+        if limit and len(value) > limit:
+            return self._error(
+                field,
+                "Maximum of {} allowed on this blog".format(limit),
+            )
 
     def _validate_htmloutput(self, htmloutput, field, value):
         try:

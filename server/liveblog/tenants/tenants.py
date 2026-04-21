@@ -26,7 +26,7 @@ class TenantsResource(Resource):
     to system administrators only.
     """
 
-    datasource = {"source": "tenants", "search_backend": "elastic"}
+    datasource = {"source": "tenants", "search_backend": None}
 
     schema = tenants_schema
 

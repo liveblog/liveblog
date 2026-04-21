@@ -133,6 +133,25 @@ export class RegisterPage extends React.Component<{}, IState> {
         orgNameManuallyEdited: false,
     };
 
+    componentDidMount() {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.get('price_id')) {
+            return;
+        }
+
+        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+
+        fetch(`${apiUrl}/billing/config`)
+            .then((r) => r.ok ? r.json() : null)
+            .then((config) => {
+                if (config && config.billing_required && config.pricing_url) {
+                    window.location.href = config.pricing_url;
+                }
+            })
+            .catch(() => undefined);
+    }
+
     private generateOrgName(firstName: string): string {
         return firstName.trim() ? `${firstName.trim()}'s LiveBlog` : '';
     }
@@ -167,24 +186,69 @@ export class RegisterPage extends React.Component<{}, IState> {
             body: JSON.stringify({ username, password }),
         });
 
-        if (authResponse.ok) {
-            const session = await authResponse.json();
-            const token = 'Basic ' + btoa(session.token + ':');
+        if (!authResponse.ok) {
+            window.location.href = '/';
+            return;
+        }
 
-            localStorage.setItem('sess:token', token);
-            localStorage.setItem('sess:id', session._id);
-            if (session._links && session._links.self) {
-                localStorage.setItem('sess:href', session._links.self.href);
-            }
+        const session = await authResponse.json();
+        const token = 'Basic ' + btoa(session.token + ':');
 
-            const userResponse = await fetch(`${apiUrl}/liveblog_users/${session.user}`, {
-                headers: { Authorization: token },
+        localStorage.setItem('sess:token', token);
+        localStorage.setItem('sess:id', session._id);
+        if (session._links && session._links.self) {
+            localStorage.setItem('sess:href', session._links.self.href);
+        }
+
+        const userResponse = await fetch(`${apiUrl}/liveblog_users/${session.user}`, {
+            headers: { Authorization: token },
+        });
+
+        if (userResponse.ok) {
+            const userData = await userResponse.json();
+
+            localStorage.setItem('sess:user', JSON.stringify(userData));
+        }
+
+        // If a specific plan was selected, go to Stripe Checkout
+        const params = new URLSearchParams(window.location.search);
+        const priceId = params.get('price_id');
+
+        if (priceId) {
+            const checkoutResponse = await fetch(`${apiUrl}/billing/checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                body: JSON.stringify({
+                    price_id: priceId,
+                    return_url: window.location.origin,
+                }),
             });
 
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
+            if (checkoutResponse.ok) {
+                const checkout = await checkoutResponse.json();
 
-                localStorage.setItem('sess:user', JSON.stringify(userData));
+                if (checkout.url) {
+                    window.location.href = checkout.url;
+                    return;
+                }
+            }
+        }
+
+        // If billing is required and no subscription, redirect to pricing
+        const statusResponse = await fetch(`${apiUrl}/billing/status`, {
+            headers: { Authorization: token },
+        });
+
+        if (statusResponse.ok) {
+            const status = await statusResponse.json();
+
+            if (status.billing_required && !status.access_allowed
+                && status.pricing_url) {
+                window.location.href = status.pricing_url;
+                return;
             }
         }
 
@@ -223,11 +287,15 @@ export class RegisterPage extends React.Component<{}, IState> {
                 return;
             }
 
-            const message = data._error || data.message || 'Registration failed. Please try again.';
+            const message = data._error || data.message
+                || 'Registration failed. Please try again.';
 
             this.setState({ globalError: message, submitting: false });
         } catch (_err) {
-            this.setState({ globalError: 'Cannot reach the server. Please try again later.', submitting: false });
+            this.setState({
+                globalError: 'Cannot reach the server. Please try again later.',
+                submitting: false,
+            });
         }
     }
 
@@ -252,7 +320,9 @@ export class RegisterPage extends React.Component<{}, IState> {
                 />
 
                 <div style={styles.heading}>Create an account</div>
-                <div style={styles.subheading}>Start your Liveblog in seconds.</div>
+                <div style={styles.subheading}>
+                    Start your Liveblog in seconds.
+                </div>
 
                 <form onSubmit={this.handleSubmit} noValidate>
                     {globalError && (
@@ -263,7 +333,8 @@ export class RegisterPage extends React.Component<{}, IState> {
                         {(['firstName', 'lastName'] as const).map((name) => (
                             <div key={name} style={styles.field}>
                                 <label style={styles.label} htmlFor={name}>
-                                    {name === 'firstName' ? 'First name' : 'Last name'}
+                                    {name === 'firstName'
+                                        ? 'First name' : 'Last name'}
                                 </label>
                                 <input
                                     id={name}
@@ -271,8 +342,12 @@ export class RegisterPage extends React.Component<{}, IState> {
                                     type="text"
                                     value={form[name]}
                                     onChange={this.handleChange}
-                                    onFocus={() => this.setState({ focusedField: name })}
-                                    onBlur={() => this.setState({ focusedField: null })}
+                                    onFocus={() => this.setState({
+                                        focusedField: name,
+                                    })}
+                                    onBlur={() => this.setState({
+                                        focusedField: null,
+                                    })}
                                     style={this.inputStyle(name)}
                                     autoComplete="off"
                                 />
@@ -281,23 +356,44 @@ export class RegisterPage extends React.Component<{}, IState> {
                     </div>
 
                     {([
-                        { name: 'organizationName', label: 'Organization name (optional)', type: 'text' },
+                        {
+                            name: 'organizationName',
+                            label: 'Organization name (optional)',
+                            type: 'text',
+                        },
                         { name: 'username', label: 'Username', type: 'text' },
                         { name: 'email', label: 'Email', type: 'email' },
-                        { name: 'password', label: 'Password', type: 'password' },
-                    ] as Array<{name: keyof IFormState; label: string; type: string}>).map(({ name, label, type }) => (
+                        {
+                            name: 'password',
+                            label: 'Password',
+                            type: 'password',
+                        },
+                    ] as Array<{
+                        name: keyof IFormState;
+                        label: string;
+                        type: string;
+                    }>).map(({ name, label, type }) => (
                         <div key={name} style={styles.field}>
-                            <label style={styles.label} htmlFor={name}>{label}</label>
+                            <label style={styles.label} htmlFor={name}>
+                                {label}
+                            </label>
                             <input
                                 id={name}
                                 name={name}
                                 type={type}
                                 value={form[name]}
                                 onChange={this.handleChange}
-                                onFocus={() => this.setState({ focusedField: name })}
-                                onBlur={() => this.setState({ focusedField: null })}
+                                onFocus={() => this.setState({
+                                    focusedField: name,
+                                })}
+                                onBlur={() => this.setState({
+                                    focusedField: null,
+                                })}
                                 style={this.inputStyle(name)}
-                                autoComplete={name === 'password' ? 'new-password' : 'off'}
+                                autoComplete={
+                                    name === 'password'
+                                        ? 'new-password' : 'off'
+                                }
                             />
                         </div>
                     ))}
@@ -306,10 +402,14 @@ export class RegisterPage extends React.Component<{}, IState> {
                         type="submit"
                         disabled={submitting}
                         style={submitting
-                            ? { ...styles.submitBtn, ...styles.submitBtnDisabled }
+                            ? {
+                                ...styles.submitBtn,
+                                ...styles.submitBtnDisabled,
+                            }
                             : styles.submitBtn}
                     >
-                        {submitting ? 'Creating account...' : 'Create account'}
+                        {submitting
+                            ? 'Creating account...' : 'Create account'}
                     </button>
                 </form>
 

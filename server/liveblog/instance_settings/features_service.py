@@ -51,9 +51,17 @@ class FeaturesService:
 
     def current_sub_level(self):
         """
-        Returns the current subscription level. In the future this should fetch
-        the information for the current user and return the package accordingly
+        Returns the subscription level for the current tenant.
+
+        In HTTP requests, reads from the tenant document (cached per-request
+        via flask.g). Falls back to the global SUBSCRIPTION_LEVEL env var
+        for CLI commands and Celery tasks without tenant context.
         """
+        from liveblog.tenancy import get_tenant
+
+        tenant = get_tenant(required=False)
+        if tenant:
+            return tenant.get("subscription_level", SUBSCRIPTION_LEVEL)
         return SUBSCRIPTION_LEVEL
 
     def is_network_subscription(self):

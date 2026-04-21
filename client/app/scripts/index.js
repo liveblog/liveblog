@@ -93,6 +93,11 @@ import 'liveblog-common/notify';
 import {EventNames} from './liveblog-common/constants';
 import 'liveblog-features.service';
 
+import {simpleReactDirective} from 'liveblog-edit/directives/react-directives-factory';
+import {BillingBanner} from './liveblog-billing/BillingBanner';
+
+const sdBillingBanner = simpleReactDirective(BillingBanner, []);
+
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
 
@@ -188,16 +193,98 @@ liveblog.constant('config', config);
 liveblog.constant('lodash', _);
 liveblog.constant('moment', moment);
 
-liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
-    $locationProvider.hashPrefix('');
-    $routeProvider.when('/', {redirectTo: '/liveblog'});
-    $routeProvider.when('/settings', {redirectTo: '/settings/general'});
+liveblog.factory('billingInterceptor', ['$q', '$injector', function($q, $injector) {
+    return {
+        responseError: function(rejection) {
+            if (rejection.status === 403
+                && rejection.data
+                && rejection.data._issues
+                && rejection.data._issues.billing_error === 'SUBSCRIPTION_REQUIRED') {
+                var notify = $injector.get('notify');
+                var $timeout = $injector.get('$timeout');
+
+                // Clear any existing notifications first, then
+                // show billing message after a short delay to
+                // ensure other error handlers have run.
+                $timeout(() => {
+                    notify.messages.length = 0;
+                    notify.error(
+                        'Active subscription required. '
+                        + 'Please subscribe to continue using LiveBlog.',
+                        10000
+                    );
+                }, 0);
+
+                return $q.resolve(rejection);
+            }
+
+            return $q.reject(rejection);
+        },
+    };
 }]);
 
-liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
-    function($rootScope, $timeout, notify, gettext, session) {
+liveblog.config([
+    '$routeProvider', '$locationProvider', '$httpProvider',
+    ($routeProvider, $locationProvider, $httpProvider) => {
+        $locationProvider.hashPrefix('');
+        $routeProvider.when('/', {redirectTo: '/liveblog'});
+        $routeProvider.when('/settings', {redirectTo: '/settings/general'});
+        $httpProvider.interceptors.push('billingInterceptor');
+    },
+]);
+
+liveblog.directive('sdBillingBanner', sdBillingBanner);
+
+liveblog.directive('sdManageSubscription', ['$http', 'config', function($http, config) {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            $http.get(config.server.url + '/billing/status').then((resp) => {
+                var status = resp.data;
+
+                if (!status.billing_required) {
+                    element.remove();
+                    return;
+                }
+                element.on('click', () => {
+                    $http.post(config.server.url + '/billing/portal', {
+                        return_url: window.location.origin,
+                    }).then((portalResp) => {
+                        window.location.href = portalResp.data.url;
+                    });
+                });
+            })
+                .catch(() => {
+                    element.remove();
+                });
+        },
+    };
+}]);
+
+liveblog.directive('sdRegisterLink', ['$http', 'config', function($http, config) {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            element.attr('href', '/register.html');
+
+            $http.get(config.server.url + '/billing/config')
+                .then((resp) => {
+                    var cfg = resp.data;
+
+                    if (cfg.billing_required && cfg.pricing_url) {
+                        element.attr('href', cfg.pricing_url);
+                    }
+                })
+                .catch(() => undefined);
+        },
+    };
+}]);
+
+liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$http', 'config',
+    function($rootScope, $timeout, notify, gettext, session, $http, config) {
         let alertTimeout;
         let notificationId;
+
 
         $rootScope.$on(EventNames.Disconnected, (event) => {
             $timeout.cancel(alertTimeout);
