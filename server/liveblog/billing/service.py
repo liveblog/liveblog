@@ -96,7 +96,13 @@ def update_tenant_subscription(tenant_id, subscription):
 
 
 def reset_tenant_subscription(tenant_id):
-    """Reset a tenant to solo after subscription deletion."""
+    """Mark a tenant's subscription as canceled.
+
+    We intentionally reset ``subscription_level`` to ``solo`` because the
+    field is used as the tenant's current entitlement level across the app,
+    not as billing history. We keep ``stripe_subscription_id`` so the last
+    Stripe subscription remains traceable for support/debugging.
+    """
     tenant_id = _ensure_object_id(tenant_id)
     tenants_service = get_resource_service("tenants")
     tenant = tenants_service.find_one(req=None, _id=tenant_id)
@@ -104,7 +110,6 @@ def reset_tenant_subscription(tenant_id):
         tenant_id,
         {
             "subscription_level": "solo",
-            "stripe_subscription_id": None,
             "stripe_subscription_status": "canceled",
         },
         tenant,

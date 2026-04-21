@@ -500,7 +500,7 @@ class TenantSubscriptionPersistenceTest(SuperdeskTestCase):
 
         tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_id)
         self.assertEqual(tenant["subscription_level"], "solo")
-        self.assertIsNone(tenant["stripe_subscription_id"])
+        self.assertEqual(tenant["stripe_subscription_id"], "sub_old_123")
         self.assertEqual(tenant["stripe_subscription_status"], "canceled")
 
     def test_reset_tenant_subscription_accepts_string_tenant_id(self):
@@ -514,7 +514,7 @@ class TenantSubscriptionPersistenceTest(SuperdeskTestCase):
 
         tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_id)
         self.assertEqual(tenant["subscription_level"], "solo")
-        self.assertIsNone(tenant["stripe_subscription_id"])
+        self.assertEqual(tenant["stripe_subscription_id"], "sub_old_456")
         self.assertEqual(tenant["stripe_subscription_status"], "canceled")
 
     @patch("liveblog.billing.service.stripe")

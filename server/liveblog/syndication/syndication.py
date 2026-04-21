@@ -118,7 +118,15 @@ class SyndicationOutService(TenantAwareService):
 
     def send_syndication_post(self, post, action="created"):
         if self._is_repeat_syndication(post):
-            blog_id = ObjectId(post["blog"])
+            blog_id = post.get("blog")
+            if not ObjectId.is_valid(blog_id):
+                logger.warning(
+                    'Skipping syndication for post "%s": invalid blog id "%s".',
+                    post.get("_id"),
+                    blog_id,
+                )
+                return
+            blog_id = ObjectId(blog_id)
             out_syndication = self.get_blog_syndication(blog_id)
             for out in out_syndication:
                 send_post_to_consumer.delay(out, post, action)
