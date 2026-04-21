@@ -56,6 +56,12 @@ class BillingGateUnitTest(TestCase):
 
 
 class BillingIntegrationTestCase(SuperdeskTestCase):
+    VALID_PNG_DATA_URL = (
+        "data:image/png;base64,"
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ"
+        "+wP9KobjigAAAABJRU5ErkJggg=="
+    )
+
     @run_once
     def setup_test_case(self):
         self.app.config.update(
@@ -120,7 +126,10 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
         response = self.client.post(
             "/api/archive/draganddrop/",
             data=json.dumps(
-                {"image_url": "data:image/png;base64,AAAA", "mimetype": "image/png"}
+                {
+                    "image_url": self.VALID_PNG_DATA_URL,
+                    "mimetype": "image/png",
+                }
             ),
             headers=headers,
         )
@@ -130,6 +139,31 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
 
         tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_id)
         self.assertIsNone(tenant.get("stripe_customer_id"))
+
+    def test_non_eve_write_is_allowed_for_active_subscription(self):
+        tenant_id, user_id = self._create_user_with_tenant(
+            {
+                "stripe_customer_id": "cus_active_123",
+                "stripe_subscription_id": "sub_active_123",
+                "stripe_subscription_status": "active",
+            }
+        )
+        headers = self._create_auth_headers(user_id)
+
+        response = self.client.post(
+            "/api/archive/draganddrop/",
+            data=json.dumps(
+                {
+                    "image_url": self.VALID_PNG_DATA_URL,
+                    "mimetype": "image/png",
+                }
+            ),
+            headers=headers,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_id)
+        self.assertEqual(tenant.get("stripe_subscription_status"), "active")
 
     def test_billing_endpoint_creates_missing_stripe_customer_lazily(self):
         registration_service = RegistrationService()
