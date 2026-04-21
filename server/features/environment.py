@@ -22,6 +22,7 @@ def before_all(context):
         "NO_TAKES": True,
         "CELERY_ALWAYS_EAGER": True,
         "MAIL_SUPPRESS_SEND": True,
+        "STRIPE_BILLING_REQUIRED": False,
     }
     setup_before_all(context, config, app_factory=get_app)
 
@@ -49,6 +50,7 @@ def before_scenario(context, scenario):
         "NO_TAKES": True,
         "CELERY_ALWAYS_EAGER": True,
         "MAIL_SUPPRESS_SEND": True,
+        "STRIPE_BILLING_REQUIRED": False,
     }
     setup_before_scenario(context, scenario, config, app_factory=get_app)
 

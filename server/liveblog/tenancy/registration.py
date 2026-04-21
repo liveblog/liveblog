@@ -152,6 +152,15 @@ class RegistrationService:
             )
             if stripe_customer_id:
                 tenant_updates["stripe_customer_id"] = stripe_customer_id
+            else:
+                logger.warning(
+                    "Stripe customer creation failed during registration for "
+                    "tenant %s (user %s, email %s); billing endpoints will "
+                    "retry customer creation lazily",
+                    tenant_id,
+                    user_id,
+                    user_data.get("email", ""),
+                )
 
         tenants_service.patch(tenant_id, tenant_updates)
 

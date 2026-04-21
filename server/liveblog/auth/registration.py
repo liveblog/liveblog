@@ -64,7 +64,10 @@ def register():
         - Username and email uniqueness enforced
         - Rollback mechanism ensures consistency
     """
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
+
+    if not isinstance(data, dict) or not data:
+        return api_error("Request body must be a non-empty JSON object", 400)
 
     # Validate required fields
     required = ["username", "email", "password", "first_name", "last_name"]

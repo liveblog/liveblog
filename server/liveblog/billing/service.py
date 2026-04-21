@@ -137,15 +137,14 @@ def sync_subscription_from_stripe(tenant):
         if not stripe.api_key:
             return tenant
 
-        subs = stripe.Subscription.list(
-            customer=customer_id,
-            status="active",
-            limit=1,
-        )
+        subs = stripe.Subscription.list(customer=customer_id, limit=1)
         if subs.data:
             update_tenant_subscription(tenant["_id"], subs.data[0])
             tenant["stripe_subscription_id"] = subs.data[0].id
             tenant["stripe_subscription_status"] = subs.data[0].status
+            level = get_subscription_level(subs.data[0])
+            if level:
+                tenant["subscription_level"] = level
             logger.info(
                 "Synced subscription %s from Stripe for tenant %s",
                 subs.data[0].id,

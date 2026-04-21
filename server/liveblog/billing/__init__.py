@@ -1,12 +1,21 @@
 import flask
 import superdesk
 
+from liveblog.auth.token_auth import (
+    get_authenticated_user_from_context,
+    get_request_auth_token,
+    hydrate_request_context_from_token,
+)
+
 from .endpoints import billing_blueprint
 from . import service
 
 
 # Paths excluded from billing enforcement — must remain accessible
 # regardless of subscription status.
+# TODO: Prefix matching is convenient but brittle: new routes can be
+# unintentionally exempted if they share one of these prefixes.
+# Consider switching to explicit endpoint/blueprint allowlisting.
 BILLING_EXEMPT_PREFIXES = (
     "/api/billing/",
     "/api/auth_db",
@@ -18,15 +27,18 @@ BILLING_EXEMPT_PREFIXES = (
 )
 
 
-def _check_billing_gate(resource, request=None, lookup=None):
-    """Block write operations for tenants without an active subscription.
+def _check_billing_gate():
+    """Block mutating requests for tenants without an active subscription.
 
-    Registered on Eve's on_pre_POST/PATCH/PUT/DELETE hooks, which fire
-    after authentication — flask.g.user is guaranteed to be set.
+    Registered as an app-level before_request hook so it applies to both
+    Eve resources and custom Flask blueprints.
 
     Raises SuperdeskApiError(403) with a _billing payload so the
     frontend interceptor can show a subscription prompt.
     """
+    if flask.request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
+        return
+
     if not flask.current_app.config.get("STRIPE_BILLING_REQUIRED"):
         return
 
@@ -34,7 +46,13 @@ def _check_billing_gate(resource, request=None, lookup=None):
     if any(path.startswith(prefix) for prefix in BILLING_EXEMPT_PREFIXES):
         return
 
-    user = flask.g.get("user")
+    user = get_authenticated_user_from_context()
+    if not user:
+        user = hydrate_request_context_from_token(
+            get_request_auth_token(),
+            method=flask.request.method,
+            touch_session=False,
+        )
     if not user or not user.get("tenant_id"):
         return
 
@@ -60,11 +78,7 @@ def _check_billing_gate(resource, request=None, lookup=None):
 
 def init_app(app):
     app.register_blueprint(billing_blueprint)
-
-    app.on_pre_POST += _check_billing_gate
-    app.on_pre_PATCH += _check_billing_gate
-    app.on_pre_PUT += _check_billing_gate
-    app.on_pre_DELETE += _check_billing_gate
+    app.before_request(_check_billing_gate)
 
 
 superdesk.privilege(

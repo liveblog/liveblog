@@ -52,7 +52,12 @@ def get_tenant_id(required=False):
     if tenant_id is not None:
         return tenant_id
 
-    # Priority 2: Check flask.g.user (HTTP requests)
+    # Priority 2: Check flask.g.user when a Flask context exists.
+    if not flask.has_app_context():
+        if required:
+            raise SuperdeskApiError.forbiddenError(message="Authentication required")
+        return None
+
     user = flask.g.get("user")
 
     if not user:
@@ -98,7 +103,9 @@ def get_tenant(required=False):
         if tenant.get('subscription_level') == 'solo':
             max_blogs = 5
     """
-    if hasattr(flask.g, "tenant_cached"):
+    has_flask_context = flask.has_app_context()
+
+    if has_flask_context and hasattr(flask.g, "tenant_cached"):
         tenant = flask.g.tenant_cached
         if not tenant and required:
             raise SuperdeskApiError.forbiddenError(
@@ -117,7 +124,8 @@ def get_tenant(required=False):
     if not tenant and required:
         raise SuperdeskApiError.forbiddenError(message="Tenant not found")
 
-    flask.g.tenant_cached = tenant
+    if has_flask_context:
+        flask.g.tenant_cached = tenant
     return tenant
 
 

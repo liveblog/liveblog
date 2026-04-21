@@ -1,12 +1,14 @@
 """
 Tests for billing service business logic.
 """
+import flask
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from liveblog.billing.service import (
     get_billing_state,
     get_subscription_level,
+    sync_subscription_from_stripe,
     ACTIVE_STATUSES,
     RECOVERABLE_STATUSES,
     TERMINAL_STATUSES,
@@ -285,3 +287,65 @@ class SubscriptionLevelTest(TestCase):
 
         self.assertEqual(result, "team")
         mock_stripe.Product.retrieve.assert_called_once_with("prod_ABC123")
+
+
+class StripeSyncTest(TestCase):
+    def setUp(self):
+        self.app = flask.Flask(__name__)
+        self.app.config["STRIPE_SECRET_KEY"] = "sk_test_123"
+
+    @patch("liveblog.billing.service.update_tenant_subscription")
+    @patch("liveblog.billing.service.stripe")
+    def test_sync_updates_trialing_subscription(self, mock_stripe, mock_update):
+        subscription = MagicMock()
+        subscription.id = "sub_trial_123"
+        subscription.status = "trialing"
+        subscription.get.return_value = {
+            "data": [
+                {
+                    "price": {
+                        "product": {
+                            "metadata": {"subscription_level": "team"},
+                        }
+                    }
+                }
+            ]
+        }
+        mock_stripe.Subscription.list.return_value = MagicMock(data=[subscription])
+        tenant = {
+            "_id": "tenant_123",
+            "stripe_customer_id": "cus_123",
+            "stripe_subscription_id": None,
+            "stripe_subscription_status": None,
+        }
+
+        with self.app.app_context():
+            synced_tenant = sync_subscription_from_stripe(tenant)
+
+        mock_stripe.Subscription.list.assert_called_once_with(
+            customer="cus_123", limit=1
+        )
+        mock_update.assert_called_once_with("tenant_123", subscription)
+        self.assertEqual(synced_tenant["stripe_subscription_id"], "sub_trial_123")
+        self.assertEqual(synced_tenant["stripe_subscription_status"], "trialing")
+        self.assertEqual(synced_tenant["subscription_level"], "team")
+
+    @patch("liveblog.billing.service.update_tenant_subscription")
+    @patch("liveblog.billing.service.stripe")
+    def test_sync_leaves_tenant_unchanged_when_no_subscription_found(
+        self, mock_stripe, mock_update
+    ):
+        mock_stripe.Subscription.list.return_value = MagicMock(data=[])
+        tenant = {
+            "_id": "tenant_123",
+            "stripe_customer_id": "cus_123",
+            "stripe_subscription_id": None,
+            "stripe_subscription_status": None,
+        }
+
+        with self.app.app_context():
+            synced_tenant = sync_subscription_from_stripe(tenant.copy())
+
+        mock_update.assert_not_called()
+        self.assertIsNone(synced_tenant["stripe_subscription_id"])
+        self.assertIsNone(synced_tenant["stripe_subscription_status"])

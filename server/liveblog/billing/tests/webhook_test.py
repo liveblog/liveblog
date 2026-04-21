@@ -2,7 +2,8 @@
 Tests for webhook event handlers.
 """
 from unittest import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+from bson import ObjectId
 from liveblog.billing.webhooks import (
     _handle_subscription_event,
     _handle_subscription_deleted,
@@ -38,52 +39,54 @@ class WebhookHandlerTest(TestCase):
             },
         }
 
-    @patch("liveblog.billing.service.get_resource_service")
-    def test_subscription_created_updates_tenant(self, mock_grs):
-        mock_service = MagicMock()
-        mock_service.find_one.return_value = {
-            "_id": "tenant_1",
+    @patch("liveblog.billing.webhooks.service.update_tenant_subscription")
+    @patch("liveblog.billing.webhooks.service.find_tenant_by_customer")
+    def test_subscription_created_updates_tenant(
+        self, mock_find_tenant_by_customer, mock_update_tenant_subscription
+    ):
+        tenant_id = ObjectId()
+        mock_find_tenant_by_customer.return_value = {
+            "_id": tenant_id,
             "stripe_customer_id": "cus_123",
         }
-        mock_grs.return_value = mock_service
 
         event = self._make_event(level="team", status="active")
 
         _handle_subscription_event(event)
 
-        mock_service.patch.assert_called_once()
-        call_args = mock_service.patch.call_args
-        updates = call_args[0][1]
+        mock_find_tenant_by_customer.assert_called_once_with("cus_123")
+        mock_update_tenant_subscription.assert_called_once_with(
+            tenant_id, event["data"]["object"]
+        )
 
-        self.assertEqual(updates["subscription_level"], "team")
-        self.assertEqual(updates["stripe_subscription_id"], "sub_456")
-        self.assertEqual(updates["stripe_subscription_status"], "active")
-
-    @patch("liveblog.billing.service.get_resource_service")
-    def test_subscription_event_no_tenant_found(self, mock_grs):
-        mock_service = MagicMock()
-        mock_service.find_one.return_value = None
-        mock_grs.return_value = mock_service
+    @patch("liveblog.billing.webhooks.service.update_tenant_subscription")
+    @patch("liveblog.billing.webhooks.service.find_tenant_by_customer")
+    def test_subscription_event_no_tenant_found(
+        self, mock_find_tenant_by_customer, mock_update_tenant_subscription
+    ):
+        mock_find_tenant_by_customer.return_value = None
 
         event = self._make_event()
 
         _handle_subscription_event(event)
 
-        mock_service.patch.assert_not_called()
+        mock_update_tenant_subscription.assert_not_called()
 
     def test_subscription_event_no_customer_id(self):
         event = {"data": {"object": {"id": "sub_1"}}}
 
         _handle_subscription_event(event)
 
-    @patch("liveblog.billing.service.get_resource_service")
-    def test_subscription_deleted_resets_to_solo(self, mock_grs):
-        mock_service = MagicMock()
-        mock_service.find_one.return_value = {
-            "_id": "tenant_1",
+    @patch("liveblog.billing.webhooks.service.reset_tenant_subscription")
+    @patch("liveblog.billing.webhooks.service.find_tenant_by_customer")
+    def test_subscription_deleted_resets_to_solo(
+        self, mock_find_tenant_by_customer, mock_reset_tenant_subscription
+    ):
+        tenant_id = ObjectId()
+        mock_find_tenant_by_customer.return_value = {
+            "_id": tenant_id,
             "stripe_customer_id": "cus_123",
         }
-        mock_grs.return_value = mock_service
 
         event = {
             "data": {
@@ -97,19 +100,15 @@ class WebhookHandlerTest(TestCase):
 
         _handle_subscription_deleted(event)
 
-        mock_service.patch.assert_called_once()
-        call_args = mock_service.patch.call_args
-        updates = call_args[0][1]
+        mock_find_tenant_by_customer.assert_called_once_with("cus_123")
+        mock_reset_tenant_subscription.assert_called_once_with(tenant_id)
 
-        self.assertEqual(updates["subscription_level"], "solo")
-        self.assertIsNone(updates["stripe_subscription_id"])
-        self.assertEqual(updates["stripe_subscription_status"], "canceled")
-
-    @patch("liveblog.billing.service.get_resource_service")
-    def test_deleted_no_tenant_found(self, mock_grs):
-        mock_service = MagicMock()
-        mock_service.find_one.return_value = None
-        mock_grs.return_value = mock_service
+    @patch("liveblog.billing.webhooks.service.reset_tenant_subscription")
+    @patch("liveblog.billing.webhooks.service.find_tenant_by_customer")
+    def test_deleted_no_tenant_found(
+        self, mock_find_tenant_by_customer, mock_reset_tenant_subscription
+    ):
+        mock_find_tenant_by_customer.return_value = None
 
         event = {
             "data": {
@@ -122,7 +121,7 @@ class WebhookHandlerTest(TestCase):
 
         _handle_subscription_deleted(event)
 
-        mock_service.patch.assert_not_called()
+        mock_reset_tenant_subscription.assert_not_called()
 
     def test_deleted_no_customer_id(self):
         event = {"data": {"object": {"id": "sub_1"}}}
