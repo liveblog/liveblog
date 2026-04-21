@@ -1,5 +1,5 @@
 import json
-from flask import make_response
+from flask import make_response, escape
 from eve.io.mongo import MongoJSONEncoder
 
 
@@ -15,4 +15,5 @@ def api_response(data, status_code, json_dumps=True):
 
 def api_error(error_message, status_code):
     """Make error for blueprints."""
-    return api_response({"_status": "ERR", "_error": error_message}, status_code)
+    safe_error_message = escape(str(error_message))
+    return api_response({"_status": "ERR", "_error": safe_error_message}, status_code)
