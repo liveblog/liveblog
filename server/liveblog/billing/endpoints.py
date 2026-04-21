@@ -12,7 +12,11 @@ import stripe
 from flask import Blueprint, abort, request, current_app as app
 from flask_cors import CORS
 
-from liveblog.auth.token_auth import LiveBlogTokenAuth
+from liveblog.auth.token_auth import (
+    get_authenticated_user_from_context,
+    get_request_auth_token,
+    hydrate_request_context_from_token,
+)
 from liveblog.tenancy import get_tenant
 from liveblog.utils.api import api_error, api_response
 
@@ -33,8 +37,16 @@ def _billing_auth():
     """
     if request.path.endswith("/webhook") or request.path.endswith("/config"):
         return
-    auth = LiveBlogTokenAuth()
-    if not auth.authorized(allowed_roles=[], resource="billing", method="GET"):
+
+    user = get_authenticated_user_from_context()
+    if not user:
+        user = hydrate_request_context_from_token(
+            get_request_auth_token(),
+            method=request.method,
+            touch_session=True,
+        )
+
+    if not user:
         return abort(401, "Authorization failed.")
 
 

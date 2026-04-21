@@ -214,8 +214,6 @@ liveblog.factory('billingInterceptor', ['$q', '$injector', function($q, $injecto
                         10000
                     );
                 }, 0);
-
-                return $q.resolve(rejection);
             }
 
             return $q.reject(rejection);

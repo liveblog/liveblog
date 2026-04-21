@@ -16,7 +16,7 @@ from superdesk.validator import SuperdeskValidator
 class LiveblogValidator(SuperdeskValidator):
     def _validate_maxmembers(self, meta, field, value):
         limit = app.features.get_feature_limit("blog_members")
-        if limit and len(value) > limit:
+        if app.features.is_limit_reached("blog_members", len(value)):
             return self._error(
                 field,
                 "Maximum of {} allowed on this blog".format(limit),
