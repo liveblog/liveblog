@@ -98,6 +98,28 @@ class RegistrationServiceTestCase(TestCase):
             "Tenant should have been deleted on rollback",
         )
 
+    def test_stripe_failure_succeeds_without_customer_id(self):
+        """Stripe customer creation is best-effort at registration.
+        If it fails, registration succeeds but stripe_customer_id is
+        null. The Stripe customer will be created lazily when the user
+        first hits a billing endpoint."""
+        from unittest.mock import patch
+
+        with patch.object(
+            self.registration_service, "_get_stripe_key", return_value="sk_test_fake"
+        ), patch.object(
+            self.registration_service, "_create_stripe_customer", return_value=None
+        ):
+            result = self.registration_service.register_new_user(self.valid_user_data)
+
+        self.assertIn("user_id", result)
+        self.assertIn("tenant_id", result)
+
+        tenant = get_resource_service("tenants").find_one(
+            req=None, _id=result["tenant_id"]
+        )
+        self.assertIsNone(tenant.get("stripe_customer_id"))
+
     def test_generate_tenant_name(self):
         """Test tenant name generation from user data (internal method)."""
         tenant_name = self.registration_service._generate_tenant_name(

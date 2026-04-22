@@ -102,6 +102,32 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertIn("_error", data)
         self.assertIn("username", data["_error"].lower())
 
+    def test_malformed_json_returns_400(self):
+        response = self.client.post(
+            "/api/register",
+            data='{"username":',
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("json object", data["_error"].lower())
+
+    def test_empty_json_body_returns_400(self):
+        response = self.client.post(
+            "/api/register",
+            data=json.dumps({}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        data = json.loads(response.data)
+        self.assertEqual(data["_status"], "ERR")
+        self.assertIn("json object", data["_error"].lower())
+
     def test_missing_email_returns_400(self):
         """Test missing email field returns 400 Bad Request."""
         invalid_data = self.valid_registration_data.copy()

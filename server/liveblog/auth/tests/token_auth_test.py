@@ -8,7 +8,9 @@ across all tenants.
 
 These tests use real database operations to verify actual behavior.
 """
+from base64 import b64encode
 import flask
+from unittest.mock import patch
 
 from bson import ObjectId
 from superdesk.tests import TestCase
@@ -17,7 +19,12 @@ from superdesk.utc import utcnow
 
 from liveblog import tenants, users, auth
 from liveblog.common import run_once
-from liveblog.auth.token_auth import LiveBlogTokenAuth
+from liveblog.auth.token_auth import (
+    LiveBlogTokenAuth,
+    get_authenticated_user_from_context,
+    get_request_auth_token,
+    hydrate_request_context_from_token,
+)
 
 
 class LiveBlogTokenAuthTestCase(TestCase):
@@ -138,3 +145,98 @@ class LiveBlogTokenAuthTestCase(TestCase):
             self.assertTrue(result)
             self.assertEqual(flask.g.user["_id"], user_id)
             self.assertEqual(flask.g.user["tenant_id"], tenant_a_id)
+
+    def test_hydrate_request_context_from_token_populates_flask_g(self):
+        tenants_service = get_resource_service("tenants")
+        tenant_id = ObjectId(tenants_service.post([{"name": "Hydrate Tenant"}])[0])
+
+        users_service = get_resource_service("users")
+        user_id = ObjectId(
+            users_service.post(
+                [
+                    {
+                        "username": "hydrate_user",
+                        "email": "hydrate@example.com",
+                        "password": "testpass123",
+                        "first_name": "Hydrate",
+                        "last_name": "User",
+                        "tenant_id": tenant_id,
+                        "user_type": "administrator",
+                    }
+                ]
+            )[0]
+        )
+
+        token_value = "test-token-" + str(ObjectId())
+        auth_data = {"user": user_id, "token": token_value, "_updated": utcnow()}
+        self.app.data.insert("auth", [auth_data])
+
+        with self.app.test_request_context():
+            user = hydrate_request_context_from_token(
+                token_value, method="POST", touch_session=False
+            )
+
+            self.assertEqual(user["_id"], user_id)
+            self.assertEqual(flask.g.user["_id"], user_id)
+            self.assertEqual(flask.g.auth["token"], token_value)
+
+    def test_hydrate_request_context_from_token_reuses_existing_context(self):
+        auth_token = {
+            "token": "existing-token",
+            "user": ObjectId(),
+            "_updated": utcnow(),
+        }
+        user = {"_id": ObjectId(), "tenant_id": ObjectId(), "username": "existing"}
+
+        with self.app.test_request_context():
+            flask.g.auth = auth_token
+            flask.g.user = user
+            flask.g.auth_session_touched = True
+
+            with patch("liveblog.auth.token_auth.get_resource_service") as mock_grs:
+                result = hydrate_request_context_from_token(
+                    "existing-token", method="POST", touch_session=True
+                )
+
+            self.assertEqual(result, user)
+            mock_grs.assert_called_once_with("auth")
+
+    def test_get_authenticated_user_from_context_returns_none_without_user(self):
+        with self.app.test_request_context():
+            self.assertIsNone(get_authenticated_user_from_context())
+
+    def test_get_authenticated_user_from_context_returns_existing_user(self):
+        user = {"_id": ObjectId(), "tenant_id": ObjectId(), "username": "existing"}
+
+        with self.app.test_request_context():
+            flask.g.user = user
+            self.assertEqual(get_authenticated_user_from_context(), user)
+
+    def test_get_request_auth_token_supports_superdesk_basic_auth_header(self):
+        token_value = "test-token-" + str(ObjectId())
+        auth_header = "basic " + b64encode((token_value + ":").encode("ascii")).decode(
+            "ascii"
+        )
+
+        with self.app.test_request_context(headers={"Authorization": auth_header}):
+            self.assertEqual(get_request_auth_token(), token_value)
+
+    def test_get_request_auth_token_supports_bearer_header(self):
+        token_value = "test-token-" + str(ObjectId())
+
+        with self.app.test_request_context(
+            headers={"Authorization": "Bearer " + token_value}
+        ):
+            self.assertEqual(get_request_auth_token(), token_value)
+
+    def test_hydrate_request_context_from_token_requires_token(self):
+        with self.app.test_request_context():
+            flask.g.user = {"_id": ObjectId(), "tenant_id": ObjectId()}
+
+            with patch("liveblog.auth.token_auth.get_resource_service") as mock_grs:
+                result = hydrate_request_context_from_token(
+                    None, method="POST", touch_session=False
+                )
+
+            self.assertIsNone(result)
+            mock_grs.assert_not_called()

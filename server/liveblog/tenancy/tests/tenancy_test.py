@@ -12,6 +12,12 @@ from unittest.mock import patch, MagicMock
 from superdesk.tests import TestCase
 from superdesk.errors import SuperdeskApiError
 from liveblog.tenancy import get_tenant_id, get_tenant
+from liveblog.tenancy.context import (
+    set_current_tenant_id,
+    reset_current_tenant_id,
+    set_system_mode,
+    reset_system_mode,
+)
 
 
 class TenancyContextTestCase(TestCase):
@@ -141,3 +147,42 @@ class TenancyContextTestCase(TestCase):
             get_tenant(required=True)
 
         self.assertEqual(context.exception.status_code, 403)
+
+    def test_get_tenant_id_without_request_context_returns_none(self):
+        with self.app.app_context():
+            tenant_id = get_tenant_id(required=False)
+
+        self.assertIsNone(tenant_id)
+
+    def test_get_tenant_id_without_request_context_required_raises(self):
+        with self.app.app_context():
+            with self.assertRaises(SuperdeskApiError) as context:
+                get_tenant_id(required=True)
+
+        self.assertEqual(context.exception.status_code, 403)
+
+    def test_get_tenant_without_request_context_returns_none(self):
+        with self.app.app_context():
+            tenant = get_tenant(required=False)
+
+        self.assertIsNone(tenant)
+
+    def test_get_tenant_id_uses_contextvar_outside_request_context(self):
+        token = set_current_tenant_id(self.tenant_id)
+        try:
+            with self.app.app_context():
+                tenant_id = get_tenant_id(required=False)
+        finally:
+            reset_current_tenant_id(token)
+
+        self.assertEqual(tenant_id, self.tenant_id)
+
+    def test_get_tenant_id_returns_none_in_system_mode(self):
+        token = set_system_mode()
+        try:
+            with self.app.app_context():
+                tenant_id = get_tenant_id(required=False)
+        finally:
+            reset_system_mode(token)
+
+        self.assertIsNone(tenant_id)

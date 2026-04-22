@@ -17,8 +17,9 @@ def setup_auth_user_with_tenant(context):
     Creates a default tenant and assigns the test_user to it, then
     calls the standard setup_auth_user to create authentication.
     """
-    # First call the standard setup_auth_user to create the user
-    setup_auth_user(context)
+    # Use a fresh copy so tenant assignment in one scenario doesn't leak
+    # back into the shared superdesk.tests.test_user fixture.
+    setup_auth_user(context, tests.test_user.copy())
 
     # Create a default tenant for tests
     with context.app.app_context():
@@ -29,7 +30,14 @@ def setup_auth_user_with_tenant(context):
 
         if not existing_tenant:
             # Create default tenant
-            tenant_id = tenants_service.post([{"name": "Test Tenant"}])[0]
+            tenant_id = tenants_service.post(
+                [
+                    {
+                        "name": "Test Tenant",
+                        "subscription_level": "network",
+                    }
+                ]
+            )[0]
         else:
             tenant_id = existing_tenant["_id"]
 

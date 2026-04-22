@@ -22,7 +22,7 @@ DEFAULT_PASSWORD = "test123"
 
 
 def create_tenant_fixture(
-    context, tenant_name, tenant_id=None, subscription_level="solo"
+    context, tenant_name, tenant_id=None, subscription_level="network"
 ):
     """
     Create a tenant fixture with proper ObjectId.
