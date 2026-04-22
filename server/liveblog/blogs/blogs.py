@@ -21,7 +21,6 @@ from superdesk.emails import send_email
 from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
@@ -357,21 +356,3 @@ class BlogService(TenantAwareService):
             ]
 
             post_auto_output_creation.apply_async(args=[output_data], countdown=3)
-
-
-# TODO(multi-tenancy): UserBlogsResource/UserBlogsService appear to be unused — no backend
-# callers, no frontend references, no feature tests. Before the multi-tenancy release, decide
-# whether to remove this endpoint entirely or migrate it to TenantAwareService.
-class UserBlogsResource(Resource):
-    url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
-    schema = blogs_schema
-    datasource = {"source": "blogs", "default_sort": [("title", 1)]}
-    resource_methods = ["GET"]
-
-
-class UserBlogsService(BaseService):
-    def get(self, req, lookup):
-        if lookup.get("user_id"):
-            lookup["members.user"] = ObjectId(lookup["user_id"])
-            del lookup["user_id"]
-        return super().get(req, lookup)

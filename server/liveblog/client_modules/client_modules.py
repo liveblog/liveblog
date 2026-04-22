@@ -30,6 +30,7 @@ from liveblog.advertisements.advertisements import (
 from liveblog.posts.posts import (
     PostsService,
     PostsResource,
+    PostStatus,
     BlogPostsResource,
 )
 from liveblog.tenancy.service import TenantAwareArchiveService
@@ -123,14 +124,17 @@ class ClientPostsResource(PostsResource):
 
 
 class ClientPostsService(PostsService, AuthorsMixin):
+    VISIBLE_STATUSES = (PostStatus.OPEN, PostStatus.COMMENT)
+
     def find_one(self, req, **lookup):
         with public_tenant_context(self, lookup.get("_id")) as post:
             if post is not None:
                 return self._enrich_post(post)
-        post = super().find_one(req, **lookup)
-        return self._enrich_post(post) if post else None
+        return None
 
     def _enrich_post(self, post):
+        if post.get("post_status") not in self.VISIBLE_STATUSES:
+            return None
         post_utils.calculate_post_type(post)
         post_utils.attach_syndication(post)
         self.complete_posts_info([post])
@@ -196,9 +200,7 @@ class ClientItemsResource(ItemsResource):
 class ClientItemsService(ItemsService):
     def find_one(self, req, **lookup):
         with public_tenant_context(self, lookup.get("_id")) as doc:
-            if doc is not None:
-                return doc
-        return super().find_one(req, **lookup)
+            return doc
 
     def on_create(self, docs):
         for doc in docs:
@@ -235,9 +237,7 @@ class ClientPollsResource(PollsResource):
 class ClientPollsService(PollsService):
     def find_one(self, req, **lookup):
         with public_tenant_context(self, lookup.get("_id")) as doc:
-            if doc is not None:
-                return doc
-        return super().find_one(req, **lookup)
+            return doc
 
 
 class ClientCommentsResource(PostsResource):

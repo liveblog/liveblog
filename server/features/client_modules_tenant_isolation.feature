@@ -1,4 +1,4 @@
-Feature: Client modules tenant isolation (F1/F2 regression tests)
+Feature: Client modules tenant isolation
 
     @auth
     Scenario: Client posts listing is disabled
@@ -21,6 +21,50 @@ Feature: Client modules tenant isolation (F1/F2 regression tests)
         """
         {"headline": "test_post"}
         """
+
+    @auth
+    Scenario: Client posts endpoint does not expose draft posts
+        Given system themes
+        Given a tenant "Test Tenant"
+        And a user "test_admin" for current tenant
+        When we login as tenant user "test_admin"
+        When we post to "blogs"
+        """
+        [{"title": "test_blog", "blog_preferences": {"theme": "classic", "language": "en"}}]
+        """
+        When we save "blog_id" from last response "_id"
+
+        # Create a draft, a contribution, and an open post
+        When we post to "posts"
+        """
+        [{"headline": "draft post", "blog": "#blog_id#", "post_status": "draft"}]
+        """
+        When we save "draft_post_id" from last response "_id"
+        When we post to "posts"
+        """
+        [{"headline": "contribution post", "blog": "#blog_id#", "post_status": "submitted"}]
+        """
+        When we save "submitted_post_id" from last response "_id"
+        When we post to "posts"
+        """
+        [{"headline": "open post", "blog": "#blog_id#", "post_status": "open"}]
+        """
+        When we save "open_post_id" from last response "_id"
+
+        # Client endpoint returns the open post
+        When we get "/client_posts/#open_post_id#"
+        Then we get existing resource
+        """
+        {"headline": "open post"}
+        """
+
+        # Client endpoint does not return the draft post
+        When we get "/client_posts/#draft_post_id#"
+        Then we get error 404
+
+        # Client endpoint does not return the contribution (submitted) post
+        When we get "/client_posts/#submitted_post_id#"
+        Then we get error 404
 
     @auth
     Scenario: Blog-scoped post listing still works
