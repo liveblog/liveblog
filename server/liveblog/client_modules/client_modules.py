@@ -1,5 +1,4 @@
 import json
-import flask
 import logging
 
 from bson import ObjectId
@@ -19,6 +18,7 @@ from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
 from liveblog.tenancy import get_tenant_id
 from liveblog.tenancy.context import tenant_context_from_blog
+from liveblog.client_modules.context import public_tenant_context
 
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
@@ -117,30 +117,16 @@ class ClientPostsResource(PostsResource):
     public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(PostsResource.schema)
 
 
 class ClientPostsService(PostsService, AuthorsMixin):
     def find_one(self, req, **lookup):
-        post_id = lookup.get("_id")
-        if (
-            post_id
-            and flask.has_request_context()
-            and not get_tenant_id(required=False)
-        ):
-            # No tenant context yet. Bootstrap from the post's blog reference so
-            # enrichment (including the liveblog_users query) runs under the right tenant.
-            post = self.backend.find_one(self.datasource, req=None, _id=post_id)
-            if not post:
-                return None
-            blog = get_resource_service("client_blogs").find_one(
-                req=None, _id=post["blog"]
-            )
-            with tenant_context_from_blog(blog):
+        with public_tenant_context(self, lookup.get("_id")) as post:
+            if post is not None:
                 return self._enrich_post(post)
-
         post = super().find_one(req, **lookup)
         return self._enrich_post(post) if post else None
 
@@ -153,44 +139,44 @@ class ClientPostsService(PostsService, AuthorsMixin):
 
 class ClientCollectionsResource(CollectionsResource):
     datasource = {"source": "collections", "default_sort": [("name", 1)]}
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(CollectionsResource.schema)
 
 
 class ClientCollectionsService(CollectionsService):
-    def find_one(self, req, **lookup):
-        return self.backend.find_one(self.datasource, req=req, **lookup)
+    pass
 
 
 class ClientOutputsResource(OutputsResource):
     datasource = {"source": "outputs", "default_sort": [("name", 1)]}
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(OutputsResource.schema)
 
 
 class ClientOutputsService(OutputsService):
-    def find_one(self, req, **lookup):
-        return self.backend.find_one(self.datasource, req=req, **lookup)
+    pass
 
 
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {"source": "advertisements", "default_sort": [("name", 1)]}
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(AdvertisementsResource.schema)
 
 
 class ClientAdvertisementsService(AdvertisementsService):
-    def find_one(self, req, **lookup):
-        return self.backend.find_one(self.datasource, req=req, **lookup)
+    pass
 
 
 class ClientItemsResource(ItemsResource):
@@ -209,7 +195,10 @@ class ClientItemsResource(ItemsResource):
 
 class ClientItemsService(ItemsService):
     def find_one(self, req, **lookup):
-        return self.backend.find_one(self.datasource, req=req, **lookup)
+        with public_tenant_context(self, lookup.get("_id")) as doc:
+            if doc is not None:
+                return doc
+        return super().find_one(req, **lookup)
 
     def on_create(self, docs):
         for doc in docs:
@@ -245,7 +234,10 @@ class ClientPollsResource(PollsResource):
 
 class ClientPollsService(PollsService):
     def find_one(self, req, **lookup):
-        return self.backend.find_one(self.datasource, req=req, **lookup)
+        with public_tenant_context(self, lookup.get("_id")) as doc:
+            if doc is not None:
+                return doc
+        return super().find_one(req, **lookup)
 
 
 class ClientCommentsResource(PostsResource):

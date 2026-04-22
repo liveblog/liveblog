@@ -26,7 +26,7 @@ Feature: Client modules operations
     #     Then we get list with 0 items
 
     @auth
-    Scenario: List posts as authenticated tenant user
+    Scenario: List posts via blog-scoped endpoint
         Given empty "archive"
         Given system themes
         Given a tenant "Test Tenant"
@@ -36,11 +36,12 @@ Feature: Client modules operations
         """
         [{"title": "testBlog one", "blog_preferences": {"theme": "classic", "language": "fr"}}]
         """
+        When we save "blog_id" from last response "_id"
         When we post to "posts"
         """
-        [{"headline": "testPost one", "blog": "#blogs._id#"}, {"headline": "testPost two", "blog": "#blogs._id#"}]
+        [{"headline": "testPost one", "blog": "#blog_id#"}, {"headline": "testPost two", "blog": "#blog_id#"}]
         """
-        When we get "/client_posts"
+        When we get "/client_blogs/#blog_id#/posts"
         Then we get list with 2 items
         """
         {"_items": [{"headline": "testPost one"}, {"headline": "testPost two"}]}
