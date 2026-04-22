@@ -227,6 +227,9 @@ def create_customer_session():
         return error
 
     stripe.api_key = stripe_key
+    # TODO: Replace with stripe.CustomerSession.create() once available in
+    # our pinned stripe SDK version. The APIRequestor is an internal API
+    # that may break on library upgrades.
     try:
         resp, _ = stripe.api_requestor.APIRequestor().request(
             "post",

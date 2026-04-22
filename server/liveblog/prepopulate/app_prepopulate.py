@@ -62,17 +62,25 @@ def get_default_user():
 def _register_default_user(default_user):
     """Register the default user via RegistrationService, creating a tenant automatically.
 
+    Prepopulate profiles seed multiple blogs/themes/posts, so the generated tenant
+    must keep a high-enough entitlement level for fixture loading to succeed.
+
     Returns the tenant_id so it can be used as a placeholder in prepopulate data.
     """
     from liveblog.tenancy.registration import RegistrationService
 
     users_service = get_resource_service("users")
+    tenants_service = get_resource_service("tenants")
     user = users_service.find_one(req=None, username=default_user["username"])
     if user:
+        tenant_id = user.get("tenant_id")
+        if tenant_id:
+            tenants_service.patch(tenant_id, {"subscription_level": "network"})
         return str(user.get("tenant_id", ""))
 
     reg = RegistrationService()
     result = reg.register_new_user(dict(default_user))
+    tenants_service.patch(result["tenant_id"], {"subscription_level": "network"})
     return str(result["tenant_id"])
 
 
