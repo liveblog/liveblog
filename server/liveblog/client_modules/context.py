@@ -49,7 +49,8 @@ def public_tenant_context(service, doc_id):
         yield None
         return
 
-    blog = get_resource_service("client_blogs").find_one(req=None, _id=doc.get("blog"))
+    blog_id = doc.get("blog") or doc.get("client_blog")
+    blog = get_resource_service("client_blogs").find_one(req=None, _id=blog_id)
     if not blog:
         yield None
         return
