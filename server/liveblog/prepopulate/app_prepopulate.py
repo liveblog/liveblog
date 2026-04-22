@@ -14,18 +14,21 @@ import flask
 import superdesk
 import werkzeug.exceptions
 
+from eve.utils import date_to_str
+from bson.objectid import ObjectId
+from flask import current_app as app
+from eve.versioning import insert_versioning_documents
+
+from superdesk.utc import utcnow
 from apps.archive.common import ITEM_OPERATION
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_STATE, CONTENT_STATE
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.tests import clean_dbs, use_snapshot
-from superdesk.utc import utcnow
-from eve.utils import date_to_str
-from flask import current_app as app
-from eve.versioning import insert_versioning_documents
-from bson.objectid import ObjectId
 from apps.search_providers import allowed_search_providers, register_search_provider
+
+from settings import SUBSCRIPTION_LEVEL_NETWORK
 
 
 def apply_placeholders(placeholders, text):
@@ -75,12 +78,16 @@ def _register_default_user(default_user):
     if user:
         tenant_id = user.get("tenant_id")
         if tenant_id:
-            tenants_service.patch(tenant_id, {"subscription_level": "network"})
+            tenants_service.patch(
+                tenant_id, {"subscription_level": SUBSCRIPTION_LEVEL_NETWORK}
+            )
         return str(user.get("tenant_id", ""))
 
     reg = RegistrationService()
     result = reg.register_new_user(dict(default_user))
-    tenants_service.patch(result["tenant_id"], {"subscription_level": "network"})
+    tenants_service.patch(
+        result["tenant_id"], {"subscription_level": SUBSCRIPTION_LEVEL_NETWORK}
+    )
     return str(result["tenant_id"])
 
 

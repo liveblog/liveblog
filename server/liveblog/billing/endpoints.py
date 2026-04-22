@@ -176,8 +176,8 @@ def create_checkout_session():
             customer=tenant["stripe_customer_id"],
             mode="subscription",
             line_items=[{"price": price_id, "quantity": 1}],
-            success_url=return_url + "?billing=success",
-            cancel_url=return_url + "?billing=cancelled",
+            success_url=return_url,
+            cancel_url=return_url,
         )
         return api_response({"url": session.url}, 200)
     except stripe.error.StripeError as e:

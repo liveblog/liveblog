@@ -24,6 +24,8 @@ import 'angular-messages';
 import 'lr-infinite-scroll';
 import 'superdesk-ui-framework';
 
+import React from 'react';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment-timezone';
 
@@ -93,10 +95,25 @@ import 'liveblog-common/notify';
 import {EventNames} from './liveblog-common/constants';
 import 'liveblog-features.service';
 
-import {simpleReactDirective} from 'liveblog-edit/directives/react-directives-factory';
 import {BillingBanner} from './liveblog-billing/BillingBanner';
 
-const sdBillingBanner = simpleReactDirective(BillingBanner, []);
+const sdBillingBanner = ['notify', function(notify) {
+    return {
+        restrict: 'E',
+        link: function(scope, element) {
+            const mountPoint = $(element).get(0);
+            const props = {
+                onPortalError: (message) => notify.error(message, 10000),
+            };
+
+            ReactDOM.render(React.createElement(BillingBanner, props), mountPoint);
+
+            scope.$on('$destroy', () => {
+                ReactDOM.unmountComponentAtNode(mountPoint);
+            });
+        },
+    };
+}];
 
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;

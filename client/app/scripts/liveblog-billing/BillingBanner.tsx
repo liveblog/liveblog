@@ -1,5 +1,9 @@
 import React from 'react';
 
+interface IProps {
+    onPortalError?: (message: string) => void;
+}
+
 interface IBillingStatus {
     billingRequired: boolean;
     accessAllowed: boolean;
@@ -12,7 +16,7 @@ interface IState {
     billingStatus: IBillingStatus | null;
 }
 
-export class BillingBanner extends React.Component<{}, IState> {
+export class BillingBanner extends React.Component<IProps, IState> {
     state: IState = { billingStatus: null };
 
     componentDidMount() {
@@ -56,6 +60,7 @@ export class BillingBanner extends React.Component<{}, IState> {
     private handleAction = () => {
         const apiUrl = __SUPERDESK_CONFIG__.server.url;
         const token = localStorage.getItem('sess:token');
+        const { onPortalError } = this.props;
 
         if (!token) {
             return;
@@ -75,6 +80,16 @@ export class BillingBanner extends React.Component<{}, IState> {
             .then((data) => {
                 if (data && data.url) {
                     window.location.href = data.url;
+                    return;
+                }
+
+                if (onPortalError) {
+                    onPortalError('Unable to open billing portal. Please try again.');
+                }
+            })
+            .catch(() => {
+                if (onPortalError) {
+                    onPortalError('Unable to open billing portal. Please try again.');
                 }
             });
     }
