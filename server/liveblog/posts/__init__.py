@@ -19,10 +19,6 @@ def init_app(app):
     service = posts.BlogPostsService(endpoint_name, backend)
     posts.BlogPostsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = "posts_versions"
-    service = posts.PostsVersionsService(endpoint_name, backend)
-    posts.PostsVersionsResource(endpoint_name, app=app, service=service)
-
     endpoint_name = "post_comments"
     service = comments.PostCommentService(endpoint_name, backend)
     comments.PostCommentResource(endpoint_name, app=app, service=service)

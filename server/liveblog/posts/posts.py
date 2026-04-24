@@ -11,7 +11,6 @@ from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
-from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource
 from superdesk.services import BaseService
 from liveblog.tenancy.service import TenantAwareArchiveService
@@ -96,21 +95,6 @@ def private_draft_filter():
     return {"bool": private_filter}
 
 
-class PostsVersionsResource(ArchiveVersionsResource):
-    """
-    Resource class for versions of archive_media
-    """
-
-    datasource = {"source": "archive" + "_versions", "filter": {"type": "composite"}}
-
-
-class PostsVersionsService(BaseService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get("archive_versions", req=req, lookup=lookup)
-
-
 class PostsResource(ArchiveResource):
     datasource = {
         "source": "archive",
@@ -121,6 +105,7 @@ class PostsResource(ArchiveResource):
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": DEFAULT_POSTS_ORDER,
     }
+    versioning = False
 
     item_methods = ["GET", "PATCH", "DELETE"]
 
