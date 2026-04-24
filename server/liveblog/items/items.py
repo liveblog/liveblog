@@ -25,6 +25,8 @@ import requests
 import tempfile
 import base64
 import imghdr
+import ipaddress
+import socket
 
 
 logger = logging.getLogger("superdesk")
@@ -198,6 +200,36 @@ class BlogItemsService(ArchiveService):
         return super().get(req, lookup)
 
 
+def _is_public_http_url(url):
+    if not isinstance(url, str):
+        return False
+
+    match = re.match(r"^(https?)://([^/:?#]+)(?::\d+)?(?:[/?#]|$)", url.strip(), re.IGNORECASE)
+    if not match:
+        return False
+
+    host = match.group(2)
+    try:
+        addrinfos = socket.getaddrinfo(host, None)
+    except socket.gaierror:
+        return False
+
+    for addrinfo in addrinfos:
+        ip_str = addrinfo[4][0]
+        ip_obj = ipaddress.ip_address(ip_str)
+        if (
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_link_local
+            or ip_obj.is_multicast
+            or ip_obj.is_reserved
+            or ip_obj.is_unspecified
+        ):
+            return False
+
+    return True
+
+
 @drag_and_drop_blueprint.route("/api/archive/draganddrop/", methods=["POST"])
 def drag_and_drop():
     data = request.get_json()
@@ -207,6 +239,9 @@ def drag_and_drop():
     if url.startswith("data:image/"):
         archive = handle_base64_image(url)
         return make_response(dumps(archive), 201)
+
+    if not _is_public_http_url(url):
+        return make_response('Invalid or disallowed url: "{}"'.format(url), 406)
 
     try:
         response = requests.get(url, timeout=5)
