@@ -13,7 +13,7 @@ from apps.archive.archive import (
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta
 from werkzeug.datastructures import FileStorage
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, make_response, escape
 from flask_cors import CORS
 from superdesk import get_resource_service
 from bson.json_util import dumps
@@ -241,12 +241,12 @@ def drag_and_drop():
         return make_response(dumps(archive), 201)
 
     if not _is_public_http_url(url):
-        return make_response('Invalid or disallowed url: "{}"'.format(url), 406)
+        return make_response('Invalid or disallowed url: "{}"'.format(escape(url)), 406)
 
     try:
         response = requests.get(url, timeout=5)
     except (ConnectionError, RequestException):
-        return make_response('Unable to get url: "{}"'.format(url), 406)
+        return make_response('Unable to get url: "{}"'.format(escape(url)), 406)
     fd = tempfile.NamedTemporaryFile()
     for chunk in response.iter_content(chunk_size=1024):
         if chunk:
