@@ -584,6 +584,7 @@ class PostFlagResource(Resource):
         "expireAt": {"type": "datetime"},
     }
 
+    resource_methods = ["POST"]
     item_methods = ["PUT", "GET", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "DELETE": "posts"}
 
@@ -594,7 +595,20 @@ class PostFlagResource(Resource):
 
 
 class PostFlagService(BaseService):
+    """Manages edit flags that indicate which users are editing a post.
+
+    Tenant isolation: flags reference a postId, and posts are tenant-scoped
+    via PostsService (TenantAwareArchiveService). On create, the referenced
+    post is validated via the tenant-filtered PostsService.find_one().
+    """
+
     custom_hateoas = {"self": {"title": "Post Flag", "href": "/{location}/{_id}"}}
+
+    def _validate_post_access(self, post_id):
+        post = get_resource_service("posts").find_one(req=None, _id=post_id)
+        if not post:
+            raise SuperdeskApiError.notFoundError(message="Post not found")
+        return post
 
     def create(self, docs, **kwargs):
         """
@@ -606,6 +620,7 @@ class PostFlagService(BaseService):
         userId = get_user()["_id"]
 
         for doc in docs:
+            self._validate_post_access(doc["postId"])
             doc["users"] = [userId]
             doc["expireAt"] = utcnow() + datetime.timedelta(seconds=EDIT_POST_FLAG_TTL)
 
@@ -657,6 +672,9 @@ class PostFlagService(BaseService):
         # more than one user editing the same post
         update = False
         flag = self.find_one(req=None, **lookup)
+
+        if flag and flag.get("postId"):
+            self._validate_post_access(flag["postId"])
 
         if len(flag["users"]) > 1:
             current_user = get_user()["_id"]
