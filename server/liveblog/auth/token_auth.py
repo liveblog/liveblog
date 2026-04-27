@@ -58,7 +58,11 @@ def hydrate_request_context_from_token(token, method=None, touch_session=True):
     existing_auth = flask.g.get("auth")
     existing_user = get_authenticated_user_from_context()
 
-    if existing_auth and existing_user and existing_auth.get("token") == token:
+    if (
+        existing_auth
+        and isinstance(existing_user, dict)
+        and existing_auth.get("token") == token
+    ):
         auth_service = get_resource_service("auth")
         if touch_session and method:
             _touch_auth_session(auth_service, existing_auth, method)
