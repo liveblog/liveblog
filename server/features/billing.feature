@@ -77,3 +77,17 @@ Feature: Billing endpoints
         {"image_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==", "mimetype": "image/png"}
         """
         Then we get response code 201
+
+    @auth
+    Scenario: Eve resource writes work when billing gate is active
+        Given system themes
+        Given a tenant "Billing Tenant"
+        And a user "billing_admin" for current tenant
+        When we login as tenant user "billing_admin"
+        Given billing is required
+        And current tenant has an active subscription
+        When we post to "blogs"
+        """
+        [{"title": "Billing Test Blog", "blog_preferences": {"theme": "classic", "language": "en"}}]
+        """
+        Then we get OK response
