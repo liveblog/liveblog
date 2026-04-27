@@ -48,7 +48,7 @@ def send_email_to_owner(doc, owner, origin):
     prefs_service = get_resource_service("preferences")
 
     if prefs_service.email_notification_is_enabled(user_id=owner):
-        user_doc = get_resource_service("users").find_one(req=None, _id=owner)
+        user_doc = get_resource_service("liveblog_users").find_one(req=None, _id=owner)
         if user_doc:
             recipients = [user_doc["email"]]
         else:
@@ -94,16 +94,32 @@ request_schema = {
 class MembershipResource(Resource):
     schema = request_schema
     datasource = {"source": "request_membership", "default_sort": [("_updated", -1)]}
-    resource_methods = ["POST", "GET"]
+    resource_methods = ["POST"]
     item_methods = ["GET", "DELETE"]
     privileges = {"POST": "request_membership", "DELETE": "request_membership"}
 
 
 class MembershipService(BaseService):
+    """Handles creation and deletion of blog membership requests.
+
+    Tenant isolation is achieved through blog-scoped validation rather than
+    TenantAwareService inheritance. Since every request references a blog
+    (required field), and BlogService is tenant-aware, validating the blog
+    implicitly scopes all operations to the current tenant. Bare listing
+    is disabled on MembershipResource (resource_methods = ["POST"]).
+    """
+
     notification_key = "request"
+
+    def _validate_blog_access(self, blog_id):
+        blog = get_resource_service("blogs").find_one(req=None, _id=blog_id)
+        if not blog:
+            raise SuperdeskApiError.notFoundError(message="Blog not found")
+        return blog
 
     def on_create(self, docs):
         for doc in docs:
+            self._validate_blog_access(doc["blog"])
             doc["original_creator"] = get_user().get("_id")
 
             if self.find_one(
@@ -131,9 +147,19 @@ class MemberListResource(Resource):
 
 
 class MemberListService(BaseService):
+    """Lists pending membership requests for a specific blog.
+
+    Tenant isolation: validates the blog_id from the URL belongs to the
+    current user's tenant via BlogService.find_one() (tenant-filtered)
+    before querying the request_membership collection.
+    """
+
     def get(self, req, lookup):
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            blog_id = ObjectId(lookup["blog_id"])
+            blog = get_resource_service("blogs").find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+            lookup["blog"] = blog_id
             del lookup["blog_id"]
-        docs = super().get(req, lookup)
-        return docs
+        return super().get(req, lookup)

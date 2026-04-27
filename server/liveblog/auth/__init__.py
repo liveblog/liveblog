@@ -1,6 +1,7 @@
 import superdesk
 from apps.auth import AuthResource
 from liveblog.auth.db import AccessAuthService
+from liveblog.auth.token_auth import LiveBlogTokenAuth
 from .reset_password import LiveBlogResetPasswordService
 
 from apps.auth.db.reset_password import ResetPasswordResource, ActiveTokensResource
@@ -8,6 +9,9 @@ from apps.auth.db.change_password import ChangePasswordService, ChangePasswordRe
 
 
 def init_app(app):
+    # Override the default SuperdeskTokenAuth with tenant-aware LiveBlogTokenAuth
+    # This is called after apps.auth.init_app(), so it replaces the auth instance
+    app.auth = LiveBlogTokenAuth()
     endpoint_name = "auth_db"
     service = AccessAuthService("auth", backend=superdesk.get_backend())
     AuthResource(endpoint_name, app=app, service=service)

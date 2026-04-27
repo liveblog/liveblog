@@ -9,12 +9,11 @@ from flask import current_app as app
 from bson.objectid import ObjectId
 from eve.utils import config
 from eve.utils import ParsedRequest, date_to_str
-from eve_elastic.elastic import ElasticCursor
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
-from apps.archive import ArchiveVersionsResource
-from apps.archive.archive import ArchiveResource, ArchiveService
+from apps.archive.archive import ArchiveResource
 from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareArchiveService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
@@ -22,6 +21,7 @@ from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length, get_user
 from liveblog.polls.polls import poll_calculations
+from liveblog.tenancy.filters import tenant_elastic_filter, combine_elastic_filters
 
 from settings import EDIT_POST_FLAG_TTL
 from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
@@ -31,8 +31,8 @@ from .tasks import (
     notify_scheduled_post,
     update_scheduled_post_blog_data,
 )
-from .mixins import AuthorsMixin
-from .utils import get_associations, check_content_diff
+from .mixins import AuthorsMixin, BlogPostsMixin
+from .utils import check_content_diff
 
 
 logger = logging.getLogger("superdesk")
@@ -69,6 +69,7 @@ def get_publisher():
         "sign_off",
         "byline",
         "email",
+        "tenant_id",
     )
 
     return {k: publisher.get(k, None) for k in publisher_keys}
@@ -94,29 +95,17 @@ def private_draft_filter():
     return {"bool": private_filter}
 
 
-class PostsVersionsResource(ArchiveVersionsResource):
-    """
-    Resource class for versions of archive_media
-    """
-
-    datasource = {"source": "archive" + "_versions", "filter": {"type": "composite"}}
-
-
-class PostsVersionsService(BaseService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get("archive_versions", req=req, lookup=lookup)
-
-
 class PostsResource(ArchiveResource):
     datasource = {
         "source": "archive",
         "search_backend": "elastic",
-        "elastic_filter_callback": private_draft_filter,
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, private_draft_filter
+        ),
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": DEFAULT_POSTS_ORDER,
     }
+    versioning = False
 
     item_methods = ["GET", "PATCH", "DELETE"]
 
@@ -124,6 +113,7 @@ class PostsResource(ArchiveResource):
     schema.update(ArchiveResource.schema)
     schema.update(
         {
+            "tenant_id": Resource.rel("tenants", type="objectid"),
             "blog": Resource.rel("blogs", True),
             "particular_type": {
                 "type": "string",
@@ -168,6 +158,7 @@ class PostsResource(ArchiveResource):
         "order_-1": ([("order", -1)]),
         "blog_posts_optimized": (
             [
+                ("tenant_id", 1),
                 ("blog", 1),
                 ("post_status", 1),
                 ("deleted", 1),
@@ -230,7 +221,7 @@ class PostsResource(ArchiveResource):
             request.environ["HTTP_IF_MATCH"] = etag_in_mongo
 
 
-class PostsService(ArchiveService):
+class PostsService(TenantAwareArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         try:
@@ -345,6 +336,10 @@ class PostsService(ArchiveService):
                 raise not_allowed_ex
 
     def on_create(self, docs):
+        # CRITICAL: Must set doc["type"] = "composite" BEFORE calling super().on_create()
+        # The parent ArchiveService.on_create() checks doc[ITEM_TYPE] == CONTENT_TYPE.COMPOSITE
+        # to decide whether to call packageService.on_create() which generates the "groups" field.
+        # If type is not set before super() call, groups won't be created, causing KeyError later.
         for doc in docs:
             self.check_post_permission(doc)
             doc["type"] = "composite"
@@ -432,7 +427,7 @@ class PostsService(ArchiveService):
         the blog ID from updates into the original. This seems unnecessary
         and should be investigated further.
         Also, if the comment is marked as deleted in updates, we can safely skip
-        this block since we don’t need to access the comment item anymore thus
+        this block since we don't need to access the comment item anymore thus
         not causing a key error.
         """
         if original["post_status"] == "comment" and not updates.get("deleted", False):
@@ -589,6 +584,7 @@ class PostFlagResource(Resource):
         "expireAt": {"type": "datetime"},
     }
 
+    resource_methods = ["POST"]
     item_methods = ["PUT", "GET", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "DELETE": "posts"}
 
@@ -599,7 +595,20 @@ class PostFlagResource(Resource):
 
 
 class PostFlagService(BaseService):
+    """Manages edit flags that indicate which users are editing a post.
+
+    Tenant isolation: flags reference a postId, and posts are tenant-scoped
+    via PostsService (TenantAwareArchiveService). On create, the referenced
+    post is validated via the tenant-filtered PostsService.find_one().
+    """
+
     custom_hateoas = {"self": {"title": "Post Flag", "href": "/{location}/{_id}"}}
+
+    def _validate_post_access(self, post_id):
+        post = get_resource_service("posts").find_one(req=None, _id=post_id)
+        if not post:
+            raise SuperdeskApiError.notFoundError(message="Post not found")
+        return post
 
     def create(self, docs, **kwargs):
         """
@@ -611,6 +620,7 @@ class PostFlagService(BaseService):
         userId = get_user()["_id"]
 
         for doc in docs:
+            self._validate_post_access(doc["postId"])
             doc["users"] = [userId]
             doc["expireAt"] = utcnow() + datetime.timedelta(seconds=EDIT_POST_FLAG_TTL)
 
@@ -638,7 +648,9 @@ class PostFlagService(BaseService):
         if "users" in flag:
             for userId in flag["users"]:
                 users.append(
-                    get_resource_service("users").find_one(req=None, _id=userId)
+                    get_resource_service("liveblog_users").find_one(
+                        req=None, _id=userId
+                    )
                 )
             flag["users"] = users
 
@@ -660,6 +672,9 @@ class PostFlagService(BaseService):
         # more than one user editing the same post
         update = False
         flag = self.find_one(req=None, **lookup)
+
+        if flag and flag.get("postId"):
+            self._validate_post_access(flag["postId"])
 
         if len(flag["users"]) > 1:
             current_user = get_user()["_id"]
@@ -687,9 +702,7 @@ class BlogPostsResource(Resource):
     privileges = {"GET": "posts"}
 
 
-class BlogPostsService(ArchiveService, AuthorsMixin):
-    custom_hateoas = {"self": {"title": "Posts", "href": "/{location}/{_id}"}}
-
+class BlogPostsService(TenantAwareArchiveService, BlogPostsMixin, AuthorsMixin):
     def get(self, req, lookup):
         imd = req.args.items()
         for key in imd:
@@ -699,123 +712,19 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
                     del lookup["blog_id"]
 
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            blog_id = ObjectId(lookup["blog_id"])
+
+            # Validate that the blog exists in the current tenant before querying posts
+            blog = get_resource_service("blogs").find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+            lookup["blog"] = blog_id
             del lookup["blog_id"]
 
         docs = super().get(req, lookup)
-        related_items = self.related_items_map(docs)
-
-        for doc in docs:
-            build_custom_hateoas(self.custom_hateoas, doc, location="posts")
-
-            for assoc in get_associations(doc):
-                ref_id = assoc.get("residRef", None)
-
-                # NOTE: not in related_items means it's a deleted item
-                # then let's mark it as deleted to later remove it in `remove_orphan_items`
-                if ref_id and ref_id not in related_items:
-                    assoc["deleted"] = True
-                    continue
-
-                if ref_id:
-                    assoc["item"] = related_items[ref_id]
-                    if assoc.get("type") == "poll":
-                        assoc["item"]["poll_body"] = poll_calculations(
-                            assoc["item"]["poll_body"]
-                        )
-
-            self.extract_author_ids(doc)
-
-        # NOTE: temporary workaround for broken references
-        # TODO: remove this after two releases from now
-        self.remove_orphan_items(docs)
-
-        # now that we have authors id, let's hit db once
-        self.generate_authors_map()
-        self.attach_authors(docs)
-
+        self._enrich_blog_posts(docs)
         return docs
-
-    def remove_post_from_list_and_db(self, docs, post):
-        """
-        Removes the post from the list and the database
-        """
-        # skip in tests as we use posts without items for testing purposes
-        if app.config.get("SUPERDESK_TESTING", False):
-            return
-
-        self.delete(lookup={"_id": post["_id"]})
-
-        try:
-            if isinstance(docs, ElasticCursor):
-                docs.docs.remove(post)
-            else:
-                docs.remove(post)
-        except Exception as e:
-            logger.warning(f"Failed to remove orphan doc: {post}. Error: {e}")
-
-    def remove_orphan_items(self, docs):
-        """This tries to remove the items that are not present in the related_items map"""
-
-        for post in docs:
-            posts_items = []
-
-            # we only get the refs from the main group (meaning child items of the post)
-            for group in post.get("groups", []):
-                if group.get("id") == "main":
-                    posts_items = group.get("refs", [])
-
-            # if the post has no items, we nuke it from db
-            if len(posts_items) == 0:
-                self.remove_post_from_list_and_db(docs, post)
-
-            for assoc in get_associations(post):
-                # if `deleted` is found in the item, it means it's a deleted item
-                if "deleted" in assoc:
-                    # if the post only has one item, we nuke it from db
-                    if (
-                        len(post["groups"]) > 0
-                        and "refs" in post["groups"][1]
-                        and len(post["groups"][1]["refs"]) == 1
-                    ):
-                        self.remove_post_from_list_and_db(docs, post)
-
-                    # finally remove the item from the references of the post
-                    try:
-                        post["groups"][1]["refs"].remove(assoc)
-                    except Exception as e:
-                        logger.warning(
-                            f"Failed to remove orphan item: {assoc}. Error: {e}"
-                        )
-
-    def related_items_map(self, docs):
-        """
-        It receives an array of posts and extracts the associations' ID
-        then it hits the database just 1 time per resource and return them as dictionary.
-
-        It should fetch the items from the respective resource service according to the
-        location attribute. Otherwise, it should fetch from `archive` resource by default
-        """
-
-        items_map = {}
-        ids_by_service = {}
-
-        for doc in docs:
-            for assoc in self.packageService._get_associations(doc):
-                item_ref_id = assoc.get("residRef")
-
-                if item_ref_id:
-                    service_name = assoc.get("location", "archive")
-                    ids = ids_by_service.get(service_name, [])
-                    ids.append(item_ref_id)
-                    ids_by_service[service_name] = ids
-
-        # let's get all the items at once and turn it into a dict
-        for service_name, ids in ids_by_service.items():
-            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
-                items_map[str(item.get("_id"))] = item
-
-        return items_map
 
     def on_fetched(self, blog):
         super().on_fetched(blog)
@@ -848,7 +757,9 @@ class BlogPostsService(ArchiveService, AuthorsMixin):
             users = []
             for userId in flag["users"]:
                 users.append(
-                    get_resource_service("users").find_one(req=None, _id=userId)
+                    get_resource_service("liveblog_users").find_one(
+                        req=None, _id=userId
+                    )
                 )
             flag["users"] = users
 

@@ -8,17 +8,18 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
-from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareService
 
 
 class FreetypesResource(Resource):
     schema = {
         "name": {"type": "string"},
         "template": {"type": "string", "htmloutput": {"template_vars_required": True}},
+        "tenant_id": Resource.rel("tenants"),
     }
     datasource = {"source": "freetypes", "default_sort": [("name", 1)]}
-    RESOURCE_METHODS = ["GET", "POST"]
-    ITEM_METHODS = ["GET", "POST", "DELETE"]
+    resource_methods = ["GET", "POST"]
+    item_methods = ["GET", "PATCH", "DELETE"]
 
     privileges = {
         "GET": "freetypes_read",
@@ -28,7 +29,7 @@ class FreetypesResource(Resource):
     }
 
 
-class FreetypesService(BaseService):
+class FreetypesService(TenantAwareService):
     def register_freetype_files(self, template, name):
         freetype = {"name": name, "template": template}
         previous = self.find_one(req=None, name=name)

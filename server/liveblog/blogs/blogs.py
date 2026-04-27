@@ -21,12 +21,13 @@ from superdesk.emails import send_email
 from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.common import get_user, update_dates_for
+from liveblog.tenancy.service import TenantAwareService
+from liveblog.tenancy.filters import tenant_elastic_filter
 from settings import (
     DAYS_REMOVE_DELETED_BLOGS,
     TRIGGER_HOOK_URLS,
@@ -50,6 +51,7 @@ class BlogsResource(Resource):
     datasource = {
         "source": "blogs",
         "search_backend": "elastic",
+        "elastic_filter_callback": tenant_elastic_filter,
         "default_sort": [("_updated", -1)],
     }
 
@@ -78,10 +80,11 @@ def send_email_to_added_members(blog, recipients, blog_url):
         # If user want to receive email notification, we add him as recipient.
         if prefs_service.email_notification_is_enabled(user_id=user):
             user_id = user if isinstance(user, ObjectId) else user["user"]
-            user_doc = get_resource_service("users").find_one(
+            user_doc = get_resource_service("liveblog_users").find_one(
                 req=None, _id=ObjectId(user_id)
             )
-            recipients_email.append(user_doc["email"])
+            if user_doc:
+                recipients_email.append(user_doc["email"])
 
     if recipients_email:
         title = blog["title"]
@@ -105,20 +108,11 @@ def send_email_to_added_members(blog, recipients, blog_url):
             )
 
 
-class BlogService(BaseService):
+class BlogService(TenantAwareService):
     notification_key = "blog"
 
-    def _update_theme_settings(self, doc, theme_name):
-        theme = get_resource_service("themes").find_one(req=None, name=theme_name)
-        if theme:
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service(
-                "themes"
-            ).get_default_settings(theme)
-            # save the theme settings on the blog level
-            doc["theme_settings"] = default_theme_settings
-
     def on_create(self, docs):
+        super().on_create(docs)
         self._check_max_active(len(docs))
         for doc in docs:
             update_dates_for(doc)
@@ -130,11 +124,6 @@ class BlogService(BaseService):
             preferences.update(doc.get("blog_preferences", {}))
 
             doc["blog_preferences"] = preferences
-
-            # find the theme that is assigned to the blog
-            theme_name = doc["blog_preferences"].get("theme")
-            if theme_name:
-                self._update_theme_settings(doc, theme_name)
 
             embed_height_key = "embed_height_responsive_default"
             if embed_height_key not in preferences:
@@ -165,18 +154,23 @@ class BlogService(BaseService):
 
             # trigger hooks if there are any hook configured
             if TRIGGER_HOOK_URLS:
-                author = get_resource_service("users").find_one(
+                author = get_resource_service("liveblog_users").find_one(
                     req=None, _id=ObjectId(blog["original_creator"])
                 )
-                hook_data = build_hook_data(
-                    events.BLOG_CREATED,
-                    blog_url=blog_url,
-                    user_email=author.get("email", ""),
-                )
-                trigger_hooks(hook_data)
+                if author:
+                    hook_data = build_hook_data(
+                        events.BLOG_CREATED,
+                        blog_url=blog_url,
+                        user_email=author.get("email", ""),
+                    )
+                    trigger_hooks(hook_data)
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
+
+        if doc is None:
+            return None
+
         # check if the current user has permission to open a blog
         if checkUser and not is_admin(get_user()):
             # get members ids
@@ -227,11 +221,6 @@ class BlogService(BaseService):
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get("start_date") and original["start_date"] is None:
             updates["start_date"] = original["_created"]
-
-        if "blog_preferences" in updates:
-            theme_name = updates["blog_preferences"].get("theme")
-            if theme_name:
-                self._update_theme_settings(updates, theme_name)
 
     def on_updated(self, updates, original):
         original_id = str(original["_id"])
@@ -348,31 +337,22 @@ class BlogService(BaseService):
                 )
 
     def _auto_create_output(self, blog):
-        # Create output channel automatically
-        blog_theme = blog.get("theme_settings")
-        if blog_theme and blog_theme.get("outputChannel"):
-            output_name = blog_theme.get("outputChannelName", "Default output")
+        # Create output channel automatically using runtime theme settings
+        theme_name = blog.get("blog_preferences", {}).get("theme")
+        if not theme_name:
+            return
+
+        theme_settings_service = get_resource_service("theme_settings")
+        theme_settings = theme_settings_service.get_settings_for_blog(blog, theme_name)
+
+        if theme_settings and theme_settings.get("outputChannel"):
+            output_name = theme_settings.get("outputChannelName", "Default output")
             output_data = [
                 {
                     "name": output_name,
                     "blog": ObjectId(str(blog["_id"])),
-                    "theme": blog_theme.get("outputChannelTheme", "amp"),
+                    "theme": theme_settings.get("outputChannelTheme", "amp"),
                 }
             ]
 
             post_auto_output_creation.apply_async(args=[output_data], countdown=3)
-
-
-class UserBlogsResource(Resource):
-    url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
-    schema = blogs_schema
-    datasource = {"source": "blogs", "default_sort": [("title", 1)]}
-    resource_methods = ["GET"]
-
-
-class UserBlogsService(BaseService):
-    def get(self, req, lookup):
-        if lookup.get("user_id"):
-            lookup["members.user"] = ObjectId(lookup["user_id"])
-            del lookup["user_id"]
-        return super().get(req, lookup)

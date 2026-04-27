@@ -10,10 +10,6 @@
 	background: #e0e0e0;
 }
 
-// .subnav {
-//     display: block;
-// }
-
 .page-nav-title {
     padding: 10px 0;
 }
@@ -55,10 +51,6 @@
 .button-stack.right-stack > .btn {
   margin-right: 12px;
   margin-left: 0;
-}
-
-.button-stack.active {
-    //background-color: #eaeaea;
 }
 
 .button-stack.active .navbtn {
@@ -461,5 +453,68 @@ i.icon-star.orange {
     .sd-line-input {
         padding-top: 0.8em !important;
         margin-bottom: 0.8em !important;
+    }
+}
+
+sd-billing-banner {
+    display: block;
+    position: absolute;
+    bottom: 30px;
+    z-index: 10;
+    width: 100%;
+}
+
+.billing-banner {
+    margin: 0;
+    border-radius: 0;
+    border-width: 1px 0 1px;
+    box-sizing: border-box;
+    background: #fff2d9;
+    border-color: #e2b654;
+    color: #6f4e00;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.billing-banner__content {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.billing-banner__copy {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.billing-banner__action {
+    border: 1px solid #c89416;
+    background: #fff;
+    color: #6f4e00;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.billing-banner__action:hover,
+.billing-banner__action:focus {
+    background: #fff8eb;
+    outline: none;
+}
+
+@media (max-width: 767px) {
+    .billing-banner__content {
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .billing-banner__copy {
+        justify-content: center;
     }
 }

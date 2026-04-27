@@ -69,7 +69,7 @@ export default function lbFilterByMember(api) {
                                     ids.push(...blog.members.map((member) => member.user));
                                 }
                                 // retrieve information about these users and list them in the view
-                                api('users')
+                                api('liveblog_users')
                                     .query({where: {_id: {$in: ids}}})
                                     .then((data) => {
                                         self.members = data._items;

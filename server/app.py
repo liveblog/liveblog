@@ -12,6 +12,7 @@
 
 import os
 import jinja2
+import flask
 import flask_s3
 import settings
 from flask_cache import Cache
@@ -35,6 +36,7 @@ from liveblog.advertisements.advertisements import advertisements_blueprint
 from liveblog.video_upload.video_upload import video_upload_blueprint
 from liveblog.instance_settings.instance_settings import instance_settings_blueprint
 from liveblog.bandwidth.bandwidth import bandwidth_blueprint
+from liveblog.auth.registration import registration_blueprint
 
 from superdesk.factory import get_app as superdesk_app
 from superdesk.default_settings import celery_queue as instance_prefix
@@ -65,8 +67,26 @@ def get_app(config=None):
     config["SENTRY_CONFIG"] = {"release": __version__}
     config["SENTRY_NAME"] = settings.ELASTICSEARCH_INDEX
 
-    # Create superdesk app instance.
+    # Note: liveblog.auth.init_app() overrides app.auth with LiveBlogTokenAuth
+    # as superdesk does it too to override Eve's default TokenAuth
     app = superdesk_app(config, media_storage)
+
+    # Tenant context middleware
+    @app.before_request
+    def set_tenant_context():
+        """
+        Set up tenant context for each request.
+
+        Tenant is accessed lazily via flask.g.user.tenant_id, so no
+        explicit setup needed here. This middleware is a placeholder
+        for future tenant validation logic.
+        """
+        # Skip tenant checks for public/system endpoints
+        if flask.request.path.startswith(("/health", "/ping", "/embed")):
+            return
+
+        # Tenant context is available via get_tenant_id() throughout request
+        pass
 
     setup_apm(app, settings.ELASTICSEARCH_INDEX)
 
@@ -132,6 +152,9 @@ def get_app(config=None):
 
     # Bandwidth endpoint
     app.register_blueprint(bandwidth_blueprint)
+
+    # Registration endpoint
+    app.register_blueprint(registration_blueprint)
 
     return app
 

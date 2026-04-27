@@ -12,6 +12,7 @@ from flask import current_app as app
 from celery.exceptions import SoftTimeLimitExceeded
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from liveblog.tenancy.celery import TenantAwareTask
 from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
@@ -41,8 +42,7 @@ def generate_fallback_html_url(blog_id, output, api_host):
     """
     This function is called when the primary embed generation fails, and it
     generates an HTML embed url for the blog using the default seo theme. The function
-    also updates the blog's theme and theme settings to the default theme in the
-    database.
+    also updates the blog's theme preference to the default theme in the database.
     """
     logger.info(f'generate_fallback_html_url for blog "{blog_id}" started.')
 
@@ -56,7 +56,6 @@ def generate_fallback_html_url(blog_id, output, api_host):
     updates["blog_preferences"] = blog.get("blog_preferences", {})
     updates["blog_preferences"]["theme"] = theme
 
-    blogs._update_theme_settings(updates, theme)
     blogs.system_update(blog_id, updates, blog)
 
     logger.info(f'generate_fallback_html_url for blog "{blog_id}" finished.')
@@ -426,7 +425,7 @@ def publish_bloglist_embed_on_s3():
         publish_bloglist_assets("styles")
 
 
-@celery.task
+@celery.task(base=TenantAwareTask)
 def post_auto_output_creation(output_data):
     """
     Dummy task to trigger the automatic creation of

@@ -191,8 +191,10 @@ INSTALLED_APPS = [
     "apps.legal_archive",
     "apps.archive_broadcast",
     "apps.content_types",
+    "liveblog.tenancy",
     "liveblog.core",
     "liveblog.users",
+    "liveblog.liveblog_users",
     "liveblog.prepopulate",
     "liveblog.blogs",
     "liveblog.posts",
@@ -200,8 +202,10 @@ INSTALLED_APPS = [
     "liveblog.polls",
     "liveblog.languages",
     "liveblog.themes",
+    "liveblog.theme_settings",
     "liveblog.client_modules",
     "liveblog.syndication",
+    "liveblog.billing",
     "liveblog.freetypes",
     "liveblog.marketplace",
     "liveblog.analytics",
@@ -383,11 +387,28 @@ SUBSCRIPTION_LEVEL_GO = "liveblog-go"
 SUBSCRIPTION_LEVEL_SOLO = "solo"
 SUBSCRIPTION_LEVEL_TEAM = "team"
 SUBSCRIPTION_LEVEL_NETWORK = "network"
+
+SUBSCRIPTION_LEVELS = [
+    SUBSCRIPTION_LEVEL_SOLO,
+    SUBSCRIPTION_LEVEL_TEAM,
+    SUBSCRIPTION_LEVEL_NETWORK,
+]
+# Levels available via Stripe (network is self-hosted only)
+STRIPE_BILLABLE_LEVELS = {SUBSCRIPTION_LEVEL_SOLO, SUBSCRIPTION_LEVEL_TEAM}
+
+# Per-tenant level is stored in the tenant document and read by FeaturesService.
 SUBSCRIPTION_LEVEL = env("SUBSCRIPTION_LEVEL", SUBSCRIPTION_LEVEL_NETWORK)
-SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
-SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
-SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 6}
-ACCESS_SUBSCRIPTIONS_MOBILE = ["solo-mobile", "team", "network"]
+
+# Stripe billing (optional — leave unset to disable Stripe integration)
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", "")
+
+# When true, users must have an active Stripe subscription to access the app.
+# After registration, users without a subscription are redirected to Checkout.
+# Stripe subscription level is read from Product metadata, not Price IDs.
+STRIPE_BILLING_REQUIRED = env("STRIPE_BILLING_REQUIRED", False)
+
+STRIPE_PRICING_URL = env("STRIPE_PRICING_URL", "https://liveblog.pro/en/pricing/")
 
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
 NO_TAKES = True

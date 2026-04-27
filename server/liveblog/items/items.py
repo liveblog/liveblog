@@ -1,30 +1,28 @@
-from bson.objectid import ObjectId
-from eve.utils import ParsedRequest
-from superdesk.notification import push_notification
-from superdesk.utc import utcnow
-from superdesk.resource import Resource
-
-from liveblog.common import get_user, update_dates_for
-from apps.archive.archive import (
-    ArchiveResource,
-    ArchiveService,
-    ArchiveVersionsResource,
-)
-from superdesk.services import BaseService
-from superdesk.filemeta import set_filemeta
-from werkzeug.datastructures import FileStorage
-from flask import Blueprint, request, make_response
-from flask_cors import CORS
-from superdesk import get_resource_service
-from bson.json_util import dumps
-from requests.exceptions import RequestException
-
-import logging
 import re
+import logging
 import requests
 import tempfile
 import base64
 import imghdr
+
+from flask_cors import CORS
+from bson.objectid import ObjectId
+from bson.json_util import dumps
+from eve.utils import ParsedRequest
+from requests.exceptions import RequestException
+from werkzeug.datastructures import FileStorage
+from flask import Blueprint, request, make_response
+
+from superdesk.utc import utcnow
+from superdesk import get_resource_service
+from superdesk.notification import push_notification
+from superdesk.filemeta import set_filemeta
+from superdesk.resource import Resource
+from apps.archive.archive import ArchiveResource
+
+from liveblog.common import get_user, update_dates_for
+from liveblog.tenancy.service import TenantAwareArchiveService
+from liveblog.tenancy.filters import tenant_elastic_filter, combine_elastic_filters
 
 
 logger = logging.getLogger("superdesk")
@@ -32,36 +30,18 @@ drag_and_drop_blueprint = Blueprint("drag_and_drop", __name__)
 CORS(drag_and_drop_blueprint)
 
 
-class ItemsVersionsResource(ArchiveVersionsResource):
-    """
-    Resource class for versions of archive_media
-    """
-
-    datasource = {"source": "archive" + "_versions"}
-
-
-class ItemsVersionsService(BaseService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get("archive_versions", req=req, lookup=lookup)
-
-    def on_item_deleted(self, document):
-        """Called from ``content_api.items.ItemService`` when an item has been deleted.
-
-        Makes sure that associated item versions are deleted along with the stored item
-
-        :param dict document: Item that has been deleted
-        """
-        self.delete(lookup={"_id_document": document["_id"]})
-
-
 class ItemsResource(ArchiveResource):
+    def _elastic_filter_by_type():
+        return {"term": {"particular_type": "item"}}
+
     datasource = {
         "source": "archive",
-        "elastic_filter": {"term": {"particular_type": "item"}},
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, _elastic_filter_by_type
+        ),
         "default_sort": [("_updated", -1)],
     }
+    versioning = False
 
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
 
@@ -69,6 +49,7 @@ class ItemsResource(ArchiveResource):
     schema.update(schema)
     schema.update(
         {
+            "tenant_id": Resource.rel("tenants", type="objectid"),
             "text": {"type": "string"},
             "blog": Resource.rel("blogs", True),
             "particular_type": {
@@ -96,7 +77,7 @@ class ItemsResource(ArchiveResource):
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
 
 
-class ItemsService(ArchiveService):
+class ItemsService(TenantAwareArchiveService):
     embed_providers = {
         "twitter": [
             re.compile(
@@ -181,19 +162,35 @@ class ItemsService(ArchiveService):
 class BlogItemsResource(ArchiveResource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/items'
     schema = ItemsResource.schema
+
+    def _elastic_filter_by_type():
+        return {"term": {"particular_type": "item"}}
+
     datasource = {
         "source": "archive",
-        "elastic_filter": {"term": {"particular_type": "item"}},
+        "elastic_filter_callback": combine_elastic_filters(
+            tenant_elastic_filter, _elastic_filter_by_type
+        ),
         "default_sort": [("_updated", -1)],
     }
     resource_methods = ["GET"]
     privileges = {"GET": "posts"}
 
 
-class BlogItemsService(ArchiveService):
+class BlogItemsService(TenantAwareArchiveService):
     def get(self, req, lookup):
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            blog_id = ObjectId(lookup["blog_id"])
+
+            # Validate that the blog exists in the current tenant before querying items
+            from superdesk.errors import SuperdeskApiError
+
+            blogs_service = get_resource_service("blogs")
+            blog = blogs_service.find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+            lookup["blog"] = blog_id
             del lookup["blog_id"]
         return super().get(req, lookup)
 

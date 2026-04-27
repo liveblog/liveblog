@@ -6,6 +6,7 @@ import LiveblogSettingsController from './controllers/general-settings.ts';
 import LiveblogInstanceSettingsController from './controllers/instance-settings.ts';
 import {renderTagsManager} from './components/tagsManager';
 import {lbSettingsView} from './directives/lbSettingsView';
+import loginScreenTpl from '../liveblog-registration/login-screen.html';
 
 const liveblogSettings = angular.module('liveblog.settings', [])
     .config(['superdeskProvider', function(superdesk) {
@@ -37,7 +38,21 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 liveblogSupportTools: true,
             });
     }])
+    .config(['$provide', function($provide) {
+        $provide.decorator('sdLoginModalDirective', ['$delegate', function($delegate) {
+            $delegate[0].template = loginScreenTpl;
+            return $delegate;
+        }]);
+    }])
     .config(['apiProvider', function(apiProvider) {
+        // Override superdesk-core's 'users' endpoint so every api('users') call
+        // in the UI (user list, user edit, profile) hits the tenant-isolated
+        // liveblog_users backend instead of the system-wide /users endpoint.
+        // See ARCHITECTURAL_CONCERNS.md #7 for the long-term replacement plan.
+        apiProvider.api('users', {
+            type: 'http',
+            backend: {rel: 'liveblog_users'},
+        });
         apiProvider.api('themes', {
             type: 'http',
             backend: {rel: 'themes'},

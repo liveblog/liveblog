@@ -9,23 +9,20 @@ Feature: Items operations
 
     @auth
     Scenario: Add item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Test Blog", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -45,23 +42,20 @@ Feature: Items operations
 
 	@auth
     Scenario: Update item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Test Blog", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
        	When we post to "items"
@@ -80,23 +74,20 @@ Feature: Items operations
 
 	@auth
     Scenario: Delete item
-    	Given "themes"
-        """
-        [{"name": "forest"}]
-        """
+    	Given system themes
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given "users"
+        Given tenant aware "liveblog_users"
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Test Blog", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         Given empty "items"
@@ -106,3 +97,107 @@ Feature: Items operations
         """
         When we delete latest
         Then we get deleted response
+
+    @auth
+    Scenario: Retrieve items from blog
+    	Given system themes
+    	Given "roles"
+        """
+        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
+        """
+        Given tenant aware "liveblog_users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "liveblog_users" the id as "user_foo" by "where={"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Test Blog", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
+        Given empty "items"
+        When we post to "items"
+        """
+        [{"text": "first item", "blog": "#blogs._id#"}]
+        """
+        When we post to "items"
+        """
+        [{"text": "second item", "blog": "#blogs._id#"}]
+        """
+        When we post to "items"
+        """
+        [{"text": "third item", "blog": "#blogs._id#"}]
+        """
+        When we get "/blogs/#blogs._id#/items"
+        Then we get list with 3 items
+        """
+        {"_items": [{"text": "third item"}, {"text": "second item"}, {"text": "first item"}]}
+        """
+
+    @auth
+    Scenario: Create items without permissions
+    	Given system themes
+        Given empty "items"
+        When we login as user "foo" with password "bar"
+        """
+        {"user_type": "user", "email": "foo.bar@foobar.org"}
+        """
+        Given tenant aware "blogs"
+        """
+        [{"title": "Test Blog", "blog_preferences": {"theme": "forest", "language": "fr"}}]
+        """
+        When we post to "items"
+        """
+        [{"text": "unauthorized item", "blog": "#blogs._id#"}]
+        """
+        Then we get response code 403
+
+    @auth
+    Scenario: Items from different tenants are isolated
+        Given system themes
+        Given a tenant "Tenant One"
+        And a user "tenant1_admin" for current tenant
+        Given a tenant "Tenant Two"
+        And a user "tenant2_admin" for current tenant
+
+        # Tenant 1 creates a blog and item
+        When we login as tenant user "tenant1_admin"
+        When we post to "blogs"
+        """
+        [{"title": "Tenant1 Blog", "blog_preferences": {"theme": "classic", "language": "en"}}]
+        """
+        Then we get OK response
+        When we save "tenant1_blog_id" from last response "_id"
+
+        When we post to "items"
+        """
+        [{"text": "Tenant1 Item", "blog": "#tenant1_blog_id#"}]
+        """
+        Then we get OK response
+        When we save "tenant1_item_id" from last response "_id"
+        When we save "IF_MATCH_VALUE" from last response "_etag"
+
+        # Tenant 2 cannot see Tenant 1's items in list
+        When we login as tenant user "tenant2_admin"
+        When we get "/items"
+        Then we get list with 0 items
+
+        # Tenant 2 cannot access Tenant 1's item by ID
+        When we get "/items/#tenant1_item_id#"
+        Then we get error 404
+
+        # Tenant 2 cannot update Tenant 1's item
+        When we attempt to patch "/items/#tenant1_item_id#"
+        """
+        {"text": "Hacked"}
+        """
+        Then we get error 404
+
+        # Tenant 2 cannot delete Tenant 1's item
+        When we attempt to delete "/items/#tenant1_item_id#"
+        Then we get error 404
+
+        # Tenant 2 cannot access Tenant 1's blog items via blog endpoint
+        When we get "/blogs/#tenant1_blog_id#/items"
+        Then we get error 404
