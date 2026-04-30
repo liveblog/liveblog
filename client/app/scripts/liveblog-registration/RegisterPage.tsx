@@ -358,11 +358,11 @@ export class RegisterPage extends React.Component<{}, IState> {
                     {([
                         {
                             name: 'organizationName',
-                            label: 'Organization name (optional)',
+                            label: 'Organization name',
                             type: 'text',
                         },
-                        { name: 'username', label: 'Username', type: 'text' },
                         { name: 'email', label: 'Email', type: 'email' },
+                        { name: 'username', label: 'Username', type: 'text' },
                         {
                             name: 'password',
                             label: 'Password',
