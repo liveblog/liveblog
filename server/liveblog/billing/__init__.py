@@ -1,5 +1,8 @@
-import flask
 import superdesk
+
+from flask import current_app, request
+from superdesk.errors import SuperdeskApiError
+from superdesk.notification import push_notification
 
 from liveblog.auth.token_auth import (
     get_authenticated_user_from_context,
@@ -36,13 +39,13 @@ def _check_billing_gate():
     Raises SuperdeskApiError(403) with a _billing payload so the
     frontend interceptor can show a subscription prompt.
     """
-    if flask.request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
+    if request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
         return
 
-    if not flask.current_app.config.get("STRIPE_BILLING_REQUIRED"):
+    if not current_app.config.get("STRIPE_BILLING_REQUIRED"):
         return
 
-    path = flask.request.path
+    path = request.path
     if any(path.startswith(prefix) for prefix in BILLING_EXEMPT_PREFIXES):
         return
 
@@ -50,7 +53,7 @@ def _check_billing_gate():
     if not user:
         user = hydrate_request_context_from_token(
             get_request_auth_token(),
-            method=flask.request.method,
+            method=request.method,
             touch_session=False,
         )
     if not user or not user.get("tenant_id"):
@@ -64,7 +67,8 @@ def _check_billing_gate():
 
     state = service.get_billing_state(tenant)
     if not state["access_allowed"]:
-        from superdesk.errors import SuperdeskApiError
+        if state["redirect"] == "extend":
+            push_notification("billing:plan_expired")
 
         raise SuperdeskApiError.forbiddenError(
             message="Active subscription required",

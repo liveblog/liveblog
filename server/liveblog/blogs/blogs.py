@@ -291,7 +291,7 @@ class BlogService(TenantAwareService):
 
     def make_embed_unavailable_if_needed(self, blog):
         """
-        Triggers the publishing of the blog's embed which will render an 'not available'
+        Triggers the publishing of the blog's embed which will render a 'not available'
         message if the subscription plan is limited and the blog is archived or deleted.
         """
         if app.config.get("SUPERDESK_TESTING"):

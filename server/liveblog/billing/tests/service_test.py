@@ -16,7 +16,9 @@ from liveblog.billing.service import (
     ensure_stripe_customer,
     find_tenant_by_customer,
     get_billing_state,
+    get_plan_duration_days,
     get_subscription_level,
+    is_time_limited_plan_active,
     reset_tenant_subscription,
     sync_subscription_from_stripe,
     update_tenant_subscription,
@@ -164,6 +166,83 @@ class BillingStateTest(TestCase):
                 "pricing",
                 f"Status '{status}' should redirect to pricing",
             )
+
+
+class TimeLimitedPlanTest(TestCase):
+    """Test time-limited plan logic (Go plans)."""
+
+    def _future(self, days=3):
+        from superdesk.utc import utcnow
+        import datetime
+
+        return utcnow() + datetime.timedelta(days=days)
+
+    def _past(self, days=1):
+        from superdesk.utc import utcnow
+        import datetime
+
+        return utcnow() - datetime.timedelta(days=days)
+
+    def test_active_plan_allows_access(self):
+        tenant = {
+            "_id": "t1",
+            "subscription_level": "liveblog-go",
+            "plan_expires_at": self._future(3),
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertTrue(state["access_allowed"])
+        self.assertIsNone(state["redirect"])
+        self.assertEqual(state["status"], "active")
+        self.assertIsNotNone(state["plan_expires_at"])
+
+    def test_expired_plan_blocks_access(self):
+        tenant = {
+            "_id": "t1",
+            "subscription_level": "liveblog-go",
+            "plan_expires_at": self._past(1),
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertFalse(state["access_allowed"])
+        self.assertEqual(state["redirect"], "extend")
+        self.assertEqual(state["status"], "expired")
+
+    def test_plan_without_expiry_blocks_access(self):
+        tenant = {
+            "_id": "t1",
+            "subscription_level": "liveblog-go",
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertFalse(state["access_allowed"])
+        self.assertEqual(state["redirect"], "pricing")
+
+    def test_is_time_limited_plan_active_with_future_expiry(self):
+        tenant = {"plan_expires_at": self._future(1)}
+        self.assertTrue(is_time_limited_plan_active(tenant))
+
+    def test_is_time_limited_plan_active_with_past_expiry(self):
+        tenant = {"plan_expires_at": self._past(1)}
+        self.assertFalse(is_time_limited_plan_active(tenant))
+
+    def test_is_time_limited_plan_active_without_expiry(self):
+        tenant = {}
+        self.assertFalse(is_time_limited_plan_active(tenant))
+
+    def test_get_plan_duration_days_returns_int(self):
+        self.assertEqual(get_plan_duration_days({"plan_duration_days": "3"}), 3)
+        self.assertEqual(get_plan_duration_days({"plan_duration_days": "7"}), 7)
+
+    def test_get_plan_duration_days_returns_none_for_missing(self):
+        self.assertIsNone(get_plan_duration_days({}))
+        self.assertIsNone(get_plan_duration_days({"plan_duration_days": ""}))
+
+    def test_get_plan_duration_days_returns_none_for_invalid(self):
+        self.assertIsNone(get_plan_duration_days({"plan_duration_days": "abc"}))
 
 
 class SubscriptionLevelTest(TestCase):

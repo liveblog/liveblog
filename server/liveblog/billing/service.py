@@ -4,11 +4,13 @@ Billing service — business logic for subscription management.
 Handles subscription state resolution, tenant updates from Stripe events,
 and billing status checks for access gating.
 """
+import datetime
 import logging
 import stripe
 
 from bson import ObjectId
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 from settings import STRIPE_BILLABLE_LEVELS
 
 logger = logging.getLogger(__name__)
@@ -64,11 +66,58 @@ def get_subscription_level(subscription):
     return level
 
 
+def get_plan_duration_days(metadata):
+    """Extract plan duration from Product metadata.
+
+    Returns the number of days as an int, or None for regular subscriptions.
+    """
+    duration = metadata.get("plan_duration_days")
+    if duration:
+        try:
+            return int(duration)
+        except (ValueError, TypeError):
+            return None
+    return None
+
+
 def find_tenant_by_customer(customer_id):
     """Find a tenant by Stripe customer ID. Returns None if not found."""
     return get_resource_service("tenants").find_one(
         req=None, stripe_customer_id=customer_id
     )
+
+
+def set_plan_expiry(tenant_id, duration_days):
+    """Set or extend plan_expires_at on a tenant.
+
+    If the tenant has an active plan (expires in the future), stacks the
+    new duration on top. Otherwise starts from now.
+    """
+    tenant_id = _ensure_object_id(tenant_id)
+    tenants_service = get_resource_service("tenants")
+    tenant = tenants_service.find_one(req=None, _id=tenant_id)
+
+    existing_expiry = tenant.get("plan_expires_at") if tenant else None
+    now = utcnow()
+    base = (
+        max(now, existing_expiry) if existing_expiry and existing_expiry > now else now
+    )
+    new_expiry = base + datetime.timedelta(days=duration_days)
+
+    tenants_service.system_update(tenant_id, {"plan_expires_at": new_expiry}, tenant)
+    logger.info(
+        "Tenant %s plan_expires_at set to %s (%d days from %s)",
+        tenant_id,
+        new_expiry,
+        duration_days,
+        base,
+    )
+
+
+def is_time_limited_plan_active(tenant):
+    """Check if a tenant has an active time-limited plan (not expired)."""
+    expires = tenant.get("plan_expires_at")
+    return expires is not None and expires > utcnow()
 
 
 def update_tenant_subscription(tenant_id, subscription):
@@ -205,14 +254,33 @@ def get_billing_state(tenant):
 
     Returns a dict with:
         - access_allowed (bool): whether the tenant can use the app
-        - redirect (str|None): "pricing", "portal", or None
+        - redirect (str|None): "pricing", "portal", "extend", or None
         - status (str|None): the Stripe subscription status
+        - plan_expires_at (str|None): ISO datetime for Go plans
     """
     if not tenant:
         return {
             "access_allowed": False,
             "redirect": "pricing",
             "status": None,
+            "plan_expires_at": None,
+        }
+
+    # Time-limited plan: check plan_expires_at instead of subscription status
+    if tenant.get("plan_expires_at"):
+        expires = tenant["plan_expires_at"]
+        if expires > utcnow():
+            return {
+                "access_allowed": True,
+                "redirect": None,
+                "status": "active",
+                "plan_expires_at": expires,
+            }
+        return {
+            "access_allowed": False,
+            "redirect": "extend",
+            "status": "expired",
+            "plan_expires_at": expires,
         }
 
     sub_status = tenant.get("stripe_subscription_status")
@@ -224,6 +292,7 @@ def get_billing_state(tenant):
             "access_allowed": False,
             "redirect": "pricing",
             "status": None,
+            "plan_expires_at": None,
         }
 
     # Healthy subscription
@@ -232,6 +301,7 @@ def get_billing_state(tenant):
             "access_allowed": True,
             "redirect": None,
             "status": sub_status,
+            "plan_expires_at": None,
         }
 
     # Payment issue — fixable via Customer Portal
@@ -240,6 +310,7 @@ def get_billing_state(tenant):
             "access_allowed": False,
             "redirect": "portal",
             "status": sub_status,
+            "plan_expires_at": None,
         }
 
     # Cancelled or expired — need to resubscribe
@@ -247,4 +318,5 @@ def get_billing_state(tenant):
         "access_allowed": False,
         "redirect": "pricing",
         "status": sub_status,
+        "plan_expires_at": None,
     }

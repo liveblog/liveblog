@@ -121,21 +121,27 @@ def billing_status():
     tenant = service.sync_subscription_from_stripe(tenant)
     state = service.get_billing_state(tenant)
 
-    return api_response(
-        {
-            "billing_required": True,
-            "access_allowed": state["access_allowed"],
-            "redirect": state["redirect"],
-            "status": state["status"],
-            "pricing_url": app.config.get("STRIPE_PRICING_URL", ""),
-        },
-        200,
-    )
+    response = {
+        "billing_required": True,
+        "access_allowed": state["access_allowed"],
+        "redirect": state["redirect"],
+        "status": state["status"],
+        "pricing_url": app.config.get("STRIPE_PRICING_URL", ""),
+        "plan_expires_at": state.get("plan_expires_at"),
+    }
+
+    if state["redirect"] == "extend":
+        response["checkout_price_id"] = tenant.get("plan_price_id", "")
+
+    return api_response(response, 200)
 
 
 @billing_blueprint.route("/api/billing/checkout", methods=["POST"])
 def create_checkout_session():
-    """Create a Stripe Checkout session for subscribing to a plan.
+    """Create a Stripe Checkout session for subscribing to or purchasing a plan.
+
+    Uses mode="payment" for time-limited plans (Go) and mode="subscription"
+    for recurring plans (Solo, Team).
 
     Request body:
         {"price_id": "price_...", "return_url": "https://..."}
@@ -157,9 +163,6 @@ def create_checkout_session():
 
     stripe.api_key = stripe_key
 
-    # Validate that the price belongs to a valid LiveBlog plan.
-    # TODO: consider maintaining a server-side allowlist of valid price IDs
-    # to avoid this API call on every checkout.
     try:
         price = stripe.Price.retrieve(price_id, expand=["product"])
         product = price.get("product", {})
@@ -171,14 +174,25 @@ def create_checkout_session():
     except stripe.error.StripeError:
         return api_error("Invalid price_id", 400)
 
+    duration_days = service.get_plan_duration_days(metadata)
+    is_one_time = duration_days is not None
+
+    if is_one_time and service.is_time_limited_plan_active(tenant):
+        return api_error("You already have an active plan", 400)
+
     try:
-        session = stripe.checkout.Session.create(
-            customer=tenant["stripe_customer_id"],
-            mode="subscription",
-            line_items=[{"price": price_id, "quantity": 1}],
-            success_url=return_url,
-            cancel_url=return_url,
-        )
+        checkout_mode = "payment" if is_one_time else "subscription"
+        session_params = {
+            "customer": tenant["stripe_customer_id"],
+            "mode": checkout_mode,
+            "line_items": [{"price": price_id, "quantity": 1}],
+            "success_url": return_url,
+            "cancel_url": return_url,
+        }
+        if is_one_time:
+            session_params["invoice_creation"] = {"enabled": True}
+
+        session = stripe.checkout.Session.create(**session_params)
         return api_response({"url": session.url}, 200)
     except stripe.error.StripeError as e:
         logger.error("Stripe Checkout error: %s", e)

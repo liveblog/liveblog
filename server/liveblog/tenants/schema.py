@@ -71,6 +71,10 @@ tenants_schema = {
         "nullable": True,
         "data_relation": {"resource": "users", "field": "_id"},
     },
+    "plan_expires_at": {"type": "datetime", "nullable": True},
+    # Price ID used for the last one-time plan purchase, used by the "Extend" button.
+    # TODO: handle the case where this price is archived in Stripe (validate before checkout)
+    "plan_price_id": {"type": "string", "nullable": True},
     "stripe_customer_id": {
         "type": "string",
         "nullable": True,

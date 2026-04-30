@@ -10,6 +10,8 @@ interface IBillingStatus {
     redirect: string | null;
     pricingUrl: string | null;
     status: string | null;
+    planExpiresAt: string | null;
+    checkoutPriceId: string | null;
 }
 
 interface IState {
@@ -40,6 +42,8 @@ export class BillingBanner extends React.Component<IProps, IState> {
                             redirect: data.redirect,
                             pricingUrl: data.pricing_url,
                             status: data.status,
+                            planExpiresAt: data.plan_expires_at || null,
+                            checkoutPriceId: data.checkout_price_id || null,
                         },
                     });
                 }
@@ -94,6 +98,35 @@ export class BillingBanner extends React.Component<IProps, IState> {
             });
     }
 
+    private handleExtend = () => {
+        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const token = localStorage.getItem('sess:token');
+        const { billingStatus } = this.state;
+
+        if (!token || !billingStatus?.checkoutPriceId) {
+            return;
+        }
+
+        fetch(`${apiUrl}/billing/checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token,
+            },
+            body: JSON.stringify({
+                price_id: billingStatus.checkoutPriceId,
+                return_url: window.location.origin,
+            }),
+        })
+            .then((r) => r.ok ? r.json() : null)
+            .then((data) => {
+                if (data && data.url) {
+                    window.location.href = data.url;
+                }
+            })
+            .catch(() => undefined);
+    }
+
     render() {
         const { billingStatus } = this.state;
 
@@ -101,9 +134,34 @@ export class BillingBanner extends React.Component<IProps, IState> {
             return null;
         }
 
-        const isRecoverable = billingStatus.redirect === 'portal';
+        if (billingStatus.redirect === 'extend') {
+            return (
+                <div
+                    className="billing-banner alert alert-warning"
+                    role="alert"
+                >
+                    <div className="billing-banner__content">
+                        <div className="billing-banner__copy">
+                            <strong>
+                                Your plan has expired.
+                            </strong>
+                            <span>
+                                Extend your plan to continue.
+                            </span>
+                        </div>
+                        <button
+                            className="billing-banner__action"
+                            onClick={this.handleExtend}
+                            type="button"
+                        >
+                            Extend
+                        </button>
+                    </div>
+                </div>
+            );
+        }
 
-        if (isRecoverable) {
+        if (billingStatus.redirect === 'portal') {
             return (
                 <div
                     className="billing-banner alert alert-warning"

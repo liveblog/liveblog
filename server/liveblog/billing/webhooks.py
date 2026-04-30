@@ -56,10 +56,72 @@ def _handle_subscription_deleted(event):
     service.reset_tenant_subscription(tenant["_id"])
 
 
+def _handle_checkout_completed(event):
+    """Handle one-time payment checkout for time-limited plans (e.g. Go).
+
+    Skips subscription checkouts (handled by subscription event handlers).
+    """
+    session = event["data"]["object"]
+
+    if session.get("mode") != "payment":
+        return
+
+    customer_id = session.get("customer")
+    if not customer_id:
+        logger.warning("Checkout session missing customer ID")
+        return
+
+    tenant = service.find_tenant_by_customer(customer_id)
+    if not tenant:
+        logger.warning("No tenant for Stripe customer %s", customer_id)
+        return
+
+    stripe.api_key = app.config.get("STRIPE_SECRET_KEY")
+
+    # Retrieve the session with line items expanded to get product metadata
+    try:
+        session = stripe.checkout.Session.retrieve(
+            session["id"], expand=["line_items.data.price.product"]
+        )
+    except stripe.error.StripeError as e:
+        logger.error("Failed to retrieve checkout session: %s", e)
+        return
+
+    line_items = session.get("line_items", {}).get("data", [])
+    if not line_items:
+        return
+
+    product = line_items[0].get("price", {}).get("product", {})
+    metadata = product.get("metadata", {}) if isinstance(product, dict) else {}
+
+    level = metadata.get("subscription_level")
+    duration_days = service.get_plan_duration_days(metadata)
+
+    if not level or not duration_days:
+        return
+
+    tenant_id = tenant["_id"]
+    price_id = line_items[0].get("price", {}).get("id")
+    tenants_service = service.get_resource_service("tenants")
+    tenants_service.system_update(
+        service._ensure_object_id(tenant_id),
+        {"subscription_level": level, "plan_price_id": price_id},
+        tenant,
+    )
+    service.set_plan_expiry(tenant_id, duration_days)
+    logger.info(
+        "Go plan activated for tenant %s: level=%s, duration=%d days",
+        tenant_id,
+        level,
+        duration_days,
+    )
+
+
 EVENT_HANDLERS = {
     "customer.subscription.created": _handle_subscription_event,
     "customer.subscription.updated": _handle_subscription_event,
     "customer.subscription.deleted": _handle_subscription_deleted,
+    "checkout.session.completed": _handle_checkout_completed,
 }
 
 
