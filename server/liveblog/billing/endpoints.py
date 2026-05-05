@@ -35,7 +35,8 @@ def _billing_auth():
     /config — public, returns only global config flags (no tenant data).
     All other endpoints require authenticated user.
     """
-    if request.path.endswith("/webhook") or request.path.endswith("/config"):
+    public_suffixes = ("/webhook", "/config", "/plan-info")
+    if any(request.path.endswith(s) for s in public_suffixes):
         return
 
     user = get_authenticated_user_from_context()
@@ -80,6 +81,58 @@ def _require_stripe():
     if not key:
         return None, api_error("Billing not configured", 500)
     return key, None
+
+
+@billing_blueprint.route("/api/billing/plan-info", methods=["GET"])
+def plan_info():
+    """Public endpoint returning product and price info for a given price_id.
+
+    Used by the registration page to display a plan summary panel.
+    """
+    stripe_key, error = _require_stripe()
+    if error:
+        return error
+
+    price_id = request.args.get("price_id")
+    if not price_id:
+        return api_error("price_id is required", 400)
+
+    stripe.api_key = stripe_key
+
+    try:
+        price = stripe.Price.retrieve(price_id, expand=["product"])
+    except stripe.error.StripeError:
+        return api_error("Invalid price_id", 400)
+
+    product = price.get("product", {})
+    if not isinstance(product, dict):
+        return api_error("Unable to resolve product", 400)
+
+    metadata = product.get("metadata", {})
+    level = metadata.get("subscription_level")
+    if not level or level not in service.VALID_LEVELS:
+        return api_error("Invalid plan", 400)
+
+    recurring = price.get("recurring") or {}
+
+    return api_response(
+        {
+            "productName": product.get("name", ""),
+            "description": product.get("description", ""),
+            "marketingFeatures": product.get("marketing_features", []),
+            "price": {
+                "amount": (price.get("unit_amount") or 0) / 100,
+                "currency": price.get("currency", ""),
+                "interval": recurring.get("interval"),
+                "intervalCount": recurring.get("interval_count"),
+            },
+            "metadata": {
+                "subscriptionLevel": level,
+                "planDurationDays": metadata.get("plan_duration_days"),
+            },
+        },
+        200,
+    )
 
 
 @billing_blueprint.route("/api/billing/config", methods=["GET"])

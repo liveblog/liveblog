@@ -1,4 +1,5 @@
 import React from 'react';
+import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
 
 interface IFormState {
     firstName: string;
@@ -15,6 +16,7 @@ interface IState {
     submitting: boolean;
     focusedField: string | null;
     orgNameManuallyEdited: boolean;
+    planInfo: IPlanInfo | null;
 }
 
 const INITIAL_FORM: IFormState = {
@@ -32,6 +34,8 @@ const styles: {[key: string]: React.CSSProperties} = {
         borderRadius: 12,
         padding: '40px 36px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)',
+        maxWidth: 420,
+        margin: '0 auto',
     },
     logo: {
         display: 'block',
@@ -122,6 +126,15 @@ const styles: {[key: string]: React.CSSProperties} = {
         fontWeight: 500,
         marginLeft: 4,
     },
+    twoColumn: {
+        display: 'flex',
+        gap: 0,
+        alignItems: 'stretch',
+        background: '#ffffff',
+        borderRadius: 12,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)',
+        overflow: 'hidden',
+    },
 };
 
 export class RegisterPage extends React.Component<{}, IState> {
@@ -131,16 +144,25 @@ export class RegisterPage extends React.Component<{}, IState> {
         submitting: false,
         focusedField: null,
         orgNameManuallyEdited: false,
+        planInfo: null,
     };
 
     componentDidMount() {
         const params = new URLSearchParams(window.location.search);
+        const priceId = params.get('price_id');
+        const apiUrl = __SUPERDESK_CONFIG__.server.url;
 
-        if (params.get('price_id')) {
+        if (priceId) {
+            fetch(`${apiUrl}/billing/plan-info?price_id=${encodeURIComponent(priceId)}`)
+                .then((r) => r.ok ? r.json() : null)
+                .then((data) => {
+                    if (data) {
+                        this.setState({ planInfo: data });
+                    }
+                })
+                .catch(() => undefined);
             return;
         }
-
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
 
         fetch(`${apiUrl}/billing/config`)
             .then((r) => r.ok ? r.json() : null)
@@ -307,11 +329,14 @@ export class RegisterPage extends React.Component<{}, IState> {
             : styles.input;
     }
 
-    render() {
-        const { form, globalError, submitting } = this.state;
+    private renderForm() {
+        const { form, globalError, submitting, planInfo } = this.state;
+        const cardStyle = planInfo
+            ? { ...styles.card, boxShadow: 'none', borderRadius: 0, maxWidth: 'none', margin: 0 }
+            : styles.card;
 
         return (
-            <div style={styles.card}>
+            <div style={cardStyle}>
                 <img
                     src="/images/superdesk-logo.svg"
                     width="160"
@@ -419,5 +444,20 @@ export class RegisterPage extends React.Component<{}, IState> {
                 </div>
             </div>
         );
+    }
+
+    render() {
+        const { planInfo } = this.state;
+
+        if (planInfo) {
+            return (
+                <div style={styles.twoColumn}>
+                    <PlanInfoPanel planInfo={planInfo} />
+                    {this.renderForm()}
+                </div>
+            );
+        }
+
+        return this.renderForm();
     }
 }
