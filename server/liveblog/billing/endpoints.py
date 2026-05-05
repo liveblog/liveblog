@@ -118,6 +118,7 @@ def plan_info():
     return api_response(
         {
             "productName": product.get("name", ""),
+            "tagline": metadata.get("tagline", "Everything you need to go live. Simple, no overhead."),
             "description": product.get("description", ""),
             "marketingFeatures": product.get("marketing_features", []),
             "price": {

@@ -2,6 +2,7 @@ import React from 'react';
 
 export interface IPlanInfo {
     productName: string;
+    tagline: string;
     description: string;
     marketingFeatures: Array<{ name: string }>;
     price: {
@@ -19,9 +20,9 @@ export interface IPlanInfo {
 const styles: { [key: string]: React.CSSProperties } = {
     panel: {
         background: '#e0f5e7',
-        borderTopLeftRadius: 12,
-        borderBottomLeftRadius: 12,
-        padding: '36px 32px',
+        borderTopLeftRadius: 16,
+        borderBottomLeftRadius: 16,
+        padding: '40px 36px',
         display: 'flex',
         flexDirection: 'column' as const,
         justifyContent: 'space-between',
@@ -30,20 +31,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     badge: {
         display: 'inline-block',
         background: 'oklab(0.72 -0.150101 0.07981 / 0.15)',
-        color: '#1eb06c',
+        color: '#15803d',
         fontSize: 11,
         fontWeight: 600,
-        letterSpacing: '0.08em',
+        letterSpacing: '0.1em',
         padding: '5px 12px',
         borderRadius: 20,
         marginBottom: 24,
         textTransform: 'uppercase' as const,
     },
     tagline: {
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: 700,
         color: '#111827',
-        lineHeight: 1.25,
+        lineHeight: 1.35,
         marginBottom: 12,
     },
     subtitle: {
@@ -60,15 +61,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     featureItem: {
         display: 'flex',
-        alignItems: 'center',
-        gap: 10,
+        alignItems: 'flex-start',
+        gap: 12,
         padding: '7px 0',
         fontSize: 14,
-        color: '#374151',
+        color: 'rgba(17, 24, 39, 0.85)',
     },
     checkmark: {
         width: 20,
         height: 20,
+        marginTop: 2,
         borderRadius: '50%',
         background: '#1eb06c',
         display: 'flex',
@@ -82,7 +84,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     priceSection: {
         marginTop: 'auto',
-        paddingTop: 16,
+        paddingTop: 32,
     },
     priceAmount: {
         fontSize: 36,
@@ -90,13 +92,13 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#111827',
     },
     priceInterval: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 400,
-        color: '#6b7280',
+        color: 'rgba(17, 24, 39, 0.65)',
     },
     priceNote: {
-        fontSize: 13,
-        color: '#9ca3af',
+        fontSize: 12,
+        color: 'rgba(17, 24, 39, 0.6)',
         marginTop: 4,
     },
 };
@@ -122,7 +124,7 @@ function getPriceNote(price: IPlanInfo['price'], durationDays: string | null): s
         return 'Cancel anytime';
     }
     if (durationDays) {
-        return `${durationDays}-day access`;
+        return `${durationDays}-day access \u2014 extend anytime from your dashboard`;
     }
     return '';
 }
@@ -147,10 +149,10 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
             <div>
                 <span style={styles.badge}>{planInfo.productName}</span>
                 <div style={styles.tagline}>
-                    {planInfo.description || 'Everything you need to go live.'}
+                    {planInfo.tagline}
                 </div>
                 <div style={styles.subtitle}>
-                    Powerful tools for newsrooms and storytellers &mdash; included
+                    Powerful tools for newsrooms and storytellers, included
                     with your account.
                 </div>
                 {planInfo.marketingFeatures.length > 0 && (
@@ -162,7 +164,7 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                                         <path
                                             d="M2 6l3 3 5-5"
                                             stroke="#fff"
-                                            strokeWidth="2"
+                                            strokeWidth="3"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                         />

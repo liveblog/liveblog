@@ -44,8 +44,8 @@ const styles: {[key: string]: React.CSSProperties} = {
         marginRight: 'auto',
     },
     heading: {
-        fontSize: 22,
-        fontWeight: 600,
+        fontSize: 24,
+        fontWeight: 700,
         marginBottom: 6,
         color: '#111827',
         letterSpacing: '-0.3px',
@@ -67,10 +67,10 @@ const styles: {[key: string]: React.CSSProperties} = {
     },
     label: {
         display: 'block',
-        fontSize: 13,
-        fontWeight: 500,
+        fontSize: 14,
+        fontWeight: 600,
         marginBottom: 6,
-        color: '#374151',
+        color: '#111827',
     },
     input: {
         width: '100%',
@@ -85,8 +85,8 @@ const styles: {[key: string]: React.CSSProperties} = {
         boxSizing: 'border-box' as const,
     },
     inputFocused: {
-        border: '1.5px solid #a8d5bc',
-        boxShadow: '0 0 0 2px rgba(30, 176, 108, 0.06)',
+        border: '1.5px solid #1eb06c',
+        boxShadow: '0 0 0 2px rgba(30, 176, 108, 0.2)',
     },
     globalError: {
         background: '#fef2f2',
@@ -127,12 +127,12 @@ const styles: {[key: string]: React.CSSProperties} = {
         marginLeft: 4,
     },
     twoColumn: {
-        display: 'flex',
-        gap: 0,
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.95fr)',
         alignItems: 'stretch',
         background: '#ffffff',
-        borderRadius: 12,
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)',
+        borderRadius: 16,
+        boxShadow: '0 20px 60px -20px rgba(15, 23, 42, 0.15)',
         overflow: 'hidden',
     },
 };
