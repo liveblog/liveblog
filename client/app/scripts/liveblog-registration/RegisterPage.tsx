@@ -1,6 +1,15 @@
 import React from 'react';
 import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
 
+const getApiUrl = (): string => {
+    const runtimeConfig = (window as any).superdeskConfig;
+
+    if (runtimeConfig && runtimeConfig.server && runtimeConfig.server.url) {
+        return runtimeConfig.server.url;
+    }
+    return __SUPERDESK_CONFIG__.server.url;
+};
+
 interface IFormState {
     firstName: string;
     lastName: string;
@@ -150,7 +159,7 @@ export class RegisterPage extends React.Component<{}, IState> {
     componentDidMount() {
         const params = new URLSearchParams(window.location.search);
         const priceId = params.get('price_id');
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const apiUrl = getApiUrl();
 
         if (priceId) {
             fetch(`${apiUrl}/billing/plan-info?price_id=${encodeURIComponent(priceId)}`)
@@ -201,7 +210,7 @@ export class RegisterPage extends React.Component<{}, IState> {
     }
 
     private startSession = async(username: string, password: string) => {
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const apiUrl = getApiUrl();
         const authResponse = await fetch(`${apiUrl}/auth_db`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -295,7 +304,7 @@ export class RegisterPage extends React.Component<{}, IState> {
         }
 
         try {
-            const apiUrl = __SUPERDESK_CONFIG__.server.url;
+            const apiUrl = getApiUrl();
             const response = await fetch(`${apiUrl}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

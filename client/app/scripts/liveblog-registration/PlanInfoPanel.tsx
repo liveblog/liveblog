@@ -103,13 +103,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-function getCurrencySymbol(currency: string): string {
+const getCurrencySymbol = (currency: string): string => {
     const symbols: { [key: string]: string } = { usd: '$', eur: '\u20AC', gbp: '\u00A3' };
 
     return symbols[currency] || currency.toUpperCase() + ' ';
-}
+};
 
-function formatInterval(price: IPlanInfo['price']): string {
+const formatInterval = (price: IPlanInfo['price']): string => {
     if (!price.interval) {
         return '';
     }
@@ -117,9 +117,9 @@ function formatInterval(price: IPlanInfo['price']): string {
         return price.interval;
     }
     return `${price.intervalCount} ${price.interval}s`;
-}
+};
 
-function getPriceNote(price: IPlanInfo['price'], durationDays: string | null): string {
+const getPriceNote = (price: IPlanInfo['price'], durationDays: string | null): string => {
     if (price.interval) {
         return 'Cancel anytime';
     }
@@ -127,7 +127,7 @@ function getPriceNote(price: IPlanInfo['price'], durationDays: string | null): s
         return `${durationDays}-day access \u2014 extend anytime from your dashboard`;
     }
     return '';
-}
+};
 
 // eslint-disable-next-line react/no-multi-comp
 export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) => {
