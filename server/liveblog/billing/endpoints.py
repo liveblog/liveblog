@@ -121,6 +121,10 @@ def plan_info():
             "tagline": metadata.get(
                 "tagline", "Everything you need to go live. Simple, no overhead."
             ),
+            "subtitle": metadata.get(
+                "subtitle",
+                "Powerful tools for newsrooms and storytellers, included with your account.",
+            ),
             "description": product.get("description", ""),
             "marketingFeatures": product.get("marketing_features", []),
             "price": {

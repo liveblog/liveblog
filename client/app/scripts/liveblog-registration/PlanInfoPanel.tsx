@@ -3,6 +3,7 @@ import React from 'react';
 export interface IPlanInfo {
     productName: string;
     tagline: string;
+    subtitle: string;
     description: string;
     marketingFeatures: Array<{ name: string }>;
     price: {
@@ -152,8 +153,7 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                     {planInfo.tagline}
                 </div>
                 <div style={styles.subtitle}>
-                    Powerful tools for newsrooms and storytellers, included
-                    with your account.
+                    {planInfo.subtitle}
                 </div>
                 {planInfo.marketingFeatures.length > 0 && (
                     <ul style={styles.featureList}>
