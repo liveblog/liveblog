@@ -93,6 +93,7 @@ import 'liveblog-security.service';
 import 'liveblog-common/notify';
 
 import {EventNames} from './liveblog-common/constants';
+import {getApiUrl} from './liveblog-common/api-url';
 import 'liveblog-features.service';
 
 import {BillingBanner} from './liveblog-billing/BillingBanner';
@@ -254,7 +255,9 @@ liveblog.directive('sdManageSubscription', ['$http', 'config', function($http, c
     return {
         restrict: 'A',
         link: function(scope, element) {
-            $http.get(config.server.url + '/billing/status').then((resp) => {
+            const apiUrl = getApiUrl(config.server.url);
+
+            $http.get(apiUrl + '/billing/status').then((resp) => {
                 var status = resp.data;
 
                 if (!status.billing_required) {
@@ -262,7 +265,7 @@ liveblog.directive('sdManageSubscription', ['$http', 'config', function($http, c
                     return;
                 }
                 element.on('click', () => {
-                    $http.post(config.server.url + '/billing/portal', {
+                    $http.post(apiUrl + '/billing/portal', {
                         return_url: window.location.origin,
                     }).then((portalResp) => {
                         window.location.href = portalResp.data.url;
@@ -280,9 +283,11 @@ liveblog.directive('sdRegisterLink', ['$http', 'config', function($http, config)
     return {
         restrict: 'A',
         link: function(scope, element) {
+            const apiUrl = getApiUrl(config.server.url);
+
             element.attr('href', '/register.html');
 
-            $http.get(config.server.url + '/billing/config')
+            $http.get(apiUrl + '/billing/config')
                 .then((resp) => {
                     var cfg = resp.data;
 

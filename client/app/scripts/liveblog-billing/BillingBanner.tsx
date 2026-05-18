@@ -1,4 +1,5 @@
 import React from 'react';
+import { getApiUrl } from '../liveblog-common/api-url';
 
 interface IProps {
     onPortalError?: (message: string) => void;
@@ -22,7 +23,7 @@ export class BillingBanner extends React.Component<IProps, IState> {
     state: IState = { billingStatus: null };
 
     componentDidMount() {
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const apiUrl = getApiUrl();
         const token = localStorage.getItem('sess:token');
 
         if (!token) {
@@ -62,7 +63,7 @@ export class BillingBanner extends React.Component<IProps, IState> {
     }
 
     private handleAction = () => {
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const apiUrl = getApiUrl();
         const token = localStorage.getItem('sess:token');
         const { onPortalError } = this.props;
 
@@ -99,7 +100,7 @@ export class BillingBanner extends React.Component<IProps, IState> {
     }
 
     private handleExtend = () => {
-        const apiUrl = __SUPERDESK_CONFIG__.server.url;
+        const apiUrl = getApiUrl();
         const token = localStorage.getItem('sess:token');
         const { billingStatus } = this.state;
 

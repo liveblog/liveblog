@@ -1,14 +1,6 @@
 import React from 'react';
 import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
-
-const getApiUrl = (): string => {
-    const runtimeConfig = (window as any).superdeskConfig;
-
-    if (runtimeConfig && runtimeConfig.server && runtimeConfig.server.url) {
-        return runtimeConfig.server.url;
-    }
-    return __SUPERDESK_CONFIG__.server.url;
-};
+import { getApiUrl } from '../liveblog-common/api-url';
 
 interface IFormState {
     firstName: string;
