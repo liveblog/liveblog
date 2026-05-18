@@ -13,6 +13,8 @@ Usage:
         ...
 """
 
+import json
+
 from behave import given, when
 from bson.objectid import ObjectId
 
@@ -229,9 +231,6 @@ def step_create_multiple_tenants(context):
             context, tenant_name, subscription_level=subscription_level
         )
         tenant_list.append(tenant_data)
-
-    # Create all tenants in database
-    import json
 
     tenants_json = json.dumps(
         [
