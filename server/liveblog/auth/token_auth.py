@@ -83,6 +83,8 @@ def hydrate_request_context_from_token(token, method=None, touch_session=True):
     flask.g.role = user_service.get_role(user)
     flask.g.auth = auth_token
     flask.g.auth_value = auth_token["user"]
+    if hasattr(flask.g, "tenant_cached"):
+        del flask.g.tenant_cached
 
     if touch_session and method:
         _touch_auth_session(auth_service, auth_token, method)

@@ -1,4 +1,5 @@
 import logging
+import flask
 from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_LEVEL_NETWORK
 
 logger = logging.getLogger("liveblog")
@@ -60,6 +61,20 @@ class FeaturesService:
         from liveblog.tenancy import get_tenant
 
         tenant = get_tenant(required=False)
+
+        if not tenant and flask.has_request_context():
+            from liveblog.auth.token_auth import (
+                get_authenticated_user_from_context,
+                get_request_auth_token,
+                hydrate_request_context_from_token,
+            )
+
+            if not get_authenticated_user_from_context():
+                hydrate_request_context_from_token(
+                    get_request_auth_token(), touch_session=False
+                )
+                tenant = get_tenant(required=False)
+
         if tenant:
             return tenant.get("subscription_level", SUBSCRIPTION_LEVEL)
         return SUBSCRIPTION_LEVEL
