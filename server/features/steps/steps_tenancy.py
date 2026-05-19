@@ -109,9 +109,9 @@ def step_response_field_is_false(context, field_path):
 @then('response field "{field_path}" is {expected:d}')
 def step_response_field_is_int(context, field_path, expected):
     value, data = _get_response_field(context, field_path)
-    assert isinstance(value, int) and not isinstance(value, bool), (
-        f"Expected '{field_path}' to be an integer, got {value}: {data}"
-    )
+    assert isinstance(value, int) and not isinstance(
+        value, bool
+    ), f"Expected '{field_path}' to be an integer, got {value}: {data}"
     assert (
         value == expected
     ), f"Expected '{field_path}' to be {expected}, got {value}: {data}"
