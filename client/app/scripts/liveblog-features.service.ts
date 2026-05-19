@@ -1,30 +1,28 @@
 import { EventNames } from './liveblog-common/constants';
 
 interface ISettings {
-    authenticated?: boolean;
     features: { [key: string]: boolean };
     limits: { [key: string]: number };
     isNetworkSubscription: boolean;
 }
 
 class FeaturesService {
-    api: any;
     private settings: ISettings = null;
+    private config: any;
 
-    constructor(api) {
-        this.api = api;
+    constructor(config) {
+        this.config = config;
     }
 
-    async initialize(): Promise<boolean> {
+    async initialize(): Promise<void> {
         try {
-            return await this.loadSettings();
+            await this.loadSettings();
         } catch (error) {
             console.warn('There has been an error fetching instance settings');
-            return false;
         }
     }
 
-    clear(): void {
+    clear = () => {
         this.settings = null;
     }
 
@@ -32,15 +30,15 @@ class FeaturesService {
      * Gets the settings from cache or loads them if not already loaded.
      * @returns A promise that resolves to the settings object.
      */
-    private async loadSettings(): Promise<boolean> {
-        const settings = await this.api.get('/instance_settings/current');
+    private async loadSettings(): Promise<void> {
+        const token = localStorage.getItem('sess:token');
 
-        if (settings?.authenticated === false) {
-            return false;
-        }
+        const response = await fetch(
+            this.config.server.url + '/instance_settings/current',
+            { headers: { Authorization: token } }
+        );
 
-        this.settings = settings;
-        return true;
+        this.settings = response.ok ? await response.json() : null;
     }
 
     isNetworkSubscription = () => this.settings?.isNetworkSubscription ?? false;
@@ -92,27 +90,21 @@ class FeaturesService {
 }
 
 angular.module('liveblog.features', [])
-    .service('featuresService', [
-        'api',
-        '$rootScope',
-        '$timeout',
-        'session',
-        'SESSION_EVENTS',
-        (api, $rootScope, $timeout, session, SESSION_EVENTS) => {
-            const featuresService = new FeaturesService(api);
+    .service('featuresService', ['$rootScope', 'SESSION_EVENTS', 'config',
+        ($rootScope, SESSION_EVENTS, config) => {
+            const featuresService = new FeaturesService(config);
 
-            const initializeForSession = () => {
-                if (!session.token) {
-                    return;
-                }
+            $rootScope.$on(EventNames.InstanceSettingsUpdated, () => {
+                featuresService.initialize();
+            });
 
-                $timeout(() => featuresService.initialize());
-            };
+            $rootScope.$on(SESSION_EVENTS.LOGIN, async() => {
+                await featuresService.initialize();
+            });
 
-            $rootScope.$on(EventNames.InstanceSettingsUpdated, initializeForSession);
-            $rootScope.$on(SESSION_EVENTS.LOGIN, initializeForSession);
-            $rootScope.$on(SESSION_EVENTS.LOGOUT, () => featuresService.clear());
-            session.getIdentity().then(initializeForSession);
+            $rootScope.$on(SESSION_EVENTS.LOGOUT, featuresService.clear);
+
+            featuresService.initialize();
+
             return featuresService;
-        },
-    ]);
+        }]);
