@@ -1,3 +1,4 @@
+from superdesk.notification import push_notification
 from superdesk.users.services import DBUsersService
 from liveblog.tenancy.service import TenantAwareService
 
@@ -17,4 +18,6 @@ class LiveBlogUsersService(TenantAwareService, DBUsersService):
     - /api/liveblog_users → this service (public API, tenant-filtered)
     """
 
-    pass
+    def on_created(self, docs):
+        super().on_created(docs)
+        push_notification("users:created")

@@ -43,12 +43,47 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             $delegate[0].template = loginScreenTpl;
             return $delegate;
         }]);
+
+        // superdesk-core's usersService.save uses api.save('users', ...). The
+        // function form bypasses the apiProvider.api('users') override below
+        // and posts to /api/users, dropping tenant_id injection. Route through
+        // api.users (the property form), which honors rel: 'liveblog_users'.
+        // The 'users:created' websocket push from LiveBlogUsersService.on_created
+        // drives the list refresh — see the .run() listener below.
+        $provide.decorator('usersService', ['$delegate', 'api',
+            function($delegate, api) {
+                $delegate.save = (user, data) => api.users.save(user, data);
+                return $delegate;
+            }]);
+    }])
+    .run(['$rootScope', '$location', function($rootScope, $location) {
+        // Refetch the user list with the controller's current criteria so the
+        // active filter (e.g. "All", "Pending") is preserved. UserListController
+        // doesn't expose fetchUsers, but afterDelete() reuses it internally.
+        // Event arrives via websocket push_notification from the backend
+        // (LiveBlogUsersService.on_created).
+        $rootScope.$on('users:created', () => {
+            if ($location.path() !== '/users/') {
+                return;
+            }
+            const listEl = document.querySelector('section.main-section.users');
+
+            if (!listEl) {
+                return;
+            }
+            const scope = angular.element(listEl).scope();
+
+            if (scope && typeof scope.afterDelete === 'function') {
+                scope.afterDelete({});
+            }
+        });
     }])
     .config(['apiProvider', function(apiProvider) {
-        // Override superdesk-core's 'users' endpoint so every api('users') call
-        // in the UI (user list, user edit, profile) hits the tenant-isolated
-        // liveblog_users backend instead of the system-wide /users endpoint.
-        // See ARCHITECTURAL_CONCERNS.md #7 for the long-term replacement plan.
+        // Bind the 'users' resource alias to the tenant-isolated
+        // liveblog_users backend. NOTE: this only redirects the property-form
+        // api.users.* — the function-form api(...)/api.save('users', ...) still
+        // resolves to /api/users, so callers must use api.users explicitly or
+        // be patched via a $provide.decorator (see usersService above).
         apiProvider.api('users', {
             type: 'http',
             backend: {rel: 'liveblog_users'},
