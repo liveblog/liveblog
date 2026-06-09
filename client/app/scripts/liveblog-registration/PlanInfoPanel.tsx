@@ -146,7 +146,7 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
     const note = getPriceNote(planInfo.price, durationDays);
 
     return (
-        <div style={styles.panel}>
+        <div className="register-plan-panel" style={styles.panel}>
             <div>
                 <span style={styles.badge}>{planInfo.productName}</span>
                 <div style={styles.tagline}>
@@ -156,7 +156,7 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                     {planInfo.subtitle}
                 </div>
                 {planInfo.marketingFeatures.length > 0 && (
-                    <ul style={styles.featureList}>
+                    <ul className="register-plan-features" style={styles.featureList}>
                         {planInfo.marketingFeatures.map((f, i) => (
                             <li key={i} style={styles.featureItem}>
                                 <span style={styles.checkmark}>
@@ -176,7 +176,7 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                     </ul>
                 )}
             </div>
-            <div style={styles.priceSection}>
+            <div className="register-plan-price-section" style={styles.priceSection}>
                 <div>
                     <span style={styles.priceAmount}>{symbol}{amount}</span>
                     <span style={styles.priceInterval}> / {interval}</span>

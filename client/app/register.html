@@ -24,6 +24,41 @@
         max-width: 900px;
       }
 
+      @media (max-width: 768px) {
+        body {
+          padding: 16px;
+          align-items: flex-start;
+        }
+
+        .register-two-column {
+          grid-template-columns: 1fr !important;
+        }
+
+        .register-plan-panel {
+          border-top-left-radius: 16px !important;
+          border-top-right-radius: 16px !important;
+          border-bottom-left-radius: 0 !important;
+          padding: 28px 24px !important;
+          min-height: 0 !important;
+        }
+
+        .register-plan-panel .register-plan-features {
+          margin-bottom: 20px !important;
+        }
+
+        .register-plan-panel .register-plan-price-section {
+          padding-top: 16px !important;
+        }
+
+        .register-card {
+          padding: 28px 24px !important;
+        }
+
+        .register-name-row {
+          flex-direction: column !important;
+          gap: 0 !important;
+        }
+      }
     </style>
   </head>
   <body>

@@ -337,7 +337,7 @@ export class RegisterPage extends React.Component<{}, IState> {
             : styles.card;
 
         return (
-            <div style={cardStyle}>
+            <div className="register-card" style={cardStyle}>
                 <img
                     src="/images/superdesk-logo.svg"
                     width="160"
@@ -355,7 +355,7 @@ export class RegisterPage extends React.Component<{}, IState> {
                         <div style={styles.globalError}>{globalError}</div>
                     )}
 
-                    <div style={styles.row}>
+                    <div className="register-name-row" style={styles.row}>
                         {(['firstName', 'lastName'] as const).map((name) => (
                             <div key={name} style={styles.field}>
                                 <label style={styles.label} htmlFor={name}>
@@ -452,7 +452,7 @@ export class RegisterPage extends React.Component<{}, IState> {
 
         if (planInfo) {
             return (
-                <div style={styles.twoColumn}>
+                <div className="register-two-column" style={styles.twoColumn}>
                     <PlanInfoPanel planInfo={planInfo} />
                     {this.renderForm()}
                 </div>
