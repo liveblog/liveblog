@@ -2,11 +2,10 @@ import logging
 
 from bson import ObjectId
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
-from flask import current_app as app
 from flask import Blueprint
+from liveblog.tenancy.service import TenantAwareService
 from flask_cors import CORS
 from liveblog.utils.api import api_response
 
@@ -25,7 +24,8 @@ consumers_blueprint = Blueprint("consumers", __name__)
 CORS(consumers_blueprint)
 
 consumers_schema = {
-    "name": {"type": "string", "unique": True},
+    "tenant_id": Resource.rel("tenants"),
+    "name": {"type": "string"},
     "contacts": {
         "type": "list",
         "schema": {
@@ -46,7 +46,6 @@ consumers_schema = {
     "webhook_url": {
         "type": "string",
         "required": True,
-        "uniqueurl": True,
         "httpsurl": {"key_field": None, "check_auth": False, "webhook": True},
     },
     "webhook_enabled": {"type": "boolean", "default": False, "required": False},
@@ -56,12 +55,8 @@ consumers_schema = {
 }
 
 
-class ConsumerService(BaseService):
+class ConsumerService(TenantAwareService):
     notification_key = "consumers"
-
-    def _cursor(self, resource=None):
-        resource = resource or self.datasource
-        return app.data.mongo.pymongo(resource=resource).db[resource]
 
     def _get_consumer(self, consumer):
         if isinstance(consumer, (str, ObjectId)):
@@ -195,6 +190,17 @@ class ConsumerResource(Resource):
         "source": "consumers",
         "search_backend": None,
         "default_sort": [("_updated", -1)],
+    }
+
+    mongo_indexes = {
+        "consumer_name_tenant_unique": (
+            [("name", 1), ("tenant_id", 1)],
+            {"unique": True},
+        ),
+        "consumer_webhook_url_tenant_unique": (
+            [("webhook_url", 1), ("tenant_id", 1)],
+            {"unique": True},
+        ),
     }
 
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]

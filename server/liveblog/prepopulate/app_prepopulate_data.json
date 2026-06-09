@@ -9,7 +9,8 @@
         "password": "admin",
         "user_type": "administrator",
         "email": "a@a.com",
-	    "sign_off": "abc"
+	    "sign_off": "abc",
+        "tenant_id": "-id default-tenant-"
     }
 },
 {

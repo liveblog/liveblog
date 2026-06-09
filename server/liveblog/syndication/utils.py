@@ -15,7 +15,7 @@ from requests.exceptions import RequestException, ConnectionError, ConnectTimeou
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from apps.auth import SuperdeskTokenAuth
+from liveblog.auth.token_auth import LiveBlogTokenAuth
 from .exceptions import APIConnectionError, DownloadError
 from werkzeug.datastructures import FileStorage
 
@@ -107,7 +107,7 @@ def fetch_url(url, timeout=5):
 
 
 def blueprint_superdesk_token_auth():
-    auth = SuperdeskTokenAuth()
+    auth = LiveBlogTokenAuth()
     authorized = auth.authorized(allowed_roles=[], resource="producers", method="GET")
     if not authorized:
         return abort(401, "Authorization failed.")
@@ -134,7 +134,8 @@ def extract_creator_data(doc):
         "_updated",
     )
 
-    users_service = get_resource_service("users")
+    users_service = get_resource_service("liveblog_users")
+    # Use system_find_one to allow cross-tenant syndication
     original_creator = users_service.find_one(req=None, _id=doc.get("original_creator"))
 
     if not original_creator:

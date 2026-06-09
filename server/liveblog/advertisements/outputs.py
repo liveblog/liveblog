@@ -8,14 +8,15 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from liveblog.blogs.tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3
+from liveblog.tenancy.service import TenantAwareService
 from superdesk import get_resource_service
 
 
 class OutputsResource(Resource):
     schema = {
         "name": {"type": "string", "required": True},
+        "tenant_id": Resource.rel("tenants"),
         "collection": Resource.rel("collections", True),
         "blog": Resource.rel("blogs"),
         "theme": {"type": "string", "nullable": True},
@@ -58,7 +59,7 @@ class OutputsResource(Resource):
     }
 
 
-class OutputsService(BaseService):
+class OutputsService(TenantAwareService):
     def on_created(self, outputs):
         for output in outputs:
             if output.get("blog"):

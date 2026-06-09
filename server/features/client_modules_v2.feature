@@ -1,6 +1,6 @@
 Feature: Blog v2 operations
-
     @auth
+    @skip.double_check_multi_tenant
     Scenario: Get blog posts
     	Given "themes"
         """

@@ -2,23 +2,20 @@ Feature: Syndication Blog Posts Resource
 
     @auth
     Scenario: List blog posts
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        Given "blogs"
+        Given system themes
+        Given tenant aware "blogs"
         """
         [
             {
                 "title": "testBlog",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"},
+                "blog_preferences": {"theme": "classic", "language": "fr"},
                 "members": [{"user": "#CONTEXT_USER_ID#"}]
             }
         ]
         """
-        Given "items"
+        Given tenant aware "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """

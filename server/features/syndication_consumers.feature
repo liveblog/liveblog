@@ -2,7 +2,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Create a consumer
-        Given empty "consumers"
+        Given empty tenant aware "consumers"
         When we post to "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
@@ -15,7 +15,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Check if webhook_url is unique
-        Given empty "consumers"
+        Given empty tenant aware "consumers"
         When we post to "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
@@ -25,21 +25,21 @@ Feature: Consumer Resource
         """
         [{"name": "Consumer 2", "webhook_url": "http://localhost:5000/api/syndication/webhook", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """
-        Then we get response code 400
+        Then we get response code 409
         When we post to "consumers"
         """
         [{"name": "Consumer 3", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """
-        Then we get response code 400
+        Then we get response code 409
 
 
     @auth
     Scenario: List consumers
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [
             {"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]},
-            {"name": "Consumer 2", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Boo", "last_name": "Baz", "email": "boo@baz.tld", "phone": "+49987654321"}]}
+            {"name": "Consumer 2", "webhook_url": "http://localhost:5001/api/syndication/webhook/", "contacts": [{"first_name": "Boo", "last_name": "Baz", "email": "boo@baz.tld", "phone": "+49987654321"}]}
         ]
         """
         When we get "/consumers"
@@ -51,7 +51,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Update consumer
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """
@@ -64,7 +64,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Update consumer with unsecure url
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """
@@ -77,7 +77,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Update consumer with invalid url
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """
@@ -90,7 +90,7 @@ Feature: Consumer Resource
 
     @auth
     Scenario: Delete consumer
-        Given "consumers"
+        Given tenant aware "consumers"
         """
         [{"name": "Consumer 1", "webhook_url": "http://localhost:5000/api/syndication/webhook/", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
         """

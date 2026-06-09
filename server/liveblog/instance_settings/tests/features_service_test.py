@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import MagicMock
+from flask import Flask
+from unittest.mock import MagicMock, patch
 from ..features_service import FeaturesService
 
 
@@ -61,6 +62,35 @@ def test_get_settings_when_already_loaded(service):
 
     service._settings = {"features": {"feature_x": True}}
     assert service.get_settings() == {"features": {"feature_x": True}}
+
+
+def test_current_sub_level_uses_tenant_subscription_level(service):
+    """Tenant subscription_level takes precedence over the global setting."""
+
+    with patch("liveblog.tenancy.get_tenant") as get_tenant:
+        get_tenant.return_value = {"subscription_level": "team"}
+
+        assert service.current_sub_level() == "team"
+
+
+def test_current_sub_level_hydrates_request_context_before_fallback(service):
+    """Custom Flask routes can resolve tenant level from the auth token."""
+
+    flask_app = Flask(__name__)
+    with flask_app.test_request_context(headers={"Authorization": "Bearer token-1"}):
+        with patch("liveblog.tenancy.get_tenant") as get_tenant, patch(
+            "liveblog.auth.token_auth.get_authenticated_user_from_context"
+        ) as get_user, patch(
+            "liveblog.auth.token_auth.get_request_auth_token"
+        ) as get_token, patch(
+            "liveblog.auth.token_auth.hydrate_request_context_from_token"
+        ) as hydrate:
+            get_tenant.side_effect = [None, {"subscription_level": "team"}]
+            get_user.return_value = None
+            get_token.return_value = "token-1"
+
+            assert service.current_sub_level() == "team"
+            hydrate.assert_called_once_with("token-1", touch_session=False)
 
 
 def test_is_enabled_with_network_subscription_level(service):

@@ -1,5 +1,5 @@
 import superdesk
-from .blogs import BlogService, BlogsResource, UserBlogsResource, UserBlogsService
+from .blogs import BlogService, BlogsResource
 from .blogslist import (
     BlogsListService,
     BlogsListResource,
@@ -18,8 +18,6 @@ from .commands import PublishBlogsCommand, PublishBloglistCommand
 __all__ = [
     "BlogService",
     "BlogsResource",
-    "UserBlogsResource",
-    "UserBlogsService",
     "BlogsListService",
     "BlogsListResource",
     "bloglist_blueprint",
@@ -43,10 +41,6 @@ def init_app(app):
     endpoint_name = "blogslist"
     service = BlogsListService(endpoint_name, backend=superdesk.get_backend())
     BlogsListResource(endpoint_name, app=app, service=service)
-
-    endpoint_name = "user_blogs"
-    service = UserBlogsService(endpoint_name, backend=superdesk.get_backend())
-    UserBlogsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = "request_membership"
     service = MembershipService(endpoint_name, backend=superdesk.get_backend())

@@ -12,7 +12,7 @@ from superdesk import get_resource_service
 
 def get_advertisements_list(output):
     """
-    Tries to extract the ads collection from a given output. If not collection
+    Tries to extract the ads collection from a given output. If no collection
     is found it will return an empty list
 
     :param context: output `dict` comming from DB query using find_one method
