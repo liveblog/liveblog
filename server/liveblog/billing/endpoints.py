@@ -248,6 +248,7 @@ def create_checkout_session():
             "line_items": [{"price": price_id, "quantity": 1}],
             "success_url": return_url,
             "cancel_url": return_url,
+            "allow_promotion_codes": True,
         }
         if is_one_time:
             session_params["invoice_creation"] = {"enabled": True}
