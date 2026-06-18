@@ -102,6 +102,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: 'rgba(17, 24, 39, 0.6)',
         marginTop: 4,
     },
+    pricingLink: {
+        color: '#2563eb',
+        textDecoration: 'none',
+    },
 };
 
 const getCurrencySymbol = (currency: string): string => {
@@ -184,6 +188,9 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                 {note && (
                     <div style={styles.priceNote}>{note}</div>
                 )}
+                <div style={styles.priceNote}>
+                    See other <a href="https://liveblog.pro/en/pricing/" style={styles.pricingLink}>pricing plans</a>
+                </div>
             </div>
         </div>
     );
