@@ -189,7 +189,14 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                     <div style={styles.priceNote}>{note}</div>
                 )}
                 <div style={styles.priceNote}>
-                    See other <a href="https://liveblog.pro/en/pricing/" target="_blank" rel="noopener noreferrer" style={styles.pricingLink}>pricing plans</a>
+                    See other <a
+                        href="https://liveblog.pro/en/pricing/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.pricingLink}
+                    >
+                        pricing plans
+                    </a>
                 </div>
             </div>
         </div>
