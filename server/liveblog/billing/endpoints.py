@@ -108,8 +108,15 @@ def plan_info():
     if not isinstance(product, dict):
         return api_error("Unable to resolve product", 400)
 
-    metadata = product.get("metadata", {})
-    level = metadata.get("subscription_level")
+    product_metadata = product.get("metadata", {})
+    price_metadata = price.get("metadata", {})
+    discount_original = product_metadata.get("original_amount") or price_metadata.get(
+        "original_amount"
+    )
+    discount_ends = product_metadata.get("offer_ends_at") or price_metadata.get(
+        "offer_ends_at"
+    )
+    level = product_metadata.get("subscription_level")
     if not level or level not in service.VALID_LEVELS:
         return api_error("Invalid plan", 400)
 
@@ -118,10 +125,10 @@ def plan_info():
     return api_response(
         {
             "productName": product.get("name", ""),
-            "tagline": metadata.get(
+            "tagline": product_metadata.get(
                 "tagline", "Everything you need to go live. Simple, no overhead."
             ),
-            "subtitle": metadata.get(
+            "subtitle": product_metadata.get(
                 "subtitle",
                 "Powerful tools for newsrooms and storytellers, included with your account.",
             ),
@@ -135,7 +142,13 @@ def plan_info():
             },
             "metadata": {
                 "subscriptionLevel": level,
-                "planDurationDays": metadata.get("plan_duration_days"),
+                "planDurationDays": product_metadata.get("plan_duration_days"),
+            },
+            "discount": {
+                "originalAmount": (int(discount_original) / 100)
+                if discount_original
+                else None,
+                "offerEndsAt": discount_ends,
             },
         },
         200,

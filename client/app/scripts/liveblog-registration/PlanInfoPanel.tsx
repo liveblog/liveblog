@@ -12,6 +12,10 @@ export interface IPlanInfo {
         interval: string | null;
         intervalCount: number | null;
     };
+    discount?: {
+        originalAmount: number | null;
+        offerEndsAt: string | null;
+    };
     metadata: {
         subscriptionLevel: string;
         planDurationDays: string | null;
@@ -106,6 +110,35 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#2563eb',
         textDecoration: 'none',
     },
+    saveBadge: {
+        display: 'inline-block',
+        background: '#1eb06c',
+        color: '#fff',
+        fontSize: 11,
+        fontWeight: 700,
+        letterSpacing: '0.04em',
+        padding: '4px 12px',
+        borderRadius: 20,
+        marginTop: 8,
+    },
+    originalPriceRow: {
+        fontSize: 16,
+        color: 'rgba(17, 24, 39, 0.4)',
+        textDecoration: 'line-through',
+        marginBottom: 2,
+    },
+    discountOfferText: {
+        fontSize: 12,
+        color: '#b91c1c',
+        fontWeight: 500,
+        marginTop: 4,
+    },
+    priceRow: {
+        display: 'flex',
+        alignItems: 'baseline',
+        flexWrap: 'wrap' as const,
+        gap: 4,
+    },
 };
 
 const getCurrencySymbol = (currency: string): string => {
@@ -124,6 +157,16 @@ const formatInterval = (price: IPlanInfo['price']): string => {
     return `${price.intervalCount} ${price.interval}s`;
 };
 
+const getInterval = (price: IPlanInfo['price'], durationDays: string | null): string => {
+    if (price.interval) {
+        return formatInterval(price);
+    }
+    if (durationDays) {
+        return `${durationDays} days`;
+    }
+    return 'one-time';
+};
+
 const getPriceNote = (price: IPlanInfo['price'], durationDays: string | null): string => {
     if (price.interval) {
         return 'Cancel anytime';
@@ -140,14 +183,18 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
     const symbol = getCurrencySymbol(planInfo.price.currency);
     const amount = Number.isInteger(planInfo.price.amount)
         ? planInfo.price.amount : planInfo.price.amount.toFixed(2);
-    let interval = 'one-time';
-
-    if (planInfo.price.interval) {
-        interval = formatInterval(planInfo.price);
-    } else if (durationDays) {
-        interval = `${durationDays} days`;
-    }
+    const interval = getInterval(planInfo.price, durationDays);
     const note = getPriceNote(planInfo.price, durationDays);
+
+    const { discount } = planInfo;
+    const hasDiscount = discount && discount.originalAmount != null && discount.originalAmount > 0;
+    const savePercent = hasDiscount
+        ? Math.round((1 - planInfo.price.amount / discount!.originalAmount!) * 100)
+        : 0;
+    const origSymbol = getCurrencySymbol(planInfo.price.currency);
+    const origAmount = hasDiscount && Number.isInteger(discount!.originalAmount)
+        ? discount!.originalAmount : (discount!.originalAmount || 0).toFixed(2);
+    const origInterval = getInterval(planInfo.price, durationDays);
 
     return (
         <div className="register-plan-panel" style={styles.panel}>
@@ -181,10 +228,23 @@ export const PlanInfoPanel: React.FC<{ planInfo: IPlanInfo }> = ({ planInfo }) =
                 )}
             </div>
             <div className="register-plan-price-section" style={styles.priceSection}>
-                <div>
+                {hasDiscount && (
+                    <div style={styles.originalPriceRow}>
+                        {origSymbol}{origAmount} / {origInterval}
+                    </div>
+                )}
+                <div style={styles.priceRow}>
                     <span style={styles.priceAmount}>{symbol}{amount}</span>
                     <span style={styles.priceInterval}> / {interval}</span>
                 </div>
+                {hasDiscount && (
+                    <div style={styles.saveBadge}>{savePercent}% OFF</div>
+                )}
+                {hasDiscount && discount!.offerEndsAt && (
+                    <div style={styles.discountOfferText}>
+                        Limited-time offer: ends {discount!.offerEndsAt}
+                    </div>
+                )}
                 {note && (
                     <div style={styles.priceNote}>{note}</div>
                 )}
