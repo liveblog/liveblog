@@ -42,9 +42,7 @@ def _billing_auth():
     user = get_authenticated_user_from_context()
     if not user:
         user = hydrate_request_context_from_token(
-            get_request_auth_token(),
-            method=request.method,
-            touch_session=True,
+            get_request_auth_token(), method=request.method, touch_session=True,
         )
 
     if not user:
@@ -65,8 +63,7 @@ def _get_tenant_for_request():
 
     user = flask.g.get("user", {})
     customer_id, error = service.ensure_stripe_customer(
-        tenant,
-        user_email=user.get("email", ""),
+        tenant, user_email=user.get("email", ""),
     )
     if error:
         return None, api_error(error, 500)
@@ -108,8 +105,15 @@ def plan_info():
     if not isinstance(product, dict):
         return api_error("Unable to resolve product", 400)
 
-    metadata = product.get("metadata", {})
-    level = metadata.get("subscription_level")
+    product_metadata = product.get("metadata", {})
+    price_metadata = price.get("metadata", {})
+    discount_original = product_metadata.get("original_amount") or price_metadata.get(
+        "original_amount"
+    )
+    discount_ends = product_metadata.get("offer_ends_at") or price_metadata.get(
+        "offer_ends_at"
+    )
+    level = product_metadata.get("subscription_level")
     if not level or level not in service.VALID_LEVELS:
         return api_error("Invalid plan", 400)
 
@@ -118,10 +122,10 @@ def plan_info():
     return api_response(
         {
             "productName": product.get("name", ""),
-            "tagline": metadata.get(
+            "tagline": product_metadata.get(
                 "tagline", "Everything you need to go live. Simple, no overhead."
             ),
-            "subtitle": metadata.get(
+            "subtitle": product_metadata.get(
                 "subtitle",
                 "Powerful tools for newsrooms and storytellers, included with your account.",
             ),
@@ -135,7 +139,13 @@ def plan_info():
             },
             "metadata": {
                 "subscriptionLevel": level,
-                "planDurationDays": metadata.get("plan_duration_days"),
+                "planDurationDays": product_metadata.get("plan_duration_days"),
+            },
+            "discount": {
+                "originalAmount": (int(discount_original) / 100)
+                if discount_original
+                else None,
+                "offerEndsAt": discount_ends,
             },
         },
         200,
@@ -281,8 +291,7 @@ def create_portal_session():
     stripe.api_key = stripe_key
     try:
         session = stripe.billing_portal.Session.create(
-            customer=tenant["stripe_customer_id"],
-            return_url=return_url,
+            customer=tenant["stripe_customer_id"], return_url=return_url,
         )
         return api_response({"url": session.url}, 200)
     except stripe.error.StripeError as e:
@@ -316,12 +325,7 @@ def create_customer_session():
         )
         data = json.loads(resp.body)
 
-        return api_response(
-            {
-                "client_secret": data["client_secret"],
-            },
-            200,
-        )
+        return api_response({"client_secret": data["client_secret"],}, 200,)
     except stripe.error.StripeError as e:
         logger.error("Customer session error: %s", e)
         return api_error("Unable to create customer session", 500)
