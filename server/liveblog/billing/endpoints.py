@@ -42,7 +42,9 @@ def _billing_auth():
     user = get_authenticated_user_from_context()
     if not user:
         user = hydrate_request_context_from_token(
-            get_request_auth_token(), method=request.method, touch_session=True,
+            get_request_auth_token(),
+            method=request.method,
+            touch_session=True,
         )
 
     if not user:
@@ -63,7 +65,8 @@ def _get_tenant_for_request():
 
     user = flask.g.get("user", {})
     customer_id, error = service.ensure_stripe_customer(
-        tenant, user_email=user.get("email", ""),
+        tenant,
+        user_email=user.get("email", ""),
     )
     if error:
         return None, api_error(error, 500)
@@ -291,7 +294,8 @@ def create_portal_session():
     stripe.api_key = stripe_key
     try:
         session = stripe.billing_portal.Session.create(
-            customer=tenant["stripe_customer_id"], return_url=return_url,
+            customer=tenant["stripe_customer_id"],
+            return_url=return_url,
         )
         return api_response({"url": session.url}, 200)
     except stripe.error.StripeError as e:
@@ -325,7 +329,12 @@ def create_customer_session():
         )
         data = json.loads(resp.body)
 
-        return api_response({"client_secret": data["client_secret"],}, 200,)
+        return api_response(
+            {
+                "client_secret": data["client_secret"],
+            },
+            200,
+        )
     except stripe.error.StripeError as e:
         logger.error("Customer session error: %s", e)
         return api_error("Unable to create customer session", 500)
