@@ -46,6 +46,14 @@
         "id_name": "-id admin-"
     },
     {
+        "resource": "tenants",
+        "id_name": "-id support-tenant-",
+        "data": {
+            "name": "Support Internal",
+            "subscription_level": "network"
+        }
+    },
+    {
         "resource": "users",
         "data": {
             "username": "support",
@@ -56,7 +64,8 @@
             "email": "support@other.com",
             "sign_off": "sts",
             "needs_activation": false,
-            "is_support": true
+            "is_support": true,
+            "tenant_id": "-id support-tenant-"
         }
     },
     {
