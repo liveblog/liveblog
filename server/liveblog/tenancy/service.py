@@ -219,7 +219,8 @@ class TenantAwareService(BaseService):
             docs (list): List of documents to be created
 
         Note:
-            During HTTP requests with authenticated users, tenant_id is required.
+            During HTTP requests with authenticated users, tenant_id is required
+            and enforced: a client-supplied tenant_id is never trusted.
             During system operations (no request context or no user), documents
             are created as-is (useful for migrations, data imports, Celery tasks).
         """
@@ -237,8 +238,9 @@ class TenantAwareService(BaseService):
                 tenant_id = ObjectId(tenant_id)
 
             for doc in docs:
-                if "tenant_id" not in doc:
-                    doc["tenant_id"] = tenant_id
+                # Always stamp the caller's tenant, overriding any
+                # client-supplied value (cross-tenant creation spoof)
+                doc["tenant_id"] = tenant_id
 
         super().on_create(docs)
 
@@ -352,8 +354,9 @@ class TenantAwareArchiveService(ArchiveService):
                 tenant_id = ObjectId(tenant_id)
 
             for doc in docs:
-                if "tenant_id" not in doc:
-                    doc["tenant_id"] = tenant_id
+                # Always stamp the caller's tenant, overriding any
+                # client-supplied value (cross-tenant creation spoof)
+                doc["tenant_id"] = tenant_id
 
         super().on_create(docs)
 
