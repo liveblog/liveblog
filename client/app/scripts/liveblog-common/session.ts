@@ -34,8 +34,6 @@ export const formatToken = (token: string): string =>
 
 export const getToken = (): string | null => localStorage.getItem(SESSION_TOKEN_KEY);
 
-export const getAuthHeader = (): { Authorization: string } => ({ Authorization: getToken() });
-
 export const getSessionId = (): string | null => localStorage.getItem(SESSION_ID_KEY);
 
 export const getIdentity = (): any | null => {

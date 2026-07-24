@@ -380,7 +380,7 @@ def impersonate_stop():
     if not session.get("impersonated_by"):
         return api_error("Current session is not an impersonation session", 400)
 
-    get_resource_service("auth").delete_action({"_id": str(session["_id"])})
+    get_resource_service("auth").delete_action({"_id": session["_id"]})
 
     logger.info(
         "Impersonation stopped: user %s (%s), session %s created by support user %s",
