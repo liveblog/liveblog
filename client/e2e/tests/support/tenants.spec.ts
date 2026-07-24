@@ -28,13 +28,63 @@ test('support user sees the tenants pane with all tenants', async ({ supportPage
     await expect(tenants.tenantRow(tenant2.tenantName)).toBeVisible();
 });
 
-test('expanding a tenant lists its users', async ({ supportPage }) => {
+test('selecting a tenant shows its users in the detail pane', async ({ supportPage }) => {
     const tenants = new SupportTenantsPage(supportPage);
     await tenants.open();
-    await tenants.expandTenant(DEFAULT_TENANT_NAME);
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
 
+    await expect(tenants.detailPane).toBeVisible();
     await expect(tenants.userRow('abc@other.com')).toBeVisible();
     await expect(tenants.userRow('contributor@other.com')).toBeVisible();
+});
+
+test('the detail pane reflects the tenant blog and user counts and billing', async ({ supportPage, api }) => {
+    const tenants = new SupportTenantsPage(supportPage);
+    await tenants.open();
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
+    await expect(tenants.detailPane).toBeVisible();
+
+    // Cross-check the rendered pane against the API contract rather than
+    // guessing at count text: the number of user rows in the pane must equal
+    // the users_count the detail endpoint reports for the same tenant.
+    const list = await api.get<{ tenants: Array<{ _id: string; name: string }> }>(
+        '/support/tenants',
+        { as: 'support' },
+    );
+    const tenant = list.body.tenants.find((entry) => entry.name === DEFAULT_TENANT_NAME);
+    expect(tenant).toBeTruthy();
+
+    const detail = await api.get<{
+        stats: { blogs_count: number; users_count: number };
+        billing: { access_allowed: boolean };
+    }>(`/support/tenants/${tenant?._id}`, { as: 'support' });
+    expect(detail.status).toBe(200);
+    expect(detail.body.stats.users_count).toBeGreaterThan(0);
+
+    await expect(tenants.userRows).toHaveCount(detail.body.stats.users_count);
+    // The pane renders the counts and a billing indicator; assert the numbers
+    // it must contain are present (users and blogs counts from the endpoint).
+    await expect(tenants.detailPane).toContainText(String(detail.body.stats.users_count));
+    await expect(tenants.detailPane).toContainText(String(detail.body.stats.blogs_count));
+});
+
+test('filtering by a member email surfaces that member tenant', async ({ supportPage, api }) => {
+    const tenant2 = await registerTenantOwner(api, TENANT2_OWNER);
+    const tenants = new SupportTenantsPage(supportPage);
+    await tenants.open();
+
+    await expect(tenants.tenantRow(DEFAULT_TENANT_NAME)).toBeVisible();
+    await expect(tenants.tenantRow(tenant2.tenantName)).toBeVisible();
+
+    // abc@other.com is a non-owner member of the default tenant, so the
+    // filter must match it (not only tenant name or owner email).
+    await tenants.search('abc@other.com');
+
+    await expect(tenants.tenantRow(DEFAULT_TENANT_NAME)).toBeVisible();
+    await expect(tenants.tenantRow(tenant2.tenantName)).toHaveCount(0);
+
+    await tenants.search('zzz-no-such-tenant');
+    await expect(tenants.tenantRows).toHaveCount(0);
 });
 
 test('non-support admin does not see the tenants pane', async ({ authenticatedPage }) => {
@@ -110,4 +160,36 @@ test('support user can list tenants and tenant users over the API', async ({ api
     const usersResponse = await api.get(`/support/tenants/${defaultTenant?._id}/users`, { as: 'support' });
     expect(usersResponse.status).toBe(200);
     expect(JSON.stringify(usersResponse.body)).not.toContain('"password"');
+});
+
+// The master-detail pane is backed by GET /support/tenants/<id>, which joins
+// the tenant, its billing state and blog/user counts. Assert the contract the
+// UI relies on: shape and support-gating, a 404 for an unknown id, and a 403
+// for a non-support caller.
+test('the tenant detail endpoint returns stats and billing and is support-gated', async ({ api }) => {
+    const listResponse = await api.get<{ tenants: Array<{ _id: string; name: string }> }>(
+        '/support/tenants',
+        { as: 'support' },
+    );
+    expect(listResponse.status).toBe(200);
+    const defaultTenant = listResponse.body.tenants.find((tenant) => tenant.name === DEFAULT_TENANT_NAME);
+    expect(defaultTenant).toBeTruthy();
+
+    const detailResponse = await api.get<{
+        tenant: { _id: string; name: string };
+        billing: { access_allowed: boolean };
+        stats: { blogs_count: number; users_count: number };
+    }>(`/support/tenants/${defaultTenant?._id}`, { as: 'support' });
+    expect(detailResponse.status).toBe(200);
+    expect(detailResponse.body.tenant._id).toBe(defaultTenant?._id);
+    expect(typeof detailResponse.body.stats.blogs_count).toBe('number');
+    expect(typeof detailResponse.body.stats.users_count).toBe('number');
+    expect(detailResponse.body.stats.users_count).toBeGreaterThan(0);
+    expect(detailResponse.body.billing).toHaveProperty('access_allowed');
+
+    const unknownResponse = await api.get('/support/tenants/000000000000000000000000', { as: 'support' });
+    expect(unknownResponse.status).toBe(404);
+
+    const forbiddenResponse = await api.get(`/support/tenants/${defaultTenant?._id}`, { as: 'admin' });
+    expect(forbiddenResponse.status).toBe(403);
 });

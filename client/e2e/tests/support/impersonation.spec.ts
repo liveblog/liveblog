@@ -15,7 +15,7 @@ test('impersonating a tenant admin swaps identity, shows tenant data and stops c
     const login = new LoginPage(supportPage);
 
     await tenants.open();
-    await tenants.expandTenant(DEFAULT_TENANT_NAME);
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
     await tenants.impersonateUser('abc@other.com');
 
     await tenants.banner.waitFor();
@@ -45,7 +45,7 @@ test('impersonating a non-admin user keeps the banner and stop reachable', async
     const login = new LoginPage(supportPage);
 
     await tenants.open();
-    await tenants.expandTenant(DEFAULT_TENANT_NAME);
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
     await tenants.impersonateUser('contributor@other.com');
 
     await tenants.banner.waitFor();
@@ -62,7 +62,8 @@ test('impersonate owner shortcut targets the tenant owner', async ({ supportPage
     const login = new LoginPage(supportPage);
 
     await tenants.open();
-    await tenants.impersonateOwnerButton(DEFAULT_TENANT_NAME).click();
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
+    await tenants.impersonateOwnerButton.click();
 
     await tenants.banner.waitFor();
     await login.waitForReady();
@@ -79,7 +80,7 @@ test('impersonate button is disabled for an inactive user', async ({ supportPage
 
     const tenants = new SupportTenantsPage(supportPage);
     await tenants.open();
-    await tenants.expandTenant(DEFAULT_TENANT_NAME);
+    await tenants.selectTenant(DEFAULT_TENANT_NAME);
 
     await expect(tenants.userRow(INACTIVE_USER.email)).toBeVisible();
     await expect(tenants.impersonateUserButton(INACTIVE_USER.email)).toBeDisabled();
@@ -93,7 +94,24 @@ test('impersonate owner is disabled for a tenant without an owner', async ({ sup
     await tenants.open();
 
     await expect(tenants.tenantRow('Ownerless')).toBeVisible();
-    const ownerButton = tenants.impersonateOwnerButton('Ownerless');
+    await tenants.selectTenant('Ownerless');
+
+    const ownerButton = tenants.impersonateOwnerButton;
     await expect(ownerButton).toBeDisabled();
     await expect(ownerButton).toHaveAttribute('title', 'This tenant has no owner assigned');
+});
+
+// The Pending Owner tenant (prepopulate profile) has an owner whose account is
+// pending activation. The owner action must obey the same rule as that owner's
+// own row, so it is disabled with the activation reason, not left clickable.
+test('impersonate owner is disabled when the owner is pending activation', async ({ supportPage }) => {
+    const tenants = new SupportTenantsPage(supportPage);
+    await tenants.open();
+
+    await expect(tenants.tenantRow('Pending Owner')).toBeVisible();
+    await tenants.selectTenant('Pending Owner');
+
+    const ownerButton = tenants.impersonateOwnerButton;
+    await expect(ownerButton).toBeDisabled();
+    await expect(ownerButton).toHaveAttribute('title', 'This user has not been activated yet');
 });
