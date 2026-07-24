@@ -559,27 +559,385 @@ lb-impersonation-banner {
     outline: none;
 }
 
-.support-tenants__toolbar {
-    padding: 10px 20px;
+// Page-scoped so it never touches the other settings panes. The Tenants
+// console fills the settings content area edge to edge: the shared settings
+// .content adds a 48px top offset (for a sub-toolbar this page does not have)
+// and 20px padding, and its height chain stops at the directive mount, which
+// left the master-detail columns short. Drop the offset/padding and carry
+// full height down to the console root.
+.support-tenants-page {
+    .split-content > .content {
+        top: 0;
+        padding: 0;
+    }
+
+    [lb-support-tenants-pane] {
+        display: block;
+        height: 100%;
+    }
 }
 
-.support-tenants__filter {
-    width: 320px;
-    max-width: 100%;
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
+.support-tenants {
+    $st-border: #e0e2e6;
+    $st-muted: #7f8b96;
+    $st-header: #8f9aa5;
 
-.support-tenants__list {
-    padding: 0 20px 60px;
-}
+    // Master-detail: fixed-ish list on the left, flexible detail on the right
+    display: flex;
+    align-items: stretch;
+    height: 100%;
 
-.support-tenants__muted {
-    color: #999;
-}
+    &__master {
+        display: flex;
+        flex-direction: column;
+        width: 340px;
+        min-width: 260px;
+        flex: 0 0 340px;
+        border-right: 1px solid $st-border;
+        overflow: hidden;
+    }
 
-.support-tenants__users-row > td {
-    background: #f8f8f8;
-    padding: 10px 20px;
+    &__detail-pane {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-y: auto;
+    }
+
+    &__toolbar {
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid $st-border;
+    }
+
+    &__filter {
+        width: 100%;
+        max-width: 100%;
+        padding: 8px 12px;
+        font-size: 13px;
+        border: 1px solid #c6ccd2;
+        border-radius: 3px;
+
+        &:focus {
+            border-color: #5ba8c9;
+            outline: none;
+        }
+    }
+
+    &__list {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 0px 0 40px;
+    }
+
+    &__muted {
+        color: $st-muted;
+    }
+
+    &__empty {
+        padding: 24px 16px;
+        color: $st-muted;
+        font-size: 13px;
+    }
+
+    // Tenant list rows: full-width button, name + subscription, health badge
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid $st-border;
+        cursor: pointer;
+
+        &:hover {
+            background: #f4f6f8;
+        }
+
+        &--selected {
+            background: #eaf3f8;
+            box-shadow: inset -3px 0 0 #2e93c4;
+        }
+    }
+
+    &__row-main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    &__row-name {
+        font-weight: 600;
+        color: #2b3742;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__row-sub {
+        margin-top: 2px;
+        font-size: 12px;
+        color: $st-muted;
+    }
+
+    // Detail pane
+    &__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        min-height: 200px;
+        color: $st-muted;
+        font-size: 14px;
+    }
+
+    &__detail {
+        padding: 24px 28px 60px;
+    }
+
+    &__detail-header {
+        padding-bottom: 16px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid $st-border;
+    }
+
+    &__detail-title {
+        margin: 0 0 4px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #2b3742;
+    }
+
+    &__detail-org {
+        color: $st-muted;
+        font-size: 13px;
+    }
+
+    &__detail-owner {
+        margin-top: 8px;
+        font-size: 13px;
+
+        small {
+            color: $st-muted;
+        }
+    }
+
+    &__detail-created {
+        margin-top: 4px;
+        font-size: 12px;
+        color: $st-muted;
+    }
+
+    &__section {
+        padding: 18px 0;
+        border-bottom: 1px solid $st-border;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__section-title {
+        margin: 0 0 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $st-header;
+    }
+
+    &__fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 24px;
+        margin: 0;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+
+        dt {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: $st-header;
+        }
+
+        dd {
+            margin: 2px 0 0;
+            font-size: 13px;
+            color: #2b3742;
+            word-break: break-word;
+        }
+    }
+
+    &__stats {
+        display: flex;
+        gap: 32px;
+    }
+
+    &__stat {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__stat-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2b3742;
+    }
+
+    &__stat-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $st-header;
+    }
+
+    &__coming-soon {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        background: #f7f8fa;
+        border: 1px dashed #cfd6dd;
+        border-radius: 3px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__coming-soon-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7681;
+    }
+
+    &__actions {
+        > .btn {
+            margin-bottom: 16px;
+        }
+    }
+
+    &__users {
+        margin-top: 4px;
+    }
+
+    &__user-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__user-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid $st-border;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__user-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    &__user-name {
+        font-weight: 600;
+        color: #2b3742;
+    }
+
+    &__user-email {
+        margin-top: 2px;
+        font-size: 12px;
+        color: $st-muted;
+    }
+
+    // Owner pill next to a user name
+    .label-info {
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    // Billing health badge, colour-coded
+    &__badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: capitalize;
+        border-radius: 10px;
+        white-space: nowrap;
+
+        &--healthy {
+            color: #276a41;
+            background: #e0f2e6;
+        }
+
+        &--warning {
+            color: #8a5a0b;
+            background: #fbeecd;
+        }
+
+        &--danger {
+            color: #9b2c2c;
+            background: #f7dcdc;
+        }
+
+        &--unknown {
+            color: $st-muted;
+            background: #eceef1;
+        }
+
+        &--soon {
+            color: #5b6873;
+            background: #e3e7eb;
+            text-transform: none;
+        }
+    }
+
+    // Colour-coded status text
+    &__status {
+        font-size: 12px;
+        font-weight: 600;
+
+        &--active {
+            color: #3c9a5f;
+        }
+
+        &--pending {
+            color: #c98a1b;
+        }
+
+        &--inactive {
+            color: $st-muted;
+        }
+    }
+
+    @media (max-width: 900px) {
+        flex-direction: column;
+        height: auto;
+
+        &__master {
+            width: 100%;
+            flex: 1 1 auto;
+            border-right: none;
+            border-bottom: 1px solid $st-border;
+        }
+
+        &__fields {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 }

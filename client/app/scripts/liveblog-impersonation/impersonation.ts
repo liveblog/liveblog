@@ -74,13 +74,36 @@ export interface ITenantOwner {
     is_active?: boolean;
 }
 
-export interface ITenant {
+export interface ITenantSummary {
     _id: string;
     name: string;
     organization_name: string;
     subscription_level: string;
     _created: string;
     owner: ITenantOwner | null;
+}
+
+export interface ITenant extends ITenantSummary {
+    billing_status: string | null;
+    access_allowed: boolean;
+}
+
+export interface ITenantBilling {
+    status: string | null;
+    access_allowed: boolean;
+    plan_expires_at: string | null;
+    stripe_customer_id: string | null;
+}
+
+export interface ITenantStats {
+    blogs_count: number;
+    users_count: number;
+}
+
+export interface ITenantDetail {
+    tenant: ITenantSummary;
+    billing: ITenantBilling;
+    stats: ITenantStats;
 }
 
 export interface ITenantUser {
@@ -105,10 +128,18 @@ export const getImpersonationInfo = (): IImpersonationInfo | null => {
     }
 };
 
-export const fetchSupportTenants = async(): Promise<ITenant[]> => {
-    const data = await apiGet('/support/tenants');
+export const fetchSupportTenants = async(query?: string): Promise<ITenant[]> => {
+    const term = (query || '').trim();
+    const path = term ? '/support/tenants?q=' + encodeURIComponent(term) : '/support/tenants';
+    const data = await apiGet(path);
 
     return data.tenants || [];
+};
+
+export const fetchTenantDetail = async(tenantId: string): Promise<ITenantDetail> => {
+    const data = await apiGet('/support/tenants/' + tenantId);
+
+    return data;
 };
 
 export const fetchTenantUsers = async(tenantId: string): Promise<ITenantUser[]> => {

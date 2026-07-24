@@ -1,4 +1,4 @@
-<div lb-settings-view class="general-settings support-tenants">
+<div lb-settings-view class="general-settings support-tenants-page">
     <div class="split-content">
         <div class="content">
             <div lb-support-tenants-pane></div>
