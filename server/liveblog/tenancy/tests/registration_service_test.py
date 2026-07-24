@@ -120,6 +120,21 @@ class RegistrationServiceTestCase(TestCase):
         )
         self.assertIsNone(tenant.get("stripe_customer_id"))
 
+    def test_registration_strips_is_support(self):
+        """Registration must not let a caller self-grant is_support.
+
+        The public /api/register path posts through the system users
+        service, which bypasses Eve schema validation, so is_support has
+        to be stripped in the service or it would grant access to every
+        /api/support tool across all tenants.
+        """
+        result = self.registration_service.register_new_user(
+            dict(self.valid_user_data, is_support=True)
+        )
+
+        user = get_resource_service("users").find_one(req=None, _id=result["user_id"])
+        self.assertFalse(user.get("is_support", False))
+
     def test_generate_tenant_name(self):
         """Test tenant name generation from user data (internal method)."""
         tenant_name = self.registration_service._generate_tenant_name(
