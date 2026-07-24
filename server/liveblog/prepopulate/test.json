@@ -48,6 +48,28 @@
     {
         "resource": "users",
         "data": {
+            "username": "support",
+            "first_name": "Sonia",
+            "last_name": "the support",
+            "password": "support",
+            "user_type": "administrator",
+            "email": "support@other.com",
+            "sign_off": "sts",
+            "needs_activation": false,
+            "is_support": true,
+            "tenant_id": "-id default-tenant-"
+        }
+    },
+    {
+        "resource": "tenants",
+        "data": {
+            "name": "Ownerless",
+            "subscription_level": "solo"
+        }
+    },
+    {
+        "resource": "users",
+        "data": {
             "username": "editor",
             "first_name": "Victor",
             "last_name": "the Editor",
