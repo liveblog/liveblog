@@ -2,9 +2,11 @@
 
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
 import instanceTpl from 'scripts/liveblog-settings/views/instance-settings.ng1';
+import supportTenantsTpl from 'scripts/liveblog-settings/views/support-tenants.ng1';
 import LiveblogSettingsController from './controllers/general-settings.ts';
 import LiveblogInstanceSettingsController from './controllers/instance-settings.ts';
 import {renderTagsManager} from './components/tagsManager';
+import {renderSupportTenantsPane, unmountSupportTenantsPane} from './components/SupportTenantsPane';
 import {lbSettingsView} from './directives/lbSettingsView';
 import loginScreenTpl from '../liveblog-registration/login-screen.html';
 
@@ -32,6 +34,15 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 label: gettext('Instance Settings'),
                 controller: LiveblogInstanceSettingsController,
                 templateUrl: instanceTpl,
+                category: superdesk.MENU_SETTINGS,
+                privileges: {global_preferences: 1},
+                liveblogSetting: true,
+                liveblogSupportTools: true,
+            })
+            .activity('/settings/tenants', {
+                label: gettext('Tenants'),
+                controller: angular.noop,
+                templateUrl: supportTenantsTpl,
                 category: superdesk.MENU_SETTINGS,
                 privileges: {global_preferences: 1},
                 liveblogSetting: true,
@@ -119,6 +130,23 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             type: 'http',
             backend: {rel: 'instance_settings'},
         });
+    }])
+    .directive('lbSupportTenantsPane', ['notify', 'gettext', function(notify, gettext) {
+        return {
+            restrict: 'A',
+            link: function(scope, element) {
+                const mountPoint = $(element).get(0);
+
+                renderSupportTenantsPane(mountPoint, {
+                    gettext: gettext,
+                    onError: (message) => notify.error(message),
+                });
+
+                scope.$on('$destroy', () => {
+                    unmountSupportTenantsPane(mountPoint);
+                });
+            },
+        };
     }])
     .directive('renderTagsComponent', [function() {
         return {

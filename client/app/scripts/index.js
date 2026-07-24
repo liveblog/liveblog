@@ -94,9 +94,12 @@ import 'liveblog-common/notify';
 
 import {EventNames} from './liveblog-common/constants';
 import {getApiUrl} from './liveblog-common/api-url';
+import {getToken} from './liveblog-common/session';
 import 'liveblog-features.service';
 
 import {BillingBanner} from './liveblog-billing/BillingBanner';
+import {ImpersonationBanner} from './liveblog-impersonation/ImpersonationBanner';
+import {isImpersonating, restoreSupportSession} from './liveblog-impersonation/impersonation';
 
 const sdBillingBanner = ['notify', function(notify) {
     return {
@@ -250,6 +253,43 @@ liveblog.config([
 ]);
 
 liveblog.directive('sdBillingBanner', sdBillingBanner);
+
+// body-level like sdBillingBanner, outside any privilege-gated UI, so an
+// impersonated non-admin (and even the login modal after session expiry)
+// still sees the banner and can stop impersonating
+liveblog.directive('lbImpersonationBanner', ['gettext', function(gettext) {
+    return {
+        restrict: 'E',
+        link: function(scope, element) {
+            const mountPoint = $(element).get(0);
+
+            ReactDOM.render(React.createElement(ImpersonationBanner, {gettext: gettext}), mountPoint);
+
+            scope.$on('$destroy', () => {
+                ReactDOM.unmountComponentAtNode(mountPoint);
+            });
+        },
+    };
+}]);
+
+liveblog.run(['$rootScope', 'SESSION_EVENTS', function($rootScope, SESSION_EVENTS) {
+    const restoreIfSessionLost = () => {
+        if (isImpersonating() && getToken() === null) {
+            restoreSupportSession();
+        }
+    };
+
+    // page (re)loaded while the impersonation session was already rejected
+    restoreIfSessionLost();
+
+    // mid-use expiry: a 401 makes the session service drop the token and
+    // broadcast LOGOUT without a reload. The check is deferred so that an
+    // explicit logout, which wipes the support:* backups via storage.clear()
+    // right after broadcasting, does not trigger a restore.
+    $rootScope.$on(SESSION_EVENTS.LOGOUT, () => {
+        setTimeout(restoreIfSessionLost, 0);
+    });
+}]);
 
 liveblog.directive('sdManageSubscription', ['$http', 'config', function($http, config) {
     return {

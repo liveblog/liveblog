@@ -518,3 +518,68 @@ sd-billing-banner {
         justify-content: center;
     }
 }
+
+lb-impersonation-banner {
+    display: block;
+}
+
+// kept above modals (superdesk uses ~1050) so the banner and its Stop button
+// stay reachable even when the login modal is shown after session expiry
+.impersonation-banner {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 8px 20px;
+    box-sizing: border-box;
+    background: #b6350f;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.impersonation-banner__stop {
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.impersonation-banner__stop:hover,
+.impersonation-banner__stop:focus {
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+}
+
+.support-tenants__toolbar {
+    padding: 10px 20px;
+}
+
+.support-tenants__filter {
+    width: 320px;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.support-tenants__list {
+    padding: 0 20px 60px;
+}
+
+.support-tenants__muted {
+    color: #999;
+}
+
+.support-tenants__users-row > td {
+    background: #f8f8f8;
+    padding: 10px 20px;
+}

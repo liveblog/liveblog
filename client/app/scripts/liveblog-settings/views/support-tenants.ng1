@@ -1,0 +1,7 @@
+<div lb-settings-view class="general-settings support-tenants">
+    <div class="split-content">
+        <div class="content">
+            <div lb-support-tenants-pane></div>
+        </div>
+    </div>
+</div>
