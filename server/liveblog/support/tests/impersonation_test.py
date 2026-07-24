@@ -21,10 +21,12 @@ from liveblog.common import run_once
 from liveblog.auth import is_support_user, LiveBlogAuthResource
 from liveblog.auth.token_auth import LiveBlogTokenAuth
 from liveblog.tenancy import get_tenant_id
+from liveblog.blogs.blogs import BlogsResource, BlogService
 from liveblog.support.impersonation import support_blueprint, TENANT_USER_FIELDS
 
 SUPPORT_TOKEN = "support-token"
 ADMIN_TOKEN = "admin-token"
+SUPPORT_IN_ALPHA_TOKEN = "support-in-alpha-token"
 
 
 class SupportImpersonationTestCase(TestCase):
@@ -35,6 +37,10 @@ class SupportImpersonationTestCase(TestCase):
         # `impersonated_by` in the auth endpoint projection
         service = AuthService("auth", backend=superdesk.get_backend())
         LiveBlogAuthResource("auth", app=self.app, service=service)
+        # Register the blogs resource so the detail endpoint's direct pymongo
+        # blogs count can resolve the "blogs" datasource.
+        blogs_service = BlogService("blogs", backend=superdesk.get_backend())
+        BlogsResource("blogs", app=self.app, service=blogs_service)
         self.app.register_blueprint(support_blueprint)
 
     def setUp(self):
@@ -43,6 +49,7 @@ class SupportImpersonationTestCase(TestCase):
         self.client = self.app.test_client()
 
         self.support_id = ObjectId()
+        self.support_in_alpha_id = ObjectId()
         self.owner_id = ObjectId()
         self.member_id = ObjectId()
         self.inactive_id = ObjectId()
@@ -61,6 +68,9 @@ class SupportImpersonationTestCase(TestCase):
                     "organization_name": "Alpha Org",
                     "subscription_level": "solo",
                     "owner_user_id": self.owner_id,
+                    "stripe_customer_id": "cus_alpha123",
+                    "stripe_subscription_id": "sub_alpha",
+                    "stripe_subscription_status": "active",
                     "_created": utcnow(),
                 },
                 {
@@ -151,6 +161,16 @@ class SupportImpersonationTestCase(TestCase):
                     user_type="user",
                     **active_user,
                 ),
+                dict(
+                    _id=self.support_in_alpha_id,
+                    username="support_alpha",
+                    email="support_alpha@example.com",
+                    display_name="Support In Alpha",
+                    user_type="administrator",
+                    is_support=True,
+                    tenant_id=self.tenant_a_id,
+                    **active_user,
+                ),
             ],
         )
 
@@ -167,6 +187,12 @@ class SupportImpersonationTestCase(TestCase):
                 {
                     "user": self.owner_id,
                     "token": ADMIN_TOKEN,
+                    "_created": now,
+                    "_updated": now,
+                },
+                {
+                    "user": self.support_in_alpha_id,
+                    "token": SUPPORT_IN_ALPHA_TOKEN,
                     "_created": now,
                     "_updated": now,
                 },
@@ -248,6 +274,149 @@ class SupportImpersonationTestCase(TestCase):
         )
         self.assertIsNone(beta["owner"])
 
+    def _search_names(self, term):
+        response = self.get(
+            "/api/support/tenants?q={}".format(term), token=SUPPORT_TOKEN
+        )
+        self.assertEqual(response.status_code, 200)
+        return [t["name"] for t in self.parse(response)["tenants"]]
+
+    def test_tenants_search_matches_member_email(self):
+        # pending@example.com is a non-owner member of Alpha; searching it
+        # must surface Alpha, not just tenants whose owner email matches.
+        self.assertEqual(self._search_names("pending@example.com"), ["Alpha"])
+
+    def test_tenants_search_matches_tenant_name(self):
+        self.assertEqual(self._search_names("Beta"), ["Beta"])
+
+    def test_tenants_search_matches_owner_email(self):
+        self.assertEqual(self._search_names("owner@example.com"), ["Alpha"])
+
+    def test_tenants_search_is_case_insensitive(self):
+        self.assertEqual(self._search_names("aLpHa"), ["Alpha"])
+
+    def test_tenants_search_no_match(self):
+        self.assertEqual(self._search_names("zzz-no-such-tenant"), [])
+
+    def test_tenants_list_excludes_own_tenant(self):
+        # A support user that belongs to Alpha must not see Alpha, their own
+        # (internal) tenant, in the dashboard.
+        response = self.get("/api/support/tenants", token=SUPPORT_IN_ALPHA_TOKEN)
+        self.assertEqual(response.status_code, 200)
+        names = [t["name"] for t in self.parse(response)["tenants"]]
+        self.assertEqual(names, ["Beta"])
+
+    def test_tenants_list_includes_billing(self):
+        response = self.get("/api/support/tenants", token=SUPPORT_TOKEN)
+        self.assertEqual(response.status_code, 200)
+
+        by_name = {t["name"]: t for t in self.parse(response)["tenants"]}
+        for tenant in by_name.values():
+            self.assertIn("billing_status", tenant)
+            self.assertIn("access_allowed", tenant)
+
+        # Alpha has an active Stripe subscription.
+        self.assertEqual(by_name["Alpha"]["billing_status"], "active")
+        self.assertTrue(by_name["Alpha"]["access_allowed"])
+
+        # Beta never subscribed: status is null and access is denied.
+        self.assertIsNone(by_name["Beta"]["billing_status"])
+        self.assertFalse(by_name["Beta"]["access_allowed"])
+
+    def _insert_blogs(self, tenant_id, count):
+        docs = [
+            {"_id": ObjectId(), "title": "blog-{}".format(i), "tenant_id": tenant_id}
+            for i in range(count)
+        ]
+        self.app.data.mongo.pymongo(resource="blogs").db["blogs"].insert_many(docs)
+
+    def test_tenant_detail_success(self):
+        self._insert_blogs(self.tenant_a_id, 3)
+        self._insert_blogs(self.tenant_b_id, 2)
+
+        response = self.get(
+            "/api/support/tenants/{}".format(self.tenant_a_id), token=SUPPORT_TOKEN
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = self.parse(response)
+
+        tenant = payload["tenant"]
+        self.assertEqual(tenant["_id"], str(self.tenant_a_id))
+        self.assertEqual(tenant["name"], "Alpha")
+        self.assertEqual(tenant["organization_name"], "Alpha Org")
+        self.assertEqual(tenant["subscription_level"], "solo")
+        self.assertEqual(
+            tenant["owner"],
+            {
+                "_id": str(self.owner_id),
+                "display_name": "Alpha Owner",
+                "email": "owner@example.com",
+            },
+        )
+
+        billing = payload["billing"]
+        self.assertEqual(billing["status"], "active")
+        self.assertTrue(billing["access_allowed"])
+        self.assertIsNone(billing["plan_expires_at"])
+        self.assertEqual(billing["stripe_customer_id"], "cus_alpha123")
+
+        # 6 users belong to Alpha; blogs count is isolated to Alpha's blogs.
+        self.assertEqual(payload["stats"]["users_count"], 6)
+        self.assertEqual(payload["stats"]["blogs_count"], 3)
+
+    def test_tenant_detail_blogs_count_isolation(self):
+        # Blogs for another tenant must never leak into this tenant's count.
+        self._insert_blogs(self.tenant_a_id, 1)
+        self._insert_blogs(self.tenant_b_id, 5)
+
+        response = self.get(
+            "/api/support/tenants/{}".format(self.tenant_b_id), token=SUPPORT_TOKEN
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = self.parse(response)
+        self.assertEqual(payload["stats"]["blogs_count"], 5)
+
+    def test_tenant_detail_null_owner_and_billing(self):
+        response = self.get(
+            "/api/support/tenants/{}".format(self.tenant_b_id), token=SUPPORT_TOKEN
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = self.parse(response)
+
+        self.assertIsNone(payload["tenant"]["owner"])
+        self.assertIsNone(payload["billing"]["status"])
+        self.assertFalse(payload["billing"]["access_allowed"])
+        self.assertIsNone(payload["billing"]["stripe_customer_id"])
+        self.assertEqual(payload["stats"]["blogs_count"], 0)
+
+    def test_tenant_detail_unknown_id(self):
+        response = self.get(
+            "/api/support/tenants/{}".format(ObjectId()), token=SUPPORT_TOKEN
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_tenant_detail_invalid_id(self):
+        response = self.get("/api/support/tenants/not-an-id", token=SUPPORT_TOKEN)
+        self.assertEqual(response.status_code, 404)
+
+    def test_tenant_detail_rejects_own_tenant(self):
+        # The Alpha support user must not inspect their own (internal) tenant.
+        response = self.get(
+            "/api/support/tenants/{}".format(self.tenant_a_id),
+            token=SUPPORT_IN_ALPHA_TOKEN,
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_tenant_detail_rejects_non_support(self):
+        response = self.get(
+            "/api/support/tenants/{}".format(self.tenant_a_id), token=ADMIN_TOKEN
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_tenant_detail_rejects_anonymous(self):
+        response = self.get("/api/support/tenants/{}".format(self.tenant_a_id))
+        self.assertEqual(response.status_code, 403)
+
     def test_tenant_users_whitelist_and_is_owner(self):
         response = self.get(
             "/api/support/tenants/{}/users".format(self.tenant_a_id),
@@ -256,7 +425,7 @@ class SupportImpersonationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         users = self.parse(response)["users"]
-        self.assertEqual(len(users), 5)
+        self.assertEqual(len(users), 6)
 
         expected_fields = set(TENANT_USER_FIELDS) | {"is_owner"}
         for user in users:
@@ -330,6 +499,14 @@ class SupportImpersonationTestCase(TestCase):
 
     def test_impersonate_rejects_disabled_user(self):
         self.assertEqual(self.impersonate(self.disabled_id).status_code, 400)
+
+    def test_impersonate_rejects_own_tenant_target(self):
+        # member belongs to Alpha; the Alpha support user cannot impersonate
+        # a user in their own tenant.
+        self.assertEqual(
+            self.impersonate(self.member_id, token=SUPPORT_IN_ALPHA_TOKEN).status_code,
+            400,
+        )
 
     def test_impersonate_rejects_unactivated_user(self):
         self.assertEqual(self.impersonate(self.pending_id).status_code, 400)

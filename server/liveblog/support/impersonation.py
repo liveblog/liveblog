@@ -11,6 +11,7 @@ works untouched since every subsequent request authenticates as the target.
 """
 
 import logging
+import re
 from functools import wraps
 
 import flask
@@ -70,6 +71,27 @@ def _pick(doc, fields):
     return {field: doc.get(field) for field in fields}
 
 
+def _billing_state(tenant):
+    # Local import: liveblog.billing pulls in settings and Stripe at import
+    # time, so a top-level import here risks a cycle during app setup.
+    from liveblog.billing.service import get_billing_state
+
+    return get_billing_state(tenant)
+
+
+def _count_tenant_blogs(tenant_oid):
+    """Count a tenant's blogs directly against MongoDB.
+
+    The blogs service is a TenantAwareService that injects the *caller's*
+    tenant into every lookup. In a support request the caller is not the
+    target tenant, so counting through the service would filter by the wrong
+    tenant (or raise when the support user has no tenant). Querying pymongo
+    with an explicit tenant_id filter bypasses that injection entirely.
+    """
+    collection = flask.current_app.data.mongo.pymongo(resource="blogs").db["blogs"]
+    return collection.count_documents({"tenant_id": tenant_oid})
+
+
 def _hydrate_current_user():
     """Resolve the requesting user from the auth token.
 
@@ -93,11 +115,42 @@ def support_user_required(fn):
     return wrapper
 
 
+def _tenant_ids_with_matching_user(term):
+    """Tenant ids that have at least one user matching the search term.
+
+    Matches on display_name, username or email so support can find a tenant
+    by any of its members, not only its owner.
+    """
+    pattern = {"$regex": re.escape(term), "$options": "i"}
+    users = get_resource_service("users").get_from_mongo(
+        req=None,
+        lookup={
+            "$or": [
+                {"display_name": pattern},
+                {"username": pattern},
+                {"email": pattern},
+            ]
+        },
+    )
+    return {user["tenant_id"] for user in users if user.get("tenant_id")}
+
+
 @support_blueprint.route("/api/support/tenants", methods=["GET"])
 @support_user_required
 def get_tenants():
-    """List all tenants with their owner user joined in."""
+    """List tenants with their owner joined in, optionally filtered by ?q.
+
+    The q term matches tenant name, organization, owner email, and any of a
+    tenant's users (name, username, email).
+    """
     tenants = list(get_resource_service("tenants").get_from_mongo(req=None, lookup={}))
+
+    # The support user's own tenant (the internal support workspace) is not a
+    # customer to debug, and its users must not be impersonated, so it is
+    # never listed.
+    own_tenant_id = flask.g.user.get("tenant_id")
+    if own_tenant_id:
+        tenants = [tenant for tenant in tenants if tenant["_id"] != own_tenant_id]
 
     owner_ids = [
         tenant["owner_user_id"] for tenant in tenants if tenant.get("owner_user_id")
@@ -109,14 +162,93 @@ def get_tenants():
         )
         owners = {user["_id"]: user for user in users}
 
+    term = (request.args.get("q") or "").strip()
+    if term:
+        needle = term.lower()
+        tenant_ids_with_user = _tenant_ids_with_matching_user(term)
+
+        def matches(tenant):
+            owner = owners.get(tenant.get("owner_user_id"))
+            fields = [
+                tenant.get("name"),
+                tenant.get("organization_name"),
+                owner.get("email") if owner else None,
+            ]
+            if any(value and needle in value.lower() for value in fields):
+                return True
+            return tenant["_id"] in tenant_ids_with_user
+
+        tenants = [tenant for tenant in tenants if matches(tenant)]
+
     items = []
     for tenant in sorted(tenants, key=lambda t: (t.get("name") or "").lower()):
         item = _pick(tenant, TENANT_FIELDS)
         owner = owners.get(tenant.get("owner_user_id"))
         item["owner"] = _pick(owner, OWNER_FIELDS) if owner else None
+        state = _billing_state(tenant)
+        item["billing_status"] = state["status"]
+        item["access_allowed"] = state["access_allowed"]
         items.append(item)
 
     return api_response({"tenants": items}, 200)
+
+
+@support_blueprint.route("/api/support/tenants/<tenant_id>", methods=["GET"])
+@support_user_required
+def get_tenant_detail(tenant_id):
+    """Master-detail payload for a single tenant: owner, billing and counts.
+
+    Applies the same own-tenant rule as impersonate: the support user's own
+    (internal) tenant is never a customer to inspect, so it 404s just like an
+    unknown id.
+    """
+    try:
+        tenant_oid = ObjectId(tenant_id)
+    except InvalidId:
+        return api_error("Tenant not found", 404)
+
+    own_tenant_id = flask.g.user.get("tenant_id")
+    if own_tenant_id and tenant_oid == own_tenant_id:
+        return api_error("Tenant not found", 404)
+
+    tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_oid)
+    if not tenant:
+        return api_error("Tenant not found", 404)
+
+    owner = None
+    owner_id = tenant.get("owner_user_id")
+    if owner_id:
+        owner_doc = get_resource_service("users").find_one(req=None, _id=owner_id)
+        if owner_doc:
+            owner = _pick(owner_doc, OWNER_FIELDS)
+
+    tenant_item = _pick(tenant, TENANT_FIELDS)
+    tenant_item["owner"] = owner
+
+    state = _billing_state(tenant)
+
+    users = list(
+        get_resource_service("users").get_from_mongo(
+            req=None, lookup={"tenant_id": tenant_oid}
+        )
+    )
+
+    return api_response(
+        {
+            "tenant": tenant_item,
+            "billing": {
+                "status": state["status"],
+                "access_allowed": state["access_allowed"],
+                "plan_expires_at": state["plan_expires_at"],
+                "stripe_customer_id": tenant.get("stripe_customer_id"),
+            },
+            "stats": {
+                "blogs_count": _count_tenant_blogs(tenant_oid),
+                "users_count": len(users),
+            },
+        },
+        200,
+    )
 
 
 @support_blueprint.route("/api/support/tenants/<tenant_id>/users", methods=["GET"])
@@ -173,6 +305,10 @@ def impersonate():
 
     if not target.get("tenant_id"):
         return api_error("Cannot impersonate a user without a tenant", 400)
+
+    own_tenant_id = flask.g.user.get("tenant_id")
+    if own_tenant_id and target.get("tenant_id") == own_tenant_id:
+        return api_error("Cannot impersonate a user in your own tenant", 400)
 
     if (
         not target.get("is_active", False)
