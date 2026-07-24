@@ -1,6 +1,7 @@
 import React from 'react';
 import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
-import { getApiUrl } from '../liveblog-common/api-url';
+import { apiGet, apiPost, ApiError } from '../liveblog-common/api';
+import { formatToken, setSession, setIdentity } from '../liveblog-common/session';
 
 interface IFormState {
     firstName: string;
@@ -151,11 +152,9 @@ export class RegisterPage extends React.Component<{}, IState> {
     componentDidMount() {
         const params = new URLSearchParams(window.location.search);
         const priceId = params.get('price_id');
-        const apiUrl = getApiUrl();
 
         if (priceId) {
-            fetch(`${apiUrl}/billing/plan-info?price_id=${encodeURIComponent(priceId)}`)
-                .then((r) => r.ok ? r.json() : null)
+            apiGet(`/billing/plan-info?price_id=${encodeURIComponent(priceId)}`, { anonymous: true })
                 .then((data) => {
                     if (data) {
                         this.setState({ planInfo: data });
@@ -165,8 +164,7 @@ export class RegisterPage extends React.Component<{}, IState> {
             return;
         }
 
-        fetch(`${apiUrl}/billing/config`)
-            .then((r) => r.ok ? r.json() : null)
+        apiGet('/billing/config', { anonymous: true })
             .then((config) => {
                 if (config && config.billing_required && config.pricing_url) {
                     window.location.href = config.pricing_url;
@@ -202,35 +200,25 @@ export class RegisterPage extends React.Component<{}, IState> {
     }
 
     private startSession = async(username: string, password: string) => {
-        const apiUrl = getApiUrl();
-        const authResponse = await fetch(`${apiUrl}/auth_db`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
+        let session;
 
-        if (!authResponse.ok) {
+        try {
+            session = await apiPost('/auth_db', { username, password }, { anonymous: true });
+        } catch (error) {
             window.location.href = '/';
             return;
         }
 
-        const session = await authResponse.json();
-        const token = 'Basic ' + btoa(session.token + ':');
-
-        localStorage.setItem('sess:token', token);
-        localStorage.setItem('sess:id', session._id);
-        if (session._links && session._links.self) {
-            localStorage.setItem('sess:href', session._links.self.href);
-        }
-
-        const userResponse = await fetch(`${apiUrl}/liveblog_users/${session.user}`, {
-            headers: { Authorization: token },
+        setSession({
+            token: formatToken(session.token),
+            id: session._id,
+            href: session._links && session._links.self && session._links.self.href,
         });
 
-        if (userResponse.ok) {
-            const userData = await userResponse.json();
-
-            localStorage.setItem('sess:user', JSON.stringify(userData));
+        try {
+            setIdentity(await apiGet(`/liveblog_users/${session.user}`));
+        } catch (error) {
+            // best-effort: the app bootstraps the identity from the session anyway
         }
 
         // If a specific plan was selected, go to Stripe Checkout
@@ -238,41 +226,32 @@ export class RegisterPage extends React.Component<{}, IState> {
         const priceId = params.get('price_id');
 
         if (priceId) {
-            const checkoutResponse = await fetch(`${apiUrl}/billing/checkout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: token,
-                },
-                body: JSON.stringify({
+            try {
+                const checkout = await apiPost('/billing/checkout', {
                     price_id: priceId,
                     return_url: window.location.origin,
-                }),
-            });
-
-            if (checkoutResponse.ok) {
-                const checkout = await checkoutResponse.json();
+                });
 
                 if (checkout.url) {
                     window.location.href = checkout.url;
                     return;
                 }
+            } catch (error) {
+                // fall through to the billing status check
             }
         }
 
         // If billing is required and no subscription, redirect to pricing
-        const statusResponse = await fetch(`${apiUrl}/billing/status`, {
-            headers: { Authorization: token },
-        });
-
-        if (statusResponse.ok) {
-            const status = await statusResponse.json();
+        try {
+            const status = await apiGet('/billing/status');
 
             if (status.billing_required && !status.access_allowed
                 && status.pricing_url) {
                 window.location.href = status.pricing_url;
                 return;
             }
+        } catch (error) {
+            // fall through to the default redirect
         }
 
         window.location.href = '/';
@@ -296,27 +275,13 @@ export class RegisterPage extends React.Component<{}, IState> {
         }
 
         try {
-            const apiUrl = getApiUrl();
-            const response = await fetch(`${apiUrl}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-
-            if (response.status === 201) {
-                await this.startSession(form.username, form.password);
-                return;
-            }
-
-            const message = data._error || data.message
-                || 'Registration failed. Please try again.';
-
-            this.setState({ globalError: message, submitting: false });
-        } catch (_err) {
+            await apiPost('/register', payload, { anonymous: true });
+            await this.startSession(form.username, form.password);
+        } catch (error) {
             this.setState({
-                globalError: 'Cannot reach the server. Please try again later.',
+                globalError: error instanceof ApiError
+                    ? error.message
+                    : 'Cannot reach the server. Please try again later.',
                 submitting: false,
             });
         }

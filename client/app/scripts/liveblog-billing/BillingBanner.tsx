@@ -1,5 +1,6 @@
 import React from 'react';
-import { getApiUrl } from '../liveblog-common/api-url';
+import { apiGet, apiPost } from '../liveblog-common/api';
+import { getToken } from '../liveblog-common/session';
 
 interface IProps {
     onPortalError?: (message: string) => void;
@@ -23,17 +24,11 @@ export class BillingBanner extends React.Component<IProps, IState> {
     state: IState = { billingStatus: null };
 
     componentDidMount() {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('sess:token');
-
-        if (!token) {
+        if (!getToken()) {
             return;
         }
 
-        fetch(`${apiUrl}/billing/status`, {
-            headers: { Authorization: token },
-        })
-            .then((r) => r.ok ? r.json() : null)
+        apiGet('/billing/status')
             .then((data) => {
                 if (data) {
                     this.setState({
@@ -63,25 +58,13 @@ export class BillingBanner extends React.Component<IProps, IState> {
     }
 
     private handleAction = () => {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('sess:token');
         const { onPortalError } = this.props;
 
-        if (!token) {
+        if (!getToken()) {
             return;
         }
 
-        fetch(`${apiUrl}/billing/portal`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-            body: JSON.stringify({
-                return_url: window.location.origin,
-            }),
-        })
-            .then((r) => r.ok ? r.json() : null)
+        apiPost('/billing/portal', { return_url: window.location.origin })
             .then((data) => {
                 if (data && data.url) {
                     window.location.href = data.url;
@@ -100,26 +83,16 @@ export class BillingBanner extends React.Component<IProps, IState> {
     }
 
     private handleExtend = () => {
-        const apiUrl = getApiUrl();
-        const token = localStorage.getItem('sess:token');
         const { billingStatus } = this.state;
 
-        if (!token || !billingStatus?.checkoutPriceId) {
+        if (!getToken() || !billingStatus?.checkoutPriceId) {
             return;
         }
 
-        fetch(`${apiUrl}/billing/checkout`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: token,
-            },
-            body: JSON.stringify({
-                price_id: billingStatus.checkoutPriceId,
-                return_url: window.location.origin,
-            }),
+        apiPost('/billing/checkout', {
+            price_id: billingStatus.checkoutPriceId,
+            return_url: window.location.origin,
         })
-            .then((r) => r.ok ? r.json() : null)
             .then((data) => {
                 if (data && data.url) {
                     window.location.href = data.url;

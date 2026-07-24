@@ -1,4 +1,5 @@
 import { EventNames } from './liveblog-common/constants';
+import { getToken } from './liveblog-common/session';
 
 interface ISettings {
     features: { [key: string]: boolean };
@@ -31,7 +32,7 @@ class FeaturesService {
      * @returns A promise that resolves to the settings object.
      */
     private async loadSettings(): Promise<void> {
-        const token = localStorage.getItem('sess:token');
+        const token = getToken();
 
         const response = await fetch(
             this.config.server.url + '/instance_settings/current',
