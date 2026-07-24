@@ -559,6 +559,28 @@ lb-impersonation-banner {
     outline: none;
 }
 
+// General and Instance Settings forms start flush at the top: drop the 48px
+// band the shared layout reserves and pin the Save/Cancel actions as a compact
+// top-right overlay (z-index above the form so they stay visible and
+// clickable). Scoped to .general-settings so no other .split-content view is
+// affected; the tenants console has no actions bar and is already flush.
+.general-settings {
+    .split-content > .content {
+        top: 0;
+    }
+
+    .settings-actions-bar {
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        z-index: 2;
+        margin: 0;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 8px;
+    }
+}
+
 // Page-scoped so it never touches the other settings panes. The Tenants
 // console fills the settings content area edge to edge: the shared settings
 // .content adds a 48px top offset (for a sub-toolbar this page does not have)
