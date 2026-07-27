@@ -1,0 +1,429 @@
+import React from 'react';
+import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
+import { apiGet, apiPost, ApiError } from '../liveblog-common/api';
+import { formatToken, setSession, setIdentity } from '../liveblog-common/session';
+
+interface IFormState {
+    firstName: string;
+    lastName: string;
+    organizationName: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
+interface IState {
+    form: IFormState;
+    globalError: string | null;
+    submitting: boolean;
+    focusedField: string | null;
+    orgNameManuallyEdited: boolean;
+    planInfo: IPlanInfo | null;
+}
+
+const INITIAL_FORM: IFormState = {
+    firstName: '',
+    lastName: '',
+    organizationName: '',
+    username: '',
+    email: '',
+    password: '',
+};
+
+const styles: {[key: string]: React.CSSProperties} = {
+    card: {
+        background: '#ffffff',
+        borderRadius: 12,
+        padding: '40px 36px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)',
+        maxWidth: 420,
+        margin: '0 auto',
+    },
+    logo: {
+        display: 'block',
+        marginBottom: 32,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    heading: {
+        fontSize: 24,
+        fontWeight: 700,
+        marginBottom: 6,
+        color: '#111827',
+        letterSpacing: '-0.3px',
+        textAlign: 'center' as const,
+    },
+    subheading: {
+        fontSize: 14,
+        color: '#6b7280',
+        marginBottom: 28,
+        textAlign: 'center' as const,
+    },
+    row: {
+        display: 'flex',
+        gap: 12,
+    },
+    field: {
+        marginBottom: 16,
+        flex: 1,
+    },
+    label: {
+        display: 'block',
+        fontSize: 14,
+        fontWeight: 600,
+        marginBottom: 6,
+        color: '#111827',
+    },
+    input: {
+        width: '100%',
+        height: 40,
+        padding: '0 12px',
+        background: '#ffffff',
+        border: '1.5px solid #d1d5db',
+        borderRadius: 8,
+        fontSize: 14,
+        color: '#111827',
+        outline: 'none',
+        boxSizing: 'border-box' as const,
+    },
+    inputFocused: {
+        border: '1.5px solid #1eb06c',
+        boxShadow: '0 0 0 2px rgba(30, 176, 108, 0.2)',
+    },
+    globalError: {
+        background: '#fef2f2',
+        border: '1px solid #fecaca',
+        borderRadius: 8,
+        padding: '10px 14px',
+        color: '#dc2626',
+        fontSize: 13,
+        marginBottom: 16,
+    },
+    submitBtn: {
+        width: '100%',
+        height: 42,
+        background: '#1eb06c',
+        color: '#fff',
+        border: 'none',
+        borderRadius: 8,
+        fontSize: 14,
+        fontWeight: 600,
+        cursor: 'pointer',
+        marginTop: 8,
+        letterSpacing: '0.01em',
+    },
+    submitBtnDisabled: {
+        opacity: 0.5,
+        cursor: 'not-allowed',
+    },
+    footer: {
+        textAlign: 'center' as const,
+        marginTop: 24,
+        fontSize: 13,
+        color: '#6b7280',
+    },
+    loginLink: {
+        color: '#1eb06c',
+        textDecoration: 'none',
+        fontWeight: 500,
+        marginLeft: 4,
+    },
+    twoColumn: {
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.95fr)',
+        alignItems: 'stretch',
+        background: '#ffffff',
+        borderRadius: 16,
+        boxShadow: '0 20px 60px -20px rgba(15, 23, 42, 0.15)',
+        overflow: 'hidden',
+    },
+};
+
+export class RegisterPage extends React.Component<{}, IState> {
+    state: IState = {
+        form: { ...INITIAL_FORM },
+        globalError: null,
+        submitting: false,
+        focusedField: null,
+        orgNameManuallyEdited: false,
+        planInfo: null,
+    };
+
+    componentDidMount() {
+        const params = new URLSearchParams(window.location.search);
+        const priceId = params.get('price_id');
+
+        if (priceId) {
+            apiGet(`/billing/plan-info?price_id=${encodeURIComponent(priceId)}`, { anonymous: true })
+                .then((data) => {
+                    if (data) {
+                        this.setState({ planInfo: data });
+                    }
+                })
+                .catch(() => undefined);
+            return;
+        }
+
+        apiGet('/billing/config', { anonymous: true })
+            .then((config) => {
+                if (config && config.billing_required && config.pricing_url) {
+                    window.location.href = config.pricing_url;
+                }
+            })
+            .catch(() => undefined);
+    }
+
+    private generateOrgName(firstName: string): string {
+        return firstName.trim() ? `${firstName.trim()}'s LiveBlog` : '';
+    }
+
+    private handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+
+        if (name === 'organizationName') {
+            this.setState((prev) => ({
+                form: { ...prev.form, organizationName: value },
+                orgNameManuallyEdited: value.length > 0,
+            }));
+            return;
+        }
+
+        this.setState((prev) => {
+            const updated: Partial<IFormState> = { [name]: value };
+
+            if (name === 'firstName' && !prev.orgNameManuallyEdited) {
+                updated.organizationName = this.generateOrgName(value);
+            }
+
+            return { form: { ...prev.form, ...updated } };
+        });
+    }
+
+    private startSession = async(username: string, password: string) => {
+        let session;
+
+        try {
+            session = await apiPost('/auth_db', { username, password }, { anonymous: true });
+        } catch (error) {
+            window.location.href = '/';
+            return;
+        }
+
+        setSession({
+            token: formatToken(session.token),
+            id: session._id,
+            href: session._links && session._links.self && session._links.self.href,
+        });
+
+        try {
+            setIdentity(await apiGet(`/liveblog_users/${session.user}`));
+        } catch (error) {
+            // best-effort: the app bootstraps the identity from the session anyway
+        }
+
+        // If a specific plan was selected, go to Stripe Checkout
+        const params = new URLSearchParams(window.location.search);
+        const priceId = params.get('price_id');
+
+        if (priceId) {
+            try {
+                const checkout = await apiPost('/billing/checkout', {
+                    price_id: priceId,
+                    return_url: window.location.origin,
+                });
+
+                if (checkout.url) {
+                    window.location.href = checkout.url;
+                    return;
+                }
+            } catch (error) {
+                // fall through to the billing status check
+            }
+        }
+
+        // If billing is required and no subscription, redirect to pricing
+        try {
+            const status = await apiGet('/billing/status');
+
+            if (status.billing_required && !status.access_allowed
+                && status.pricing_url) {
+                window.location.href = status.pricing_url;
+                return;
+            }
+        } catch (error) {
+            // fall through to the default redirect
+        }
+
+        window.location.href = '/';
+    }
+
+    private handleSubmit = async(e: React.FormEvent) => {
+        e.preventDefault();
+        this.setState({ submitting: true, globalError: null });
+
+        const { form } = this.state;
+        const payload: Record<string, string> = {
+            first_name: form.firstName,
+            last_name: form.lastName,
+            username: form.username,
+            email: form.email,
+            password: form.password,
+        };
+
+        if (form.organizationName.trim()) {
+            payload.organization_name = form.organizationName.trim();
+        }
+
+        try {
+            await apiPost('/register', payload, { anonymous: true });
+            await this.startSession(form.username, form.password);
+        } catch (error) {
+            this.setState({
+                globalError: error instanceof ApiError
+                    ? error.message
+                    : 'Cannot reach the server. Please try again later.',
+                submitting: false,
+            });
+        }
+    }
+
+    private inputStyle(name: string) {
+        const { focusedField } = this.state;
+
+        return focusedField === name
+            ? { ...styles.input, ...styles.inputFocused }
+            : styles.input;
+    }
+
+    private renderForm() {
+        const { form, globalError, submitting, planInfo } = this.state;
+        const cardStyle = planInfo
+            ? { ...styles.card, boxShadow: 'none', borderRadius: 0, maxWidth: 'none', margin: 0 }
+            : styles.card;
+
+        return (
+            <div className="register-card" style={cardStyle}>
+                <img
+                    src="/images/superdesk-logo.svg"
+                    width="160"
+                    alt="Liveblog"
+                    style={styles.logo}
+                />
+
+                <div style={styles.heading}>Create an account</div>
+                <div style={styles.subheading}>
+                    Start your Liveblog in seconds.
+                </div>
+
+                <form onSubmit={this.handleSubmit} noValidate>
+                    {globalError && (
+                        <div style={styles.globalError}>{globalError}</div>
+                    )}
+
+                    <div className="register-name-row" style={styles.row}>
+                        {(['firstName', 'lastName'] as const).map((name) => (
+                            <div key={name} style={styles.field}>
+                                <label style={styles.label} htmlFor={name}>
+                                    {name === 'firstName'
+                                        ? 'First name' : 'Last name'}
+                                </label>
+                                <input
+                                    id={name}
+                                    name={name}
+                                    type="text"
+                                    value={form[name]}
+                                    onChange={this.handleChange}
+                                    onFocus={() => this.setState({
+                                        focusedField: name,
+                                    })}
+                                    onBlur={() => this.setState({
+                                        focusedField: null,
+                                    })}
+                                    style={this.inputStyle(name)}
+                                    autoComplete="off"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {([
+                        {
+                            name: 'organizationName',
+                            label: 'Organization name',
+                            type: 'text',
+                        },
+                        { name: 'email', label: 'Email', type: 'email' },
+                        { name: 'username', label: 'Username', type: 'text' },
+                        {
+                            name: 'password',
+                            label: 'Password',
+                            type: 'password',
+                        },
+                    ] as Array<{
+                        name: keyof IFormState;
+                        label: string;
+                        type: string;
+                    }>).map(({ name, label, type }) => (
+                        <div key={name} style={styles.field}>
+                            <label style={styles.label} htmlFor={name}>
+                                {label}
+                            </label>
+                            <input
+                                id={name}
+                                name={name}
+                                type={type}
+                                value={form[name]}
+                                onChange={this.handleChange}
+                                onFocus={() => this.setState({
+                                    focusedField: name,
+                                })}
+                                onBlur={() => this.setState({
+                                    focusedField: null,
+                                })}
+                                style={this.inputStyle(name)}
+                                autoComplete={
+                                    name === 'password'
+                                        ? 'new-password' : 'off'
+                                }
+                            />
+                        </div>
+                    ))}
+
+                    <button
+                        type="submit"
+                        disabled={submitting}
+                        style={submitting
+                            ? {
+                                ...styles.submitBtn,
+                                ...styles.submitBtnDisabled,
+                            }
+                            : styles.submitBtn}
+                    >
+                        {submitting
+                            ? 'Creating account...' : 'Create account'}
+                    </button>
+                </form>
+
+                <div style={styles.footer}>
+                    Already have an account?
+                    <a href="/" style={styles.loginLink}>Sign in</a>
+                </div>
+            </div>
+        );
+    }
+
+    render() {
+        const { planInfo } = this.state;
+
+        if (planInfo) {
+            return (
+                <div className="register-two-column" style={styles.twoColumn}>
+                    <PlanInfoPanel planInfo={planInfo} />
+                    {this.renderForm()}
+                </div>
+            );
+        }
+
+        return this.renderForm();
+    }
+}

@@ -85,7 +85,7 @@ class BandwidthService(BaseService):
             return
 
         recipients_email = [LIVEBLOG_ZENDESK_EMAIL]
-        users = get_resource_service("users").get(
+        users = get_resource_service("liveblog_users").get(
             req=None, lookup={"user_type": "administrator"}
         )
         if users:

@@ -6,6 +6,7 @@ from celery import chain
 from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from liveblog.tenancy.celery import TenantAwareTask
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
 from .exceptions import APIConnectionError
@@ -22,7 +23,7 @@ LIMIT_POSTS = SYNDICATION_LIMIT_POSTS_SENT_TO_CONSUMER
 CHUNK_SIZE = 50
 
 
-@celery.task(bind=True)
+@celery.task(bind=True, base=TenantAwareTask)
 def send_post_to_consumer(self, syndication_out, producer_post, action="created"):
     """Send blog post updates to consumers webhook."""
     from .utils import extract_post_items_data, extract_producer_post_data
@@ -138,7 +139,7 @@ def send_single_post_subtask(self, chained_result, syndication_out, post_data, a
         )
 
 
-@celery.task(bind=True)
+@celery.task(bind=True, base=TenantAwareTask)
 def check_webhook_status(self, consumer_id):
     """Check if consumer webhook is enabled by sending a fake http api request."""
     from .utils import send_api_request
@@ -172,9 +173,9 @@ def check_webhook_status(self, consumer_id):
                 )
                 webhook_enabled = False
 
-        cursor = consumers._cursor()
-        cursor.find_one_and_update(
-            {"_id": consumer["_id"]}, {"$set": {"webhook_enabled": webhook_enabled}}
+        consumers.find_and_modify(
+            query={"_id": consumer["_id"]},
+            update={"$set": {"webhook_enabled": webhook_enabled}},
         )
         push_notification(
             consumers.notification_key,
@@ -183,7 +184,7 @@ def check_webhook_status(self, consumer_id):
         )
 
 
-@celery.task(bind=True)
+@celery.task(bind=True, base=TenantAwareTask)
 def check_api_status(self, producer_or_id):
     producers = get_resource_service("producers")
     producer = producers._get_producer(producer_or_id) or {}
@@ -208,9 +209,9 @@ def check_api_status(self, producer_or_id):
             else:
                 api_status = "enabled"
 
-    cursor = producers._cursor()
-    cursor.find_one_and_update(
-        {"_id": producer["_id"]}, {"$set": {"api_status": api_status}}
+    producers.find_and_modify(
+        query={"_id": producer["_id"]},
+        update={"$set": {"api_status": api_status}},
     )
     push_notification(
         producers.notification_key,
@@ -219,7 +220,7 @@ def check_api_status(self, producer_or_id):
     )
 
 
-@celery.task
+@celery.task(base=TenantAwareTask)
 def unlink_syndicated_posts(producer_blog_id):
     """
     Takes the blog id from which the content was comsumed

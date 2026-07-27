@@ -40,7 +40,7 @@ export default function lbUserSelectList(api) {
                     filters.needs_activation = false;
                 }
 
-                return api('users')
+                return api('liveblog_users')
                     .query({where: JSON.stringify(filters)})
                     .then((result) => {
                         scope.searching = false;

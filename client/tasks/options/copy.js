@@ -60,7 +60,7 @@ module.exports = {
             dot: true,
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
-            src: ['index.html']
+            src: ['index.html', 'register.html']
         }]
     },
     versionEmbedScript: {

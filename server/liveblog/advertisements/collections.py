@@ -8,12 +8,13 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
-from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareService
 
 
 class CollectionsResource(Resource):
     schema = {
-        "name": {"type": "string", "unique": True},
+        "name": {"type": "string"},
+        "tenant_id": Resource.rel("tenants"),
         "advertisements": {
             "type": "list",
             "schema": {
@@ -27,6 +28,12 @@ class CollectionsResource(Resource):
         "deleted": {"type": "boolean", "default": False},
     }
     datasource = {"source": "collections", "default_sort": [("name", 1)]}
+    mongo_indexes = {
+        "collection_name_tenant_unique": (
+            [("name", 1), ("tenant_id", 1)],
+            {"unique": True},
+        ),
+    }
     RESOURCE_METHODS = ["GET", "POST"]
     ITEM_METHODS = ["GET", "POST", "DELETE"]
     privileges = {
@@ -37,7 +44,7 @@ class CollectionsResource(Resource):
     }
 
 
-class CollectionsService(BaseService):
+class CollectionsService(TenantAwareService):
     def delete_advertisement(self, advertisement):
         # find all collections that contains ` advertisement`
         collections = self.find(

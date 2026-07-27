@@ -24,6 +24,8 @@ import 'angular-messages';
 import 'lr-infinite-scroll';
 import 'superdesk-ui-framework';
 
+import React from 'react';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import moment from 'moment-timezone';
 
@@ -91,7 +93,31 @@ import 'liveblog-security.service';
 import 'liveblog-common/notify';
 
 import {EventNames} from './liveblog-common/constants';
+import {getApiUrl} from './liveblog-common/api-url';
+import {getToken} from './liveblog-common/session';
 import 'liveblog-features.service';
+
+import {BillingBanner} from './liveblog-billing/BillingBanner';
+import {ImpersonationBanner} from './liveblog-impersonation/ImpersonationBanner';
+import {isImpersonating, restoreSupportSession} from './liveblog-impersonation/impersonation';
+
+const sdBillingBanner = ['notify', function(notify) {
+    return {
+        restrict: 'E',
+        link: function(scope, element) {
+            const mountPoint = $(element).get(0);
+            const props = {
+                onPortalError: (message) => notify.error(message, 10000),
+            };
+
+            ReactDOM.render(React.createElement(BillingBanner, props), mountPoint);
+
+            scope.$on('$destroy', () => {
+                ReactDOM.unmountComponentAtNode(mountPoint);
+            });
+        },
+    };
+}];
 
 // eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
@@ -188,16 +214,137 @@ liveblog.constant('config', config);
 liveblog.constant('lodash', _);
 liveblog.constant('moment', moment);
 
-liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
-    $locationProvider.hashPrefix('');
-    $routeProvider.when('/', {redirectTo: '/liveblog'});
-    $routeProvider.when('/settings', {redirectTo: '/settings/general'});
+liveblog.factory('billingInterceptor', ['$q', '$injector', function($q, $injector) {
+    return {
+        responseError: function(rejection) {
+            if (rejection.status === 403
+                && rejection.data
+                && rejection.data._issues
+                && rejection.data._issues.billing_error === 'SUBSCRIPTION_REQUIRED') {
+                var notify = $injector.get('notify');
+                var $timeout = $injector.get('$timeout');
+
+                // Clear any existing notifications first, then
+                // show billing message after a short delay to
+                // ensure other error handlers have run.
+                $timeout(() => {
+                    notify.messages.length = 0;
+                    notify.error(
+                        'Active subscription required. '
+                        + 'Please subscribe to continue using LiveBlog.',
+                        10000
+                    );
+                }, 0);
+            }
+
+            return $q.reject(rejection);
+        },
+    };
 }]);
 
-liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
-    function($rootScope, $timeout, notify, gettext, session) {
+liveblog.config([
+    '$routeProvider', '$locationProvider', '$httpProvider',
+    ($routeProvider, $locationProvider, $httpProvider) => {
+        $locationProvider.hashPrefix('');
+        $routeProvider.when('/', {redirectTo: '/liveblog'});
+        $routeProvider.when('/settings', {redirectTo: '/settings/general'});
+        $httpProvider.interceptors.push('billingInterceptor');
+    },
+]);
+
+liveblog.directive('sdBillingBanner', sdBillingBanner);
+
+// body-level like sdBillingBanner, outside any privilege-gated UI, so an
+// impersonated non-admin (and even the login modal after session expiry)
+// still sees the banner and can stop impersonating
+liveblog.directive('lbImpersonationBanner', ['gettext', function(gettext) {
+    return {
+        restrict: 'E',
+        link: function(scope, element) {
+            const mountPoint = $(element).get(0);
+
+            ReactDOM.render(React.createElement(ImpersonationBanner, {gettext: gettext}), mountPoint);
+
+            scope.$on('$destroy', () => {
+                ReactDOM.unmountComponentAtNode(mountPoint);
+            });
+        },
+    };
+}]);
+
+liveblog.run(['$rootScope', 'SESSION_EVENTS', function($rootScope, SESSION_EVENTS) {
+    const restoreIfSessionLost = () => {
+        if (isImpersonating() && getToken() === null) {
+            restoreSupportSession();
+        }
+    };
+
+    // page (re)loaded while the impersonation session was already rejected
+    restoreIfSessionLost();
+
+    // mid-use expiry: a 401 makes the session service drop the token and
+    // broadcast LOGOUT without a reload. The check is deferred so that an
+    // explicit logout, which wipes the support:* backups via storage.clear()
+    // right after broadcasting, does not trigger a restore.
+    $rootScope.$on(SESSION_EVENTS.LOGOUT, () => {
+        setTimeout(restoreIfSessionLost, 0);
+    });
+}]);
+
+liveblog.directive('sdManageSubscription', ['$http', 'config', function($http, config) {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            const apiUrl = getApiUrl(config.server.url);
+
+            $http.get(apiUrl + '/billing/status').then((resp) => {
+                var status = resp.data;
+
+                if (!status.billing_required) {
+                    element.remove();
+                    return;
+                }
+                element.on('click', () => {
+                    $http.post(apiUrl + '/billing/portal', {
+                        return_url: window.location.origin,
+                    }).then((portalResp) => {
+                        window.location.href = portalResp.data.url;
+                    });
+                });
+            })
+                .catch(() => {
+                    element.remove();
+                });
+        },
+    };
+}]);
+
+liveblog.directive('sdRegisterLink', ['$http', 'config', function($http, config) {
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            const apiUrl = getApiUrl(config.server.url);
+
+            element.attr('href', '/register.html');
+
+            $http.get(apiUrl + '/billing/config')
+                .then((resp) => {
+                    var cfg = resp.data;
+
+                    if (cfg.billing_required && cfg.pricing_url) {
+                        element.attr('href', cfg.pricing_url);
+                    }
+                })
+                .catch(() => undefined);
+        },
+    };
+}]);
+
+liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$http', 'config',
+    function($rootScope, $timeout, notify, gettext, session, $http, config) {
         let alertTimeout;
         let notificationId;
+
 
         $rootScope.$on(EventNames.Disconnected, (event) => {
             $timeout.cancel(alertTimeout);

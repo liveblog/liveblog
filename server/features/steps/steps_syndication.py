@@ -11,6 +11,7 @@ from superdesk.tests.steps import (
     set_user_default,
     store_placeholder,
 )
+from liveblog.tests import tenant_request_context
 
 
 @given("config consumer api_key")
@@ -44,7 +45,7 @@ def then_we_get_producer_blogs(context, producer_id):
     blog_service = get_resource_service("blogs")
     producer_service = get_resource_service("producers")
 
-    with context.app.test_request_context(context.app.config["URL_PREFIX"]):
+    with tenant_request_context(context):
         producer = producer_service.find_one(_id=producer_id, req=None)
         blogs = list(blog_service.find(where={"syndication_enabled": True}))
 

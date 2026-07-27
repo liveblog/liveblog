@@ -1,13 +1,17 @@
 # flake8: noqa
 import json
-import liveblog.items as items
+import flask
+import datetime
+from bson import ObjectId
+from unittest.mock import patch
+
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
+
+from liveblog.common import run_once
+from liveblog import items, tenants, liveblog_users
 from liveblog.items.items import drag_and_drop_blueprint
-from bson import ObjectId
-import datetime
-from unittest.mock import patch
-import flask
+from liveblog.tests.helpers import setup_tenant_for_test
 
 
 class Foo:
@@ -155,13 +159,18 @@ class ItemsTest(TestCase):
 
 
 class ClientModuleTest(TestCase):
+    @run_once
+    def set_up_apps(self):
+        for app in [tenants, items, liveblog_users]:
+            app.init_app(self.app)
+
     def setUp(self):
-        items.init_app(self.app)
+        self.set_up_apps()
         test_config = {"LIVEBLOG_DEBUG": True, "EMBED_PROTOCOL": "http://"}
         self.app.config.update(test_config)
         self.client = self.app.test_client()
         self.items_service = get_resource_service("items")
-        self.users_service = get_resource_service("users")
+        self.users_service = get_resource_service("liveblog_users")
         self.app.register_blueprint(drag_and_drop_blueprint)
 
         self.item_meta_doc = {
@@ -217,6 +226,9 @@ class ClientModuleTest(TestCase):
             }
         ]
 
+        # Create tenant for test
+        tenant_id = setup_tenant_for_test(self.app)
+
         self.user_list = [
             {
                 "username": "admin",
@@ -228,6 +240,7 @@ class ClientModuleTest(TestCase):
                 "sign_off": "off",
                 "byline": "by",
                 "email": "abc@other.com",
+                "tenant_id": tenant_id,
             }
         ]
 
@@ -244,7 +257,7 @@ class ClientModuleTest(TestCase):
         self.assertTrue(mock_logger.info.called)
 
     def test_c_item_on_create(self):
-        flask.g.user = get_resource_service("users").find_one(
+        flask.g.user = get_resource_service("liveblog_users").find_one(
             req=None, username="admin"
         )
         self.assertIsNone(self.item_doc[0].get("original_creator"), True)

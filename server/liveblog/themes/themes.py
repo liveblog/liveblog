@@ -21,6 +21,7 @@ from math import ceil
 
 from bson.objectid import ObjectId
 from eve.io.mongo import MongoJSONEncoder
+from eve.utils import ParsedRequest
 from flask_cors import cross_origin
 from flask import make_response, request, current_app as app
 
@@ -31,8 +32,9 @@ from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 from liveblog.utils.api import api_error
+from liveblog.tenancy import get_tenant_id
+from liveblog.tenancy.service import TenantAwareService
 
-from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
 from .template.filters import (
@@ -44,6 +46,7 @@ from .template.filters import (
     fix_x_domain_embed,
 )
 from .template.loaders import ThemeTemplateLoader
+from settings import COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY
 
 
 logger = logging.getLogger("superdesk")
@@ -81,7 +84,8 @@ class UndefinedVar(jinja2.Undefined):
 
 class ThemesResource(Resource):
     schema = {
-        "name": {"type": "string", "unique": True},
+        "name": {"type": "string"},
+        "tenant_id": Resource.rel("tenants", required=False, nullable=True),
         "label": {"type": "string"},
         "extends": {"type": "string"},
         "abstract": {"type": "boolean"},
@@ -121,8 +125,32 @@ class ThemesResource(Resource):
         "template": {"type": "string", "default": ""},
         "files": {"type": "dict", "mapping": {"type": "object", "enabled": False}},
     }
-    datasource = {"source": "themes", "default_sort": [("_updated", -1)]}
+    datasource = {
+        "source": "themes",
+        "default_sort": [("_updated", -1)],
+        "search_backend": None,
+    }
     additional_lookup = {"url": 'regex("[\w\-]+")', "field": "name"}
+
+    mongo_indexes = {
+        # System themes: name must be globally unique (tenant_id = null)
+        "system_theme_name_unique": (
+            [("name", 1)],
+            {
+                "unique": True,
+                "partialFilterExpression": {"tenant_id": {"$eq": None}},
+            },
+        ),
+        # User themes: (name, tenant_id) must be unique per tenant
+        # Uses $type to match only documents where tenant_id exists and is an ObjectId
+        "user_theme_name_tenant_unique": (
+            [("name", 1), ("tenant_id", 1)],
+            {
+                "unique": True,
+                "partialFilterExpression": {"tenant_id": {"$type": "objectId"}},
+            },
+        ),
+    }
 
     etag_ignore_fields = ["_type", "template"]
 
@@ -140,30 +168,131 @@ class UnknownTheme(Exception):
     pass
 
 
-class ThemesService(BaseService):
-    def get(self, req, lookup):
+class ThemesService(TenantAwareService, BaseService):
+    def get(self, req, lookup={}):
         """
-        Simply override just because we don't have pagination in themes ui
-        so we set max_results to 50 expecting clients won't have more than 50
-        themes (at least for now)
+        Get themes: includes system themes (tenant_id=null) and current tenant's themes.
+        Overrides the default TenantAwareService behavior that only filters by tenant_id.
+        Sets max_results to 50 expecting clients won't have more than 50 themes.
         """
+        if req is None:
+            req = ParsedRequest()
 
-        if req:
-            req.max_results = THEMES_MAX_RESULTS
-        return super().get(req, lookup)
+        req.max_results = THEMES_MAX_RESULTS
+
+        if self.is_system_request():
+            return super(TenantAwareService, self).get(req, lookup)
+
+        tenant_id = get_tenant_id(required=True)
+        if "$or" not in lookup:
+            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
+
+        return self.backend.get(self.datasource, req=req, lookup=lookup)
+
+    def find_one(self, req, **lookup):
+        """
+        Override find_one to include system themes.
+
+        Allows tenants to access system themes by ID (for viewing, but not modifying).
+        """
+        if self.is_system_request():
+            return super(TenantAwareService, self).find_one(req, **lookup)
+
+        tenant_id = get_tenant_id(required=True)
+
+        if "$or" not in lookup:
+            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
+
+        return self.backend.find_one(self.datasource, req=req, **lookup)
+
+    def get_from_mongo(self, req, lookup):
+        """
+        Override get_from_mongo to include system themes.
+
+        This method is used by Eve for some item lookups.
+        """
+        if lookup is None:
+            lookup = {}
+
+        if self.is_system_request():
+            return super(TenantAwareService, self).get_from_mongo(req, lookup)
+
+        tenant_id = get_tenant_id(required=True)
+
+        if "$or" not in lookup:
+            if isinstance(tenant_id, str):
+                tenant_id = ObjectId(tenant_id)
+            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
+
+        return self.backend.get(self.datasource, req=req, lookup=lookup)
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
 
+        tenant_id = get_tenant_id(required=False)
+
+        # Only enrich themes when there's a tenant context
+        # Without tenant, return raw theme documents (for tests, system operations)
+        if not tenant_id:
+            return
+
+        theme_settings_service = get_resource_service("theme_settings")
+
         for doc in docs["_items"]:
             theme_name = doc.get("name")
-            blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get_from_mongo(
-                req=None, lookup={"blog_preferences.theme": theme_name}
+
+            # Merge tenant-specific customizations
+            effective_settings = theme_settings_service.get_effective_settings(
+                theme_name, tenant_id
             )
+            effective_style_settings = (
+                theme_settings_service.get_effective_style_settings(
+                    theme_name, tenant_id
+                )
+            )
+
+            if effective_settings:
+                doc["settings"] = effective_settings
+            if effective_style_settings:
+                doc["styleSettings"] = effective_style_settings
+
+            # Count blogs in current tenant using this theme
+            blogs_service = get_resource_service("blogs")
+            lookup = {
+                "blog_preferences.theme": theme_name,
+                "tenant_id": tenant_id,
+            }
+
+            blogs = blogs_service.find(lookup)
             blogs_list = list(blogs)
             blogs_count = len(blogs_list)
             doc["blogs_data"] = {"_items": blogs_list, "total": blogs_count}
+
+    def on_fetched_item(self, doc):
+        """
+        Merge effective settings when fetching a single theme.
+        """
+        super().on_fetched_item(doc)
+
+        tenant_id = get_tenant_id(required=False)
+
+        if tenant_id:
+            theme_name = doc.get("name")
+            theme_settings_service = get_resource_service("theme_settings")
+
+            effective_settings = theme_settings_service.get_effective_settings(
+                theme_name, tenant_id
+            )
+            effective_style_settings = (
+                theme_settings_service.get_effective_style_settings(
+                    theme_name, tenant_id
+                )
+            )
+
+            if effective_settings:
+                doc["settings"] = effective_settings
+            if effective_style_settings:
+                doc["styleSettings"] = effective_style_settings
 
     def get_options(self, theme, options=None, parents=[], optionsKey="options"):
         """
@@ -494,28 +623,6 @@ class ThemesService(BaseService):
             theme_settings.update(default_prev_theme_settings)
             theme["settings"] = theme_settings
 
-            # Set theme settings for blogs using previous theme.
-            blogs_service = get_resource_service("blogs")
-            blogs = blogs_service.get(
-                req=None, lookup={"blog_preferences.theme": previous_theme["name"]}
-            )
-            for blog in blogs:
-                # Create new settings values for the blog based on uploaded theme settings.
-                new_theme_settings = default_theme_settings.copy()
-                for key, value in blog.get("theme_settings", {}).items():
-                    # If values of theme setting from blog level are the same as previous update the settings.
-                    if value == default_prev_theme_settings.get(key, None):
-                        new_theme_settings[key] = value
-                    # Otherwise we keep the value that is already available.
-                    else:
-                        default_theme_settings[key] = value
-
-                new_theme_settings.update(default_theme_settings)
-                # Save the blog with the new settings
-                blogs_service.system_update(
-                    ObjectId(blog["_id"]), {"theme_settings": new_theme_settings}, blog
-                )
-
         return theme_settings, default_theme_settings
 
     def _set_style_settings(self, theme, previous_theme):
@@ -548,7 +655,18 @@ class ThemesService(BaseService):
         self._save_theme_files(theme)
 
         is_local_theme = self.is_local_theme(theme_name)
-        previous_theme = self.find_one(req=None, name=theme_name)
+
+        # Set tenant_id: None for system themes, current tenant for user-uploaded themes
+        if is_local_theme:
+            theme["tenant_id"] = None
+            previous_theme = self.find_one(req=None, name=theme_name)
+        else:
+            # User-uploaded themes belong to current tenant
+            tenant_id = get_tenant_id(required=False)
+            theme["tenant_id"] = tenant_id
+            previous_theme = self.find_one(
+                req=None, name=theme_name, tenant_id=tenant_id
+            )
 
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
@@ -660,20 +778,113 @@ class ThemesService(BaseService):
             countdown += delay
 
     def check_themes_limit(self, docs=[]):
-        current_themes_count = self.find({}).count() + len(docs)
+        """
+        Check if creating new themes would exceed the tenant's quota.
+
+        Counts both system themes (globally available) and tenant-specific themes
+        against the tenant's custom_themes limit.
+
+        Args:
+            docs: List of theme documents being created
+
+        Raises:
+            SuperdeskApiError: 403 Forbidden if quota would be exceeded
+        """
+        if self.is_system_request():
+            return
+
+        tenant_id = get_tenant_id(required=True)
+
+        if isinstance(tenant_id, str):
+            tenant_id = ObjectId(tenant_id)
+
+        # Count all accessible themes (system + tenant-specific)
+        # Must query MongoDB directly to bypass TenantAwareService filtering
+        where = {"$or": [{"tenant_id": None}, {"tenant_id": tenant_id}]}
+
+        # Bypass TenantAwareService's query filtering
+        cursor = self.backend.find(self.datasource, where)
+        current_themes_count = cursor.count() + len(docs)
 
         if app.features.is_limit_reached("custom_themes", current_themes_count):
             raise SuperdeskApiError.forbiddenError(message="Cannot add another theme.")
 
     def on_create(self, docs):
-        self.check_themes_limit(docs)
+        # For system themes, explicitly set tenant_id = None
+        # For user themes, leave tenant_id unset and let parent class set it
+        for doc in docs:
+            if "tenant_id" not in doc:
+                theme_name = doc.get("name")
+                if theme_name and self.is_local_theme(theme_name):
+                    doc["tenant_id"] = None
+
+        has_system_themes = any(
+            "tenant_id" in doc and doc["tenant_id"] is None for doc in docs
+        )
+
+        if not has_system_themes:
+            self.check_themes_limit(docs)
+
+        super().on_create(docs)
+
+    def on_update(self, updates, original):
+        """
+        Route settings/styleSettings to theme_settings collection instead of the theme document.
+
+        Theme documents are effectively read-only after upload — only tenant customizations
+        change. Popping settings here prevents them being written to the theme document.
+        The _settings_updated flag signals on_updated to inject the effective merged
+        settings into the PATCH response.
+
+        TODO MIGRATION: For existing single-tenant instances upgrading to multi-tenancy:
+        Migrate existing theme customizations from themes.settings/styleSettings to
+        theme_settings collection. See MIGRATION_GUIDE.md for details.
+        """
+        settings = updates.pop("settings", None)
+        style_settings = updates.pop("styleSettings", None)
+        settings_updated = settings is not None or style_settings is not None
+
+        if settings_updated and not self.is_system_request():
+            tenant_id = get_tenant_id(required=True)
+            theme_settings_service = get_resource_service("theme_settings")
+            theme_settings_service.save_or_update_settings(
+                theme_name=original["name"],
+                tenant_id=tenant_id,
+                settings_payload=settings or {},
+                style_settings_payload=style_settings or {},
+            )
+            updates["_settings_updated"] = True
+
+        super().on_update(updates, original)
 
     def on_updated(self, updates, original):
-        # Republish the related blogs if the settings have been changed.
-        if "settings" in updates:
+        """
+        Inject effective settings into the PATCH response after the DB write.
+
+        Eve builds the response from {**original, **updates}. Since settings were
+        popped in on_update (to avoid writing them to the theme document), we re-fetch
+        the freshly saved effective settings here and add them back to updates so the
+        response reflects the tenant's customizations rather than theme-level defaults.
+        """
+        if updates.pop("_settings_updated", False):
+            tenant_id = get_tenant_id(required=False)
+            if tenant_id and not self.is_system_request():
+                theme_settings_service = get_resource_service("theme_settings")
+                updates["settings"] = theme_settings_service.get_effective_settings(
+                    original["name"], tenant_id
+                )
+                updates[
+                    "styleSettings"
+                ] = theme_settings_service.get_effective_style_settings(
+                    original["name"], tenant_id
+                )
+
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
+        if deleted_theme.get("tenant_id") is None:
+            raise SuperdeskApiError.forbiddenError("System themes cannot be deleted")
+
         global_default_theme = get_resource_service(
             "global_preferences"
         ).get_global_prefs()["theme"]
@@ -689,12 +900,19 @@ class ThemesService(BaseService):
                 "This theme has child themes and cannot be removed"
             )
 
-        # Update all the blogs using the removed theme and assign the default theme.
+        # Update blogs in the same tenant using the removed theme
+        # Only tenant themes can be deleted (checked above), so we only need to
+        # reassign blogs in the same tenant
         blogs_service = get_resource_service("blogs")
-        blogs = blogs_service.get(
-            req=None, lookup={"blog_preferences.theme": deleted_theme["name"]}
-        )
+        theme_tenant_id = deleted_theme.get("tenant_id")
 
+        # Query only blogs with same tenant_id as the deleted theme
+        lookup = {
+            "blog_preferences.theme": deleted_theme["name"],
+            "tenant_id": theme_tenant_id,
+        }
+
+        blogs = blogs_service.find(lookup)
         for blog in blogs:
             blog["blog_preferences"]["theme"] = global_default_theme
             blogs_service.system_update(
