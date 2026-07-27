@@ -9,7 +9,7 @@
     "test:codegen": "playwright codegen http://localhost:9000"
   },
   "dependencies": {
-    "@playwright/test": "^1.51.0",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.7.0"
   },
