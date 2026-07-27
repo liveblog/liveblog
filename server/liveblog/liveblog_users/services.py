@@ -18,6 +18,21 @@ class LiveBlogUsersService(TenantAwareService, DBUsersService):
     - /api/liveblog_users → this service (public API, tenant-filtered)
     """
 
+    def on_create(self, docs):
+        for doc in docs:
+            # Support users are provisioned via CLI only, never through REST
+            doc.pop("is_support", None)
+        super().on_create(docs)
+
+    def on_update(self, updates, original):
+        # Strip fields a tenant client must never change: is_support is
+        # CLI-provisioned and tenant_id is immutable after creation. The REST
+        # PATCH is already schema-blocked from setting tenant_id, so this pop
+        # also guards internal service.patch callers.
+        updates.pop("is_support", None)
+        updates.pop("tenant_id", None)
+        super().on_update(updates, original)
+
     def on_created(self, docs):
         super().on_created(docs)
         push_notification("users:created")

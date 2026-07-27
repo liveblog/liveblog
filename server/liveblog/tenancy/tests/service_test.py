@@ -150,24 +150,21 @@ class TenantAwareServiceTestCase(TenantAwareTestCase):
             mock_parent_get.assert_called_once()
 
     def test_on_create_adds_tenant_id_to_documents(self):
-        """Test on_create adds tenant_id to new documents."""
+        """Test on_create stamps the caller's tenant_id on new documents."""
         flask.g.user = self.user_with_tenant
 
         docs = [
             {"title": "Doc 1"},
             {"title": "Doc 2"},
-            {"title": "Doc 3", "tenant_id": ObjectId()},  # Should not override
+            # A client-supplied tenant_id is never trusted
+            {"title": "Doc 3", "tenant_id": ObjectId()},
         ]
 
         with patch("superdesk.services.BaseService.on_create"):
             self.service.on_create(docs)
 
-            # First two docs should have tenant_id added
-            self.assertEqual(docs[0]["tenant_id"], self.tenant_id)
-            self.assertEqual(docs[1]["tenant_id"], self.tenant_id)
-
-            # Third doc should keep its original tenant_id
-            self.assertNotEqual(docs[2]["tenant_id"], self.tenant_id)
+            for doc in docs:
+                self.assertEqual(doc["tenant_id"], self.tenant_id)
 
     def test_on_create_converts_string_tenant_id_to_objectid(self):
         """Test on_create converts string tenant_id to ObjectId."""

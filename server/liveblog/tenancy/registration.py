@@ -81,6 +81,18 @@ class RegistrationService:
         users_service = get_resource_service("users")
         tenants_service = get_resource_service("tenants")
 
+        # Registration is public and unauthenticated, and posts through the
+        # system users service, which bypasses Eve schema validation. Strip
+        # server-controlled fields so a caller cannot self-grant them.
+        # is_support in particular is the gate for all /api/support tools.
+        for protected_field in (
+            "is_support",
+            "user_type",
+            "privileges",
+            "active_privileges",
+        ):
+            user_data.pop(protected_field, None)
+
         # Check for duplicate username globally (across all tenants)
         # The 'users' service has no tenant filtering, so this checks all users
         existing = users_service.find_one(req=None, username=user_data["username"])

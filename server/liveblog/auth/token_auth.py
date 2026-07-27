@@ -30,6 +30,13 @@ def get_authenticated_user_from_context():
     return flask.g.get("user")
 
 
+def is_support_user(user=None):
+    """Check if the given user (or the request user when omitted) has support rights."""
+    if user is None:
+        user = get_authenticated_user_from_context()
+    return bool(user and user.get("is_support", False))
+
+
 def get_request_auth_token():
     """Return the current request auth token using Superdesk/Eve parsing rules."""
     auth = getattr(request, "authorization", None)

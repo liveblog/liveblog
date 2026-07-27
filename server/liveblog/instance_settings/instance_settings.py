@@ -1,4 +1,3 @@
-import flask
 import logging
 
 from copy import deepcopy
@@ -11,6 +10,7 @@ from superdesk.resource import Resource
 from superdesk.errors import SuperdeskApiError
 from superdesk.services import BaseService
 from superdesk.notification import push_notification
+from liveblog.auth.token_auth import is_support_user
 from liveblog.utils.api import api_response
 
 logger = logging.getLogger(__name__)
@@ -55,10 +55,7 @@ class InstanceSettingsService(BaseService):
         """
         Checks if the user is allowed to execute actions over instance settings
         """
-        if not getattr(flask.g, "user", None):
-            return False
-
-        return flask.g.user.get("is_support", False)
+        return is_support_user()
 
     def create(self, docs, **kwargs):
         # skip permissions if it's comming from initialize_data command

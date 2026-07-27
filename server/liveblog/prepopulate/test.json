@@ -46,6 +46,66 @@
         "id_name": "-id admin-"
     },
     {
+        "resource": "tenants",
+        "id_name": "-id support-tenant-",
+        "data": {
+            "name": "Support Internal",
+            "subscription_level": "network"
+        }
+    },
+    {
+        "resource": "users",
+        "data": {
+            "username": "support",
+            "first_name": "Sonia",
+            "last_name": "the support",
+            "password": "support",
+            "user_type": "administrator",
+            "email": "support@other.com",
+            "sign_off": "sts",
+            "needs_activation": false,
+            "is_support": true,
+            "tenant_id": "-id support-tenant-"
+        }
+    },
+    {
+        "resource": "tenants",
+        "data": {
+            "name": "Ownerless",
+            "subscription_level": "solo"
+        }
+    },
+    {
+        "resource": "tenants",
+        "id_name": "-id pending-owner-tenant-",
+        "data": {
+            "name": "Pending Owner",
+            "subscription_level": "solo"
+        }
+    },
+    {
+        "resource": "users",
+        "id_name": "-id pending-owner-user-",
+        "data": {
+            "username": "pending_owner",
+            "first_name": "Pending",
+            "last_name": "Owner",
+            "password": "pending",
+            "user_type": "administrator",
+            "email": "pending.owner@other.com",
+            "sign_off": "po",
+            "needs_activation": true,
+            "tenant_id": "-id pending-owner-tenant-"
+        }
+    },
+    {
+        "resource": "tenants",
+        "id_update": "-id pending-owner-tenant-",
+        "data": {
+            "owner_user_id": "-id pending-owner-user-"
+        }
+    },
+    {
         "resource": "users",
         "data": {
             "username": "editor",

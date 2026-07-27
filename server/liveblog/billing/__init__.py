@@ -27,6 +27,10 @@ BILLING_EXEMPT_PREFIXES = (
     "/api/prepopulate",
     "/api/client_",
     "/api/syndication/webhook",
+    # Support tools are self-gated on is_support and must work regardless of
+    # the tenant's subscription state, e.g. stopping an impersonation of a
+    # tenant whose subscription expired
+    "/api/support/",
 )
 
 

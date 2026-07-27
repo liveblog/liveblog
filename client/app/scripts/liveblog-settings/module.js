@@ -2,9 +2,11 @@
 
 import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
 import instanceTpl from 'scripts/liveblog-settings/views/instance-settings.ng1';
+import supportTenantsTpl from 'scripts/liveblog-settings/views/support-tenants.ng1';
 import LiveblogSettingsController from './controllers/general-settings.ts';
 import LiveblogInstanceSettingsController from './controllers/instance-settings.ts';
 import {renderTagsManager} from './components/tagsManager';
+import {renderSupportTenantsPane, unmountSupportTenantsPane} from './components/SupportTenantsPane';
 import {lbSettingsView} from './directives/lbSettingsView';
 import loginScreenTpl from '../liveblog-registration/login-screen.html';
 
@@ -36,6 +38,15 @@ const liveblogSettings = angular.module('liveblog.settings', [])
                 privileges: {global_preferences: 1},
                 liveblogSetting: true,
                 liveblogSupportTools: true,
+            })
+            .activity('/settings/tenants', {
+                label: gettext('Tenants'),
+                controller: angular.noop,
+                templateUrl: supportTenantsTpl,
+                category: superdesk.MENU_SETTINGS,
+                privileges: {global_preferences: 1},
+                liveblogSetting: true,
+                liveblogSupportTools: true,
             });
     }])
     .config(['$provide', function($provide) {
@@ -44,12 +55,28 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             return $delegate;
         }]);
 
-        // superdesk-core's usersService.save uses api.save('users', ...). The
-        // function form bypasses the apiProvider.api('users') override below
-        // and posts to /api/users, dropping tenant_id injection. Route through
-        // api.users (the property form), which honors rel: 'liveblog_users'.
+        // The system-level users resource is internal on the server: /api/users
+        // is gone from REST and from the HATEOAS links, so any function-form
+        // resolution (api('users'), api.save('users', ...), api.find('users', ...),
+        // userList, core authoring/desks helpers) would reject with 404 from
+        // urls.resource('users'). Redirect the resource name at the url-resolver
+        // level so every remaining core call lands on the tenant-scoped
+        // liveblog_users endpoint.
+        $provide.decorator('urls', ['$delegate', function($delegate) {
+            const originalResource = $delegate.resource.bind($delegate);
+
+            $delegate.resource = (resource) =>
+                originalResource(resource === 'users' ? 'liveblog_users' : resource);
+            return $delegate;
+        }]);
+
+        // superdesk-core's usersService.save uses api.save('users', ...), which
+        // bypasses the apiProvider.api('users') override below. The urls
+        // decorator above now redirects that too; this stays as an explicit
+        // route through api.users (rel: 'liveblog_users') so tenant_id
+        // injection does not depend on the url-resolver behavior.
         // The 'users:created' websocket push from LiveBlogUsersService.on_created
-        // drives the list refresh — see the .run() listener below.
+        // drives the list refresh, see the .run() listener below.
         $provide.decorator('usersService', ['$delegate', 'api',
             function($delegate, api) {
                 $delegate.save = (user, data) => api.users.save(user, data);
@@ -80,10 +107,9 @@ const liveblogSettings = angular.module('liveblog.settings', [])
     }])
     .config(['apiProvider', function(apiProvider) {
         // Bind the 'users' resource alias to the tenant-isolated
-        // liveblog_users backend. NOTE: this only redirects the property-form
-        // api.users.* — the function-form api(...)/api.save('users', ...) still
-        // resolves to /api/users, so callers must use api.users explicitly or
-        // be patched via a $provide.decorator (see usersService above).
+        // liveblog_users backend. This redirects the property-form api.users.*;
+        // the function-form api(...)/api.save('users', ...) is covered by the
+        // urls decorator above.
         apiProvider.api('users', {
             type: 'http',
             backend: {rel: 'liveblog_users'},
@@ -104,6 +130,23 @@ const liveblogSettings = angular.module('liveblog.settings', [])
             type: 'http',
             backend: {rel: 'instance_settings'},
         });
+    }])
+    .directive('lbSupportTenantsPane', ['notify', 'gettext', function(notify, gettext) {
+        return {
+            restrict: 'A',
+            link: function(scope, element) {
+                const mountPoint = $(element).get(0);
+
+                renderSupportTenantsPane(mountPoint, {
+                    gettext: gettext,
+                    onError: (message) => notify.error(message),
+                });
+
+                scope.$on('$destroy', () => {
+                    unmountSupportTenantsPane(mountPoint);
+                });
+            },
+        };
     }])
     .directive('renderTagsComponent', [function() {
         return {
