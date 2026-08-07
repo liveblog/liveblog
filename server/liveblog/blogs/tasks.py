@@ -351,13 +351,13 @@ def publish_bloglist_assets(asset_type):
     for name in assets[asset_type]:
         asset_file = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, name)
         with open(asset_file, "rb") as file:
-            # Set the content type.
-            mime = magic.Magic(mime=True)
-            content_type = mime.from_file(asset_file)
-            if content_type == "text/plain" and name.endswith(
-                tuple(CONTENT_TYPES.keys())
-            ):
-                content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
+            # libmagic mislabels svg as "image/svg"; trust our extension map.
+            ext = os.path.splitext(name)[1]
+            if ext in CONTENT_TYPES:
+                content_type = CONTENT_TYPES[ext]
+            else:
+                mime = magic.Magic(mime=True)
+                content_type = mime.from_file(asset_file)
 
             final_file_name = os.path.join(BLOGSLIST_ASSETS_DIR, name)
             # Remove existing first.

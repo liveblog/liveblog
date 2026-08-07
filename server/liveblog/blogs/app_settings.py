@@ -26,4 +26,6 @@ CONTENT_TYPES = {
     ".css": "text/css",
     ".js": "application/javascript",
     ".json": "application/json",
+    ".svg": "image/svg+xml",
+    ".svgz": "image/svg+xml",
 }
