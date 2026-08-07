@@ -389,13 +389,13 @@ class ThemesService(BaseService):
             upload_path = self.get_theme_path(theme_name)
 
         with open(name, "rb") as file:
-            # Set the content type
-            mime = magic.Magic(mime=True)
-            content_type = mime.from_file(name)
-            if content_type == "text/plain" and name.endswith(
-                tuple(CONTENT_TYPES.keys())
-            ):
-                content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
+            # libmagic mislabels svg as "image/svg"; trust our extension map.
+            ext = os.path.splitext(name)[1]
+            if ext in CONTENT_TYPES:
+                content_type = CONTENT_TYPES[ext]
+            else:
+                mime = magic.Magic(mime=True)
+                content_type = mime.from_file(name)
 
             final_file_name = os.path.join(
                 theme_name, os.path.relpath(name, upload_path)
