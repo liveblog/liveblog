@@ -4,7 +4,7 @@
     "allow": [
       "Bash(./scripts/dev/setup.sh*)",
       "Bash(./scripts/dev/up.sh*)",
-      "Bash(./scripts/dev/down.sh*)",
+      "Bash(./scripts/dev/down.sh)",
       "Bash(docker info*)",
       "Bash(docker compose -f docker/docker-compose-dev-services.yml ps*)",
       "Bash(docker compose -f docker/docker-compose-dev-services.yml logs*)",

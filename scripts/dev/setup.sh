@@ -142,7 +142,8 @@ if [ "$REINIT" = true ] || [ ! -f "$SETUP_SENTINEL" ]; then
     # anything else, so a broken admin can't masquerade as a good setup.
     create_out=""
     if ! create_out=$( (cd "$SERVER_DIR" && "$VENV_BIN/python" manage.py \
-            users:create -u admin -p admin -e 'admin@example.com' --admin) 2>&1 ); then
+            users:create -u admin -p admin -e 'admin@example.com' \
+            -fn Frodo -ln Baggins --admin) 2>&1 ); then
         if printf '%s' "$create_out" | grep -qiE 'already exists|duplicate|E11000'; then
             log "admin user already exists; leaving it as-is"
         else

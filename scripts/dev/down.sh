@@ -30,6 +30,8 @@ HONCHO_PIDFILE="$RUN_DIR/honcho.pid"
 GRUNT_PIDFILE="$RUN_DIR/grunt.pid"
 SETUP_SENTINEL="$RUN_DIR/.setup-done"
 
+log() { printf '\n[liveblog-down] %s\n' "$*"; }
+
 # Resolve PORT identically to up.sh, so the port-based fallback never touches
 # macOS's AirPlay listener on :5000 unless the user explicitly forced it.
 if [ -n "${PORT:-}" ]; then
@@ -41,11 +43,22 @@ else
 fi
 WSPORT="${WSPORT:-5100}"
 
+# Source the same optional repo-root .env that up.sh does (after the defaults,
+# so it wins), so a PORT/WSPORT set only in .env is honoured here too. Without
+# this, the orphaned-process port sweep below — the whole reason the sweep
+# exists — would go after the wrong ports. errexit isn't set in this script,
+# but keep the same guarded block as up.sh for parity.
+if [ -f "$REPO_ROOT/.env" ]; then
+    log "loading overrides from .env"
+    set -a
+    # shellcheck disable=SC1091
+    . "$REPO_ROOT/.env"
+    set +a
+fi
+
 # Used only to scope the celery-straggler sweep to this project's virtualenv,
 # so we never kill an unrelated celery worker on the same machine.
 LIVEBLOG_VENV="${LIVEBLOG_VENV:-liveblog}"
-
-log() { printf '\n[liveblog-down] %s\n' "$*"; }
 
 # Kill whatever is listening on a port (best effort).
 kill_port() {
