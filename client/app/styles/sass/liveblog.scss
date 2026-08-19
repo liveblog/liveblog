@@ -474,6 +474,25 @@ i.icon-star.orange {
     background-color: $lb-header-bg !important;
 }
 
+#top-menu .collapse-nav .icon-collapse {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    font-size: 0;
+    &:before {
+        content: none;
+    }
+    background-color: white;
+    -webkit-mask-image: url('~images/icons/menu.svg');
+    mask-image: url('~images/icons/menu.svg');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
 .btn--contact-support {
     background-color: $lb-contact-support-bg !important;
     border-color: $lb-contact-support-bg !important;
@@ -509,7 +528,22 @@ i.icon-star.orange {
     align-items: center;
     justify-content: center;
     i {
-        color: white;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        font-size: 0;
+        &:before {
+            content: none;
+        }
+        background-color: white;
+        -webkit-mask-image: url('~images/icons/layout-grid.svg');
+        mask-image: url('~images/icons/layout-grid.svg');
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
     }
 }
 
