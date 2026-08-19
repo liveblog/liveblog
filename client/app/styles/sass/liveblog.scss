@@ -40,8 +40,7 @@
 }
 
 .button-stack.right-stack .navbtn {
-  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
-  //border-right: 0 !important;
+  border-left: none !important;
   line-height: 46px;
   width: auto;
   min-width: 48px;
@@ -336,6 +335,8 @@
 /* UI fixes */
 #main-container > div.subnav div.button-stack.right-stack {
     margin: 0;
+    border: none !important;
+    box-shadow: none !important;
 }
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -462,4 +463,61 @@ i.icon-star.orange {
         padding-top: 0.8em !important;
         margin-bottom: 0.8em !important;
     }
+}
+
+// ============================================================
+// Liveblog redesign — 2026 palette (global header + subnav)
+// Shared across all pages, not just the blog editor.
+// ============================================================
+
+#top-menu {
+    background-color: $lb-header-bg !important;
+}
+
+.btn--contact-support {
+    background-color: $lb-contact-support-bg !important;
+    border-color: $lb-contact-support-bg !important;
+    color: white !important;
+    border-radius: $lb-radius-pill !important;
+    text-transform: none !important;
+}
+
+#top-menu .current-user figure.avatar.initials {
+    background-color: white !important;
+    span {
+        color: $lb-contact-support-bg;
+    }
+}
+
+.subnav {
+    background-color: $lb-subnav-bg !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.page-nav-title {
+    color: $lb-subnav-text;
+}
+
+.homebtn {
+    background-color: $lb-subnav-icon-square !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    margin: 6px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    i {
+        color: white;
+    }
+}
+
+div.subnav div.button-stack.left-stack a.homebtn {
+    border-right: none !important;
+}
+
+div.subnav div.button-stack .navbtn i,
+.button-stack.right-stack .navbtn {
+    color: $lb-subnav-text;
 }
