@@ -3,23 +3,64 @@
 @import '~lb-variables.scss';
 @import '~lb-mixins.scss';
 
+// Recolor the left-rail icons via CSS mask instead of swapping the
+// baked-in-color SVG assets (they render on a background-image,
+// so `color`/currentColor can't reach them).
+@mixin lb-icon-mask($url) {
+    background-image: none !important;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: $lb-rail-inactive;
+}
+
 .blogedit {
     //left menu
     .side-menu {
         position: absolute;
         left: 0; top:0; bottom: 0;
         width: 48px;
-        background: #a1a1a1;
+        background: white;
         button {
             width: 48px;
             border:0;
-            border-bottom:1px solid $grayLight;
+            border-bottom: none;
             padding: 0;
             line-height: 0;
             &.active,
             &:hover {
-                background: #b8b8b8;
+                background: $lb-rail-active-bg;
             }
+            &.timeline strong {
+                color: $lb-rail-inactive;
+            }
+            &.timeline.active strong,
+            &.timeline:hover strong {
+                color: $lb-rail-active;
+            }
+        }
+
+        .lb-big-icon-editor { @include lb-icon-mask(url('~images/editor.svg')); }
+        .lb-big-icon-contributions { @include lb-icon-mask(url('~images/contributions.svg')); }
+        .lb-big-icon-scheduled-posts { @include lb-icon-mask(url('~images/scheduled-posts.svg')); }
+        .lb-big-icon-archive { @include lb-icon-mask(url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXogTTIyLDR2MTZoLTFIN0g2VjQNCgkJVjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K")); }
+        .lb-big-icon-comments { @include lb-icon-mask(url('~images/comments-sidetab.svg')); }
+        .lb-big-icon-ingest { @include lb-icon-mask(url('~images/ingest.svg')); }
+
+        [class^="lb-big-icon-"], [class*=" lb-big-icon-"] {
+            opacity: 1;
+        }
+
+        button.active [class^="lb-big-icon-"],
+        button.active [class*=" lb-big-icon-"],
+        button:hover [class^="lb-big-icon-"],
+        button:hover [class*=" lb-big-icon-"] {
+            background-color: $lb-rail-active;
         }
     }
     .notification-counter {
@@ -40,19 +81,24 @@
         position: absolute;
         left: 48px; right: 0;
         top:0; bottom: 0;
+        background: $lb-subnav-bg;
     }
 
     .column {
         position: absolute;
-        top: 0; bottom: 0;
+        top: 16px; bottom: 16px;
         padding: 0;
         @include border-box();
+        @include border-radius($lb-radius-card);
+        box-shadow: $lb-card-shadow;
         header {
             height: $nav-height;
             @include border-box();
             box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
             background-color: white;
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
             h4 {
                 color: $gray;
                 font-size: 1.4em;
@@ -71,32 +117,33 @@
         }
         .content--timeline {
             top: 48px !important;
+            background: $lb-timeline-bg;
             //padding-top: $nav-height - 10px;
         }
         &--first {
-            left: 0;
-            width: 540px;
+            left: 16px;
+            width: calc(540px - 32px);
+            background: white;
             // tablet
             @media only screen and (max-width: 1024px) {
-                width: 50%;
+                width: calc(50% - 32px);
             }
-            @include box-shadow(3px 0 0 $grayLight);
             z-index: 1;
         }
         &--timeline {
-            right: 0;
+            right: 16px;
             left: 540px;
             // tablet
             @media only screen and (max-width: 1024px) {
                 left: 50%;
             }
-            background: #f0f0f0;
+            background: $lb-timeline-bg;
             header {
-                background: #fff;
-                color: $gray;
+                background: $lb-timeline-bg;
+                color: black;
                 font-size: 1.4em;
                 line-height: 1.6em;
-                font-weight: 400;
+                font-weight: 700;
             }
         }
     }
@@ -197,6 +244,15 @@
             }
         }
         // editor
+        &--editor {
+            header .btn {
+                background-color: $lb-pill-bg !important;
+                border-color: $lb-pill-bg !important;
+                color: $lb-pill-text !important;
+                border-radius: $lb-radius-pill !important;
+                text-transform: none;
+            }
+        }
         &--editor .content {
             overflow: none;
             .option-not-activated {
@@ -300,24 +356,30 @@
 
                 .editor {
                     textarea {
-                        border: 1px solid #dfdfdf !important;
+                        border: 1px solid $lb-input-border !important;
                         resize:vertical;
                         height: 180px;
                         padding: 10px;
                         font-size: 14px;
                         line-height: 24px;
-                        @include border-radius(5px !important);
+                        @include border-radius($lb-radius-input !important);
                         margin-bottom: 20px;
                         &:focus {
                             @include box-shadow(inset 0 3px 0 0 #f0f0f0 !important);
                         }
                     }
                     // Sir-trevor elements ---------------------------
+                    .st-blocks.st-ready {
+                        padding: 24px 34px;
+                    }
                     .st-outer {
+                        display: block;
+                        border: 1px dashed $lb-input-border;
+                        @include border-radius($lb-radius-input);
                         // ["+" bars]
                         .st-block-controls__top:before, .st-icon--add:after {
                             background-color: transparent;
-                            color: $blue;
+                            color: $lb-add-content-text;
                             padding: 0;
                             line-height: 40px;
                             height: 40px;
@@ -554,12 +616,12 @@
                                     padding: 20px;
                                     min-height: 65px;
                                     font-size: 1em;
-                                    border: 1px solid lighten($grayLight, 25%);
+                                    border: 1px solid $lb-input-border;
                                     word-wrap: break-word;
                                     background-color: white;
-                                    @include border-radius(3px);
+                                    @include border-radius($lb-radius-input);
                                     &:focus, &:hover {
-                                        border: 1px solid $sd-blue;
+                                        border: 1px solid $lb-input-border;
                                     }
                                 }
                                 .st-placeholder {
@@ -675,9 +737,32 @@
                 .actions__label {
                     vertical-align: middle;
                     margin-right: 5px;
+                    // Markup text is hard-coded upper case ("PIN POST"); render
+                    // it as "Pin post" without touching the template.
+                    text-transform: lowercase;
+                    &::first-letter {
+                        text-transform: uppercase;
+                    }
                 }
                 .actions__icon i {
                     vertical-align: middle;
+                }
+            }
+            .actions__options > div > div {
+                display: inline-flex;
+                align-items: center;
+                background-color: $lb-action-pill-active-bg;
+                color: $lb-action-pill-active-text;
+                border-radius: $lb-radius-pill;
+                padding: 6px 14px;
+                cursor: pointer;
+                i { color: $lb-action-pill-active-text; }
+
+                &.option-not-activated {
+                    opacity: 1;
+                    background-color: $lb-action-pill-bg;
+                    color: $lb-action-pill-text;
+                    i { color: $lb-action-pill-text; }
                 }
             }
             > .actions {
@@ -696,6 +781,16 @@
                     padding: 0;
                     line-height: 48px;
                     font-size: 14px;
+                    border-radius: $lb-radius-pill !important;
+                    background-color: $lb-btn-dark-bg !important;
+                    border-color: $lb-btn-dark-bg !important;
+                    color: white !important;
+                    text-transform: none;
+
+                    &.btn--primary {
+                        background-color: $lb-btn-teal-bg !important;
+                        border-color: $lb-btn-teal-bg !important;
+                    }
                 }
             }
         }
@@ -963,6 +1058,14 @@
     .selector__label {
         margin-bottom: 5px;
     }
+}
+
+.tags-selector .css-2b097c-container {
+    border-radius: $lb-radius-input;
+}
+
+.tags-selector .css-1f578jt-control {
+    border-radius: $lb-radius-input;
 }
 
 .schedule-selector {
