@@ -100,14 +100,11 @@
 .button-stack .navbtn {
 	text-decoration: none;
 
-	&.analytics-link,
-	&.settings-link {
-		i { position: relative; top: 10px; }
-	}
-
-	.big-icon--analytics,
-	.big-icon--cog {
-		position: relative; top: 10px;
+	// Absolute + transform centering for the icon instead of fighting
+	// vendor's line-height/vertical-align inheritance (tried twice, still
+	// landed high) — this is immune to line-height entirely.
+	&.analytics-link, &.settings-link {
+		position: relative !important;
 	}
 }
 
@@ -477,8 +474,17 @@ i.icon-star.orange {
     background-color: $lb-header-bg !important;
 }
 
+// superdesk-core's own menu.scss sets the same selector (also !important,
+// also width:48px) as a component-scoped style loaded outside this file's
+// import chain, so source order isn't reliable — .collapse-nav.collapse-nav
+// bumps specificity instead so this always wins regardless of load order.
+#top-menu a.collapse-nav.collapse-nav, #top-menu button.collapse-nav.collapse-nav {
+    width: 78px !important;
+}
+
 #top-menu .collapse-nav .icon-collapse {
     display: inline-block;
+    margin-left: 8px;
     width: 20px;
     height: 20px;
     font-size: 0;
@@ -496,12 +502,33 @@ i.icon-star.orange {
     mask-size: contain;
 }
 
+// !important on width/height: vendor's [class^="big-icon--"] base rule
+// (superdesk-ui.bundle.css) sets width/height:26px with equal specificity
+// but loads AFTER this file in lb-bootstrap.scss's import order, so it was
+// winning over the mixin's plain 20px.
 .big-icon--analytics {
-    @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text);
+    @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text, 20px);
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0 !important;
 }
 
 .big-icon--cog {
-    @include lb-icon-font-mask(url('~images/icons/settings.svg'), $lb-subnav-text);
+    @include lb-icon-font-mask(url('~images/icons/settings.svg'), $lb-subnav-text, 20px);
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0 !important;
+}
+
+// Absolute-center against the .analytics-link/.settings-link wrapper
+// (position:relative, above) — beats vendor's `.navbtn i { vertical-align:
+// baseline !important; }` outright since position isn't a line-layout
+// property at all.
+.navbtn .big-icon--analytics, .navbtn .big-icon--cog {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
 }
 
 .btn--contact-support {
@@ -532,8 +559,8 @@ i.icon-star.orange {
 .homebtn {
     background-color: $lb-subnav-icon-square !important;
     border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
+    width: 38px !important;
+    height: 38px !important;
     margin: 6px;
     display: flex !important;
     align-items: center;
@@ -559,6 +586,7 @@ i.icon-star.orange {
 }
 
 div.subnav div.button-stack.left-stack a.homebtn {
+    margin-left: 24px;
     border-right: none !important;
 }
 
