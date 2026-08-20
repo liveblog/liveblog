@@ -222,10 +222,10 @@
                                         sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}"
                                         ng-class="{'option-not-activated': !sticky}" class="pull-right"
                                         ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>PIN <span>POST</span></span>
                                         <span class="actions__icon">
                                             <i class="icon-pin rotate" ng-class="{'blue': sticky}"></i>
                                         </span>
+                                        <span class="actions__label" translate>PIN <span>POST</span></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
@@ -233,10 +233,10 @@
                                         sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}"
                                         ng-class="{'option-not-activated': !highlight}" class="pull-right"
                                         ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>HIGHTLIGHT <span>POST</span></span>
                                         <span class="actions__icon">
                                             <i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i>
                                         </span>
+                                        <span class="actions__label" translate>HIGHTLIGHT <span>POST</span></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
@@ -244,10 +244,10 @@
                                         sd-tooltip="{{ 'Schedule Post' | translate }}"
                                         ng-class="{'option-not-activated': !scheduled}" class="pull-right"
                                         ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span class="actions__label" translate>SCHEDULE <span>POST</span></span>
                                         <span class="actions__icon">
                                             <i class="icon-calendar rotate" ng-class="{'blue': scheduled}"></i>
                                         </span>
+                                        <span class="actions__label" translate>SCHEDULE <span>POST</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -257,14 +257,15 @@
                                         ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true" translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
+                                        <i class="icon-publish"></i>
                                     </button>
                                 </div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()"
                                         ng-disabled="isCurrentPostPublished() || actionStatus()"
-                                        translate>Submit</button></div>
+                                        ><span translate>Submit</span><i class="icon-submit"></i></button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()"
                                         ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()"
-                                        translate><span class="hideMobile">Save</span> draft</button></div>
+                                        ><span translate><span class="hideMobile">Save</span> draft</span><i class="icon-save-draft"></i></button></div>
                             </div>
                         </div>
                     </div>

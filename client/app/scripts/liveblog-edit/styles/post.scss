@@ -93,6 +93,46 @@
                     }
                 }
             }
+            // Lucide replacements for the sd_icons glyphs/sprites above.
+            // Descendant selector (not `a > i`) so it also reaches the
+            // disabled reorder state, which renders the icon inside a
+            // plain <div class="reorder-disabled"> instead of an <a>.
+            // opacity: 1 overrides the `> i { opacity: .5 }` fade above —
+            // these render solid in $lb-btn-dark-bg, not faded.
+            i.icon-star {
+                @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+                &.orange {
+                    background-color: #f89406;
+                }
+            }
+            i.icon-pin {
+                @include lb-icon-font-mask(url('~images/icons/pin.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+                &.blue {
+                    background-color: $sd-blue;
+                }
+            }
+            i.icon-close-thick {
+                @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-pencil {
+                @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-move {
+                @include lb-icon-font-mask(url('~images/icons/grip.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-unpublish {
+                @include lb-icon-bg-mask(url('~images/icons/undo-2.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-publish {
+                @include lb-icon-bg-mask(url('~images/icons/send.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
         }
     }
     &__expander {
@@ -170,7 +210,11 @@
         &--even {
             border-top: 1px solid #ebebeb;
         }
-        img {max-width: 100%;}
+        img {
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
         iframe {max-width: 100%;}
         ul {
             list-style-type: disc;
