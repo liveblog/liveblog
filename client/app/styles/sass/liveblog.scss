@@ -337,6 +337,9 @@
     margin: 0;
     border: none !important;
     box-shadow: none !important;
+    .navbtn {
+        border-left: none !important;
+    }
 }
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -491,6 +494,14 @@ i.icon-star.orange {
     mask-position: center;
     -webkit-mask-size: contain;
     mask-size: contain;
+}
+
+.big-icon--analytics {
+    @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text);
+}
+
+.big-icon--cog {
+    @include lb-icon-font-mask(url('~images/icons/settings.svg'), $lb-subnav-text);
 }
 
 .btn--contact-support {

@@ -20,10 +20,13 @@
 }
 
 .blogedit {
+    // vendor's .main-section sets top: $subnav-height + $topspace; pull it
+    // up a bit so there's less empty space below the subnav row.
+    top: 84px;
     //left menu
     .side-menu {
         position: absolute;
-        left: 0; top:0; bottom: 0;
+        left: 0; top: 16px; bottom: 0;
         width: 48px;
         background: white;
         button {
@@ -126,7 +129,7 @@
         }
         &--first {
             left: 16px;
-            width: calc(540px - 32px);
+            width: calc(680px - 32px);
             background: white;
             // tablet
             @media only screen and (max-width: 1024px) {
@@ -136,7 +139,7 @@
         }
         &--timeline {
             right: 16px;
-            left: 540px;
+            left: 680px;
             // tablet
             @media only screen and (max-width: 1024px) {
                 left: 50%;
@@ -255,6 +258,10 @@
                 color: $lb-pill-text !important;
                 border-radius: $lb-radius-pill !important;
                 text-transform: none;
+            }
+            header h4 {
+                color: black;
+                font-weight: 700;
             }
         }
         &--editor .content {
@@ -455,18 +462,55 @@
                                         font-family: inherit;
                                         @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                     } // prevent style from sir-trevor
+                                    // sir-trevor renders these via a ligature font (the
+                                    // element's text content, e.g. "text"/"quote", gets
+                                    // glyph-substituted by the ST-Icons webfont) — kill
+                                    // that with font-size: 0 and mask a Lucide SVG in its
+                                    // place instead, one per block type via [data-type].
                                     .st-icon {
-                                        font-size: 20px;
-                                        display: inline;
+                                        font-size: 0 !important; // beats sir-trevor.scss's global `.st-icon { font-size: 18px !important; }`
+                                        display: inline-block;
+                                        width: 16px;
+                                        height: 16px;
                                         vertical-align: top;
                                         position: absolute;
                                         left: 13px;
                                         top: 10px;
-                                        color: $gray;
+                                        background-color: $gray;
+                                        -webkit-mask-repeat: no-repeat;
+                                        mask-repeat: no-repeat;
+                                        -webkit-mask-position: center;
+                                        mask-position: center;
+                                        -webkit-mask-size: contain;
+                                        mask-size: contain;
                                     }
                                     &:last-child {
                                         margin: 0;
                                     }
+                                }
+                                a[data-type='text'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/file-text.svg');
+                                    mask-image: url('~images/icons/file-text.svg');
+                                }
+                                a[data-type='image'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/camera.svg');
+                                    mask-image: url('~images/icons/camera.svg');
+                                }
+                                a[data-type='embed'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/ellipsis.svg');
+                                    mask-image: url('~images/icons/ellipsis.svg');
+                                }
+                                a[data-type='quote'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/quote.svg');
+                                    mask-image: url('~images/icons/quote.svg');
+                                }
+                                a[data-type='poll'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
+                                    mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
+                                }
+                                a[data-type='video'] .st-icon {
+                                    -webkit-mask-image: url('~images/icons/video.svg');
+                                    mask-image: url('~images/icons/video.svg');
                                 }
                             }
                         }
@@ -739,8 +783,12 @@
             }
             .actions {
                 .actions__label {
+                    // ::first-letter only applies to block containers, not
+                    // plain inline elements — without this the rule below
+                    // was a silent no-op and every label rendered all-lowercase.
+                    display: inline-block;
                     vertical-align: middle;
-                    margin-right: 5px;
+                    margin-left: 5px;
                     // Markup text is hard-coded upper case ("PIN POST"); render
                     // it as "Pin post" without touching the template.
                     text-transform: lowercase;
@@ -752,6 +800,12 @@
                     vertical-align: middle;
                 }
             }
+            // Shrink the table's border-spacing-driven gap between the Pin/
+            // Highlight/Schedule pills (margin is ignored on table-cells,
+            // so pull each pill after the first closer via its own margin).
+            .actions__options > div:not(:first-child) > div {
+                margin-left: -4px;
+            }
             .actions__options > div > div {
                 display: inline-flex;
                 align-items: center;
@@ -762,11 +816,26 @@
                 cursor: pointer;
                 i { color: $lb-action-pill-active-text; }
 
+                // Lucide replacements for icon-pin/icon-star/icon-calendar —
+                // masked icons ignore `color`, tint via background-color.
+                i.icon-pin {
+                    @include lb-icon-font-mask(url('~images/icons/pin.svg'), $lb-action-pill-active-text);
+                }
+                i.icon-star {
+                    @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-action-pill-active-text);
+                }
+                i.icon-calendar {
+                    @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-action-pill-active-text);
+                }
+
                 &.option-not-activated {
                     opacity: 1;
                     background-color: $lb-action-pill-bg;
                     color: $lb-action-pill-text;
                     i { color: $lb-action-pill-text; }
+                    i.icon-pin, i.icon-star, i.icon-calendar {
+                        background-color: $lb-action-pill-text;
+                    }
                 }
             }
             > .actions {
@@ -794,6 +863,29 @@
                     &.btn--primary {
                         background-color: $lb-btn-teal-bg !important;
                         border-color: $lb-btn-teal-bg !important;
+                    }
+
+                    // Lucide icons after the label (Publish/Update, Submit,
+                    // Save draft). icon-publish is also a real font-icon
+                    // class elsewhere (mask'd to send.svg in post.scss for
+                    // the post-card action), so it needs the bg-mask variant
+                    // here to override its global sprite rule; icon-submit/
+                    // icon-save-draft are new, purpose-built classes with no
+                    // legacy glyph to suppress.
+                    i {
+                        vertical-align: middle;
+                        margin-left: 8px;
+                        width: 20px;
+                        height: 20px;
+                    }
+                    i.icon-publish {
+                        @include lb-icon-bg-mask(url('~images/icons/send-horizontal.svg'), white);
+                    }
+                    i.icon-submit {
+                        @include lb-icon-font-mask(url('~images/icons/circle-check-big.svg'), white, 20px);
+                    }
+                    i.icon-save-draft {
+                        @include lb-icon-font-mask(url('~images/icons/save-plus.svg'), white, 20px);
                     }
                 }
             }

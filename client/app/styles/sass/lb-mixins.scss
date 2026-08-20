@@ -1,5 +1,42 @@
 @import '~superdesk-core/styles/sass/mixins';
 
+// Replace an icon-font glyph (font-family/content coming from the vendored
+// sd_icons font) with a Lucide SVG rendered via mask, tinted through
+// background-color since currentColor can't reach a masked element.
+@mixin lb-icon-font-mask($url, $color: #333, $size: 16px) {
+    display: inline-block;
+    width: $size;
+    height: $size;
+    font-size: 0;
+    &:before {
+        content: none;
+    }
+    background-color: $color;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// Same, but for icons that were a background-image sprite instead of a
+// font-icon glyph (no `:before` content to suppress).
+@mixin lb-icon-bg-mask($url, $color: #333) {
+    background-image: none !important;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: $color;
+}
+
 @mixin buttonStates($background:$btnDefaultColor, $color: $sd-text){
     color: $color;
     background-color: $background;
