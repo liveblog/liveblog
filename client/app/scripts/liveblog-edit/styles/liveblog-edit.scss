@@ -281,6 +281,10 @@
                 color: $lb-pill-text !important;
                 border-radius: $lb-radius-pill !important;
                 text-transform: none;
+                transition: background-color .15s ease;
+                &:hover:not(:disabled), &:focus {
+                    background-color: darken($lb-pill-bg, 4%) !important;
+                }
             }
             header h4 {
                 color: black;
@@ -422,10 +426,11 @@
                         }
                         .st-block-controls__top:hover:before, .st-block--with-plus:after {
                             cursor: pointer;
-                            background-color: #d9d9d9;
+                            background-color: #edf4f8;
                             color: #333;
                         }
                         .st-block-controls {
+                            background-color: #edf4f8;
                             a[data-type='comment'] {
                                 display: none;
                             }
@@ -672,6 +677,10 @@
                             &__inner {
                                 border: 0;
                                 margin: 8px 0;
+                                // Matches .st-text-block's radius below so the
+                                // hover box-shadow (cast by this element) doesn't
+                                // trace a square outline around the rounded child.
+                                @include border-radius($lb-radius-input);
                                 ::selection {
                                     background: $sd-blue;
                                     color: $white;
@@ -837,6 +846,12 @@
                 border-radius: $lb-radius-pill;
                 padding: 6px 18px;
                 cursor: pointer;
+                transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 10px rgba($lb-action-pill-active-text, 0.25);
+                    background-color: darken($lb-action-pill-active-bg, 3%);
+                }
                 i { color: $lb-action-pill-active-text; }
 
                 // Lucide replacements for icon-pin/icon-star/icon-calendar —
@@ -858,6 +873,10 @@
                     i { color: $lb-action-pill-text; }
                     i.icon-pin, i.icon-star, i.icon-calendar {
                         background-color: $lb-action-pill-text;
+                    }
+                    &:hover {
+                        background-color: darken($lb-action-pill-bg, 3%);
+                        box-shadow: 0 4px 10px rgba($lb-action-pill-text, 0.2);
                     }
                 }
             }
@@ -882,10 +901,18 @@
                     border-color: $lb-btn-dark-bg !important;
                     color: white !important;
                     text-transform: none;
+                    transition: box-shadow .15s ease, transform .15s ease;
+                    &:hover:not(:disabled) {
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 10px rgba($lb-btn-dark-bg, 0.25) !important;
+                    }
 
                     &.btn--primary {
                         background-color: $lb-btn-teal-bg !important;
                         border-color: $lb-btn-teal-bg !important;
+                        &:hover:not(:disabled) {
+                            box-shadow: 0 4px 10px rgba($lb-btn-teal-bg, 0.35) !important;
+                        }
                     }
 
                     // Lucide icons after the label (Publish/Update, Submit,

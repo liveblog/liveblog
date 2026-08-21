@@ -80,14 +80,24 @@
         li {
             display: inline-block;
             a {
+                display: inline-block;
+                vertical-align: middle;
+                // Kills the inline-block "phantom" bottom space reserved
+                // for a text line-box (descenders) by matching the line box
+                // to the icon's own height — font-size: 0 also zeroed sizing
+                // that icon-unpublish/icon-publish rely on, so use line-height
+                // instead of touching font-size.
+                line-height: 16px;
                 padding: 5px 5px;
+                border-radius: 6px;
+                transition: background-color .15s ease;
                 > i {
-                    @include transition(opacity .25s linear);
+                    @include transition(opacity .15s ease);
                     opacity: .5;
                     color: $lb-btn-dark-bg;
                 }
                 &:hover {
-                    background-color: #F0F0F0;
+                    background-color: #EDF4F8;
                     > i {
                         opacity: 1;
                     }
@@ -128,6 +138,9 @@
             i.icon-unpublish {
                 @include lb-icon-bg-mask(url('~images/icons/undo-2.svg'), $lb-btn-dark-bg);
                 opacity: 1;
+                // Cancel the legacy sprite rule's rotate(180deg) (liveblog.scss)
+                // which otherwise bleeds through and flips this icon backwards.
+                transform: none;
             }
             i.icon-publish {
                 @include lb-icon-bg-mask(url('~images/icons/send.svg'), $lb-btn-dark-bg);

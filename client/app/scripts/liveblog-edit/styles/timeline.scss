@@ -4,7 +4,18 @@
 // timeline
 .column--timeline {
     border: 0px;
+    // .cancel-reorder/.header--filters/.header--live all rely on this
+    // (margin-left: auto, etc.) to line up in one row — make it explicit
+    // instead of assuming it's inherited from elsewhere.
+    header {
+        display: flex;
+        align-items: center;
+    }
     .header--live {
+        // Keeps LIVE right after the "Timeline" title, with the
+        // Cancel/reorder control and ALL/star filters visually reordered
+        // (via order:, not DOM position) to cluster on the right.
+        order: 1;
         padding: 0 5px 0 5px;
         a {
             display: inline-flex;
@@ -12,7 +23,7 @@
             background-color: $lb-live-badge-bg;
             color: $lb-live-badge-text;
             border-radius: $lb-radius-pill;
-            padding: 0px 12px;
+            padding: 0px 14px 0px 12px;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 12px;
@@ -25,6 +36,33 @@
                 border-radius: 50%;
                 background-color: $lb-live-badge-text;
             }
+            &:after {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 11px;
+                margin-left: 0;
+                background-color: $lb-live-badge-text;
+                -webkit-mask-image: url('~images/icons/external-link.svg');
+                mask-image: url('~images/icons/external-link.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: left center;
+                mask-position: left center;
+                // Fixed (not "contain") so the icon itself never scales —
+                // widening the box just reveals more of it, left to right.
+                -webkit-mask-size: 11px 11px;
+                mask-size: 11px 11px;
+                transition: width .15s ease, margin-left .15s ease;
+            }
+            &:hover {
+                text-decoration: none;
+                color: $lb-live-badge-text;
+                &:after {
+                    width: 11px;
+                    margin-left: 6px;
+                }
+            }
         }
     }
     .header--timeline {
@@ -36,6 +74,7 @@
         }
     }
     .header--filters {
+        order: 4;
         margin-left: auto;
         .btn {
             background: $lb-filter-btn-bg;
@@ -45,8 +84,9 @@
             height: 24px;
             margin-left: 4px;
             border-radius: $lb-radius-pill;
+            transition: background-color .15s ease;
             &:hover {
-                background: $lb-filter-btn-bg;
+                background: darken($lb-filter-btn-bg, 4%);
                 border: none;
                 color: $lb-pill-text;
             }
@@ -58,6 +98,7 @@
             }
             &.active:hover {
                 cursor: default;
+                background: $lb-filter-btn-bg;
             }
             [class^="icon-"] {
                 margin-right: 0;
@@ -123,18 +164,29 @@
     .timeline-reorder {
         border: 0px;
         height: 0px;
-        color: #ccc;
-        font-size: 0px;
+        color: $lb-timestamp;
+        font-size: 15px;
+        opacity: 0;
+        overflow: hidden;
         background: transparent;
         text-align: center;
-        padding-top: 0px;
-        transition: all linear 0.4s;
+        // Height/border/background animate first; opacity (the text)
+        // is delayed until that's mostly done, so the box grows and only
+        // then does the text fade in — font-size stays constant the whole
+        // time so the text itself never visibly "grows".
+        transition: height 0.3s ease, border-color 0.3s ease,
+            background-color 0.3s ease, opacity 0.2s ease 0.15s;
     }
     .timeline-reorder.active {
-        padding-top: 15px;
-        height: 34px;
-        font-size: 18px;
-        border: 1px dashed #ccc;
+        height: 44px;
+        opacity: 1;
+        padding: 0 16px;
+        margin: 10px 0;
+        border: 1px dashed darken($lb-input-border, 20%);
+        @include border-radius($lb-radius-input);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .timeline-reorder.top {
         margin-bottom: 10px;
@@ -143,24 +195,35 @@
         margin-top: 10px;
     }
     .timeline-reorder:hover {
-        border: 1px dashed #999;
-        color: #666;
-        background: #f8f8f8;
+        border: 1px dashed $lb-rail-active;
+        color: $lb-btn-dark-bg;
+        background: $lb-action-pill-bg;
     }
     .cancel-reorder {
-        border-right: 1px solid #e0e0e0!important;
-        position:absolute; top: 0px; right: 127px;
-        height: 38px;
-        padding-top:9px;
-        padding-right:9px;
-        background-color: white;
+        // Explicit order (lower than the real .header--filters' order: 4
+        // below) so it always renders right before ALL/star, with no
+        // reliance on DOM-position tie-breaking.
+        order: 3;
+        border-right: 1px solid $lb-input-border !important;
+        display: flex;
+        align-items: center;
+        padding-right: 12px;
+        background-color: transparent;
+    }
+    // It keeps margin-left: auto (inherited from sharing .header--filters)
+    // so it's the one that consumes the pushed-right free space. The real
+    // filters must NOT also use auto here, or flex splits that free space
+    // between the two and Cancel ends up stranded mid-row instead of snug
+    // against ALL/star — so give the real filters a fixed gap instead,
+    // but only when .cancel-reorder actually exists (reorder mode).
+    .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
+        margin-left: 12px;
+    }
+    i.svg-icon-move {
+        @include lb-icon-bg-mask(url('~images/icons/move.svg'), $lb-btn-dark-bg);
     }
     .fix-cancel-move-icon {
-        margin-top:5px;
         margin-right:5px;
-    }
-    .fix-cancel-move-button {
-        margin-top: -7px;
     }
     .pin-drawer-button {
         position: absolute;
