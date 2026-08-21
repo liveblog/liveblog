@@ -1,3 +1,13 @@
+// Global .btn hover/focus/active override — superdesk-ui-framework's vendored
+// `.btn:hover, .btn:focus` rule (dist/superdesk-ui.bundle.css) adds a heavy
+// drop shadow, and Bootstrap's own `.btn:active` sets an inset shadow
+// (buttons.less); both load after this file in lb-bootstrap.scss's import
+// order, so !important is needed to win regardless of load order (same
+// pattern already used elsewhere in this file for vendor overrides).
+.btn:hover, .btn:focus, .btn:active, .btn.active {
+    box-shadow: none !important;
+}
+
 .main-section {
 	z-index: auto;
 }
@@ -105,6 +115,11 @@
 	// landed high) — this is immune to line-height entirely.
 	&.analytics-link, &.settings-link {
 		position: relative !important;
+		// Vendor's `.navbtn:hover` (superdesk-ui.bundle.css) sets a plain
+		// white overlay — keep the same square hover backdrop, just retint it.
+		&:hover {
+			background-color: #dee7eca6 !important;
+		}
 	}
 }
 
@@ -537,6 +552,12 @@ i.icon-star.orange {
     color: white !important;
     border-radius: $lb-radius-pill !important;
     text-transform: none !important;
+    transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    &:hover {
+        background-color: lighten($lb-contact-support-bg, 8%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba($lb-contact-support-bg, 0.4) !important;
+    }
 }
 
 #top-menu .current-user figure.avatar.initials {
