@@ -117,6 +117,41 @@ allow-listed commands:
 Summarise in plain language: what's up, what's down, and (if nothing is
 running) that `/liveblog-up` will start it.
 
+## Known issue: MongoDB fails to restart on macOS
+
+Some Mac setups hit a MongoDB failure that has nothing to do with the scripts
+themselves. `docker logs mongodb` shows:
+
+```
+WiredTiger error (1) ... file:WiredTiger.wt, connection: /data/db/WiredTiger.wt: handle-open: open: Operation not permitted
+```
+
+Mongo starts fine the very first time (it's creating its files), then breaks
+on every restart after that (`down` + `up`, or `up` twice). This comes from
+how Docker Desktop shares the host filesystem into the container on macOS.
+MongoDB's WiredTiger storage engine can't reopen an existing data file across
+that bind mount. It doesn't happen on every machine, and it doesn't happen at
+all outside macOS.
+
+Because it's not universal, **don't change `docker/docker-compose-dev-services.yml`
+in the repo to work around it**. Switching Mongo to a different volume type
+there would move the data path for everyone, including people it doesn't
+affect, and could quietly break their existing local data. If you hit this,
+fix it locally instead, on your own machine only:
+
+1. Edit your local (uncommitted) copy of
+   `docker/docker-compose-dev-services.yml`: change the `mongodb-3.4.23`
+   service's volume from `../data/mongodb:/data/db` to `mongodb_data:/data/db`,
+   and add a top-level `volumes:` section with `mongodb_data:` under it. This
+   moves Mongo's storage into a Docker-managed volume instead of the host
+   bind mount, which sidesteps the file-sharing issue entirely.
+2. `docker compose -f docker/docker-compose-dev-services.yml down` to drop
+   the old container, then re-run setup so the database gets initialised into
+   the new volume.
+
+Leave those two lines as local, uncommitted changes. Don't stage or commit
+them.
+
 ## Notes
 
 - **Ports.** The API is on 5000 (5001 on macOS, where AirPlay holds 5000).
