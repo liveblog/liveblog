@@ -1158,6 +1158,95 @@
     }
 }
 
+.output-channels-modal.modal {
+    .sd-line-input {
+        // Vendor's own value is 1.4rem — a little more room above the
+        // label reads clearer now that the label's own spacing (below) is
+        // fixed. Margin between fields (1.8em) stays at vendor's default.
+        padding-top: 2rem !important;
+        &__label {
+            color: $lb-timestamp;
+            // Vendor sets `display: inline-block` with `line-height: 2.6rem`
+            // (~42px) — that line-height alone dwarfs any margin-bottom we
+            // add, so the extra spacing never reads as visible. Block +a
+            // normal line-height first, so margin-bottom actually controls
+            // the gap.
+            display: block !important;
+            line-height: normal !important;
+            // Vendor's own `.sd-line-input .sd-line-input__label` sets
+            // `margin: 0 0.5rem 0 0` (margin-bottom: 0) — needs !important
+            // to actually win.
+            margin-bottom: 6px !important;
+        }
+        // The public embed URL link sitting right under the Embed code
+        // textarea — a little breathing room instead of sitting flush
+        // against the box above it.
+        .form-input > a {
+            display: inline-block;
+            margin-top: 8px;
+        }
+        input.sd-line-input__input,
+        textarea.sd-line-input__input,
+        select.sd-line-input__select {
+            border: 1px solid $lb-input-border !important;
+            @include border-radius($lb-radius-input !important);
+            background-color: white !important;
+            padding: 8px 12px !important;
+            height: auto !important;
+            box-shadow: none !important;
+            transition: border-color .15s ease, box-shadow .15s ease;
+            &:hover {
+                border-color: darken($lb-input-border, 12%) !important;
+            }
+            &:focus {
+                border-color: $lb-rail-active !important;
+                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            }
+        }
+        // The native arrow ignores padding-right in most browsers (drawn
+        // glued to the edge regardless) — drop it and draw our own via
+        // background-image instead, same as the Settings page's selects.
+        select.sd-line-input__select {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-image: url('~images/icons/chevron-down.svg') !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            background-size: 14px !important;
+            padding-right: 32px !important;
+        }
+        input.sd-line-input__color {
+            border: 1px solid $lb-input-border !important;
+            border-radius: 6px !important;
+            width: 100% !important;
+            height: 36px !important;
+        }
+    }
+    .modal__footer .btn {
+        border-radius: $lb-radius-pill !important;
+        text-transform: none;
+        transition: box-shadow .15s ease, transform .15s ease, background-color .15s ease;
+        &.btn-default {
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            &:hover:not(:disabled) {
+                background-color: darken($lb-pill-bg, 4%) !important;
+            }
+        }
+        &.btn-primary.btn-info {
+            background-color: $lb-btn-teal-bg !important;
+            border-color: $lb-btn-teal-bg !important;
+            color: white !important;
+            &:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba($lb-btn-teal-bg, 0.35);
+            }
+        }
+    }
+}
+
 .tags-selector,
 .schedule-selector {
     position: relative;
