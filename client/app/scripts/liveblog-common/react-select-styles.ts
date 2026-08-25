@@ -4,7 +4,7 @@ export const selectStyles: Styles = {
     control: (provided, state) => {
         const styles = {
             ...provided,
-            borderRadius: '3px',
+            borderRadius: '8px',
             minHeight: '32px',
             borderColor: '#d9d9d9',
             cursor: 'pointer',
@@ -34,5 +34,10 @@ export const selectStyles: Styles = {
     valueContainer: (provided) => ({
         ...provided,
         padding: '2px 3px',
+    }),
+
+    multiValue: (provided) => ({
+        ...provided,
+        borderRadius: '999px',
     }),
 };

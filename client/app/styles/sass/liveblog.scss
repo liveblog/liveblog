@@ -46,7 +46,17 @@
 
 .button-stack.right-stack {
   float: right;
-  margin: -10px -20px 0 5px;
+  // Was margin-right: -20px, pulling it flush against (or past) the
+  // right edge of the screen — give it real breathing room instead.
+  // !important: #main-container > div.subnav div.button-stack.right-stack
+  // (an ID-scoped rule further down) sets margin: 0 and otherwise always
+  // wins over this plain class selector, no matter what's set here.
+  margin: 4px 20px 0 5px !important;
+  // The circular analytics/settings icons (40px) sit inside a taller
+  // container without this — they were landing near the top instead of
+  // centered vertically. Used on both the blog editor and settings pages.
+  display: flex;
+  align-items: center;
 }
 
 .button-stack.right-stack .navbtn {
@@ -113,12 +123,44 @@
 	// Absolute + transform centering for the icon instead of fighting
 	// vendor's line-height/vertical-align inheritance (tried twice, still
 	// landed high) — this is immune to line-height entirely.
-	&.analytics-link, &.settings-link {
+	// The Settings page's own top bar (settings.ng1) renders this same
+	// analytics/gear pair WITHOUT the .analytics-link/.settings-link
+	// classes — just a bare .navbtn wrapping the big-icon — so match on
+	// the icon itself too, or this page never picks up the circular style.
+	&.analytics-link, &.settings-link,
+	&:has(> .big-icon--analytics), &:has(> .big-icon--cog) {
 		position: relative !important;
+		// Circular hover/selected backdrop instead of the default
+		// rectangular button box. !important because vendor's
+		// `.button-stack.right-stack .navbtn` (width/padding) and the
+		// `.active`/`.settings-disabled` combo used on the Settings page
+		// carry the same specificity and must not win this back to a square.
+		width: 40px !important;
+		height: 40px !important;
+		min-width: 40px !important;
+		padding: 0 !important;
+		border-radius: 50% !important;
 		// Vendor's `.navbtn:hover` (superdesk-ui.bundle.css) sets a plain
-		// white overlay — keep the same square hover backdrop, just retint it.
+		// white overlay — keep the same hover backdrop, just retint it.
 		&:hover {
 			background-color: #dee7eca6 !important;
+		}
+		// "Selected" state (currently on this page) — was a square notch
+		// with a border/shadow; match the circular hover instead.
+		&.navbtn-active {
+			background-color: #dee7ec !important;
+			border-right: none !important;
+			margin-right: 0 !important;
+			box-shadow: none !important;
+			// A separate, equal-specificity vendor rule
+			// (.button-stack .navbtn.navbtn-active) sets height: 48px
+			// (no !important) — reassert 40px here so the selected (gear)
+			// icon doesn't end up taller than its unselected (chart)
+			// sibling, throwing off their vertical alignment.
+			height: 40px !important;
+			&:hover {
+				background-color: #dee7ec !important;
+			}
 		}
 	}
 }
@@ -614,4 +656,94 @@ div.subnav div.button-stack.left-stack a.homebtn {
 div.subnav div.button-stack .navbtn i,
 .button-stack.right-stack .navbtn {
     color: $lb-subnav-text;
+}
+
+// Global sd-modal redesign (`.modal > .modal__dialog > .modal__content`,
+// vendor's `.modal__header`/`.modal__body`/`.modal__footer` BEM structure)
+// — this is the shared popup shell used everywhere in the backend (Team
+// members, Edit team, Output modal, Advert/Collection modals, Theme
+// settings, etc.), so restyling it here applies the redesign to every
+// popup at once instead of one page at a time. Page-specific modal rules
+// (e.g. .output-channels-modal.modal in liveblog-edit.scss) still load
+// after this and can override further.
+.modal .modal__content {
+    border: none;
+    box-shadow: $lb-card-shadow;
+    // No overflow:hidden here (box-shadow + overflow:hidden on the same
+    // element clip each other) — round the header/footer's own corners
+    // instead, same trick used elsewhere in this redesign.
+    .modal__header {
+        border-top-left-radius: $lb-radius-card;
+        border-top-right-radius: $lb-radius-card;
+        padding: 18px 24px !important;
+        border-bottom-color: $lb-input-border;
+        .modal__heading {
+            font-size: 16px;
+            font-weight: 600;
+            color: $lb-btn-dark-bg;
+        }
+        .modal__close {
+            color: $lb-timestamp;
+            transition: color .15s ease;
+            &:hover {
+                color: $lb-btn-dark-bg;
+            }
+        }
+    }
+    .modal__body {
+        // Vendor's default modal__body has its own grey (#f8f8f8) fill —
+        // every popup in this redesign is a plain white card.
+        background: #fff !important;
+        padding: 20px 24px;
+        .add-label {
+            color: $lb-timestamp;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            margin-bottom: 6px;
+        }
+        // .searchbar (vendor's user-search input, e.g. "Add people") pins
+        // its own border-radius at 2px with !important — needs the same to
+        // win.
+        input[type="text"], input[type="search"], input[type="email"], textarea, select {
+            border: 1px solid $lb-input-border;
+            @include border-radius($lb-radius-input !important);
+            padding: 8px 12px;
+            box-sizing: border-box;
+            &:focus {
+                outline: 0;
+                border-color: $lb-rail-active !important;
+                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            }
+        }
+    }
+    .modal__footer {
+        border-bottom-left-radius: $lb-radius-card;
+        border-bottom-right-radius: $lb-radius-card;
+        padding: 14px 24px !important;
+        border-top-color: $lb-input-border;
+        .btn {
+            @include border-radius($lb-radius-pill);
+            text-transform: none;
+            font-weight: 400;
+            box-shadow: none !important;
+            &.btn--primary, &.btn-primary, &.btn-info {
+                background-color: $lb-btn-dark-bg !important;
+                border-color: $lb-btn-dark-bg !important;
+                color: #fff !important;
+                &:hover:not(:disabled) {
+                    background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                }
+            }
+            &:not(.btn--primary):not(.btn-primary):not(.btn-info) {
+                background-color: $lb-pill-bg !important;
+                border-color: $lb-pill-bg !important;
+                color: $lb-pill-text !important;
+                &:hover:not(:disabled) {
+                    background-color: darken($lb-pill-bg, 4%) !important;
+                }
+            }
+        }
+    }
 }

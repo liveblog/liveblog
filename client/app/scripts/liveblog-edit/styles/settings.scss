@@ -11,61 +11,305 @@ $PADDING: 20px;
 }
 .blog-settings-view {
     .settings-page {
-        top: $SUBNAV_HEIGHT*3;
+        // Vendor's own value ($topspace) — pin it explicitly rather than
+        // relying on that variable, since it's what actually clears the
+        // two header bars above.
+        top: 98px !important;
+        // Wrap the header bar + sidebar/content in one card, floating on
+        // the page background — matches the "Edit output" modal's look.
+        // A small top margin — zero felt too tight against the "Test blog"
+        // row above, but the page's own `top` offset already does most of
+        // the work so this only needs to be a little breathing room.
+        margin: 12px 20px 20px;
+        background-color: white;
+        @include border-radius($lb-radius-card);
+        // $lb-card-shadow has a vertical offset (built for a shadow cast
+        // downward), so it barely shows on the top edge — use a blur-only,
+        // no-offset shadow instead so this floating card reads evenly on
+        // all four sides.
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        // No overflow: hidden here — box-shadow and overflow: hidden on the
+        // same element conflict, since overflow clips the shadow along with
+        // everything else (the blog editor's .column avoids this the same
+        // way: round each section's own corners instead of clipping at the
+        // outer box). Rounded top corners on .subnav and bottom corners on
+        // the sidebar/content below give the same "one clean card" look
+        // without hiding this box's own shadow.
+        // The old layout pushed .settings-page down by one extra header's
+        // worth of height, then pulled .subnav back up by the same negative
+        // offset so it rendered in that "reclaimed" strip above .tabbable —
+        // a fixed-pixel trick calibrated to the *old*, shorter header. Once
+        // the header grew (bigger title/buttons), that calibration broke
+        // and .subnav started overlapping .tabbable's content instead of
+        // sitting above it. Flex avoids the magic numbers entirely: header
+        // sized by its own content, body (.tabbable.outer) fills whatever
+        // is left, no matter how tall the header ends up being.
+        display: flex;
+        flex-direction: column;
+
         > .subnav {
-            top: 1 - $SUBNAV_HEIGHT;
-            background-color: #eaeaea;
-            padding: 0 20px;
+            position: static;
+            flex: 0 0 auto;
+            height: 5.8rem;
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
+            background-color: white !important;
+            border-bottom: 1px solid $lb-input-border !important;
+            padding: 0 24px;
+            .page-nav-title {
+                color: $lb-btn-dark-bg;
+                font-size: 22px;
+                font-weight: 700;
+            }
+            // Flat pills, no shadow/lift — this is a plain settings form,
+            // not a primary editorial action, so it should stay calm.
+            // Sized up from the default subnav button — these are the
+            // page's main commit actions and were reading as too small.
+            .btn {
+                border-radius: $lb-radius-pill !important;
+                text-transform: none;
+                // Matches Publish/Submit/Save draft in the editor (normal
+                // weight, not bold) — bold was reading as odd/out of place.
+                font-weight: 400;
+                font-size: 14px;
+                padding: 8px 22px !important;
+                height: auto !important;
+                box-shadow: none !important;
+                transition: background-color .15s ease;
+                &.btn--primary {
+                    background-color: $lb-btn-dark-bg !important;
+                    border-color: $lb-btn-dark-bg !important;
+                    color: white !important;
+                    &:hover:not(:disabled) {
+                        background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                    }
+                }
+                // Cancel needs to read as clearly clickable against the
+                // pale subnav background — the same light pill as other
+                // utility buttons washed out here, so give it a stronger,
+                // more saturated neutral instead.
+                &.btn-default {
+                    background-color: darken($lb-pill-bg, 18%) !important;
+                    border-color: darken($lb-pill-bg, 18%) !important;
+                    color: $lb-btn-dark-bg !important;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-pill-bg, 26%) !important;
+                    }
+                }
+            }
         }
 
+        // Fills whatever height is left below .subnav (see flex note above),
+        // and is the containing block for .nav-stacked/.tab-content.outer's
+        // own `position: absolute; top: 0; bottom: 0;`.
+        .tabbable.outer {
+            flex: 1 1 auto;
+            min-height: 0;
+            position: relative;
+        }
+
+        // Left tab list — a left accent bar + color on the active item,
+        // no filled/boxed background. Non-active items stay quiet (same
+        // weight/color as body text) so the active tab is the only thing
+        // that reads as "selected".
         .tabbable.outer > .nav-stacked {
-            width: 200px;
+            // Keep vendor's width/position/padding as-is (.tab-content.outer
+            // is absolutely positioned with left: 200px, assuming this
+            // stays 180px + no padding) — only recolor it to match the
+            // white card instead of vendor's default grey ($sd-background).
+            background-color: white !important;
+            box-shadow: none !important;
+            border-right: 1px solid $lb-input-border !important;
+            border-bottom-left-radius: $lb-radius-card;
+            padding-top: 8px;
+            > li {
+                margin-bottom: 2px;
+                > a {
+                    display: block;
+                    padding: 10px 16px 10px 22px;
+                    color: $lb-subnav-text;
+                    font-weight: 500;
+                    // Vendor's .nav-tabs.nav-stacked sets a 1px border on
+                    // all 4 sides — reset it, no accent bar replacing it,
+                    // just a color change when active.
+                    border: none !important;
+                    border-radius: 0 !important;
+                    transition: color .15s ease;
+                    &:hover {
+                        color: $lb-btn-dark-bg;
+                        text-decoration: none;
+                        background: none;
+                    }
+                }
+                &.active > a, &.active > a:hover {
+                    background: none !important;
+                    color: $lb-rail-active !important;
+                    // Vendor's original .active > a sets this inset shadow
+                    // (a leftover from the old "square notch" look).
+                    box-shadow: none !important;
+                }
+            }
         }
 
         .tab-content {
             > .header {
                 height: $SUBNAV_HEIGHT;
-                border-bottom: 1px solid #e0e0e0;
                 padding: $PADDING/2 $PADDING;
                 box-sizing: border-box;
+                // Vendor sets its own border-bottom here (layouts.scss
+                // .split-content > .header, and the settings app's own
+                // .split-content > .header) — kill both explicitly.
+                border-bottom: none !important;
+                h2 {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: $lb-btn-dark-bg;
+                }
             }
             > .content {
-                padding: $PADDING;
+                // Vendor's .split-content > .content sets a grey #f8f8f8
+                // fill — this card is already white end to end.
+                background-color: white !important;
+                border-bottom-right-radius: $lb-radius-card;
+                padding: $PADDING*1.5 $PADDING;
                 @include box-sizing(border-box);
                 > * {
                     width: $SUBSETTINGS_WIDTH;
                 }
                 .form-group {
-                    display: table;
-                    content: " ";
+                    display: flex;
+                    // Centered, not top-aligned — rows with a toggle switch
+                    // (Blog Status, Embed height, Syndication…) were reading
+                    // as visibly offset from their label.
+                    align-items: center;
                     width: 100%;
-                    padding: $PADDING/2 0;
+                    padding: 14px 0;
                     .control-label {
                         text-align: left;
                         font-size: 11px;
                         text-transform: uppercase;
-                        color: #808080;
-                        float: left;
-                        width: 18%;
-                        margin-right: 2%;
+                        letter-spacing: .02em;
+                        color: $lb-timestamp;
+                        flex: 0 0 160px;
+                        margin-right: 20px;
                     }
                     .form-input {
-                        width: 80%;
-                        float: left;
+                        flex: 1 1 auto;
+                        min-width: 0;
+                        // Same cap for every field type (plain input, select,
+                        // textarea, and the datepicker/timepicker widget) so
+                        // Blog Title/Theme/etc. all line up at one width —
+                        // and so the datepicker/timepicker's calendar/clock
+                        // button (absolutely positioned against *this* box)
+                        // sits right at the visible edge of the field
+                        // instead of far off to the right of an uncapped row.
+                        max-width: 480px;
                         select {margin: 0; height: auto;} // overwrite bootstrap
-                        input {
+                        select, input, textarea {
+                            border: 1px solid $lb-input-border;
+                            @include border-radius($lb-radius-input);
+                            transition: border-color .15s ease, box-shadow .15s ease;
+                        }
+                        input, textarea {
                             box-sizing: border-box;
-                            border-radius: 2px;
-                            padding: 4px 6px;
+                            padding: 8px 12px;
                             height: auto;
-                            font-size: 12px;
+                            font-size: 13px;
                             color: #000;
                             box-shadow: none;
                             &:focus {
-                                box-shadow: 0 0 5px 0 #d0d0d0!important;
-                                border-color: #b8b8b8!important;
+                                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                                border-color: $lb-rail-active !important;
                                 outline: 0!important;
                             }
+                        }
+                        select {
+                            padding: 8px 12px;
+                            // The native arrow ignores padding-right in most
+                            // browsers (it's drawn glued to the edge
+                            // regardless) — drop it and draw our own via
+                            // background-image, which does respect
+                            // background-position, so it actually moves.
+                            appearance: none;
+                            -webkit-appearance: none;
+                            -moz-appearance: none;
+                            background-image: url('~images/icons/chevron-down.svg');
+                            background-repeat: no-repeat;
+                            background-position: right 10px center;
+                            background-size: 14px;
+                            padding-right: 32px;
+                            &:focus {
+                                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                                border-color: $lb-rail-active !important;
+                                outline: 0!important;
+                            }
+                        }
+                        // In-form utility buttons (Upload Image, Change,
+                        // Remove) are secondary actions, not page-level
+                        // commits — keep them light and flat, no shadow.
+                        // Needs a stronger fill than the default pale pill,
+                        // same reasoning as Cancel above — it was washing
+                        // out against the white card.
+                        .btn {
+                            border-radius: $lb-radius-pill !important;
+                            text-transform: none;
+                            box-shadow: none !important;
+                            transition: background-color .15s ease;
+                            background-color: darken($lb-pill-bg, 12%) !important;
+                            border-color: darken($lb-pill-bg, 12%) !important;
+                            color: $lb-btn-dark-bg !important;
+                            &:hover:not(:disabled) {
+                                background-color: darken($lb-pill-bg, 20%) !important;
+                            }
+                        }
+                        // ...except the datepicker/timepicker's calendar/
+                        // clock icon button — that's not an action button,
+                        // it's the field's own affordance, so leave it
+                        // borderless/transparent like the rest of the input.
+                        .datepicker-input .btn, .timepicker-input .btn {
+                            background-color: transparent !important;
+                            border-color: transparent !important;
+                            color: $lb-timestamp !important;
+                            box-shadow: none !important;
+                            // Vendor pins this at a fixed `top: 2px`, sized
+                            // for a shorter input — our input is taller now,
+                            // so that reads as sitting too high. Center it
+                            // against the input's actual height instead.
+                            top: 50% !important;
+                            transform: translateY(-50%);
+                            &:hover:not(:disabled) {
+                                background-color: transparent !important;
+                                color: $lb-btn-dark-bg !important;
+                            }
+                        }
+                        // Swap the legacy sd_icons glyphs for Lucide.
+                        .datepicker-input .btn i.icon-calendar {
+                            @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-timestamp, 16px);
+                        }
+                        .timepicker-input .btn i.icon-time {
+                            @include lb-icon-font-mask(url('~images/icons/clock.svg'), $lb-timestamp, 16px);
+                        }
+                        .datepicker-input .btn:hover i.icon-calendar,
+                        .timepicker-input .btn:hover i.icon-time {
+                            background-color: $lb-btn-dark-bg;
+                        }
+                        // Hint/help text under a field ("This will override…",
+                        // stylesheet/embed links, AMP warning) — always its
+                        // own line below the control, quiet and small.
+                        > p, .form-input__hint {
+                            display: block;
+                            width: 100%;
+                            margin: 6px 0 0;
+                            font-size: 12px;
+                            color: $lb-timestamp;
+                        }
+                        // The public embed/stylesheet URL link sitting right
+                        // under a textarea (Embed code, Stylesheet) — same
+                        // gap as the hint text above, otherwise it reads as
+                        // glued to the box right above it.
+                        > a {
+                            display: block;
+                            margin-top: 8px;
                         }
                     }
                 }
@@ -73,6 +317,38 @@ $PADDING: 20px;
         }
         .relative {
             position: relative;
+        }
+    }
+    // Buttons anywhere in the settings tabs (Team's owner-search footer,
+    // the "edit team" modal, etc.) that aren't covered by a more specific
+    // rule above — same pill/palette treatment as everywhere else.
+    .btn {
+        border-radius: $lb-radius-pill !important;
+        text-transform: none;
+        font-weight: 400;
+        box-shadow: none !important;
+        transition: background-color .15s ease;
+        &.btn--primary {
+            background-color: $lb-btn-dark-bg !important;
+            border-color: $lb-btn-dark-bg !important;
+            color: white !important;
+            &:hover:not(:disabled) {
+                background-color: lighten($lb-btn-dark-bg, 8%) !important;
+            }
+        }
+        // Plain `.btn` with no modifier class (e.g. the owner-search
+        // footer's Cancel) fell through with no color at all before —
+        // catch it too, not just `.btn-default`. Same flat $lb-pill-bg
+        // fill as every other secondary/Cancel button on the page (see
+        // the popups below) — one consistent "secondary button" color
+        // site-wide instead of some reading grey and some blue.
+        &:not(.btn--primary) {
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            &:hover:not(:disabled) {
+                background-color: darken($lb-pill-bg, 4%) !important;
+            }
         }
     }
     .outputs {
@@ -87,29 +363,164 @@ $PADDING: 20px;
         .header {
             h2 {
                 display: inline;
+                font-size: 18px;
+                font-weight: 600;
+                color: $lb-btn-dark-bg;
+            }
+        }
+        .pills-list li {
+            // Each row reads as its own card now — a real border instead of
+            // vendor's box-shadow, rounded corners, and margin between
+            // rows instead of a shared divider line.
+            // Vendor lays this row out with h6 float:left and .actions
+            // position:absolute (top:0, meant for a short single-line row).
+            // Flex here instead, so the title and the action icons both
+            // vertically center against the row's real (taller) height.
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 22px;
+            margin-bottom: 12px;
+            border: 1px solid $lb-input-border !important;
+            @include border-radius($lb-radius-input);
+            box-shadow: none !important;
+            // The `clearfix` class on this <li> (in the template, for the
+            // old float-based layout) generates empty ::before/::after
+            // pseudo-elements. Flex turns those into two extra flex items,
+            // so `justify-content: space-between` splits its gap 3 ways
+            // instead of 1, pushing the title right instead of flush left.
+            // Not needed once this row is flex (no floats left to clear).
+            &::before, &::after {
+                content: none;
+            }
+            &:last-child {
+                margin-bottom: 0;
+            }
+            &:hover {
+                box-shadow: none !important;
+            }
+            h6 {
+                float: none;
+                margin: 0;
+                color: $lb-btn-dark-bg;
+                font-weight: 600;
+                font-size: 15px;
+            }
+            .actions {
+                // Vendor has `&:hover .actions { display: block !important }`
+                // (this row's actions are hidden by default, shown on
+                // hover, in the vendor's original design) — needs its own
+                // !important to keep winning on hover, or the icons flip
+                // from a flex row to inline block flow and visibly jump.
+                position: static !important;
+                display: flex !important;
+                align-items: center;
+                gap: 6px;
+            }
+            .actions button {
+                color: $lb-pill-text;
+                width: 34px;
+                height: 34px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                @include border-radius($lb-radius-pill);
+                transition: background-color .15s ease, color .15s ease;
+                &:hover {
+                    color: $lb-rail-active;
+                    background-color: $lb-rail-active-bg;
+                }
+                // Swap the legacy sd_icons glyphs for Lucide, same
+                // masking technique used for the datepicker/timepicker
+                // icons above. Darkest available tone by default — these
+                // are actions, not secondary metadata, so they should read
+                // clearly without needing to hover first. Same size/color/
+                // hover treatment across all three so they read as one
+                // uniform icon set.
+                i.icon-globe, i.icon-pencil, i.icon-trash {
+                    margin: 0;
+                }
+                i.icon-globe {
+                    @include lb-icon-font-mask(url('~images/icons/globe.svg'), $lb-btn-dark-bg, 18px);
+                }
+                i.icon-pencil {
+                    @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg, 18px);
+                }
+                i.icon-trash {
+                    @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg, 18px);
+                }
+                &:hover i {
+                    background-color: $lb-rail-active;
+                }
+            }
+        }
+        .sd-create-btn {
+            i {
+                color: $lb-rail-active;
             }
         }
     }
     .dropdown-content {
         background-color: #fff;
-        border: 1px solid #c6c6c6;
-        border-radius: 3px;
-        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-input);
+        box-shadow: $lb-card-shadow;
         left: 45px;
-        padding: 10px;
+        padding: 14px;
         top: -16px;
         width: 290px;
         z-index: 1;
         position: absolute;
         left: $SUBSETTINGS_WIDTH;
         top:78px;
+        // "Choose new owner" label + search input.
+        .user-select form {
+            label {
+                display: block;
+                color: $lb-timestamp;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .02em;
+                margin-bottom: 6px;
+            }
+            input {
+                width: 100%;
+                @include box-sizing(border-box);
+                border: 1px solid $lb-input-border;
+                @include border-radius($lb-radius-input);
+                padding: 8px 10px;
+                font-size: 13px;
+                &:focus {
+                    outline: 0;
+                    border-color: $lb-rail-active;
+                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                }
+            }
+        }
+        // "Team" / "Users" group labels above each list section — these
+        // `<a>` tags are children of .users-list-embed, not of
+        // .search-result directly, so the `>` combinator here needs to
+        // reach one level deeper or it never matches (and the labels
+        // render inline, squeezed against the input above and the list
+        // below instead of getting their own line/spacing).
+        .search-result .users-list-embed > a {
+            display: block;
+            margin-top: 14px;
+            margin-bottom: 8px;
+            color: $lb-timestamp;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+        }
     }
     .footer {
-        background: none repeat scroll 0 0 #f8f8f8;
-        border-radius: 0 0 5px 5px;
-        border-top: 1px solid #e8e8e8;
-        margin: 3px -10px -10px;
-        padding: 10px;
+        background-color: white;
+        border-radius: 0 0 $lb-radius-input $lb-radius-input;
+        border-top: 1px solid $lb-input-border;
+        margin: 10px -14px -14px;
+        padding: 10px 14px;
         height: 30px;
     }
     .subsettings-content {
@@ -128,14 +539,42 @@ $PADDING: 20px;
         padding-right: 20px;
     }
     .subsettings-header {
-            color: #666;
+            color: $lb-timestamp;
             font-weight: 400;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid $lb-input-border;
+            padding-bottom: 8px;
+            h3 {
+                color: $lb-btn-dark-bg;
+                font-weight: 600;
+            }
         }
     .users-list-embed {
         max-height:136px;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         margin-top: 3px;
+        > li {
+            // Vendor's negative right margin is what causes the horizontal
+            // scrollbar: it makes every row a few px wider than the list's
+            // own scrollable box.
+            margin-right: 0;
+            @include border-radius($lb-radius-input);
+            padding: 0 8px;
+            @include box-sizing(border-box);
+            .avatar {
+                margin: 3px 10px 4px 0;
+            }
+            &:hover, &.active {
+                color: $lb-btn-dark-bg !important;
+            }
+            &:hover {
+                background: $lb-rail-active-bg !important;
+            }
+            &.active {
+                background: $lb-rail-active-bg !important;
+                font-weight: 600;
+            }
+        }
     }
     .reset-default {
         position: absolute;
@@ -145,6 +584,7 @@ $PADDING: 20px;
         float: left;
         text-transform: uppercase;
         width: 80px;
+        margin-right: 12px;
     }
     .top-pad {
         padding-top: 4px;
@@ -160,6 +600,10 @@ $PADDING: 20px;
         .inner {
             border-radius: 8px;
         }
+        // Vendor's "on" state is $sd-blue — match our teal accent instead.
+        &.checked {
+            background: $lb-rail-active !important;
+        }
     }
     .header-top {
         margin-top: 40px;
@@ -174,14 +618,31 @@ $PADDING: 20px;
         display:inline-block;
         float:right;
         margin-top:7px;
+        color: $lb-rail-active;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        &:hover {
+            color: darken($lb-rail-active, 10%);
+            text-decoration: none;
+        }
     }
     .avatar.large {
         height: 84px!important;
         width: 84px!important;
+        // Vendor's .avatar.large.initials still uses line-height: 48px
+        // (its own, smaller default size) — the initials were sitting
+        // near the top of this bigger 84px circle instead of centered.
+        &.initials {
+            line-height: 84px !important;
+            font-size: 28px !important;
+        }
     }
     .blog-media {
         @include border-box();
-        border: 1px solid #d0d0d0 !important;
+        @include border-radius($lb-radius-input);
+        border: 1px solid $lb-input-border !important;
         img {
             padding: 7px;
             max-width: 240px;
@@ -254,6 +715,243 @@ div.datepicker-wrapper div.datepicker-additional td button {
 div.timepicker-popup div.timepicker-core button.btn.btn-info {
     margin: 0;
     float: left;
+}
+
+// The sd-datepicker calendar popup is appended straight to <body> by the
+// vendor directive (not nested under .blog-settings-view), so it stays
+// global like the rules above — recolored/resized to match the rest of the
+// redesigned Settings page instead of vendor's default grey/blue Bootstrap
+// look.
+div.datepicker-wrapper {
+    border: 1px solid $lb-input-border;
+    @include border-radius($lb-radius-card);
+    box-shadow: $lb-card-shadow;
+    padding: 14px;
+    // Vendor's fixed 260px is too narrow for the month/year picker's
+    // 3-column grid — longer labels ("SEPTEMBER", "NOVEMBER") had no room
+    // and ran into their neighboring column. Wider box, same as the day
+    // grid's own comfortable spacing.
+    width: 320px !important;
+
+    .datepicker-additional .btn {
+        @include border-radius($lb-radius-pill);
+        background-color: $lb-pill-bg !important;
+        border-color: $lb-pill-bg !important;
+        color: $lb-pill-text !important;
+        text-transform: none;
+        font-weight: 600;
+        box-shadow: none !important;
+        transition: background-color .15s ease;
+        &:hover:not(:disabled) {
+            background-color: darken($lb-pill-bg, 6%) !important;
+        }
+    }
+
+    .datepicker-core table {
+        // Vendor sizes columns to fit each cell's content, so the month
+        // picker's ragged label widths ("MAY" vs "SEPTEMBER") throw off
+        // both the grid's column alignment and each pill's centering.
+        // Fixed layout gives every column (day-grid's 7 or month/year
+        // grid's 3) equal width, in both this view and the day grid.
+        table-layout: fixed;
+
+        thead {
+            tr:first-child th {
+                .btn strong {
+                    font-weight: 600;
+                    font-size: 13px;
+                    color: $lb-btn-dark-bg;
+                    letter-spacing: .02em;
+                }
+                &:first-child .btn, &:last-child .btn {
+                    @include border-radius($lb-radius-pill);
+                    &:hover {
+                        background-color: $lb-rail-active-bg !important;
+                    }
+                }
+                // Breathing room before the grid below (day names, or the
+                // first month/year row).
+                padding-bottom: 6px;
+            }
+            tr:last-child th small {
+                display: inline-block;
+                margin-top: 8px;
+                color: $lb-timestamp;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: .02em;
+            }
+        }
+        tbody td {
+            // More breathing room between rows/columns than vendor's
+            // cramped `0 2px` — noticeable on the month/year grid, whose
+            // taller pill labels were reading as squeezed together.
+            padding: 6px 4px !important;
+        }
+        tbody td .btn {
+            @include border-radius($lb-radius-pill);
+            color: $lb-btn-dark-bg;
+            font-size: 13px;
+            white-space: nowrap;
+            text-align: center;
+            transition: background-color .15s ease, color .15s ease;
+            .text-muted {
+                color: $lb-timestamp;
+            }
+            &:hover {
+                background-color: $lb-rail-active-bg !important;
+                color: $lb-btn-dark-bg !important;
+                box-shadow: none !important;
+            }
+            // Selected date — filled solid instead of the barely-there tint
+            // hover uses, so it actually reads as "selected" at a glance.
+            &.active {
+                background-color: $lb-rail-active !important;
+                color: #fff !important;
+                font-weight: 600;
+                box-shadow: none !important;
+            }
+            &.btn--primary, &.btn--primary.active {
+                background-color: $lb-rail-active !important;
+                color: #fff !important;
+                .text-muted {
+                    color: #fff;
+                }
+            }
+        }
+    }
+
+    // Confirm/Cancel — same pill treatment as the rest of the Settings
+    // page's buttons (see .settings-page .subnav .btn above).
+    > .btn {
+        @include border-radius($lb-radius-pill);
+        text-transform: none;
+        font-weight: 400;
+        font-size: 12px;
+        margin-top: 12px;
+        padding: 6px 16px !important;
+        height: auto !important;
+        box-shadow: none !important;
+        transition: background-color .15s ease;
+        &.btn--primary {
+            background-color: $lb-btn-dark-bg !important;
+            border-color: $lb-btn-dark-bg !important;
+            color: #fff !important;
+            &:hover:not(:disabled) {
+                background-color: lighten($lb-btn-dark-bg, 8%) !important;
+            }
+        }
+        &:not(.btn--primary) {
+            margin-right: 8px;
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            &:hover:not(:disabled) {
+                background-color: darken($lb-pill-bg, 4%) !important;
+            }
+        }
+    }
+}
+
+// The sd-timepicker popup — same body-appended global scope and the same
+// redesign treatment as .datepicker-wrapper above.
+div.timepicker-popup {
+    border: 1px solid $lb-input-border;
+    @include border-radius($lb-radius-card);
+    box-shadow: $lb-card-shadow;
+    padding: 14px;
+    // Vendor pins this at a fixed height (310px), sized for its old
+    // side-by-side Hours/Minutes layout. Ours stacks them, and runs
+    // taller — with a fixed height the floated Confirm/Cancel buttons at
+    // the bottom render past the box's actual bottom edge instead of
+    // inside it. Let the box grow to fit its content instead.
+    height: auto !important;
+    // Vendor's fixed 200px is too narrow to fit Cancel + Confirm side by
+    // side (they wrap onto their own lines instead) — match the calendar
+    // popup's width, which comfortably fits both.
+    width: 260px !important;
+
+    .timepicker-additional .btn {
+        @include border-radius($lb-radius-pill);
+        background-color: $lb-pill-bg !important;
+        border-color: $lb-pill-bg !important;
+        color: $lb-pill-text !important;
+        text-transform: none;
+        font-weight: 600;
+        box-shadow: none !important;
+        transition: background-color .15s ease;
+        &:hover:not(:disabled) {
+            background-color: darken($lb-pill-bg, 6%) !important;
+        }
+    }
+
+    .timepicker-core {
+        // Contains the floated Confirm/Cancel buttons below (pull-right)
+        // so the box's own height/border grows to include them instead of
+        // stopping before them.
+        &::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+        .select-area {
+            border-top-color: $lb-input-border;
+            .header {
+                color: $lb-timestamp;
+                letter-spacing: .02em;
+            }
+            ul > li {
+                @include border-radius($lb-radius-pill);
+                color: $lb-btn-dark-bg;
+                &:hover {
+                    background-color: $lb-rail-active-bg !important;
+                    color: $lb-rail-active;
+                }
+                // Selected hour/minute — filled solid, matching the
+                // calendar's selected-date treatment.
+                &.active {
+                    background-color: $lb-rail-active !important;
+                    color: #fff !important;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        // Confirm/Cancel — same pill treatment and spacing as the
+        // calendar popup's, side by side (float:right, Confirm first in
+        // markup so it lands rightmost, Cancel to its left).
+        .btn {
+            @include border-radius($lb-radius-pill);
+            text-transform: none;
+            font-weight: 400;
+            font-size: 12px;
+            white-space: nowrap;
+            margin-top: 12px;
+            padding: 6px 16px !important;
+            height: auto !important;
+            box-shadow: none !important;
+            transition: background-color .15s ease;
+            &:not(.btn--primary) {
+                margin-right: 8px;
+            }
+            &.btn--primary {
+                background-color: $lb-btn-dark-bg !important;
+                border-color: $lb-btn-dark-bg !important;
+                color: #fff !important;
+                &:hover:not(:disabled) {
+                    background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                }
+            }
+            &:not(.btn--primary) {
+                background-color: $lb-pill-bg !important;
+                border-color: $lb-pill-bg !important;
+                color: $lb-pill-text !important;
+                &:hover:not(:disabled) {
+                    background-color: darken($lb-pill-bg, 4%) !important;
+                }
+            }
+        }
+    }
 }
 
 p.warn-block {
