@@ -3,6 +3,74 @@
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+// Producer/Consumer avatars — `sd-user-avatar` (superdesk-core) falls back
+// to vendor's raster `avatar_64.png` (a generic grey person silhouette)
+// whenever the bound object has neither `picture_url` nor `display_name`
+// — true for every producer/consumer here (they have a `name`, not a
+// Superdesk-user's `display_name`, so the directive's own initials
+// fallback never kicks in either; see UserAvatarDirective.js's `initAvatar`
+// — no `display_name` and no `picture_url` hits the plain `else` branch,
+// hiding the `<img>` with neither `.initials` nor `.no-bg` added, which is
+// exactly what's targeted below). Same masked-Lucide-icon swap as every
+// other raster placeholder in this redesign — solid teal circle, white
+// `user-round` glyph — instead of vendor's grey silhouette PNG.
+[lb-producers] .avatar:not(.no-bg):not(.initials),
+[lb-consumers] .avatar:not(.no-bg):not(.initials) {
+    background: $lb-rail-active !important;
+    position: relative;
+    &:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 60%;
+        @include lb-icon-bg-mask(url('~images/icons/user-round.svg'), #fff);
+    }
+}
+
+// "Producers"/"Consumers" tabs — same segmented pill toggle as the Blog
+// List's "Active blogs"/"Archived blogs"/"Deleted blogs" tabs
+// (liveblog-bloglist.scss's `.button-stack .nav-tabs`) instead of vendor's
+// underlined tab bar. `.subnav` here is a SIBLING of `[lb-producers]`/
+// `[lb-consumers]` (whichever is currently `ng-if`-active), not an
+// ancestor — `:has()` scopes it to just this page's tab bar.
+.subnav:has(+ [lb-producers]), .subnav:has(+ [lb-consumers]) {
+    .nav-tabs {
+        display: inline-flex;
+        height: auto;
+        border-bottom: none;
+        margin-top: 12px;
+        background: $lb-subnav-bg;
+        padding: 4px;
+        @include border-radius($lb-radius-pill);
+        > li {
+            margin-bottom: 0;
+            > button {
+                margin: 0;
+                height: auto;
+                line-height: normal;
+                background: none;
+                border: none !important;
+                @include border-radius($lb-radius-pill);
+                padding: 8px 18px;
+                color: $lb-pill-text;
+                font-weight: 500;
+                font-size: 13px;
+                transition: background-color .15s ease, color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            &.active > button, &.active > button:hover {
+                background-color: $lb-btn-dark-bg;
+                color: #fff;
+            }
+        }
+    }
+}
+
 /*Force 4 columns layout in consumers view*/
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div,
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.email,
@@ -228,6 +296,43 @@ i.webhook-status.on {
 
 .zIndex2 {
     z-index: 2;
+}
+
+// "+" create button (Producers/Consumers list) — same labeled teal pill as
+// the Blog List's "Create blog" button (`lb-create-btn-pill` mixin,
+// lb-mixins.scss). Both the Producers and Consumers pages render this
+// exact same button markup with no distinguishing wrapper class between
+// them reachable from CSS, so one neutral label covers both instead of
+// guessing/hardcoding either "producer" or "consumer".
+// This button's actual DOM parent (`[lb-producers]`/`[lb-consumers]`, the
+// directive root — an otherwise unstyled wrapper) sits in NORMAL document
+// flow right after the "Producers"/"Consumers" tab bar (`.subnav`), while
+// `.main-section.users` right below it is `position:absolute; top:
+// $subnav-height+$topspace (96px)` — an entirely different, page-global
+// positioning reference. A floated (`pull-right`) button in normal flow
+// and an absolutely-positioned card don't share a coordinate system, so no
+// amount of `margin-top` reliably lines them up.
+//
+// TRIED making `[lb-producers]`/`[lb-consumers]` `position:relative` so
+// the button could be `position:absolute` within it — broke badly: that
+// also makes the wrapper the new nearest-positioned-ancestor for
+// `.main-section.users` (still a descendant, still `position:absolute`),
+// shifting ITS `top:96px` to be relative to the wrapper's own position
+// (which already starts ~96px down the page) instead of the page root —
+// pushing the whole card an extra ~96px down, off past the visible area
+// (rendered as "nothing there"). Reverted.
+//
+// TRIED `transform: translateY(-44px)` next (doesn't touch layout/
+// positioning context, should have been safe) — button vanished entirely
+// instead of just landing in the wrong spot; not confident why without a
+// live inspector, not worth a 4th blind guess. Back to plain normal-flow
+// float + margin (known-safe, was the original working baseline before
+// this button got wider from the "New entry" label) — not pixel-perfect,
+// but visible and roughly right rather than broken.
+.sd-create-btn.zIndex2 {
+    @include lb-create-btn-pill('New entry');
+    margin-top: 16px;
+    margin-right: 24px;
 }
 
 .preview-layout .list-pane > .content, .preview-layout .preview-pane > .content {

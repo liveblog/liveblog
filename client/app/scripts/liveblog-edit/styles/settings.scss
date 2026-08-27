@@ -379,7 +379,7 @@ $PADDING: 20px;
             display: flex !important;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 22px;
+            padding: 8px 22px;
             margin-bottom: 12px;
             border: 1px solid $lb-input-border !important;
             @include border-radius($lb-radius-input);
@@ -454,11 +454,8 @@ $PADDING: 20px;
                 }
             }
         }
-        .sd-create-btn {
-            i {
-                color: $lb-rail-active;
-            }
-        }
+        // Icon now comes from the app-wide `.sd-create-btn i` rule
+        // (liveblog.scss, masked white circle-plus).
     }
     .dropdown-content {
         background-color: #fff;

@@ -1,4 +1,76 @@
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
+// "+" create button — same labeled teal pill as the Blog List's "Create
+// blog" button (`lb-create-btn-pill` mixin, lb-mixins.scss).
+.items-manager .sd-create-btn {
+    @include lb-create-btn-pill('Create Free Type');
+}
+// Not a flex-centering problem — a taller bar instead of a per-button
+// margin-top hack (same reasoning as the Users page, liveblog.scss).
+.items-manager {
+    height: 5.8rem;
+}
+// Right-edge breathing room — vendor's wrapper only sets a left margin,
+// so this wider pill was landing flush against the edge.
+.items-manager .subnav__button-stack--square-buttons {
+    margin-right: 20px;
+}
+
 .freetypeslist {
+    // Info banner — vendor's plain Bootstrap `.alert-info` (square corners,
+    // dated blue/border combo) restyled to match the rest of the app's
+    // palette and card language.
+    .alert.alert-info {
+        background: $lb-pill-bg;
+        border: 1px solid darken($lb-pill-bg, 12%);
+        color: $lb-pill-text;
+        @include border-radius($lb-radius-input);
+        padding: 16px 40px 16px 48px;
+        font-size: 13px;
+        line-height: 1.7;
+        position: relative;
+        // A leading icon gives the wall of text an entry point instead of
+        // reading as one dense paragraph.
+        &::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 16px;
+            width: 18px;
+            height: 18px;
+            background-color: $lb-rail-active;
+            -webkit-mask-image: url('~images/icons/info.svg');
+            mask-image: url('~images/icons/info.svg');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+        }
+        a {
+            color: $lb-rail-active;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            &:hover {
+                color: darken($lb-rail-active, 10%);
+            }
+        }
+        .close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: $lb-timestamp;
+            opacity: 1;
+            transition: color .15s ease;
+            &:hover {
+                color: $lb-btn-dark-bg;
+                opacity: 1;
+            }
+        }
+    }
     .list-container {
         position: absolute;
         top: 0px;
@@ -11,50 +83,98 @@
             }
         }
     }
+    // Same bordered/rounded row-card treatment as the Output Channels list
+    // on the Blog Settings page (client/app/scripts/liveblog-edit/styles/
+    // settings.scss, `.outputs .pills-list li`) — border instead of
+    // box-shadow, flex layout so the title/actions vertically center, and
+    // the legacy sd_icons pencil/trash glyphs swapped for Lucide masks.
     .pills-list {
         max-width: 650px;
         margin: 0;
         padding-left: 2px;
         >li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background: #fff;
-            margin-bottom: 6px;            
-            border-radius: 2px;
-            padding: 10px 16px;
+            margin-bottom: 12px;
+            border: 1px solid $lb-input-border;
+            @include border-radius($lb-radius-input);
+            padding: 8px 22px;
             min-height: 18px;
             color: #444;
             position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.08);
+            box-shadow: none;
             line-height: 18px;
             text-rendering: optimizelegibility;
+            // Vendor's `clearfix` pseudo-elements become extra flex items
+            // once this is `display:flex`, throwing off `justify-content:
+            // space-between` — same fix as the Output Channels row.
+            &::before, &::after {
+                content: none;
+            }
+            &:last-child {
+                margin-bottom: 0;
+            }
+            &:hover {
+                box-shadow: none;
+            }
             h6 {
-
-                font-size: 14px;
-                font-weight: 300;
-                color: #333;
+                float: none;
+                margin: 0;
+                font-size: 15px;
+                font-weight: 600;
+                color: $lb-btn-dark-bg;
                 text-transform: none;
             };
+            // Vendor has `.pills-list li:hover .actions { display: block
+            // !important }` (this row's actions are meant to be hidden by
+            // default, shown on hover) — needs its own !important to keep
+            // winning on hover, or the icons flip from a flex row to
+            // inline block flow and visibly jump. Same fix as Output
+            // Channels.
+            .actions {
+                position: static !important;
+                display: flex !important;
+                align-items: center;
+                gap: 6px;
+            }
             .actions button {
                 border: 0;
-                height: 30px;
-                width: 30px;
-                margin: 3px;
+                width: 34px;
+                height: 34px;
+                margin: 0;
                 background: none;
                 text-align: center;
-                display: block;
-                float: left;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                @include border-radius($lb-radius-pill);
                 line-height: 0;
-                opacity: .4;
+                opacity: 1;
+                color: $lb-pill-text;
+                transition: background-color .15s ease, color .15s ease;
+                i.icon-pencil {
+                    @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-pill-text, 18px);
+                    opacity: .4;
+                }
+                i.icon-trash {
+                    @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 18px);
+                    opacity: .4;
+                }
             };
             .actions button:hover {
                 cursor: pointer;
                 opacity: 1;
+                background-color: $lb-rail-active-bg;
+                i {
+                    background-color: $lb-rail-active;
+                    opacity: 1;
+                }
             };
         }
-        >li:hover {
-            box-shadow: 0 0 3px rgba(0,0,0,.3), 0 0 1px rgba(0,0,0,.2);
-        }
     }
-        
+
 }
 .alert-advert {
     margin: 60px 10px 0px 10px;

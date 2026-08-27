@@ -37,6 +37,54 @@
     background-color: $color;
 }
 
+// Turns a vendor `.sd-create-btn` (a bare circular "+" — the directive
+// replaces whatever's in the template with its own icon/`.circle` markup,
+// see the app-wide `.sd-create-btn`/`.sd-create-btn i` rules in
+// liveblog.scss for the icon/circle color) into a labeled teal pill, e.g.
+// the Blog List's "Create blog" button. The icon itself still comes from
+// that shared app-wide rule — this only handles the pill shape, hiding the
+// now-redundant `.circle` badge (the icon already draws its own ring), and
+// injecting the label via `content:` since these buttons have no text node
+// of their own in the template.
+@mixin lb-create-btn-pill($label) {
+    position: relative;
+    width: auto !important;
+    height: 40px !important;
+    padding: 0 20px 0 16px !important;
+    display: inline-flex !important;
+    align-items: center;
+    overflow: visible !important;
+    @include border-radius($lb-radius-pill !important);
+    background-color: $lb-rail-active !important;
+    transition: box-shadow .15s ease, transform .15s ease;
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba($lb-rail-active, 0.35) !important;
+    }
+    // Vendor's own icon-font CSS absolutely-centers this assuming the old
+    // bare 48×48 icon-only button — drop back into normal inline flow so
+    // it sits before the injected label instead of centered under it.
+    i {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 2;
+    }
+    .circle {
+        display: none !important;
+    }
+    &::after {
+        content: $label;
+        position: relative;
+        z-index: 2;
+        margin-left: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+    }
+}
+
 @mixin buttonStates($background:$btnDefaultColor, $color: $sd-text){
     color: $color;
     background-color: $background;
