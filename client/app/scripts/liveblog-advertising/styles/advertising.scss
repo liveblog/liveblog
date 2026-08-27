@@ -1,44 +1,375 @@
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
+// Float the Adverts section as a card, matching Settings/Analytics/Users —
+// `.main-section` is vendor's `position:absolute; top/right/bottom/left`
+// with no width/height set, so a plain margin shrinks it inward on all
+// sides without touching any of the offset math children rely on.
+.main-section.advertising {
+	margin: 12px 20px 20px;
+	// Same floating-card shadow as the Blog Settings page
+	// (.blog-settings-view .settings-page).
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+// "+" create buttons — these two are actually dropdown TOGGLES (the
+// Adverts one opens a "Create new" menu of ad types, Collections opens its
+// dialog directly). TRIED the same labeled teal pill as the Blog List's
+// "Create blog" button here — broke: the vendor `.dropdown` wrapper's own
+// positioning math assumes the old narrow icon-only width and pushed the
+// much wider pill off past the edge of the header. Reverted to icon-only,
+// still gets the app-wide teal circle from `.sd-create-btn .circle`
+// (liveblog.scss).
+//
+// The icon itself needs its own fallback here though: both buttons render
+// with NO child markup at all in the source (`<button class="dropdown__
+// toggle sd-create-btn" ...></button>`, completely empty, unlike every
+// other `.sd-create-btn` in the app which at least has a dead `<i>`/
+// `.circle` in its template for the CreateButtonDirective to replace) — so
+// the shared `.sd-create-btn i` rule (which only masks an EXISTING `<i>`)
+// has nothing to attach to. First attempt centered a `:before` on the
+// button itself, assuming vendor's `.circle` badge was centered the same
+// way — it isn't (`.circle` is `display:inline-block` + a fixed
+// `margin-top`, not `top/left/transform`), so the two landed off-center
+// from each other. Simplest fix: don't rely on vendor's circle at all,
+// draw both the circle AND the icon ourselves with the exact same
+// centering math so they're always concentric.
+.main-section.advertising {
+	[data-test-id="open-adverts-modal"].sd-create-btn,
+	[ng-click="openCollectionDialog();"].sd-create-btn {
+		position: relative;
+		.circle {
+			display: none !important;
+		}
+		&:before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background-color: $lb-rail-active;
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 14px;
+			height: 14px;
+			z-index: 1;
+			// Plain `plus`, not `circle-plus` — that one already draws its
+			// own ring, which combined with the solid circle background
+			// above (`:before`) looked like two overlapping circles.
+			@include lb-icon-bg-mask(url('~images/icons/plus.svg'), #fff);
+		}
+	}
+}
+
+// "Adverts"/"Collections" — a segmented pill toggle group instead of an
+// underlined tab bar (same look as the Users page's "All user types"/
+// "Authors only" toggle). This `.subnav` is a SIBLING of `.main-section.
+// advertising`, not a descendant (same layout as the Users page's title
+// bar) — `.advertising .subnav` never matches anything, which is why this
+// rule silently did nothing before. `:has()` scopes it correctly, same
+// technique already used for the Users page title. Vendor's underline
+// mechanic (a real 3px border-bottom on the <button>, plus a fixed nav
+// height/margin) gets fully reset since it no longer applies here.
+.subnav:has(+ .main-section.advertising) .nav-tabs {
+	display: inline-flex;
+	height: auto;
+	margin-top: 12px;
+	// White, not $lb-subnav-bg — this sits inside `.subnav`, which is
+	// already that same grey globally, so a same-color pill would be
+	// invisible against its own background.
+	background: #fff;
+	padding: 4px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+	@include border-radius($lb-radius-pill);
+	> li {
+		margin-bottom: 0;
+		> button {
+			margin: 0;
+			height: auto;
+			line-height: normal;
+			background: none;
+			border: none !important;
+			@include border-radius($lb-radius-pill);
+			padding: 8px 18px;
+			color: $lb-pill-text;
+			font-weight: 500;
+			font-size: 13px;
+			transition: background-color .15s ease, color .15s ease;
+			&:hover {
+				color: $lb-btn-dark-bg;
+			}
+		}
+		&.active > button, &.active > button:hover {
+			background-color: $lb-btn-dark-bg;
+			color: #fff;
+		}
+	}
+}
+
 .advertising {
 	.button-stack.right-stack {
 		margin: 0px!important;
-	}
-	.section-title {
-		float: left;
-		padding: 7px 20px;
 	}
 	.right-important {
 		float: right!important;
 	}
 
+	// Was a bare, unstyled "Adverts" heading floating loose above a
+	// full-bleed divider — now the card's own header row, matching the
+	// Settings/Analytics page pattern (white bg, padding, bottom divider,
+	// rounded top corners).
+	.ad-section > header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: #fff;
+		height: 68px;
+		box-sizing: border-box;
+		padding: 0 24px;
+		border-bottom: 1px solid $lb-input-border;
+		border-top-left-radius: $lb-radius-card;
+		border-top-right-radius: $lb-radius-card;
+		// `align-items: center` above should be enough on its own, but the
+		// "+" dropdown wrapper (`.dropdown.navbtn`) carries this file's own
+		// `.right-important { float: right !important; }` — floats compute
+		// to `none` on a flex item per spec, but this was still landing
+		// uncentered/straddling the header's bottom border in practice.
+		// Taking it out of flex layout entirely and centering it via
+		// absolute positioning sidesteps whatever's actually going on
+		// instead of fighting it further.
+		position: relative;
+		.dropdown.navbtn {
+			float: none !important;
+			position: absolute !important;
+			top: 50%;
+			right: 0;
+			transform: translateY(-50%);
+			// `.advert-list-holder` below (also `position:absolute`, no
+			// z-index of its own) was painting on top of this at default
+			// stacking order since it comes later in the DOM — that's what
+			// made the dropdown MENU (open on click) invisible, hidden
+			// behind the list. z-index only matters between positioned
+			// elements, so this alone is enough to reassert it above.
+			z-index: 3;
+		}
+		.section-title {
+			float: none;
+			padding: 0;
+			h2 {
+				margin: 0;
+				font-size: 18px;
+				font-weight: 600;
+				color: $lb-btn-dark-bg;
+			}
+		}
+	}
+
 	.advert-list-holder {
 		position: absolute;
-		top: 48px;
+		top: 68px;
 		left: 0;
 		right: 0;
-		bottom: 0;		
+		bottom: 0;
+		background: #fff;
 		overflow-y: auto;
+		border-bottom-left-radius: $lb-radius-card;
+		border-bottom-right-radius: $lb-radius-card;
 		& > .shadow-list-holder {
 			& > .pills-list {
 				padding: 20px;
 			}
 		}
 	}
+
+
+	// Adverts list — same bordered/rounded row-card treatment as Output
+	// Channels on the Blog Settings page (client/app/scripts/liveblog-edit/
+	// styles/settings.scss, `.outputs .pills-list li`).
+	.pills-list li {
+		display: flex;
+		align-items: center;
+		background: #fff;
+		margin-bottom: 12px;
+		border: 1px solid $lb-input-border;
+		@include border-radius($lb-radius-input);
+		padding: 8px 22px;
+		box-shadow: none;
+		// Vendor's clearfix pseudo-elements become extra flex items once
+		// this is `display:flex` — same fix as Output Channels.
+		&::before, &::after {
+			content: none;
+		}
+		&:last-child {
+			margin-bottom: 0;
+		}
+		&:hover {
+			box-shadow: none;
+		}
+		h6 {
+			float: none;
+			margin: 0;
+			font-size: 15px;
+			font-weight: 600;
+			color: $lb-btn-dark-bg;
+		}
+		// 3 children now (title, state badge, actions) — space-between
+		// would spread all three apart evenly; push actions to the far
+		// right with auto margin instead, so title+badge stay together.
+		.actions {
+			position: static !important;
+			display: flex !important;
+			align-items: center;
+			gap: 6px;
+			margin-left: auto;
+		}
+		.actions button {
+			border: 0;
+			width: 34px;
+			height: 34px;
+			margin: 0;
+			background: none;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			@include border-radius($lb-radius-pill);
+			opacity: 1;
+			transition: background-color .15s ease;
+			i.icon-pencil {
+				@include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg, 18px);
+				opacity: .4;
+			}
+			i.icon-trash {
+				@include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg, 18px);
+				opacity: .4;
+			}
+			&:hover {
+				background-color: $lb-rail-active-bg;
+				i {
+					background-color: $lb-rail-active;
+					opacity: 1;
+				}
+			}
+		}
+	}
+
+	// "Advertisement Local"/"Advertisement Remote" badges — shared as-is
+	// across the Adverts list, Collection cards, and the "Add collection"
+	// checklist. Modern chip look (tinted fill, pill shape) instead of a
+	// plain colored-outline box, using the app's teal/amber accents.
+	.state-label {
+		@include border-radius($lb-radius-pill);
+		padding: 3px 10px;
+		font-size: 10px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: .02em;
+		border-width: 1px;
+		border-style: solid;
+	}
 	.green-state {
-		border-color: #5e8d32!important;
-    	color: #5e8d32!important;
-    	margin-left: 20px;
+		border-color: $lb-rail-active !important;
+		color: $lb-rail-active !important;
+		background: $lb-rail-active-bg;
+		margin-left: 20px;
 	}
 	.yellow-state {
-		border-color: #d2a800;
-    	color: #d2a800;
-    	margin-left: 20px;
+		border-color: $lb-star-selected;
+		color: darken($lb-star-selected, 10%);
+		background: lighten($lb-star-selected, 38%);
+		margin-left: 20px;
 	}
 	.adverts-in-collection {
 		color: black;
 		margin-left: 10px;
 	}
+
+	// Collection cards — vendor's default flat grey/blue header bar.
+	.card-box {
+		border: 1px solid $lb-input-border;
+		@include border-radius($lb-radius-card);
+		box-shadow: none;
+		// No overflow:hidden — it would also clip the "⋮" dropdown menu,
+		// which is `position:absolute` and meant to overflow past the
+		// card's own bounds. Round each section's own corners instead,
+		// same trick used elsewhere in this redesign.
+		// Without overflow:hidden, the sliver just outside the header's
+		// rounded corner shows THIS element's own background, not the
+		// page's — left unset, that's the grey page background peeking
+		// through as a darker corner (same fix as .settings-page in
+		// liveblog-edit/styles/settings.scss).
+		background-color: #fff;
+	}
+	.card-box__header {
+		background-color: $lb-btn-dark-bg !important;
+		color: #fff;
+		border-top-left-radius: $lb-radius-card;
+		border-top-right-radius: $lb-radius-card;
+		.card-box__heading {
+			color: #fff;
+			font-weight: 600;
+		}
+		.dropdown__toggle {
+			color: rgba(255, 255, 255, 0.7);
+			&:hover {
+				color: #fff;
+			}
+			i.icon-dots-vertical {
+				color: inherit;
+			}
+		}
+		// "Actions" menu (Edit/Remove) — swap the legacy sd_icons glyphs
+		// for Lucide, and give the menu itself more breathing room.
+		.more-activity-menu {
+			padding: 6px 0;
+			.dropdown__menu-label {
+				padding: 8px 16px 4px;
+			}
+			li.divider {
+				margin: 4px 0;
+			}
+			li > button {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 9px 16px;
+				i.icon-pencil, i.icon-trash {
+					margin: 0;
+				}
+				i.icon-pencil {
+					@include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-pill-text, 16px);
+				}
+				i.icon-trash {
+					@include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 16px);
+				}
+				&:hover {
+					i {
+						background-color: $lb-rail-active;
+					}
+				}
+			}
+		}
+	}
 	.card-box__content {
 		min-height: 120px;
+		border-bottom-left-radius: $lb-radius-card;
+		border-bottom-right-radius: $lb-radius-card;
+	}
+
+	// "Add collection" modal's plain checkbox list — a quick modern touch
+	// via `accent-color` (no custom checkbox component used here, unlike
+	// the Users page's `.sd-checkbox`).
+	.collection-list input[type="checkbox"] {
+		accent-color: $lb-rail-active;
+		width: 16px;
+		height: 16px;
 	}
 	.ads-media {
         img {

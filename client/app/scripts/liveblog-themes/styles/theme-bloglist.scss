@@ -7,6 +7,54 @@
 .theme-settings-modal {
     form { padding: 0; }
 
+    // Toggle switches — vendor's "on" state is $sd-blue, same fix as the
+    // Blog Settings page's own toggles (settings.scss).
+    .sd-toggle {
+        border-radius: 9px;
+        .inner {
+            border-radius: 8px;
+        }
+        &.checked {
+            background: $lb-rail-active !important;
+        }
+    }
+
+    // "Settings"/"Styles" tabs — same segmented pill toggle as the Blog
+    // List's "Active blogs"/"Archived blogs"/"Deleted blogs" tabs
+    // (liveblog-bloglist.scss's `.button-stack .nav-tabs`), instead of
+    // vendor's underlined tab bar.
+    .nav.nav-tabs {
+        display: inline-flex;
+        height: auto;
+        border-bottom: none;
+        margin: 12px 0 0 24px;
+        padding: 4px;
+        @include border-radius($lb-radius-pill);
+        > li {
+            margin-bottom: 0;
+            > button {
+                margin: 0;
+                height: auto;
+                line-height: normal;
+                background: none;
+                border: none !important;
+                @include border-radius($lb-radius-pill);
+                padding: 8px 18px;
+                color: $lb-pill-text;
+                font-weight: 500;
+                font-size: 13px;
+                transition: background-color .15s ease, color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            &.active > button, &.active > button:hover {
+                background-color: $lb-btn-dark-bg;
+                color: #fff;
+            }
+        }
+    }
+
     .form__row {
         padding-bottom: 0px;
 
@@ -144,21 +192,153 @@
         float: left;
         .navbtn {
             cursor: pointer;
+            margin-bottom: 0px;
         }
         #uploadAThemeFile {
             display: none;
         }
     }
+    // "+" create button (a `<label>` or `<button>`, both share this class)
+    // — same labeled teal pill as the Blog List's "Create blog" button
+    // (`lb-create-btn-pill` mixin, lb-mixins.scss).
+    .sd-create-btn {
+        @include lb-create-btn-pill('New Theme');
+    }
+    // Not a flex-centering problem — a taller bar instead of a per-button
+    // margin-top hack (same reasoning as the Users page, liveblog.scss).
+    height: 5.8rem;
+    // Right-edge breathing room — vendor's wrapper only sets a left
+    // margin, so this wider pill was landing flush against the edge.
+    .subnav__button-stack--square-buttons {
+        margin-right: 20px;
+    }
+}
+// Float the whole page as a card, matching Advertising/Users/Analytics —
+// vendor's `.main-section` has no width/height of its own, so a plain
+// margin shrinks it inward without touching any absolute-positioned
+// descendant's own offset math.
+.main-section.themelist {
+    margin: 12px 20px 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
 }
 .themelist {
+    // Info banner — vendor's plain Bootstrap `.alert-info` (square
+    // corners, dated blue/border combo), same restyle as the Free Types
+    // page's own info banner (freetypes.scss).
+    .alert.alert-info {
+        background: $lb-pill-bg;
+        border: 1px solid darken($lb-pill-bg, 12%);
+        color: $lb-pill-text;
+        @include border-radius($lb-radius-input);
+        padding: 16px 40px 16px 48px;
+        font-size: 13px;
+        line-height: 1.7;
+        position: relative;
+        &::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 16px;
+            width: 18px;
+            height: 18px;
+            background-color: $lb-rail-active;
+            -webkit-mask-image: url('~images/icons/info.svg');
+            mask-image: url('~images/icons/info.svg');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+        }
+        a {
+            color: $lb-rail-active;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            &:hover {
+                color: darken($lb-rail-active, 10%);
+            }
+        }
+        .close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: $lb-timestamp;
+            opacity: 1;
+            transition: color .15s ease;
+            &:hover {
+                color: $lb-btn-dark-bg;
+                opacity: 1;
+            }
+        }
+    }
+    // Warning banner (AMP theme notice) — same shape/structure as the info
+    // banner above, but in the app's one existing red tone ($lb-live-badge-*,
+    // reused from the LIVE post badge) instead of introducing a new color.
+    .alert.alert-error {
+        // Same blue/neutral treatment as `.alert.alert-info` above instead
+        // of vendor's alarming red — this is a heads-up about feature
+        // support, not an error state.
+        background: $lb-pill-bg;
+        border: 1px solid darken($lb-pill-bg, 12%);
+        color: $lb-pill-text;
+        @include border-radius($lb-radius-input);
+        padding: 16px 40px 16px 48px;
+        font-size: 13px;
+        line-height: 1.7;
+        position: relative;
+        &::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 16px;
+            width: 18px;
+            height: 18px;
+            background-color: $lb-rail-active;
+            -webkit-mask-image: url('~images/icons/info.svg');
+            mask-image: url('~images/icons/info.svg');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+        }
+        .close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: $lb-timestamp;
+            opacity: 1;
+            transition: color .15s ease;
+            &:hover {
+                color: $lb-btn-dark-bg;
+                opacity: 1;
+            }
+        }
+    }
     .list-container {
         position: absolute;
         top: 0px;
         left: 0; right: 0; bottom: 0;
         padding: 20px;
         overflow-y: auto;
+        // Each top-level theme renders its own root `<ul><li>` (one per
+        // entry in `self.themesHierachy`); a theme's *variants* render as
+        // a nested `<ul><li>` INSIDE that parent li (recursive `ng-include`
+        // over `themeChildren`). Only that nested case should be indented
+        // — matching by DOM nesting depth (`li li`) instead of `:first-
+        // child` correctly separates "child theme" from "just another
+        // top-level theme that happens to come later in the list" (the
+        // previous `:first-child` reset only ever un-indented whichever
+        // entry was literally first, leaving every other top-level theme
+        // — not just actual child variants — indented).
         ul {
             li {
+                margin-left: 0;
+            }
+            li li {
                 margin-left: 40px;
             }
             .theme {
@@ -166,14 +346,24 @@
                 overflow: auto;
                 width: 100%;
             }
+            // Same bordered/rounded row-card treatment used everywhere
+            // else in this redesign (border instead of a heavy box-shadow,
+            // a soft lift-shadow only on hover) instead of vendor's flat
+            // grey-bordered box.
             .card {
-                border: 1px solid #e2e2e2;
-                @include box-shadow(0 1px 0 #e2e2e2);
+                border: 1px solid $lb-input-border;
+                box-shadow: none;
                 background-color: white;
-                padding: 10px;
+                padding: 16px;
                 cursor: default;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
+                position: relative;
+                @include border-radius($lb-radius-card);
                 @include border-box();
+                transition: box-shadow .15s ease;
+                &:hover {
+                    box-shadow: $lb-card-shadow;
+                }
                 .media {
                     &.no-screenshot {
                         cursor: default;
@@ -181,12 +371,40 @@
                             display: none;
                         }
                     }
+                    // Vendor's original relied on the inner `div` below
+                    // having a real fixed pixel width (238px) to give this
+                    // floated, no-explicit-`width` box something to
+                    // shrink-wrap to — that div's width is now a `100%`
+                    // percentage instead, which can't establish a
+                    // shrink-to-fit size (resolves to 0), collapsing the
+                    // whole thumbnail column to nothing. An explicit width
+                    // here fixes it directly instead of re-hardcoding the
+                    // child's pixel width.
+                    width: 220px;
                     max-width: 400px;
                     height: 140px;
                     @include border-box();
-                    background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
+                    @include border-radius($lb-radius-input);
+                    background-color: #f8f8f8;
                     float: left;
                     position: relative;
+                    overflow: hidden;
+                    // Same masked Lucide `image` placeholder as the Blog
+                    // List's own card media (liveblog-bloglist.scss) — a
+                    // dedicated `:before`, not a mask on `.media` itself,
+                    // so the surrounding grey fill survives (masking the
+                    // element directly clips its own background to just
+                    // the icon's silhouette, leaving the rest transparent).
+                    &:before {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 48px;
+                        height: 48px;
+                        @include lb-icon-bg-mask(url('~images/icons/image.svg'), #d7dbe0);
+                    }
                     &:hover {
                         > .overlay {
                             opacity: 1;
@@ -196,45 +414,66 @@
                         cursor: pointer;
                         opacity: 0;
                         position: absolute;
-                        background-color: rgba(0, 0, 0, 0.8);
-                        top: 0; leff: 0; bottom: 0; right: 0;
-                        background-position: center center;
-                        background-size: 20%;
+                        background-color: rgba(12, 37, 49, 0.75);
+                        top: 0; left: 0; bottom: 0; right: 0;
+                        transition: opacity .15s ease;
                         &.big-icon-search {
-                            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyOCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjggMjQiPjxwYXRoIGZpbGw9IiNjY2MiIGQ9Im0yMy4wNyAxOC45NzVsLTMuODkzLTMuODU3YzEuMTYzLTEuNTc2IDEuODU5LTMuNTE2IDEuODU5LTUuNjIxIDAtNS4yMzYtNC4yNTktOS40OTctOS40OTYtOS40OTdzLTkuNDk3IDQuMjYxLTkuNDk3IDkuNDk2YzAgNS4yMzcgNC4yNiA5LjQ5NyA5LjQ5NyA5LjQ5NyAxLjc1MiAwIDMuMzg5LS40ODUgNC44LTEuMzE2LjkxNSAxIDMuMDIgMy4yODYgMy45MDIgNC4xNDEgMS4xNDYgMS4xMDcgMi4wNTkgMi4yOTcgMi43MTkgMi4xNzMuNjY3LS4xMjUgMS44MDQtMS40MDIgMi4zNzUtMi4wNDguNjQ1LS43MjktMi4yNjYtMi45NjgtMi4yNjYtMi45NjhtLTE4LjI5Mi05LjQ3OWMwLTMuNzI5IDMuMDMtNi43NjEgNi43NjItNi43NjEgMy43MjggMCA2Ljc2MSAzLjAzIDYuNzYxIDYuNzYxIDAgMy43MjktMy4wMyA2Ljc2My02Ljc2MSA2Ljc2My0zLjcyOCAwLTYuNzYyLTMuMDMtNi43NjItNi43NjMiLz48L3N2Zz4=);
+                            @include lb-icon-bg-mask(url('~images/icons/search.svg'), #fff);
+                            background-position: center;
+                            background-size: 28px;
+                            -webkit-mask-size: 28px;
+                            mask-size: 28px;
+                            -webkit-mask-position: center;
+                            mask-position: center;
                         }
                     }
                     div {
-                        width: 238px;
+                        position: relative;
+                        z-index: 1;
+                        width: 100%;
                         height: 140px;
-                        background-position: top center;
-                        background-size: 150%;
+                        background-position: center center;
+                        background-size: cover;
                     }
                 }
                 .content {
                     @include border-box();
                     padding: 0;
                     overflow: hidden;
-                    margin: 0 30px 0;
+                    margin: 0 24px;
                     float: left;
+                    h3 {
+                        margin: 0 0 10px;
+                        font-size: 16px;
+                        font-weight: 700;
+                        color: $lb-btn-dark-bg;
+                    }
                     dl {
                         margin: 0;
-                        font-size: 11px;
+                        font-size: 12px;
                         dt {
                             @include text-light();
                             clear: both;
                             float: left;
-                            color: #b4b4b4;
-                            font-weight: 400;
-                            line-height: 20px;
+                            color: $lb-timestamp;
+                            font-weight: 500;
+                            line-height: 22px;
                             min-width: 160px;
                             text-transform: uppercase;
+                            letter-spacing: .02em;
                         }
                         dd {
                             @include text-light();
                             float: left;
                             font-weight: 400;
-                            line-height: 16px;
+                            color: $lb-pill-text;
+                            line-height: 22px;
+                            a {
+                                color: $lb-rail-active;
+                                &:hover {
+                                    color: darken($lb-rail-active, 10%);
+                                }
+                            }
                         }
                     }
                 }
@@ -248,22 +487,50 @@
                         white-space: nowrap;
                     }
                 }
+                // Replaces vendor's `default-icon.png` corner-ribbon
+                // graphic (a raster image with "DEFAULT" baked into it)
+                // with a plain teal pill badge, matching the app's other
+                // status pills — this element has no text content of its
+                // own, so the label is generated via `content:` instead of
+                // touching the template.
+                // A solid teal pill + checkmark reads as an actual status
+                // badge — the first attempt used the same pale
+                // `$lb-rail-active-bg` for both this and `.card.default`'s
+                // own background below, so the "pill" was invisible
+                // (identical color to what's behind it, leaving only the
+                // text visible with no pill boundary at all).
                 .default-theme {
                     position: absolute;
-                    right: 0;
-                    top: 0;
-                    width: 90px;
-                    height: 65px;
-                    background: url('~images/default-icon.png') no-repeat left bottom;
+                    right: 16px;
+                    top: 16px;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    background: $lb-rail-active !important;
+                    color: #fff;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: .04em;
+                    text-transform: uppercase;
+                    padding: 5px 12px 5px 8px;
+                    @include border-radius($lb-radius-pill);
+                    &:before {
+                        content: '';
+                        width: 13px;
+                        height: 13px;
+                        @include lb-icon-bg-mask(url('~images/icons/circle-check-big.svg'), #fff);
+                    }
+                    &:after {
+                        content: 'Default';
+                    }
                 }
                 &.default {
-                    background-color: #eff7fa;
-                    border: 1px solid #D1E5ED;
-                    @include box-shadow(0 1px 0 #D1E5ED);
+                    background-color: $lb-rail-active-bg;
+                    border-color: $lb-rail-active;
                     .btn-default {
-                        background-color: #d9d9d9;
+                        background-color: darken($lb-pill-bg, 10%);
                         &:hover {
-                            background-color: #c3c3c3;
+                            background-color: darken($lb-pill-bg, 18%);
                         }
                     }
                 }
