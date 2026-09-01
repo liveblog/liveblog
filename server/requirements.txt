@@ -1,4 +1,4 @@
-gunicorn==19.7.1
+gunicorn==22.0.0
 honcho==1.0.1
 newrelic>=2.66,<2.67
 Flask==1.0
