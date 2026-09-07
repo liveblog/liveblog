@@ -1028,10 +1028,6 @@
                     padding: 0;
                     line-height: 48px;
                     font-size: 14px;
-                    // Less round than the app-wide pill default — full
-                    // capsule shape read too round on these wide 48px-tall
-                    // Publish/Submit/Save draft buttons specifically.
-                    border-radius: $lb-radius-input !important;
                     background-color: $lb-btn-dark-bg !important;
                     border-color: $lb-btn-dark-bg !important;
                     color: white !important;
