@@ -173,6 +173,24 @@
 	[ng-click="openCollectionDialog();"].sd-create-btn:after {
 		content: 'New Collection';
 	}
+	// Same narrow-screen collapse to an icon-only circle as every other
+	// "+" create button (`lb-create-btn-pill` mixin, lb-mixins.scss) —
+	// these two aren't built from the mixin (see the wrapper-quirk note
+	// above), so it's repeated by hand here.
+	@media (max-width: 800px) {
+		[data-test-id="open-adverts-modal"].sd-create-btn,
+		[ng-click="openCollectionDialog();"].sd-create-btn {
+			width: 40px !important;
+			padding: 0 !important;
+			justify-content: center !important;
+			&:after {
+				content: none !important;
+			}
+			i {
+				margin: 0 !important;
+			}
+		}
+	}
 	// "New Advert"'s "CREATE NEW" ad-type menu — vendor's plain white box,
 	// sharp corners, hard shadow. Same redesigned dropdown-list pattern
 	// used elsewhere (e.g. liveblog-edit.scss's `.freetype-selector`).

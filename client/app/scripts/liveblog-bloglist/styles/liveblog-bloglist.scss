@@ -173,8 +173,9 @@
 // bug as the blog editor page, see responsive.scss). Rather than making
 // the row scroll horizontally, free up the width instead: let each tab's
 // label wrap onto two lines (vendor's own older mobile layout did this —
-// "Active"/"blogs" stacked) and collapse "Create blog" down to an
-// icon-only circle, matching the vendor reference for this breakpoint.
+// "Active"/"blogs" stacked). "Create blog" collapsing to an icon-only
+// circle at this same breakpoint is handled by the `lb-create-btn-pill`
+// mixin itself now (lb-mixins.scss).
 @media(max-width: 800px) {
     .subnav:has(+ .main-section.bloglist) {
         .button-stack .nav-tabs {
@@ -184,17 +185,6 @@
                 white-space: normal;
                 text-align: center;
                 line-height: 1.25;
-            }
-        }
-        .sd-create-btn {
-            width: 40px !important;
-            padding: 0 !important;
-            justify-content: center !important;
-            &::after {
-                content: none !important;
-            }
-            i {
-                margin: 0 !important;
             }
         }
     }

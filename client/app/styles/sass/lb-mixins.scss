@@ -56,6 +56,13 @@
     overflow: visible !important;
     @include border-radius($lb-radius-pill !important);
     background-color: $lb-rail-active !important;
+    // Vendor's `.navbtn` base class (present on most of these buttons)
+    // draws a faint `border-left` divider meant for a row of icon-only
+    // buttons sitting flush against each other — on a standalone pill/
+    // circle it's a stray hairline, and since it's one-sided it also
+    // throws off the icon's horizontal centering once collapsed to a
+    // bare circle (see the @media block below).
+    border: none !important;
     // No lift/shadow hover here (or on any other green "+" create button
     // app-wide) — that treatment is reserved for the blog editor's
     // Publish button specifically (liveblog-edit.scss's
@@ -81,6 +88,22 @@
         color: #fff;
         font-size: 13px;
         font-weight: 600;
+    }
+    // On narrow screens there's no room left for a labeled pill next to
+    // the page title/tabs (it was overlapping or overflowing off-screen —
+    // Blog List hit this first, see its own subnav rules), so collapse
+    // back down to the vendor's original icon-only circle for every page
+    // using this mixin.
+    @media (max-width: 800px) {
+        width: 40px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        &::after {
+            content: none !important;
+        }
+        i {
+            margin: 0 !important;
+        }
     }
 }
 
