@@ -56,11 +56,10 @@
     overflow: visible !important;
     @include border-radius($lb-radius-pill !important);
     background-color: $lb-rail-active !important;
-    transition: box-shadow .15s ease, transform .15s ease;
-    &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba($lb-rail-active, 0.35) !important;
-    }
+    // No lift/shadow hover here (or on any other green "+" create button
+    // app-wide) — that treatment is reserved for the blog editor's
+    // Publish button specifically (liveblog-edit.scss's
+    // `.actions .btn.btn--primary:hover`), not every teal pill.
     // Vendor's own icon-font CSS absolutely-centers this assuming the old
     // bare 48×48 icon-only button — drop back into normal inline flow so
     // it sits before the injected label instead of centered under it.

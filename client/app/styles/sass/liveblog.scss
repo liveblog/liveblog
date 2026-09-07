@@ -998,7 +998,7 @@ div.subnav div.button-stack .navbtn i,
         // .searchbar (vendor's user-search input, e.g. "Add people") pins
         // its own border-radius at 2px with !important — needs the same to
         // win.
-        input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select {
+        input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
             border: 1px solid $lb-input-border;
             @include border-radius($lb-radius-input !important);
             padding: 8px 12px;
@@ -1571,6 +1571,122 @@ div.subnav div.button-stack .navbtn i,
             background-color: $lb-rail-active-bg !important;
             border-color: $lb-rail-active !important;
             color: $lb-rail-active !important;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Login / reset-password screens — vendor markup and base CSS live in
+// node_modules/superdesk-core/scripts/core/auth/{login-modal.html,
+// reset-password.html,styles/auth.scss} (sdLoginModal etc., a full-page
+// overlay outside #main-container, not a router view — always mounted,
+// shown/hidden via ng-show). Both screens share the same `.login-screen`/
+// `.login-form-container`/`.form-handler` markup, so this one block skins
+// both. Per the CSS-only redesign rule we never touch that HTML, only
+// override its classes here. Flat treatment on purpose — elements sit
+// directly on the dark navy background, no boxed white card (explicit
+// request 2026-09-04, an earlier white-card version was rejected).
+// Everything below fights either the vendor rule directly (same-ish
+// specificity, bundle order not guaranteed — hence !important throughout,
+// matching this file's convention) or the app-wide `.btn` fallback above,
+// which would otherwise paint the Log In button as its light-blue
+// secondary pill since `.btn--sd-green` isn't `.btn--primary`.
+.login-screen {
+    background: $lb-header-bg !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    .logo-handler {
+        margin-bottom: 32px !important;
+        text-align: center;
+        img {
+            width: 180px !important;
+            height: auto !important;
+        }
+    }
+
+    .login-form-container {
+        position: static !important;
+        top: auto !important; left: auto !important; margin: 0 !important;
+        width: 320px;
+        height: auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+
+        .session-error {
+            position: static;
+            width: auto;
+            margin: 0 0 20px !important;
+            @include border-radius($lb-radius-input);
+            background-color: $lb-star-selected;
+        }
+
+        .form-handler {
+            width: 100% !important;
+
+            .avatar {
+                width: 120px !important;
+                height: 120px !important;
+                margin: 0 auto 24px !important;
+            }
+
+            form {
+                .inputs input {
+                    width: 100%;
+                    @include box-sizing(border-box);
+                    height: 44px;
+                    margin-bottom: 14px;
+                    border: 1px solid $lb-input-border !important;
+                    @include border-radius($lb-radius-input !important);
+                    box-shadow: none !important;
+                    padding: 0 14px;
+                    font-size: 14px;
+                    line-height: normal;
+                    &:focus {
+                        border-color: $lb-rail-active !important;
+                        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                        outline: none;
+                    }
+                }
+                .buttons button {
+                    background-color: $lb-rail-active !important;
+                    border-color: $lb-rail-active !important;
+                    color: #fff !important;
+                    height: 44px;
+                    font-weight: 500;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-rail-active, 6%) !important;
+                    }
+                }
+            }
+
+            .links {
+                border-top: none !important;
+                padding-top: 4px;
+                margin-top: 4px;
+            }
+            .text {
+                color: $lb-rail-active !important;
+                &:hover {
+                    color: lighten($lb-rail-active, 12%);
+                    text-decoration: underline;
+                }
+            }
+            .reset-info {
+                color: rgba(255, 255, 255, 0.75) !important;
+            }
+            .transition-id {
+                color: #fff !important;
+            }
+            .validation-info span {
+                color: $lb-star-selected !important;
+            }
+            .error-handler .error {
+                background: $lb-live-badge-text !important;
+                @include border-radius($lb-radius-input);
+            }
         }
     }
 }

@@ -73,7 +73,7 @@ blog image uploader
                         // (needed to stack the icon above the text instead
                         // of flowing inline next to it, which is what was
                         // pushing/misaligning it) wins.
-                        @include lb-icon-font-mask(url('~images/icons/upload.svg'), $lb-timestamp, 22px);
+                        @include lb-icon-font-mask(url('~images/icons/image.svg'), $lb-timestamp, 22px);
                         display: block;
                     }
                 }

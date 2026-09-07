@@ -67,7 +67,12 @@
     .form-group {
         margin: 0;
         padding-top: 0;
-        margin-bottom: 20px;
+        // Was 20px — with the hint text itself carrying no bottom margin
+        // of its own, that was the only space between a group's
+        // description (e.g. "Introduces a button for the readers to
+        // filter the timeline by highlights") and the next toggle row,
+        // reading as cramped.
+        margin-bottom: 26px;
 
         // settings groups headline
         &.sd-line-input--is-groupheading {
@@ -78,14 +83,21 @@
         &.sd-line-input {
             .sd-line-input__hint {
                 position: relative;
-                margin-top: 0;
+                // A little separation from its own label/checkbox above —
+                // was flush against it (0).
+                margin-top: 4px;
                 display: block;
+                color: $lb-timestamp;
             }
 
         }
 
         .sd-line-input__label {
             position: relative;
+            // Labels (e.g. "Author info position") sat flush against
+            // their input/select below with no breathing room.
+            margin-bottom: 8px;
+            display: block;
         }
 
         .lb-group-heading {
@@ -112,6 +124,24 @@
             .datetime__text {
                 width: 50%;
                 margin: 0 0 0 5px;
+                // The "Custom" field (lb-date-format's own template) is a
+                // bare `<input>` with no `type` attribute and no class, so
+                // it never matched the global `.modal .modal__body
+                // input[type="..."]` redesign rule (liveblog.scss) — same
+                // border/radius/focus treatment, applied directly here.
+                input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    border: 1px solid $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    &:focus {
+                        outline: 0;
+                        border-color: $lb-rail-active;
+                        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                    }
+                }
             }
             .datetime__example {
                 margin: 0 0 0 15px;

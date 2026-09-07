@@ -1,12 +1,18 @@
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
 .poll_component {
     padding: 24px;
-    border: 0.5px solid #EBEBEB;
+    border: 1px solid $lb-input-border;
+    @include border-radius($lb-radius-card);
+    background-color: #fff;
     display: flex;
 }
 
 .poll_component_title {
     font-size: 16px;
     font-weight: 500;
+    color: $lb-btn-dark-bg;
 }
 
 .poll_component_vote_option {
@@ -21,8 +27,12 @@
 }
 
 .poll_component_subtitle {
-    font-size: 12px;
-    color: #737373;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    color: $lb-timestamp;
+    margin-bottom: 6px;
 }
 
 .poll_option_container {
@@ -34,14 +44,51 @@
 .poll_option_remove_container {
     position: absolute;
     right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include border-radius(50%);
     cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+    color: $lb-timestamp;
+    &:hover {
+        background-color: rgba($lb-btn-dark-bg, 0.08);
+        color: $lb-btn-dark-bg;
+    }
+    // No Lucide "x" asset in the icon set — same CSS-drawn crossed-bar
+    // technique already used for the Contributions filter pill's remove
+    // button, which centers pixel-perfectly regardless of font metrics.
+    .icon-close-small {
+        position: relative;
+        width: 10px;
+        height: 10px;
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 2px;
+            background-color: currentColor;
+        }
+        &:before { transform: translate(-50%, -50%) rotate(45deg); }
+        &:after { transform: translate(-50%, -50%) rotate(-45deg); }
+    }
 }
 
 .poll_option_add_button {
-   font-size: 12px;
-   font-weight: 500;
-   color: #8AB6D0; 
-   width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+    color: $lb-rail-active;
+    width: fit-content;
+    transition: color .15s ease;
+    &:hover {
+        color: $lb-btn-dark-bg;
+    }
 }
 
 .poll_flex_box {
@@ -79,15 +126,58 @@
 }
 
 .poll_vote_bg {
-    height: 4px; 
-    width: 100%; 
+    height: 4px;
+    width: 100%;
     background-color: #D9D8D8;
     border-radius: 12px;
 }
 
 .poll_vote_fg {
-    height: 4px; 
-    
-    background-color: #5FA8C8; 
+    height: 4px;
+
+    background-color: $lb-rail-active;
     border-radius: 12px;
+}
+
+// Question/answer/duration fields — plain unstyled `<input>`s (no class of
+// their own in the React component), so they fell back to the browser's
+// default text-input chrome instead of matching the rest of the app.
+.poll_component input[type="text"],
+.poll_component input[type="number"] {
+    width: 100%;
+    box-sizing: border-box !important;
+    // Explicit on every state (base/hover/focus) so nothing — a vendor
+    // default focus style included — can swap in a different border
+    // width and shift the box size, which is what read as the text
+    // around it "jumping" on click.
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: $lb-input-border;
+    @include border-radius($lb-radius-input !important);
+    // sir-trevor's own vendor CSS (`.st-block input[type="text"]` /
+    // `:active` / `:focus`, inputs.scss) sets `padding: .6em` at the exact
+    // same specificity as this rule — a tie whose winner depends on build
+    // order, and can flip between this rule's plain/`:focus` selectors and
+    // vendor's three near-identical ones. That's what was actually
+    // "jumping": the box briefly resizing to vendor's padding on
+    // interaction. `!important` settles it for good.
+    padding: 8px 12px !important;
+    font-size: 13px;
+    transition: border-color .15s ease;
+    &:hover {
+        border-color: darken($lb-input-border, 15%);
+    }
+    &:focus {
+        outline: 0 !important;
+        border-color: $lb-rail-active;
+        // No box-shadow glow here — this popup sits in a small, tightly
+        // spaced card (unlike the app's modals), where the extra 3px ring
+        // read as the surrounding text shifting.
+        box-shadow: none !important;
+    }
+    &:disabled {
+        background-color: $lb-subnav-bg;
+        color: $lb-timestamp;
+        cursor: not-allowed;
+    }
 }

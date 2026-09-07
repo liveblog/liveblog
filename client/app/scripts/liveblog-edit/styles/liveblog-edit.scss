@@ -19,6 +19,45 @@
     background-color: $lb-rail-inactive;
 }
 
+// Timeline/Drafts post authors and the Contributions "Select users" popover
+// all fall back to vendor's raster `avatar_64.png` (grey silhouette) — same
+// masked-Lucide-icon swap as the Producer/Consumer avatars in
+// liveblog-syndication/styles/syndication.scss: solid teal circle, white
+// `user-round` glyph, instead of the grey PNG.
+.blogedit .avatar:not(.no-bg):not(.initials) {
+    background: $lb-rail-active !important;
+    position: relative;
+    &:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 60%;
+        @include lb-icon-bg-mask(url('~images/icons/user-round.svg'), #fff);
+    }
+}
+
+// "There aren't any comments." / "No posts" empty-state notices
+// (posts-list.ng1's `.alert.alert-info`) — vendor's bare Bootstrap alert
+// box (hard blue fill, heavy text-shadow, sharp-ish corners) untouched by
+// the redesign until now.
+.blogedit .alert-info {
+    background-color: $lb-rail-active-bg;
+    border: 1px solid rgba($lb-rail-active, 0.25);
+    @include border-radius($lb-radius-input);
+    color: $lb-btn-dark-bg;
+    text-shadow: none;
+    font-size: 13px;
+    // Vendor's `padding: 8px 35px 8px 14px` is symmetric top/bottom on
+    // paper, but inherits the page's tall 1.8rem body line-height, which
+    // pads more space under the text's baseline than above it — reset to
+    // a tight line-height so the padding alone centers it.
+    padding: 14px;
+    line-height: 1.4;
+}
+
 .blogedit {
     // vendor's .main-section sets top: $subnav-height + $topspace; pull it
     // up a bit so there's less empty space below the subnav row.
@@ -148,8 +187,14 @@
             left: 16px;
             width: calc(680px - 32px);
             background: white;
-            // tablet
-            @media only screen and (max-width: 1024px) {
+            // Between the tablet breakpoint and the point where the fixed
+            // 680px Editor column leaves enough room for Timeline on its
+            // own — Editor was staying pinned at 680px right up until
+            // 1024px, squeezing Timeline into whatever was left (as little
+            // as ~330px around 1025-1100px). Give both columns the same
+            // 50/50 split as the tablet rule for this range too, just
+            // shifted earlier.
+            @media only screen and (max-width: 1240px) {
                 width: calc(50% - 32px);
             }
             z-index: 1;
@@ -157,8 +202,7 @@
         &--timeline {
             right: 16px;
             left: 680px;
-            // tablet
-            @media only screen and (max-width: 1024px) {
+            @media only screen and (max-width: 1240px) {
                 left: 50%;
             }
             background: $lb-timeline-bg;
@@ -200,26 +244,51 @@
                 .btn {
                     margin-left: 5px;
                     > .title {white-space: nowrap; text-transform: none;}
-                    &:hover {> .overlay {top:0;}}
+                    // A small round "x" at the pill's trailing edge instead
+                    // of the old full-cover dark overlay sliding up over
+                    // the whole pill on hover (which blotted out the name
+                    // with an oversized × mid-word).
                     > .overlay {
-                        transition-property: top;
-                        transition-duration: .25s;
                         position: absolute;
-                        top: 24px;
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        background-color: rgba(0, 0, 0, 0.6);
-                        color: white;
-                        padding: 10px 0 0;
-                        font-size: 1.8em;
-                        line-height: 0 !important;
+                        top: 50%;
+                        right: 4px;
+                        bottom: auto;
+                        left: auto;
+                        transform: translateY(-50%);
+                        width: 20px;
+                        height: 20px;
+                        @include border-radius(50%);
+                        background-color: transparent;
+                        color: $lb-timestamp;
+                        padding: 0;
+                        transition: background-color .15s ease, color .15s ease;
                         @include box-sizing(border-box);
+                        // The "×" text glyph itself sits high in its own
+                        // font-metrics box — no amount of flex/line-height
+                        // centering fixes that. Draw the X as two crossed
+                        // bars instead, which centers pixel-perfectly
+                        // regardless of font.
+                        font-size: 0;
+                        &::before, &::after {
+                            content: '';
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            width: 10px;
+                            height: 2px;
+                            background-color: currentColor;
+                        }
+                        &::before { transform: translate(-50%, -50%) rotate(45deg); }
+                        &::after { transform: translate(-50%, -50%) rotate(-45deg); }
+                    }
+                    &:hover > .overlay {
+                        background-color: rgba($lb-btn-dark-bg, 0.12);
+                        color: $lb-btn-dark-bg;
                     }
                 }
 
                 .btn-mini {
-                    padding: 6px 8px 6px 8px;
+                    padding: 6px 24px 6px 8px;
                     height: auto;
                     margin: 2px 5px 2px 0;
                     position: relative;
@@ -229,19 +298,57 @@
 
                 .dropdown-content {
                     background-color: #fff;
-                    border: 1px solid #c6c6c6;
-                    border-radius: 3px;
-                    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
-                    padding: 10px 10px 0;
+                    border: 1px solid $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    box-shadow: $lb-card-shadow;
+                    padding: 14px 14px 0;
                     width: 290px;
                     z-index: 2;
                     position: absolute;
                     left: 150px;
                     top: 2px;
+                    // "Select users" label + search input.
+                    .user-select form {
+                        label {
+                            display: block;
+                            color: $lb-timestamp;
+                            font-size: 11px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: .02em;
+                            margin-bottom: 6px;
+                        }
+                        input {
+                            width: 100%;
+                            @include box-sizing(border-box);
+                            border: 1px solid $lb-input-border;
+                            @include border-radius($lb-radius-input);
+                            padding: 8px 10px;
+                            font-size: 13px;
+                            &:focus {
+                                outline: 0;
+                                border-color: $lb-rail-active;
+                                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                            }
+                        }
+                    }
                     ul {
                         margin: 10px 0;
                         li {
                             margin: 0;
+                            @include border-radius($lb-radius-input);
+                            padding: 4px 8px;
+                            @include box-sizing(border-box);
+                            &:hover, &.active {
+                                color: $lb-btn-dark-bg !important;
+                            }
+                            &:hover {
+                                background: $lb-rail-active-bg !important;
+                            }
+                            &.active {
+                                background: $lb-rail-active-bg !important;
+                                font-weight: 600;
+                            }
                         }
                     }
                     &::before {
@@ -257,11 +364,11 @@
                     }
                     .footer {
                         overflow: hidden;
-                        background-color: #f8f8f8;
-                        margin: 0 -10px;
-                        border-top: 1px solid #e8e8e8;
-                        padding: 10px;
-                        @include border-radius(0 0 2px 2px);
+                        background-color: #fff;
+                        margin: 10px -14px 0;
+                        border-top: 1px solid $lb-input-border;
+                        padding: 10px 14px;
+                        @include border-radius(0 0 $lb-radius-input $lb-radius-input);
                     }
                 }
             }
@@ -639,10 +746,35 @@
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css
-                                border: 1px dashed $grayLight;
+                                border: 2px dashed $lb-input-border;
+                                @include border-radius($lb-radius-input);
                                 padding: $main-content-padding * 2;
-                                p, .st-icon {
-                                    color: $grayLight;
+                                p {
+                                    color: $lb-timestamp;
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                }
+                                // Same "image" icon as every other upload dropzone in the
+                                // app (liveblog-upload.scss's `.computer .dropzone`) instead
+                                // of sir-trevor's own ligature-font glyph (the element's text
+                                // content, "image", gets glyph-substituted by its bundled
+                                // icon webfont) — same font-size: 0 + mask technique used for
+                                // the block-type buttons below (a[data-type] .st-icon).
+                                .st-icon {
+                                    font-size: 0 !important;
+                                    display: block;
+                                    width: 22px;
+                                    height: 22px;
+                                    margin: 0 auto 10px;
+                                    background-color: $lb-timestamp;
+                                    -webkit-mask-image: url('~images/icons/image.svg');
+                                    mask-image: url('~images/icons/image.svg');
+                                    -webkit-mask-repeat: no-repeat;
+                                    mask-repeat: no-repeat;
+                                    -webkit-mask-position: center;
+                                    mask-position: center;
+                                    -webkit-mask-size: contain;
+                                    mask-size: contain;
                                 }
                             }
                             &__upload-container {
@@ -694,7 +826,7 @@
                                 // for text input field (div[content-editable] looking like a textarea)
                                 .st-text-block {
                                     padding: 20px;
-                                    min-height: 65px;
+                                    min-height: 155px;
                                     font-size: 1em;
                                     border: 1px solid $lb-input-border;
                                     word-wrap: break-word;
@@ -896,13 +1028,25 @@
                     padding: 0;
                     line-height: 48px;
                     font-size: 14px;
-                    border-radius: $lb-radius-pill !important;
+                    // Less round than the app-wide pill default — full
+                    // capsule shape read too round on these wide 48px-tall
+                    // Publish/Submit/Save draft buttons specifically.
+                    border-radius: $lb-radius-input !important;
                     background-color: $lb-btn-dark-bg !important;
                     border-color: $lb-btn-dark-bg !important;
                     color: white !important;
                     text-transform: none;
                     transition: box-shadow .15s ease, transform .15s ease;
                     &:hover:not(:disabled) {
+                        // Restate the dark-navy background here (not just
+                        // the shadow/lift): liveblog.scss's global
+                        // `.blogedit .btn:not(.btn--primary):hover` rule
+                        // has higher specificity than this rule's own
+                        // non-hover background-color, so without this it
+                        // wins on hover and turns Submit/Save draft a pale
+                        // blue instead of staying dark navy.
+                        background-color: $lb-btn-dark-bg !important;
+                        border-color: $lb-btn-dark-bg !important;
                         transform: translateY(-1px);
                         box-shadow: 0 4px 10px rgba($lb-btn-dark-bg, 0.25) !important;
                     }
@@ -911,6 +1055,8 @@
                         background-color: $lb-btn-teal-bg !important;
                         border-color: $lb-btn-teal-bg !important;
                         &:hover:not(:disabled) {
+                            background-color: $lb-btn-teal-bg !important;
+                            border-color: $lb-btn-teal-bg !important;
                             box-shadow: 0 4px 10px rgba($lb-btn-teal-bg, 0.35) !important;
                         }
                     }
@@ -1083,9 +1229,9 @@
 
 .freetype-selector {
     background-color: #fff;
-    border: 1px solid #c6c6c6;
-    border-radius: 3px;
-    box-shadow: 0 3px 5px rgba(0,0,0,.2);
+    border: 1px solid $lb-input-border;
+    @include border-radius($lb-radius-input);
+    box-shadow: $lb-card-shadow;
     padding: 10px 10px 5px 10px;
     min-width: 100px;
     width: auto;
@@ -1097,13 +1243,23 @@
     }
     top: 2px;
     li {
-        padding: 0px 5px;
-        border-radius: 2px;
+        padding: 6px 8px;
+        @include border-radius($lb-radius-input);
         margin-right: 0px;
         margin-bottom: 1px;
         height: auto;
         white-space: normal;
         word-wrap: break-word;
+        &:hover, &.active {
+            color: $lb-btn-dark-bg !important;
+        }
+        &:hover {
+            background: $lb-rail-active-bg !important;
+        }
+        &.active {
+            background: $lb-rail-active-bg !important;
+            font-weight: 600;
+        }
     }
     max-height: 348px;
     overflow-y: auto;
@@ -1123,7 +1279,12 @@
     content: " ";
 }
 .freetype-selector .separator {
-    border-bottom: 1px solid #ebebeb;
+    // The shared `li { border-radius: $lb-radius-input }` above (for the
+    // hover/active pill highlight) also rounds this divider's own
+    // border-bottom corners, turning a straight line into an odd curved
+    // "smile" shape — reset it to square for this one.
+    border-radius: 0;
+    border-bottom: 1px solid $lb-input-border;
 }
 
 .cursor-pointer {

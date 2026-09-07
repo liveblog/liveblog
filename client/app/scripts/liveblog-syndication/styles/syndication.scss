@@ -227,6 +227,20 @@ div.select-producer {
     select {
         width: 85%;
         float: left;
+        // Match the redesign's custom-chevron selects (liveblog-edit.scss's
+        // .output-channels-modal / settings.scss's .form-input select) —
+        // without this, the browser's native arrow renders at the box's
+        // new bordered/padded edge (from liveblog.scss's global
+        // `.modal .modal__body select` rule) instead of a drawn one, and
+        // sits shifted/cut off relative to it.
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        background-image: url('~images/icons/chevron-down.svg') !important;
+        background-repeat: no-repeat !important;
+        background-position: right 10px center !important;
+        background-size: 14px !important;
+        padding-right: 32px !important;
     }
 
     select.full {
@@ -333,6 +347,22 @@ i.webhook-status.on {
     @include lb-create-btn-pill('New entry');
     margin-top: 16px;
     margin-right: 24px;
+}
+
+// Ingest panel's "Attach syndicated blog" button — every other "+" create
+// button in the app (Blog List, Users, Free Types, Themes, Producers/
+// Consumers above) already got the labeled teal pill treatment via this
+// same mixin; this was the one left as a bare circular icon button.
+// `[lb-ingest-panel]` is the directive's own root attribute (see
+// ingest-panel.js), scoping this to just the Ingest panel's button.
+[lb-ingest-panel] .sd-create-btn {
+    @include lb-create-btn-pill('Attach');
+    // `.minusMargin1020` (margin: -10px -20px) was tuned to visually
+    // align the old bare circular icon flush with the header edge — with
+    // the wider labeled pill that negative right margin instead pulled it
+    // past the header's own padding, leaving no breathing room on desktop
+    // and pushing it off-screen on narrow/mobile widths.
+    margin: 0 !important;
 }
 
 .preview-layout .list-pane > .content, .preview-layout .preview-pane > .content {
