@@ -334,3 +334,17 @@
         }
     }
 }
+
+// The post's tags line is a plain inline-styled `<div style="text-align:
+// right">` in the template (no class to hook), sitting as the last direct
+// child of `.lb-post__holder` — its own bottom padding (8px, vs. 20px on
+// every other side) left the right-aligned text crowding the card's
+// rounded bottom-right corner. Give it a divider off the content above and
+// room to breathe, and mute it to secondary-text color instead of plain
+// black, like a small meta footer rather than a stray floating label.
+.lb-post__holder > div[style*="text-align: right"] {
+    padding-top: 10px;
+    padding-bottom: 2px;
+    color: $lb-timestamp !important;
+    b { color: $lb-timestamp; font-weight: 600; }
+}

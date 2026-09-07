@@ -1,6 +1,85 @@
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+// "Edit/Add Advert" modal — field rhythm (label-to-input gap, gap between
+// field groups) was untouched vendor spacing, reading noticeably tighter/
+// less consistent than the same field types in the Theme Settings modal
+// (theme-bloglist.scss), which already got this pass. Match it here: labels
+// get breathing room from their input, and each field/group gets consistent
+// space from the next one, whether it's the plain "Advert Name" field or
+// one of the freetype-rendered fields (Image/Text/Link) below it.
+.item-creation.advertising {
+    // Direct child only — the freetype-rendered group (e.g. "Advertisement
+    // Local") injects its OWN nested `<fieldset>` wrapper, which this
+    // descendant selector was also matching and re-applying the same
+    // padding to on top of the outer one, stacking into an oversized gap
+    // around the whole group.
+    > fieldset {
+        padding: 4px 24px 24px;
+    }
+    fieldset fieldset {
+        padding: 0;
+    }
+    // The Image/Text/Link groups are actually wrapped in `.fieldset-group`
+    // / `.fieldset-group-image` (confirmed in DevTools) — not `.form-group`
+    // as assumed earlier, which is why they were reading squeezed together
+    // with no gap between them despite that rule.
+    > fieldset > .sd-line-input, .form-group, .fieldset-group, .fieldset-group-image {
+        margin-bottom: 26px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+    .sd-line-input__label,
+    .form-group > label,
+    .form-input > label,
+    .fieldset-group > label,
+    .fieldset-group-image > label {
+        display: block;
+        margin-bottom: 8px;
+    }
+    // Vendor's `.sd-line-input .sd-line-input__label` is `position:
+    // absolute; top: 0` (a floating-label pattern) — taken out of normal
+    // flow entirely, so the `margin-bottom` above never had any effect on
+    // the input below it. Put it back in flow so that margin actually
+    // creates space.
+    .sd-line-input__label {
+        position: static !important;
+    }
+    // Vendor's plain/sd-line-input inputs here weren't filling the modal's
+    // width, leaving a noticeable gap on the right and reading narrower
+    // than every other field type in this same modal (the char-counted
+    // Advert Name field already spans full width).
+    .sd-line-input__input, .form-input input[type="text"], .form-input input[type="url"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .sd-line-input__char-count {
+        margin-top: 4px;
+    }
+    .form-input .image-text {
+        margin-top: 8px;
+        color: $lb-timestamp;
+        font-size: 12px;
+    }
+}
+
+// This modal never got a `modal--large`/`modal--x-large` size class on its
+// root (advert-modal.ng1's `<div sd-modal>` has no modifier at all, unlike
+// the Theme Settings modal), so it was stuck at vendor's plain-`.modal`
+// default of `max-width: 480px` — genuinely too narrow for the Image
+// dropzone plus Text/Link fields inside it, not just a padding illusion.
+// Can't add the class from CSS, so match what `modal--large` would give it
+// (680px) by targeting the modal that actually contains this content.
+.modal:has(.item-creation.advertising) {
+    .modal__dialog {
+        max-width: 680px;
+    }
+    .modal__body {
+        max-width: 680px !important;
+    }
+}
+
 // Float the Adverts section as a card, matching Settings/Analytics/Users —
 // `.main-section` is vendor's `position:absolute; top/right/bottom/left`
 // with no width/height set, so a plain margin shrinks it inward on all
@@ -14,57 +93,115 @@
 
 // "+" create buttons — these two are actually dropdown TOGGLES (the
 // Adverts one opens a "Create new" menu of ad types, Collections opens its
-// dialog directly). TRIED the same labeled teal pill as the Blog List's
-// "Create blog" button here — broke: the vendor `.dropdown` wrapper's own
-// positioning math assumes the old narrow icon-only width and pushed the
-// much wider pill off past the edge of the header. Reverted to icon-only,
-// still gets the app-wide teal circle from `.sd-create-btn .circle`
-// (liveblog.scss).
-//
-// The icon itself needs its own fallback here though: both buttons render
-// with NO child markup at all in the source (`<button class="dropdown__
-// toggle sd-create-btn" ...></button>`, completely empty, unlike every
-// other `.sd-create-btn` in the app which at least has a dead `<i>`/
-// `.circle` in its template for the CreateButtonDirective to replace) — so
-// the shared `.sd-create-btn i` rule (which only masks an EXISTING `<i>`)
-// has nothing to attach to. First attempt centered a `:before` on the
-// button itself, assuming vendor's `.circle` badge was centered the same
-// way — it isn't (`.circle` is `display:inline-block` + a fixed
-// `margin-top`, not `top/left/transform`), so the two landed off-center
-// from each other. Simplest fix: don't rely on vendor's circle at all,
-// draw both the circle AND the icon ourselves with the exact same
-// centering math so they're always concentric.
+// dialog directly). Both DO have the usual `<i class="icon-plus-large">`/
+// `.circle` markup (wrongly assumed empty in an earlier pass, which led to
+// briefly hand-drawing a duplicate icon here — reverted). The wrapper
+// (`.dropdown.navbtn`) no longer needs the old absolute-positioning
+// workaround either (see `.ad-section > header .dropdown.navbtn` below) —
+// confirmed dead now that this button is a plain flex child. Not the
+// `lb-create-btn-pill` mixin verbatim (this wrapper's own sizing/z-index
+// quirks made inlining simpler than fighting the mixin's assumptions), but
+// the same underlying technique: drop the real `<i>` back into normal flex
+// flow and inject the label via `::after`.
 .main-section.advertising {
+	// Vendor's `.navbtn` (a class also on this wrapper) sets a fixed
+	// `width: 4.8rem` — harmless for the old icon-only circle, but with a
+	// wider labeled pill inside, the wrapper stayed pinned to that fixed
+	// width while the button overflowed out its right side, past the
+	// wrapper's own `right: 0` anchor and off the edge of the screen.
+	// Let the wrapper size to its content instead.
+	.dropdown.navbtn {
+		width: auto !important;
+		// Vendor's `.navbtn` base rule (a class on this wrapper div, not
+		// the button inside it — that's why the earlier override on
+		// `.sd-create-btn` itself never touched this) draws a faint left
+		// divider line, meant for icon-only buttons sitting flush next to
+		// something else. Stray hairline against this pill otherwise.
+		border-left: none !important;
+	}
+	// While the "CREATE NEW" menu is open, vendor flips the toggle button
+	// back to a white/grey fill and adds a side box-shadow (meant to
+	// visually fuse the old bare icon-only button with the menu below it)
+	// — read as the pill itself changing shape/color on click.
+	.dropdown.open > .dropdown__toggle.sd-create-btn {
+		background-color: $lb-rail-active !important;
+		box-shadow: none !important;
+	}
 	[data-test-id="open-adverts-modal"].sd-create-btn,
 	[ng-click="openCollectionDialog();"].sd-create-btn {
 		position: relative;
+		width: auto !important;
+		height: 40px !important;
+		padding: 0 20px 0 16px !important;
+		display: inline-flex !important;
+		align-items: center;
+		@include border-radius($lb-radius-pill !important);
+		background-color: $lb-rail-active !important;
+		// Vendor's `.navbtn` base rule draws a faint left divider line
+		// (meant for icon-only buttons sitting flush next to something) —
+		// looks like a stray hairline against this pill.
+		border-left: none !important;
 		.circle {
 			display: none !important;
 		}
-		&:before {
-			content: '';
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 32px;
-			height: 32px;
-			border-radius: 50%;
-			background-color: $lb-rail-active;
+		// This button DOES have real markup after all (an
+		// `<i class="icon-plus-large">`) — wrongly assumed empty earlier,
+		// which led to hand-drawing a separate icon that duplicated it.
+		// Simpler and more consistent: let the real `<i>` render through
+		// the same app-wide `.sd-create-btn i` rule (liveblog.scss) every
+		// other "+" button uses — `circle-plus.svg` already draws its own
+		// ring, exactly matching e.g. the Theme Manager's "New Theme"
+		// button — just drop it back into normal flex flow instead of
+		// vendor's absolute-centered-for-a-bare-circle positioning.
+		i {
+			position: static !important;
+			top: auto !important;
+			left: auto !important;
+			margin: 0 8px 0 0 !important;
 		}
 		&:after {
-			content: '';
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 14px;
-			height: 14px;
-			z-index: 1;
-			// Plain `plus`, not `circle-plus` — that one already draws its
-			// own ring, which combined with the solid circle background
-			// above (`:before`) looked like two overlapping circles.
-			@include lb-icon-bg-mask(url('~images/icons/plus.svg'), #fff);
+			position: relative;
+			color: #fff;
+			font-size: 13px;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+	}
+	[data-test-id="open-adverts-modal"].sd-create-btn:after {
+		content: 'New Advert';
+	}
+	[ng-click="openCollectionDialog();"].sd-create-btn:after {
+		content: 'New Collection';
+	}
+	// "New Advert"'s "CREATE NEW" ad-type menu — vendor's plain white box,
+	// sharp corners, hard shadow. Same redesigned dropdown-list pattern
+	// used elsewhere (e.g. liveblog-edit.scss's `.freetype-selector`).
+	.dropdown__menu {
+		border: 1px solid $lb-input-border;
+		@include border-radius($lb-radius-input);
+		box-shadow: $lb-card-shadow;
+		padding: 6px;
+		.dropdown__menu-label {
+			padding: 8px 10px 4px;
+			color: $lb-timestamp;
+			font-size: 11px;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: .02em;
+		}
+		li > button {
+			display: block;
+			width: 100%;
+			text-align: left;
+			padding: 8px 10px;
+			@include border-radius($lb-radius-input);
+			color: $lb-pill-text;
+			font-size: 13px;
+			transition: background-color .15s ease, color .15s ease;
+			&:hover {
+				background: $lb-rail-active-bg;
+				color: $lb-btn-dark-bg;
+			}
 		}
 	}
 }
@@ -137,27 +274,17 @@
 		border-bottom: 1px solid $lb-input-border;
 		border-top-left-radius: $lb-radius-card;
 		border-top-right-radius: $lb-radius-card;
-		// `align-items: center` above should be enough on its own, but the
-		// "+" dropdown wrapper (`.dropdown.navbtn`) carries this file's own
-		// `.right-important { float: right !important; }` — floats compute
-		// to `none` on a flex item per spec, but this was still landing
-		// uncentered/straddling the header's bottom border in practice.
-		// Taking it out of flex layout entirely and centering it via
-		// absolute positioning sidesteps whatever's actually going on
-		// instead of fighting it further.
+		// `align-items: center` + `justify-content: space-between` handle
+		// centering/right-alignment on their own now that the button is a
+		// normal flex child — the float/absolute-positioning workaround
+		// this used to need is gone (confirmed dead in DevTools). Kept
+		// `position: relative` + z-index, since `.advert-list-holder`
+		// below (also `position: absolute`, no z-index of its own) still
+		// paints over the dropdown MENU at default stacking order
+		// otherwise, hiding it behind the list.
 		position: relative;
 		.dropdown.navbtn {
-			float: none !important;
-			position: absolute !important;
-			top: 50%;
-			right: 0;
-			transform: translateY(-50%);
-			// `.advert-list-holder` below (also `position:absolute`, no
-			// z-index of its own) was painting on top of this at default
-			// stacking order since it comes later in the DOM — that's what
-			// made the dropdown MENU (open on click) invisible, hidden
-			// behind the list. z-index only matters between positioned
-			// elements, so this alone is enough to reassert it above.
+			position: relative;
 			z-index: 3;
 		}
 		.section-title {
@@ -310,8 +437,21 @@
 	.card-box__header {
 		background-color: $lb-btn-dark-bg !important;
 		color: #fff;
-		border-top-left-radius: $lb-radius-card;
-		border-top-right-radius: $lb-radius-card;
+		// Vendor draws an 8px semi-transparent black strip across the very
+		// top of the header (layouts.scss `::before`) — meant to darken a
+		// lighter default header color as an accent, but on our flat dark
+		// navy fill it just reads as an odd shadow band. Not needed here.
+		&::before {
+			content: none;
+		}
+		// Inset 1px inside `.card-box`'s own 1px border — using the same
+		// $lb-radius-card here left this corner's curve very slightly
+		// bigger than the space actually available inside that border,
+		// so a sliver of the card's white background showed through at
+		// the very corner (read as an odd light/shadowed notch instead
+		// of a clean dark corner). Shrink by the border width to match.
+		border-top-left-radius: $lb-radius-card - 1px;
+		border-top-right-radius: $lb-radius-card - 1px;
 		.card-box__heading {
 			color: #fff;
 			font-weight: 600;

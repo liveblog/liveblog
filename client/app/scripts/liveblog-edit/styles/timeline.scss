@@ -226,36 +226,68 @@
         margin-right:5px;
     }
     .pin-drawer-button {
+        // Anchored to `.pin-drawer`'s own bottom edge (`top: 100%` +
+        // `translateY(-50%)`) instead of the old `margin-top: -10px` off
+        // its static flow position — that hack pulled the button upward by
+        // a fixed amount regardless of how much room existed above, so
+        // when `.pin-drawer` was the very first thing in the (scrolling)
+        // timeline column — the collapsed "N PINNED POSTS" state — the
+        // button's top half got clipped by the scroll container's edge.
+        // Centering on `.pin-drawer`'s own border keeps the whole circle
+        // inside its box in every state.
         position: absolute;
-        width: 23px;
-        height: 23px;
-        border: 0;
+        width: 28px;
+        height: 28px;
+        border: 1px solid $lb-input-border;
         padding: 0;
         left: 50%;
-        margin-left: -11.5px;
+        top: 100%;
+        margin-left: -14px;
         background-color: #ffffff;
         z-index: 3;
-        margin-top: -10px;
         line-height: 0;
-        border-radius: 23px;
-        box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 28px;
+        box-shadow: none;
+        transform: translateY(-50%);
         -webkit-transition: transform 0.5s;
         -o-transition: transform 0.5s;
         transition: transform 0.5s;
+        // Combine with the base translateY (rather than the vendor
+        // `rotate()` mixin, which would set `transform: rotate(180deg)`
+        // alone and drop the centering translate).
         &.active {
-            @include rotate(180deg);
+            transform: translateY(-50%) rotate(180deg);
+        }
+        // Vendor's sd_icons glyphs carry their own margin/positioning
+        // baggage from being sprite-based — absolute-center the masked
+        // Lucide replacement against this button directly instead of
+        // trusting flex to override all of that.
+        i.icon-chevron-up-thin {
+            @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 14px);
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            margin: 0 !important;
+            transform: translate(-50%, -50%);
         }
     }
     .pin-drawer {
+        position: relative;
         margin: 0px 20px 0px 20px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        span {
+        // The "N PINNED POSTS" label is a plain `<div>` in the template,
+        // not a `<span>` — this rule never matched it, so the text sat
+        // flush against the border-bottom below with no breathing room.
+        > div {
             font-size: 11px;
             color: #999999;
-            padding: 5px 0;
+            padding: 5px 0 12px;
             display: inline-block;
         }
     }
+}
+.column--timeline .pin-drawer {
+    margin: 0px 20px 26px 20px;
 }
 .opaque {
     opacity: 1!important;

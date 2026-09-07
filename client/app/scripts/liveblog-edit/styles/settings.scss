@@ -4,6 +4,20 @@ $PADDING: 20px;
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+// Companion to the `.tabbable.outer > .nav-stacked` mobile override below —
+// vendor's `.tab-content.outer` is `position: absolute; top: 0; left:
+// 180px` (assuming the sidebar it sits beside is a fixed-width column).
+// An older app-wide rule (responsive.scss) already resets `left: 0` once
+// that sidebar becomes a horizontal row on mobile, but never adjusted
+// `top`, so the content pane still started at the very top of
+// `.tabbable.outer` — sitting underneath/behind the tab row instead of
+// below it.
+@media(max-width: 800px) {
+    .settings-page .tabbable.outer .tab-content.outer {
+        top: 48px !important;
+    }
+}
+
 .settings-disabled {
     .navbtn {
         opacity: 0.3;
@@ -147,6 +161,36 @@ $PADDING: 20px;
                     // Vendor's original .active > a sets this inset shadow
                     // (a leftover from the old "square notch" look).
                     box-shadow: none !important;
+                }
+            }
+            // An older app-wide rule (responsive.scss) already converts
+            // this sidebar into a horizontal scrollable tab row on narrow
+            // screens — but this file (module-scoped CSS, loaded after the
+            // global bundle) redeclares the same selector with vendor's
+            // fixed-width sidebar positioning left untouched, which wins
+            // the tie and silently cancels that conversion. Re-declare it
+            // here instead, so General/Team/Output Channels/Consumers stay
+            // reachable instead of being squeezed into an unusable sliver
+            // (or hidden off-screen) next to the content pane.
+            @media(max-width: 800px) {
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                border-right: none !important;
+                border-bottom: 1px solid $lb-input-border !important;
+                border-bottom-left-radius: 0 !important;
+                padding: 0 8px !important;
+                > li {
+                    flex: 0 0 auto;
+                    margin-bottom: 0;
+                    > a {
+                        white-space: nowrap;
+                        padding: 12px 14px !important;
+                    }
                 }
             }
         }
@@ -301,6 +345,7 @@ $PADDING: 20px;
                             width: 100%;
                             margin: 6px 0 0;
                             font-size: 12px;
+                            line-height: 1.5;
                             color: $lb-timestamp;
                         }
                         // The public embed/stylesheet URL link sitting right
@@ -366,6 +411,21 @@ $PADDING: 20px;
                 font-size: 18px;
                 font-weight: 600;
                 color: $lb-btn-dark-bg;
+            }
+            // Labeled teal pill, same as every other "+" create button in
+            // the app (Blog List, Users, Free Types, Themes…) — this one
+            // has a real `<i>`/`.circle` in its template already (unlike
+            // the Advertising page's create buttons), so the shared mixin
+            // works directly.
+            .sd-create-btn {
+                @include lb-create-btn-pill('Add output');
+            }
+            // `.minusMargin1020` on the wrapper (margin: -10px -20px) was
+            // tuned for the old bare circular icon — same issue as the
+            // Ingest panel's "Attach" button — and pulls the now-wider
+            // pill past the header's edge.
+            .minusMargin1020 {
+                margin: 0 !important;
             }
         }
         .pills-list li {

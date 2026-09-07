@@ -1,12 +1,54 @@
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
 $PADDING: 20px;
+
+// Left sidebar nav ("General Settings" list) + main content pane — vendor's
+// own `.sd-page`/`.sd-left-nav` shell (settings-view.html), plain white
+// list with a flat blue active-state bar.
+.sd-page {
+    background: $lb-subnav-bg;
+}
+.sd-left-nav {
+    background: #fff;
+    border-right: 1px solid $lb-input-border;
+    padding-top: 12px;
+    .sd-left-nav__btn {
+        display: block;
+        padding: 10px 20px;
+        color: $lb-subnav-text;
+        font-weight: 500;
+        border-left: 3px solid transparent;
+        transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+        &:hover {
+            color: $lb-btn-dark-bg;
+            text-decoration: none;
+        }
+        &--active {
+            color: $lb-btn-dark-bg !important;
+            border-left-color: $lb-rail-active !important;
+            // Vendor's own active-state rule for this exact class draws a
+            // flat blue 4px right-side border — redundant/conflicting with
+            // the teal left accent above.
+            border-right: none !important;
+            background: $lb-rail-active-bg;
+        }
+    }
+}
+
 .general-settings {
+    background: #fff;
+    .split-content {
+        background: #fff;
+    }
     .content {
-        padding: $PADDING;
+        background: #fff;
+        padding: $PADDING * 1.5;
         .form-group {
             display: table;
             content: " ";
             width: 100%;
-            padding: $PADDING/2 0;
+            padding: 14px 0;
             .control-label {
                 text-align: left;
             }
@@ -16,5 +58,72 @@ $PADDING: 20px;
                 select {margin: 0;} // overwrite bootstrap
             }
         }
+    }
+    // "DEFAULT THEME" / "GLOBAL TAGS" / "YOUTUBE PRIVACY STATUS" etc.
+    // section labels — was plain uppercase-bold text sitting flush
+    // against its control below. Every one of these labels (whether or
+    // not it also carries `.sd-line-input__label`) lives inside
+    // `.lb-group-heading` — targeting that directly, rather than the
+    // earlier `.form-group > div > label` attempt, which also
+    // accidentally caught the *toggle's own* plain-text description
+    // label ("Makes blog's default embed height responsive by default"),
+    // wrapping it in the same tiny uppercase treatment as a section title.
+    .lb-group-heading {
+        margin-bottom: 8px;
+        label {
+            display: block;
+            color: $lb-timestamp;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+        }
+    }
+    select.form-control, select.row-td {
+        width: 100%;
+        max-width: 360px;
+        box-sizing: border-box;
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-input);
+        padding: 8px 32px 8px 12px;
+        height: auto;
+        line-height: normal;
+        font-size: 13px;
+        background-color: #fff;
+        appearance: none;
+        background-image: url('~images/icons/chevron-down.svg');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 14px;
+        &:focus {
+            outline: 0;
+            border-color: $lb-rail-active;
+            box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+        }
+    }
+    // Toggle switches (Default Embed Height, Multiple tags selection) —
+    // vendor's "on" state is a flat blue, retint teal (same fix already
+    // applied to the Theme Settings modal's own toggles).
+    .sd-toggle {
+        border-radius: 9px;
+        .inner {
+            border-radius: 8px;
+        }
+        &.checked {
+            background: $lb-rail-active !important;
+        }
+    }
+    // The plain-text label next to each toggle — normal sentence-case
+    // body text, NOT the uppercase section-heading treatment above.
+    span[sd-switch] + label {
+        display: inline;
+        text-transform: none;
+        margin-left: 8px;
+        color: $lb-btn-dark-bg;
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .btn.pull-right {
+        margin-left: 8px;
     }
 }
