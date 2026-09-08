@@ -4,54 +4,112 @@
 // timeline
 .column--timeline {
     border: 0px;
+    // .cancel-reorder/.header--filters/.header--live all rely on this
+    // (margin-left: auto, etc.) to line up in one row — make it explicit
+    // instead of assuming it's inherited from elsewhere.
+    header {
+        display: flex;
+        align-items: center;
+    }
     .header--live {
-        float: left;
+        // Keeps LIVE right after the "Timeline" title, with the
+        // Cancel/reorder control and ALL/star filters visually reordered
+        // (via order:, not DOM position) to cluster on the right.
+        order: 1;
         padding: 0 5px 0 5px;
+        a {
+            display: inline-flex;
+            align-items: center;
+            background-color: $lb-live-badge-bg;
+            color: $lb-live-badge-text;
+            border-radius: $lb-radius-pill;
+            padding: 0px 14px 0px 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            &:before {
+                content: '';
+                display: inline-block;
+                width: 6px;
+                height: 6px;
+                margin-right: 6px;
+                border-radius: 50%;
+                background-color: $lb-live-badge-text;
+            }
+            &:after {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 11px;
+                margin-left: 0;
+                background-color: $lb-live-badge-text;
+                -webkit-mask-image: url('~images/icons/external-link.svg');
+                mask-image: url('~images/icons/external-link.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: left center;
+                mask-position: left center;
+                // Fixed (not "contain") so the icon itself never scales —
+                // widening the box just reveals more of it, left to right.
+                -webkit-mask-size: 11px 11px;
+                mask-size: 11px 11px;
+                transition: width .15s ease, margin-left .15s ease;
+            }
+            &:hover {
+                text-decoration: none;
+                color: $lb-live-badge-text;
+                &:after {
+                    width: 11px;
+                    margin-left: 6px;
+                }
+            }
+        }
     }
     .header--timeline {
         padding: 0 5px 0 5px;
-        float: left;
+        color: black;
+        font-weight: 700;
         a:hover {
             text-decoration: none;
         }
     }
     .header--filters {
-        float: right;
+        order: 4;
+        margin-left: auto;
         .btn {
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(215, 215, 215, 0.7);
-            color: $grayLight;
+            background: $lb-filter-btn-bg;
+            border: none;
+            color: $lb-pill-text;
             padding: 4px 12px;
             height: 24px;
             margin-left: 4px;
+            border-radius: $lb-radius-pill;
+            transition: background-color .15s ease;
             &:hover {
-                background: rgba(255, 255, 255, 0.8);
-                border: 1px solid #aaaaaa;
-                color: $gray;
+                background: darken($lb-filter-btn-bg, 4%);
+                border: none;
+                color: $lb-pill-text;
             }
             &.active {
-                color: $grayDark;
-                background-color: rgba(0, 0, 0, 0.11);
-                box-shadow: inset 0 2px 1px rgba(0, 0, 0, 0.11);
-                border: 1px solid rgba(0, 0, 0, 0.11);
-                [class^="icon-"] {
-                    color: $orange;
-                }
+                color: $lb-pill-text;
+                background-color: $lb-filter-btn-bg;
+                box-shadow: none;
+                border: none;
             }
             &.active:hover {
                 cursor: default;
+                background: $lb-filter-btn-bg;
             }
             [class^="icon-"] {
                 margin-right: 0;
-                color: $orange;
             }
-            // & + .btn {
-            //     margin-left: 4px;
-            // }
+            i.icon-star {
+                @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-pill-text);
+            }
         }
     }
     .posts {
-        padding: 20px 20px 7px 20px;
+        padding: 0px 20px 7px 20px;
         opacity: 1;
         transition: opacity linear 0.1s;
         > li {
@@ -59,8 +117,9 @@
         }
         .lb-post {
             margin-bottom: 15px;
-            border: 1px solid #F0F0F0;
-            border-bottom: 1px solid #D4D4D4;
+            border: none;
+            box-shadow: $lb-card-shadow;
+            @include border-radius($lb-radius-card);
             transition: border 0.4s;
             transition: box-shadow 0.4s;
         }
@@ -71,12 +130,12 @@
         .lb-post.highlight {
             border: 1px solid #edc1b2;
             box-shadow: 0 1px 0 #edc1b2;
-            @include border-radius(3px);
+            @include border-radius($lb-radius-card);
         }
         .lb-post.pinned {
             border: 1px solid #a9cad7;
             box-shadow: 0 1px 0 #a9cad7;
-            @include border-radius(3px);
+            @include border-radius($lb-radius-card);
         }
     }
     .posts.flicker {
@@ -105,18 +164,29 @@
     .timeline-reorder {
         border: 0px;
         height: 0px;
-        color: #ccc;
-        font-size: 0px;
+        color: $lb-timestamp;
+        font-size: 15px;
+        opacity: 0;
+        overflow: hidden;
         background: transparent;
         text-align: center;
-        padding-top: 0px;
-        transition: all linear 0.4s;
+        // Height/border/background animate first; opacity (the text)
+        // is delayed until that's mostly done, so the box grows and only
+        // then does the text fade in — font-size stays constant the whole
+        // time so the text itself never visibly "grows".
+        transition: height 0.3s ease, border-color 0.3s ease,
+            background-color 0.3s ease, opacity 0.2s ease 0.15s;
     }
     .timeline-reorder.active {
-        padding-top: 15px;
-        height: 34px;
-        font-size: 18px;
-        border: 1px dashed #ccc;
+        height: 44px;
+        opacity: 1;
+        padding: 0 16px;
+        margin: 10px 0;
+        border: 1px dashed darken($lb-input-border, 20%);
+        @include border-radius($lb-radius-input);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .timeline-reorder.top {
         margin-bottom: 10px;
@@ -125,56 +195,99 @@
         margin-top: 10px;
     }
     .timeline-reorder:hover {
-        border: 1px dashed #999;
-        color: #666;
-        background: #f8f8f8;
+        border: 1px dashed $lb-rail-active;
+        color: $lb-btn-dark-bg;
+        background: $lb-action-pill-bg;
     }
     .cancel-reorder {
-        border-right: 1px solid #e0e0e0!important;
-        position:absolute; top: 0px; right: 127px;
-        height: 38px;
-        padding-top:9px;
-        padding-right:9px;
-        background-color: white;
+        // Explicit order (lower than the real .header--filters' order: 4
+        // below) so it always renders right before ALL/star, with no
+        // reliance on DOM-position tie-breaking.
+        order: 3;
+        border-right: 1px solid $lb-input-border !important;
+        display: flex;
+        align-items: center;
+        padding-right: 12px;
+        background-color: transparent;
+    }
+    // It keeps margin-left: auto (inherited from sharing .header--filters)
+    // so it's the one that consumes the pushed-right free space. The real
+    // filters must NOT also use auto here, or flex splits that free space
+    // between the two and Cancel ends up stranded mid-row instead of snug
+    // against ALL/star — so give the real filters a fixed gap instead,
+    // but only when .cancel-reorder actually exists (reorder mode).
+    .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
+        margin-left: 12px;
+    }
+    i.svg-icon-move {
+        @include lb-icon-bg-mask(url('~images/icons/move.svg'), $lb-btn-dark-bg);
     }
     .fix-cancel-move-icon {
-        margin-top:5px;
         margin-right:5px;
     }
-    .fix-cancel-move-button {
-        margin-top: -7px;
-    }
     .pin-drawer-button {
+        // Anchored to `.pin-drawer`'s own bottom edge (`top: 100%` +
+        // `translateY(-50%)`) instead of the old `margin-top: -10px` off
+        // its static flow position — that hack pulled the button upward by
+        // a fixed amount regardless of how much room existed above, so
+        // when `.pin-drawer` was the very first thing in the (scrolling)
+        // timeline column — the collapsed "N PINNED POSTS" state — the
+        // button's top half got clipped by the scroll container's edge.
+        // Centering on `.pin-drawer`'s own border keeps the whole circle
+        // inside its box in every state.
         position: absolute;
-        width: 23px;
-        height: 23px;
-        border: 0;
+        width: 28px;
+        height: 28px;
+        border: 1px solid $lb-input-border;
         padding: 0;
         left: 50%;
-        margin-left: -11.5px;
+        top: 100%;
+        margin-left: -14px;
         background-color: #ffffff;
         z-index: 3;
-        margin-top: -10px;
         line-height: 0;
-        border-radius: 23px;
-        box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 28px;
+        box-shadow: none;
+        transform: translateY(-50%);
         -webkit-transition: transform 0.5s;
         -o-transition: transform 0.5s;
         transition: transform 0.5s;
+        // Combine with the base translateY (rather than the vendor
+        // `rotate()` mixin, which would set `transform: rotate(180deg)`
+        // alone and drop the centering translate).
         &.active {
-            @include rotate(180deg);
+            transform: translateY(-50%) rotate(180deg);
+        }
+        // Vendor's sd_icons glyphs carry their own margin/positioning
+        // baggage from being sprite-based — absolute-center the masked
+        // Lucide replacement against this button directly instead of
+        // trusting flex to override all of that.
+        i.icon-chevron-up-thin {
+            @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 14px);
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            margin: 0 !important;
+            transform: translate(-50%, -50%);
         }
     }
     .pin-drawer {
+        position: relative;
         margin: 0px 20px 0px 20px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        span {
+        // The "N PINNED POSTS" label is a plain `<div>` in the template,
+        // not a `<span>` — this rule never matched it, so the text sat
+        // flush against the border-bottom below with no breathing room.
+        > div {
             font-size: 11px;
             color: #999999;
-            padding: 5px 0;
+            padding: 5px 0 12px;
             display: inline-block;
         }
     }
+}
+.column--timeline .pin-drawer {
+    margin: 0px 20px 26px 20px;
 }
 .opaque {
     opacity: 1!important;

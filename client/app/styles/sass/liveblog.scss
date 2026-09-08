@@ -1,3 +1,13 @@
+// Global .btn hover/focus/active override — superdesk-ui-framework's vendored
+// `.btn:hover, .btn:focus` rule (dist/superdesk-ui.bundle.css) adds a heavy
+// drop shadow, and Bootstrap's own `.btn:active` sets an inset shadow
+// (buttons.less); both load after this file in lb-bootstrap.scss's import
+// order, so !important is needed to win regardless of load order (same
+// pattern already used elsewhere in this file for vendor overrides).
+.btn:hover, .btn:focus, .btn:active, .btn.active {
+    box-shadow: none !important;
+}
+
 .main-section {
 	z-index: auto;
 }
@@ -36,12 +46,21 @@
 
 .button-stack.right-stack {
   float: right;
-  margin: -10px -20px 0 5px;
+  // Was margin-right: -20px, pulling it flush against (or past) the
+  // right edge of the screen — give it real breathing room instead.
+  // !important: #main-container > div.subnav div.button-stack.right-stack
+  // (an ID-scoped rule further down) sets margin: 0 and otherwise always
+  // wins over this plain class selector, no matter what's set here.
+  margin: 4px 20px 0 5px !important;
+  // The circular analytics/settings icons (40px) sit inside a taller
+  // container without this — they were landing near the top instead of
+  // centered vertically. Used on both the blog editor and settings pages.
+  display: flex;
+  align-items: center;
 }
 
 .button-stack.right-stack .navbtn {
-  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
-  //border-right: 0 !important;
+  border-left: none !important;
   line-height: 46px;
   width: auto;
   min-width: 48px;
@@ -101,14 +120,48 @@
 .button-stack .navbtn {
 	text-decoration: none;
 
-	&.analytics-link,
-	&.settings-link {
-		i { position: relative; top: 10px; }
-	}
-
-	.big-icon--analytics,
-	.big-icon--cog {
-		position: relative; top: 10px;
+	// Absolute + transform centering for the icon instead of fighting
+	// vendor's line-height/vertical-align inheritance (tried twice, still
+	// landed high) — this is immune to line-height entirely.
+	// The Settings page's own top bar (settings.ng1) renders this same
+	// analytics/gear pair WITHOUT the .analytics-link/.settings-link
+	// classes — just a bare .navbtn wrapping the big-icon — so match on
+	// the icon itself too, or this page never picks up the circular style.
+	&.analytics-link, &.settings-link,
+	&:has(> .big-icon--analytics), &:has(> .big-icon--cog) {
+		position: relative !important;
+		// Circular hover/selected backdrop instead of the default
+		// rectangular button box. !important because vendor's
+		// `.button-stack.right-stack .navbtn` (width/padding) and the
+		// `.active`/`.settings-disabled` combo used on the Settings page
+		// carry the same specificity and must not win this back to a square.
+		width: 40px !important;
+		height: 40px !important;
+		min-width: 40px !important;
+		padding: 0 !important;
+		border-radius: 50% !important;
+		// Vendor's `.navbtn:hover` (superdesk-ui.bundle.css) sets a plain
+		// white overlay — keep the same hover backdrop, just retint it.
+		&:hover {
+			background-color: #dee7eca6 !important;
+		}
+		// "Selected" state (currently on this page) — was a square notch
+		// with a border/shadow; match the circular hover instead.
+		&.navbtn-active {
+			background-color: #dee7ec !important;
+			border-right: none !important;
+			margin-right: 0 !important;
+			box-shadow: none !important;
+			// A separate, equal-specificity vendor rule
+			// (.button-stack .navbtn.navbtn-active) sets height: 48px
+			// (no !important) — reassert 40px here so the selected (gear)
+			// icon doesn't end up taller than its unselected (chart)
+			// sibling, throwing off their vertical alignment.
+			height: 40px !important;
+			&:hover {
+				background-color: #dee7ec !important;
+			}
+		}
 	}
 }
 
@@ -336,6 +389,11 @@
 /* UI fixes */
 #main-container > div.subnav div.button-stack.right-stack {
     margin: 0;
+    border: none !important;
+    box-shadow: none !important;
+    .navbtn {
+        border-left: none !important;
+    }
 }
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -461,5 +519,1174 @@ i.icon-star.orange {
     .sd-line-input {
         padding-top: 0.8em !important;
         margin-bottom: 0.8em !important;
+    }
+}
+
+// ============================================================
+// Liveblog redesign — 2026 palette (global header + subnav)
+// Shared across all pages, not just the blog editor.
+// ============================================================
+
+#top-menu {
+    background-color: $lb-header-bg !important;
+}
+
+#top-menu a, #top-menu button {
+    background: #01131c !important;
+}
+
+// #main-menu (left sidebar: Blog List / Admin tools) — vendor paints this
+// in its own grey/black palette (#272727 base, #283032 hover, #1f1f1f
+// active, #353535/#1b1b1b/#202020 borders & shadows) with no relation to
+// $lb-header-bg. Recolor the whole sidebar onto that navy tone instead:
+// same base color where vendor was flat-grey, darken()/lighten() within
+// that same hue wherever vendor used a separate darker/lighter shade.
+#main-menu {
+    background: $lb-header-bg !important;
+    @include box-shadow(inset -5px 0 6px -0px darken($lb-header-bg, 5%));
+    .header {
+        @include box-shadow(0 2px 3px 0px darken($lb-header-bg, 5%));
+    }
+    .content {
+        > ul > li {
+            > a:hover {
+                background: #1a313c !important;
+                border-top-color: #1a313c !important;
+            }
+            &.open > a {
+                border-bottom-color: darken($lb-header-bg, 8%);
+            }
+            &.open ul {
+                @include box-shadow(inset 0 7px 5px -5px darken($lb-header-bg, 5%));
+            }
+            &.active > a {
+                background: #01131c !important;
+            }
+            + li > a {
+                border-top-color: darken($lb-header-bg, 3%);
+            }
+        }
+    }
+    .footer {
+        border-top: none !important;
+        box-shadow: none !important;
+    }
+    // `.footer .about`'s own rgba(0,0,0,0.3) overlay already darkens
+    // whatever sits behind it, so it comes out a darker shade of this same
+    // navy automatically — nothing to override there.
+}
+
+// Notifications dropdown panel (`.notification-pane`, opened from the
+// avatar button in #top-menu) — same story as #main-menu above: vendor's
+// own grey/black palette (#313131 body, #212121 header, #464646/#202020
+// borders & shadows) recolored onto the same navy tone, header darkened to
+// the same #01131c already used for #main-menu's active state.
+.notification-pane {
+    background: $lb-header-bg !important;
+    > .header {
+        background: #01131c !important;
+        border-bottom-color: $lb-header-bg !important;
+        @include box-shadow(inset 0 4px 4px -2px darken($lb-header-bg, 8%));
+        // Avatar/name/actions read a little small and cramped against the
+        // wider panel — bump each up slightly (not a full size step).
+        .avatar {
+            width: 46px !important;
+            height: 46px !important;
+        }
+        .user-info {
+            .name {
+                font-size: 13px;
+            }
+            .displayname {
+                font-size: 12px;
+            }
+        }
+        .actions {
+            a, button {
+                font-size: 11px;
+            }
+        }
+    }
+    > .content {
+        border-top-color: darken($lb-header-bg, 3%) !important;
+        @include box-shadow(inset 4px 0 4px -2px darken($lb-header-bg, 6%));
+        // "All good so far." (shown when the list is empty) has no color
+        // or padding of its own in vendor's CSS — it inherited the
+        // default (near-black) text color, invisible against this dark
+        // panel, and sat flush against the left edge with none of the
+        // padding its "Notifications" heading sibling has.
+        .notification-list .info {
+            color: rgba(255, 255, 255, 0.5);
+            padding: 0 10px;
+        }
+    }
+}
+
+// Generic upload modal (`.upload-media`, opened from e.g. Blog Settings'
+// "Upload Image"/"Change" — `settings.openUploadModal()`) — swap vendor's
+// raster `dragfiles.png` illustration for a masked Lucide `image` icon.
+// `.title` still carries its own translated text content, so the icon
+// can't just be a `mask-image` on `.title` itself (that would clip the
+// text along with the background) — same reasoning as the earlier
+// Sir Trevor "add content" attempt. A `:before` sized into the same
+// reserved top space (vendor's `padding-top: 100px`) keeps the text
+// untouched.
+.upload-media .drag-area .title {
+    background: none !important;
+    position: relative;
+    &:before {
+        content: '';
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 64px;
+        height: 64px;
+        @include lb-icon-bg-mask(url('~images/icons/image.svg'), #c2c2c2);
+    }
+}
+
+// "Select them from folder" now gets its dark shade from the app-wide
+// `.btn` default above — no scoped override needed here any more.
+
+// superdesk-core's own menu.scss sets the same selector (also !important,
+// also width:48px) as a component-scoped style loaded outside this file's
+// import chain, so source order isn't reliable — .collapse-nav.collapse-nav
+// bumps specificity instead so this always wins regardless of load order.
+#top-menu a.collapse-nav.collapse-nav, #top-menu button.collapse-nav.collapse-nav {
+    width: 78px !important;
+}
+
+#top-menu .collapse-nav .icon-collapse {
+    display: inline-block;
+    margin-left: 8px;
+    width: 20px;
+    height: 20px;
+    font-size: 0;
+    &:before {
+        content: none;
+    }
+    background-color: white;
+    -webkit-mask-image: url('~images/icons/menu.svg');
+    mask-image: url('~images/icons/menu.svg');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// !important on width/height: vendor's [class^="big-icon--"] base rule
+// (superdesk-ui.bundle.css) sets width/height:26px with equal specificity
+// but loads AFTER this file in lb-bootstrap.scss's import order, so it was
+// winning over the mixin's plain 20px.
+.big-icon--analytics {
+    @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text, 20px);
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0 !important;
+}
+
+.big-icon--cog {
+    @include lb-icon-font-mask(url('~images/icons/settings.svg'), $lb-subnav-text, 20px);
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0 !important;
+}
+
+// Absolute-center against the .analytics-link/.settings-link wrapper
+// (position:relative, above) — beats vendor's `.navbtn i { vertical-align:
+// baseline !important; }` outright since position isn't a line-layout
+// property at all.
+.navbtn .big-icon--analytics, .navbtn .big-icon--cog {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+// Several page-specific stylesheets each re-declare their own
+// `.btn.btn--primary{background-color:$lb-btn-dark-bg !important}`
+// fallback (settings, freetypes, advertising, ...) — every one of them
+// is (0,2,0), same as a two-class `.btn--primary.btn--contact-support`
+// rule, so whichever one happens to load last in the bundle wins and
+// silently flips this back to dark navy regardless of source order.
+// Three classes (0,3,0) reliably beats all of those.
+.btn.btn--primary.btn--contact-support {
+    background-color: $lb-contact-support-bg !important;
+    border-color: $lb-contact-support-bg !important;
+    color: white !important;
+    border-radius: $lb-radius-pill !important;
+    text-transform: none !important;
+    transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    &:hover {
+        background-color: lighten($lb-contact-support-bg, 8%) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba($lb-contact-support-bg, 0.4) !important;
+    }
+}
+
+#top-menu .current-user figure.avatar.initials {
+    background-color: white !important;
+    span {
+        color: $lb-contact-support-bg;
+    }
+}
+
+#main-container {
+    background-color: #F5F6F7;
+}
+
+.subnav {
+    // #F5F6F7, not $lb-subnav-bg (#F6F7F8) — kept as a local override here
+    // rather than changing the shared variable, per explicit request.
+    background-color: #F5F6F7 !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 5.8rem;
+}
+// App-wide default so individual pages don't each need their own
+// `align-items: center` fix for this wrapper (Users/Free Types/Theme
+// Manager all needed it separately before this existed).
+.subnav__button-stack--square-buttons {
+    align-items: center;
+}
+
+// Global fallback button treatment — pages that already have their own
+// more specific `.btn` rule (Settings, modals, etc.) keep winning by
+// specificity; this just catches everywhere else that's still on
+// vendor's plain square/blue default, e.g. the Users profile edit
+// action bar's Save/Cancel buttons.
+.btn {
+    @include border-radius($lb-radius-pill !important);
+    text-transform: none;
+    font-weight: 400;
+    box-shadow: none !important;
+    transition: background-color .15s ease;
+    &.btn--primary, &.btn-primary {
+        background-color: $lb-btn-dark-bg !important;
+        border-color: $lb-btn-dark-bg !important;
+        color: #fff !important;
+        &:hover:not(:disabled) {
+            background-color: lighten($lb-btn-dark-bg, 8%) !important;
+        }
+    }
+    // App-wide default for these small light-blue secondary buttons
+    // (Settings/Remove/etc. pills, popup Cancel/OK, ...) — explicit
+    // request 2026-08-27: promote what used to only be the *hover* shade
+    // to the resting/default state everywhere, since the previous flat
+    // $lb-pill-bg default read as too light. `.btn--primary`/`.btn-primary`
+    // (dark navy) and the various teal/green buttons elsewhere are
+    // untouched by this — only this light-blue secondary family changes.
+    // Excludes the Blog Editor's own composer/timeline view on purpose
+    // (see the `.blogedit` override right below) — everywhere else,
+    // including the Blog Settings sub-page and every modal, gets this.
+    &:not(.btn--primary):not(.btn-primary) {
+        background-color: #d2e4ee !important;
+        border-color: #d2e4ee !important;
+        color: #224558 !important;
+        &:hover:not(:disabled) {
+            background-color: darken(#d2e4ee, 8%) !important;
+        }
+    }
+}
+
+// Blog Editor exclusion for the app-wide darker default above — per
+// explicit request, the main composer/timeline view (`.blogedit`, the
+// wrapper around main.ng1/post.ng1 — does NOT cover settings.ng1 or other
+// sibling views, see [[liveblog-blog-editor-redesign-status]]) keeps the
+// original flat/light shade on any plain `.btn` that isn't already covered
+// by a more specific rule of its own (e.g. saveAsContribution/saveAsDraft,
+// the reorder-mode `.btn-xs` controls, the pinned-posts filter button).
+.blogedit .btn:not(.btn--primary):not(.btn-primary) {
+    background-color: $lb-pill-bg !important;
+    border-color: $lb-pill-bg !important;
+    color: $lb-pill-text !important;
+    &:hover:not(:disabled) {
+        background-color: darken($lb-pill-bg, 4%) !important;
+    }
+}
+
+// Icon-only pagination arrows (`.btn-group .btn.btn--text-only`, sd-
+// pagination's first/prev/next/last, e.g. on the Users page) app-wide —
+// `.btn--text-only` is vendor's own "no background" marker, but the
+// app-wide `.btn` default above (3-class specificity via its two `:not()`
+// clauses) still beats a plain `.btn-group .btn.btn--text-only` (also 3
+// classes) on a same-specificity tie unless this comes later in the
+// file — it does, so this wins and actually clears the pill.
+.btn-group .btn.btn--text-only {
+    background: none !important;
+    border: none !important;
+}
+
+// Every "+" create button's circular badge (vendor default #5ea9c8 blue)
+// app-wide — Output channels, Users, Themes, and anywhere else
+// `.sd-create-btn` appears — same teal accent used everywhere else in this
+// redesign.
+.sd-create-btn .circle {
+    background-color: $lb-rail-active !important;
+}
+// Same icon everywhere too — vendor's own glyph varies by page (a real
+// icon-font character in some places, a dead/unloaded glyph in others),
+// and where it WAS real it was tinted the same teal as the `.circle`
+// background behind it (`color: $lb-rail-active` on teal — invisible,
+// same color on same color). One masked Lucide `circle-plus` (white, ring
+// built into the glyph so it reads correctly sitting inside the `.circle`
+// badge) replaces all of that, matching the Blog List's own "Create blog"
+// pill button (liveblog-bloglist.scss), which already used this icon
+// correctly. Page-specific overrides that duplicated/conflicted with this
+// (Users, Blog Settings' output-channel "+", Themes) have been removed —
+// this is the one source of truth now.
+.sd-create-btn i {
+    @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+}
+
+// Every `sd-line-input` select (page-size pickers, status filters, etc.)
+// app-wide — vendor draws its own dropdown arrow as a CSS border-triangle
+// on `::after` (no icon/image involved), so it doesn't go away just by
+// giving the <select> a Lucide background-image arrow; both rendered at
+// once is the "two icons" double-arrow bug. Remove vendor's triangle and
+// use one consistent Lucide chevron everywhere this component appears.
+.sd-line-input--is-select::after {
+    content: none !important;
+}
+.sd-line-input.sd-line-input--is-select select.sd-line-input__select {
+    background-image: url('~images/icons/chevron-down.svg') !important;
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.page-nav-title {
+    color: $lb-subnav-text;
+}
+
+.homebtn {
+    background-color: $lb-subnav-icon-square !important;
+    border-radius: 50% !important;
+    width: 38px !important;
+    height: 38px !important;
+    margin: 6px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    i {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        font-size: 0;
+        &:before {
+            content: none;
+        }
+        background-color: white;
+        -webkit-mask-image: url('~images/icons/layout-grid.svg');
+        mask-image: url('~images/icons/layout-grid.svg');
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+    }
+}
+
+div.subnav div.button-stack.left-stack a.homebtn {
+    margin-left: 24px;
+    border-right: none !important;
+}
+
+div.subnav div.button-stack .navbtn i,
+.button-stack.right-stack .navbtn {
+    color: $lb-subnav-text;
+}
+
+// sd-modal's own directive (superdesk-ui-framework/app/scripts/modals.js)
+// caches a reference to `.modal`/`.modal__backdrop` the first time a given
+// modal opens, and sets their z-index via inline style at that moment.
+// `.modal__backdrop` carries `ng-if="model"` in its template though, so
+// Angular destroys and recreates it on every close/reopen — the directive
+// keeps showing/hiding its stale first-generation reference while a brand
+// new backdrop element (with no inline z-index, just vendor's CSS default
+// of 1045) is what's actually in the DOM. Whatever happens to sit at a
+// higher z-index than 1045 on the page then shows through undimmed on the
+// second+ open. A `!important` class rule beats both that low CSS default
+// AND any inline z-index the JS did manage to set (non-!important inline
+// styles lose to an !important stylesheet rule), so this stays correct
+// regardless of which "generation" of backdrop element is live.
+// Distinct values, not the same one for both — at equal z-index, stacking
+// falls back to DOM order, and the backdrop is appended to <body> AFTER
+// the modal itself, so an equal value put the (semi-transparent, but
+// still there) backdrop on top and silently ate every click meant for
+// the dialog underneath it.
+.modal {
+    z-index: 100001 !important;
+}
+.modal__backdrop {
+    z-index: 100000 !important;
+}
+
+// Global sd-modal redesign (`.modal > .modal__dialog > .modal__content`,
+// vendor's `.modal__header`/`.modal__body`/`.modal__footer` BEM structure)
+// — this is the shared popup shell used everywhere in the backend (Team
+// members, Edit team, Output modal, Advert/Collection modals, Theme
+// settings, etc.), so restyling it here applies the redesign to every
+// popup at once instead of one page at a time. Page-specific modal rules
+// (e.g. .output-channels-modal.modal in liveblog-edit.scss) still load
+// after this and can override further.
+.modal .modal__content {
+    border: none;
+    // Vendor's own default here is a heavy `0 0 8px 2px rgba(0,0,0,0.3)` —
+    // !important since we've been repeatedly bitten by same-specificity
+    // load-order ties with vendor CSS this session.
+    box-shadow: $lb-card-shadow !important;
+    // No overflow:hidden here (box-shadow + overflow:hidden on the same
+    // element clip each other) — round the header/footer's own corners
+    // instead, same trick used elsewhere in this redesign.
+    .modal__header {
+        border-top-left-radius: $lb-radius-card;
+        border-top-right-radius: $lb-radius-card;
+        padding: 18px 24px !important;
+        border-bottom-color: $lb-input-border;
+        .modal__heading {
+            font-size: 16px;
+            font-weight: 600;
+            color: $lb-btn-dark-bg;
+        }
+        .modal__close {
+            color: $lb-timestamp;
+            transition: color .15s ease;
+            &:hover {
+                color: $lb-btn-dark-bg;
+            }
+        }
+    }
+    .modal__body {
+        // Vendor's default modal__body has its own grey (#f8f8f8) fill —
+        // every popup in this redesign is a plain white card.
+        background: #fff !important;
+        padding: 20px 24px;
+        // Fallback bottom rounding for modal variants that put their
+        // buttons inside `.modal__body-footer` instead of a real sibling
+        // `.modal__footer` (e.g. the Change/Reset password modals below) —
+        // harmless when a real `.modal__footer` follows and covers it.
+        border-bottom-left-radius: $lb-radius-card;
+        border-bottom-right-radius: $lb-radius-card;
+        // `.modal--tabs` (Change/Reset password) wraps its actual fields in
+        // a `.modal__body-content` div that has its OWN opaque grey fill
+        // (#f8f8f8) plus `flex:1 1 auto; overflow-y:auto` — that flex-grow
+        // stretches it to fill the modal's full height even when the form
+        // itself is much shorter, showing an empty grey box with a
+        // scrollbar below the fields. Let it size to its own content.
+        .modal__body-content {
+            background: #fff !important;
+            flex: 0 1 auto !important;
+            min-height: 0 !important;
+            overflow-y: visible !important;
+        }
+        .add-label {
+            color: $lb-timestamp;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            margin-bottom: 6px;
+        }
+        // .searchbar (vendor's user-search input, e.g. "Add people") pins
+        // its own border-radius at 2px with !important — needs the same to
+        // win.
+        input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
+            border: 1px solid $lb-input-border;
+            @include border-radius($lb-radius-input !important);
+            padding: 8px 12px;
+            box-sizing: border-box;
+            // Vendor's own `.sd-line-input__input`/`__select` set a fixed
+            // height (2.4rem/3.2rem) — with border-box that just squeezes
+            // this padding into too little content space instead of
+            // actually matching. Let height be driven by padding + content
+            // everywhere, same as the Settings page's plain inputs.
+            height: auto !important;
+            font-size: 13px;
+            &:focus {
+                outline: 0;
+                border-color: $lb-rail-active !important;
+                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            }
+        }
+        // `.searchbar-large` (e.g. the Team tab's "Add people" search in
+        // Create/Edit Blog) carries its own vendor `height: 32px !important`
+        // at higher specificity (2 classes) than the shared `input[type=
+        // "text"]` rule above, so the `height: auto` there wasn't reaching
+        // it — same comfortable padding-driven sizing + pill radius as the
+        // rest of this modal's fields instead of vendor's clipped fixed box.
+        .searchbar.searchbar-large {
+            height: auto !important;
+            // Same vertical padding as the Blog List's own search bar
+            // (`.flat-searchbar .search-handler`, liveblog-bloglist.scss)
+            // so both read as the same height.
+            padding: 6px 12px 6px 35px !important;
+            @include border-radius($lb-radius-pill !important);
+            font-size: 13px;
+            // Vendor's icon position is a fixed pixel offset (`9px 7px`)
+            // calibrated to its own fixed 32px box — now that the box's
+            // height is padding-driven instead, that pins the icon to the
+            // old vertical spot rather than this field's actual center.
+            background-position: 12px center !important;
+            &:focus {
+                outline: 0;
+                border-color: $lb-rail-active !important;
+                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            }
+        }
+        // Change/Reset password (and any other modal using this simpler
+        // "buttons live inside the body" layout instead of a proper
+        // `.modal__footer` sibling) — same button treatment as below.
+        .modal__body-footer {
+            // Was a negative-margin bleed out to the modal's outer edge —
+            // the math didn't perfectly cancel against `.modal__body`'s
+            // own box and produced a horizontal scrollbar on the whole
+            // modal. Simpler: stay inset within the body's own padding,
+            // divider line + spacing only, no edge-to-edge background.
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid $lb-input-border;
+            .btn {
+                @include border-radius($lb-radius-pill);
+                text-transform: none;
+                font-weight: 400;
+                box-shadow: none !important;
+                &.btn--primary, &.btn-primary, &.btn-info {
+                    background-color: $lb-btn-dark-bg !important;
+                    border-color: $lb-btn-dark-bg !important;
+                    color: #fff !important;
+                    &:hover:not(:disabled) {
+                        background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                    }
+                }
+                // Stronger, more saturated neutral (same shade as the
+                // Settings page's Cancel button) — the flat $lb-pill-bg
+                // default read as too washed-out/low-contrast here per
+                // explicit request. Scoped to modal footers specifically
+                // (not the shared `.btn` default — see the note on
+                // `.upload-media .upload-manual .btn` above for why that
+                // was reverted) and excludes the Blog Editor's own
+                // `.output-channels-modal.modal .modal__footer .btn`
+                // (liveblog-edit.scss), which stays on the flat shade on
+                // purpose.
+                &:not(.btn--primary):not(.btn-primary):not(.btn-info) {
+                    background-color: darken($lb-pill-bg, 10%) !important;
+                    border-color: darken($lb-pill-bg, 10%) !important;
+                    color: $lb-pill-text !important;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-pill-bg, 18%) !important;
+                    }
+                }
+            }
+        }
+    }
+    .modal__footer {
+        border-bottom-left-radius: $lb-radius-card;
+        border-bottom-right-radius: $lb-radius-card;
+        padding: 14px 24px !important;
+        border-top-color: $lb-input-border;
+        .btn {
+            @include border-radius($lb-radius-pill);
+            text-transform: none;
+            font-weight: 400;
+            box-shadow: none !important;
+            &.btn--primary, &.btn-primary, &.btn-info {
+                background-color: $lb-btn-dark-bg !important;
+                border-color: $lb-btn-dark-bg !important;
+                color: #fff !important;
+                &:hover:not(:disabled) {
+                    background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                }
+            }
+            // Same stronger neutral as `.modal__body-footer .btn` above.
+            &:not(.btn--primary):not(.btn-primary):not(.btn-info) {
+                background-color: darken($lb-pill-bg, 10%) !important;
+                border-color: darken($lb-pill-bg, 10%) !important;
+                color: $lb-pill-text !important;
+                &:hover:not(:disabled) {
+                    background-color: darken($lb-pill-bg, 18%) !important;
+                }
+            }
+        }
+    }
+}
+
+// ============================================================
+// Liveblog redesign — User management page (#/users/)
+// ============================================================
+
+// Float the whole page as a card, like the Blog Settings page — vendor's
+// `.main-section` is `position:absolute; top/right/bottom/left` with no
+// width/height set, so a plain `margin` shrinks its box inward on all
+// sides without touching any of the offset math children rely on (every
+// descendant below is `position:absolute; top:0;right:0;left:0;bottom:0`
+// chained off this element, so they all resize with it automatically).
+.main-section.users {
+    margin: 12px 20px 20px;
+    // sd-modal moves its content to <body> with an inline z-index of
+    // 1050+ (backdrop 1049+) — reassert these vendor defaults with
+    // !important as a guard, in case the toolbar was ever rendering above
+    // a modal's dimming backdrop instead of underneath it.
+    .list-pane {
+        z-index: 1 !important;
+    }
+    .preview-pane {
+        z-index: 2 !important;
+    }
+}
+
+// "Users Profile: <name>" page (/#/users/<id>) — a different route/page
+// than the Users list, `.subnav--absolute` is a SIBLING of `.main-section`,
+// not a descendant — `:has()` scopes it. Its back-arrow button sits flush
+// against the title with no gap.
+.subnav--absolute:has(+ .main-section.user-profile-page) .page-nav-title {
+    margin-left: 20px;
+}
+
+// Page titles — app-wide, every `.subnav__page-title` (Users, Themes,
+// Free Types, Syndication, ...). Matches the Blog Settings page title's
+// own size/weight/color exactly.
+.subnav__page-title {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #143A4D !important;
+}
+
+// "+" add user button lives in this same sibling `.subnav--absolute`, not
+// inside `.main-section.users` — same labeled teal pill as the Blog List's
+// "Create blog" button (`lb-create-btn-pill` mixin, lb-mixins.scss).
+.subnav--absolute:has(+ .main-section.users) .sd-create-btn {
+    @include lb-create-btn-pill('Create user');
+}
+// Not actually a flex-centering problem (vendor's `.subnav` DOES set
+// `display:flex; align-items:center`, but a different core stylesheet
+// also matches `.subnav` at equal specificity with `display` commented
+// out — load order decides which wins) — the real fix is a taller bar,
+// not a per-button margin-top hack. Same right-edge breathing room as the
+// Blog List's own "Create blog" button (liveblog-bloglist.scss).
+.subnav--absolute:has(+ .main-section.users) {
+    height: 5.8rem;
+}
+.subnav--absolute:has(+ .main-section.users) .subnav__button-stack--square-buttons {
+    margin-right: 20px;
+    align-items: center;
+}
+
+.users {
+    // "PENDING"/"disabled"/"inactive" badge next to a user's name — vendor
+    // relies on a fixed 13px height/line-height with only horizontal
+    // padding, reading as cramped/flat. Let it breathe vertically too.
+    .disabled-label {
+        height: auto;
+        line-height: normal;
+        padding: 3px 8px;
+        @include border-radius($lb-radius-pill);
+    }
+
+    // `.list-pane` fills the card in the default (no user selected) state
+    // and `.preview-pane` overlays its right 400px once a row is picked —
+    // give both their own white background + rounding + shadow instead of
+    // vendor's flat grey page + 1px divider border, so either state reads
+    // as a floating card like Settings.
+    .list-pane {
+        background: #fff !important;
+        border-right: none !important;
+        @include border-radius($lb-radius-card);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        // The toolbar (search/toggles/filter/pagination) is a plain
+        // `.subnav` div sitting in normal flow at the top, not a `<header>`
+        // — round its corners to match or its square top edges would show
+        // past `.list-pane`'s own rounded corners.
+        > .subnav {
+            background-color: #fff !important;
+            border-bottom: 1px solid $lb-input-border !important;
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
+            // Search icon / toggle buttons / filter select on the left,
+            // page-size / pagination on the right — vendor lines these up
+            // with mismatched margins, not a shared baseline.
+            display: flex !important;
+            align-items: center !important;
+            // Expanding the search box (`.flat-searchbar.extended`) gives
+            // `.search-handler` its own opaque white fill with square
+            // corners — sitting right at the toolbar's rounded top-left
+            // corner, it visually squares it off. Round it to match.
+            .flat-searchbar.extended {
+                border-top-left-radius: $lb-radius-card !important;
+                .search-handler {
+                    border-top-left-radius: $lb-radius-card !important;
+                }
+            }
+        }
+    }
+    .preview-pane {
+        background: #fff;
+        border-left: 1px solid $lb-input-border;
+        // Vendor's inset shadow was standing in for a divider line — a
+        // real border reads more like this redesign's other cards.
+        box-shadow: none;
+        border-top-right-radius: $lb-radius-card;
+        border-bottom-right-radius: $lb-radius-card;
+        > header {
+            background-color: #fff;
+            border-bottom: 1px solid $lb-input-border;
+            box-shadow: none;
+            border-top-right-radius: $lb-radius-card;
+            #open-user-profile {
+                margin-left: 20px;
+            }
+        }
+    }
+
+    // Toolbar toggle buttons ("All user types" / "Authors only")
+    .toggle-button {
+        @include border-radius($lb-radius-pill);
+        border-color: $lb-input-border;
+        color: $lb-pill-text;
+        background: #fff;
+        box-shadow: none;
+        &:hover {
+            border-color: $lb-rail-active;
+            color: $lb-rail-active;
+            box-shadow: none;
+        }
+        &:active {
+            box-shadow: none;
+        }
+    }
+    // Same dark-navy "primary/selected" treatment used everywhere else in
+    // the app (Save/Publish buttons, active pill state) — not the teal
+    // accent, which this app reserves for hover/highlight, not "selected".
+    .toggle-button--active {
+        background-color: $lb-btn-dark-bg !important;
+        border-color: $lb-btn-dark-bg !important;
+        color: #fff !important;
+        box-shadow: none !important;
+        &:hover {
+            background-color: lighten($lb-btn-dark-bg, 8%) !important;
+            border-color: lighten($lb-btn-dark-bg, 8%) !important;
+            box-shadow: none !important;
+        }
+        &:active {
+            box-shadow: none !important;
+        }
+    }
+
+    // "Active" status filter select and the pagination page-size select —
+    // both are the same vendor .sd-line-input--is-select component. Border/
+    // radius/padding stay scoped to this page; the arrow fix itself is
+    // global (see .sd-line-input--is-select below) since the double-arrow
+    // bug applies to every instance of this vendor component, not just
+    // this page's.
+    .sd-line-input.sd-line-input--is-select select.sd-line-input__select {
+        border: 1px solid $lb-input-border !important;
+        // Vendor separately sets `border-bottom: 1px solid
+        // var(--color-input-border)` on this exact selector — a plain
+        // `border` shorthand's !important should already beat a
+        // non-important longhand, but that bottom edge kept showing a
+        // different color, so reassert it explicitly too.
+        border-bottom: 1px solid $lb-input-border !important;
+        @include border-radius($lb-radius-input !important);
+        // Vendor's height (2.4rem/3.2rem) doesn't include padding unless
+        // box-sizing is set — without it, the padding pushed the text
+        // down inside a box taller than the border actually wrapped.
+        box-sizing: border-box !important;
+        height: 32px !important;
+        line-height: 20px !important;
+        padding: 6px 26px 6px 10px !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    // Pagination arrows — icon-font glyphs, plain `color` is enough here.
+    .sd-pagination .btn-group .btn {
+        color: $lb-pill-text;
+        &:hover:not(:disabled) {
+            color: $lb-rail-active;
+        }
+        &:disabled {
+            color: $lb-timestamp;
+        }
+    }
+
+    // Users table
+    .users-table {
+        border-top: none;
+        // Taller rows with more room, and a slightly bigger avatar — the
+        // two have to move together, or the avatar/row-wrapper stop
+        // lining up with the row's vertical center (vendor's own math is
+        // 40px row / 30px content, evenly split top+bottom).
+        // !important throughout this block: `client/app/styles/sass/
+        // liveblog.scss` loads before `superdesk-core/scripts/apps/users`
+        // in index.js's import order, and these selectors match vendor's
+        // own at equal specificity — without !important, vendor's later
+        // <style> tag wins the tie and silently keeps the old 40px-row
+        // numbers (this is exactly why the row-wrapper text stayed
+        // top-aligned to the old height instead of recentering).
+        .table-header, .table-newest, .table-body {
+            > li {
+                height: 56px !important;
+                .avatar {
+                    width: 36px !important;
+                    height: 36px !important;
+                    margin: 10px 8px 10px 14px !important;
+                    // Vendor's initials sizing (font-size/line-height) is
+                    // hardcoded for the default 30px avatar and doesn't
+                    // scale with the width/height override above.
+                    &.initials {
+                        font-size: 13px !important;
+                        line-height: 36px !important;
+                    }
+                }
+                // The small admin "gear" badge (`.admin-label.icon-settings`)
+                // is `position:absolute` against this `<li>`, not the avatar
+                // itself. No circle backing — just the icon, black, with a
+                // thin white halo (faked via drop-shadow, since a masked
+                // icon has no fill to put a real stroke on) so it still
+                // reads against a dark avatar. Sits on the avatar's
+                // top-left corner (avatar box is 14,10 to 50,46 at this
+                // margin/size) per the reference layout.
+                .admin-label {
+                    width: 18px !important;
+                    height: 18px !important;
+                    top: 5px !important;
+                    left: 5px !important;
+                    // Solid white fill, not transparent — a transparent
+                    // badge with just a border ring lets whatever's behind
+                    // it (a selected/hover row's tinted background) show
+                    // through inside the ring, reading as a stray blue dot.
+                    background-color: #fff !important;
+                    border: 2px solid #fff !important;
+                    @include border-radius(50%);
+                    box-sizing: border-box;
+                    box-shadow: none !important;
+                    &:before {
+                        content: none;
+                    }
+                    &:after {
+                        content: '';
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        background-color: #000;
+                        -webkit-mask-image: url('~images/icons/settings.svg');
+                        mask-image: url('~images/icons/settings.svg');
+                        -webkit-mask-repeat: no-repeat;
+                        mask-repeat: no-repeat;
+                        -webkit-mask-position: center;
+                        mask-position: center;
+                        -webkit-mask-size: contain;
+                        mask-size: contain;
+                        filter:
+                            drop-shadow(1px 0 0 #fff)
+                            drop-shadow(-1px 0 0 #fff)
+                            drop-shadow(0 1px 0 #fff)
+                            drop-shadow(0 -1px 0 #fff);
+                    }
+                }
+                // Online-status dot — back to the bottom-right corner (per
+                // the reference layout, the gear owns top-left), sized up,
+                // and hollow (white fill, grey ring) when logged out instead
+                // of a solid grey dot, so "not logged in" reads as a
+                // distinct empty state rather than just a duller color.
+                // Positioned relative to the avatar figure itself (vendor's
+                // `bottom`/`right`), not the `<li>`.
+                // Same total size and white outer ring for both states —
+                // offline is a hollow grey ring (border grey, fill white),
+                // online is a solid filled dot (border color = fill color,
+                // so it reads as one solid green circle instead of a
+                // green dot with a white ring eating into it).
+                .logged-info {
+                    width: 14.4px !important;
+                    height: 14.4px !important;
+                    bottom: -4px !important;
+                    right: -4px !important;
+                    top: auto !important;
+                    border: 2px solid $lb-timestamp !important;
+                    box-sizing: border-box;
+                    box-shadow: 0 0 0 2px #fff !important;
+                    background-color: #fff !important;
+                }
+                .user-logged .logged-info {
+                    background-color: $lb-rail-active !important;
+                    border-color: $lb-rail-active !important;
+                }
+                > div.row-wrapper {
+                    top: 13px !important;
+                }
+            }
+        }
+        .table-header {
+            background: #d0e2ed47;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            > li {
+                // !important: this kept disappearing in some states
+                // (row selected/hovered) — same equal-specificity,
+                // vendor-loads-later tie seen elsewhere in this file.
+                border-bottom: 1px solid #99c0d878 !important;
+                > div, .name, .email, .created {
+                    color: $lb-btn-dark-bg !important;
+                }
+                // Swap the legacy sd_icons sort chevrons for Lucide.
+                .sortable i {
+                    opacity: .6;
+                    margin-left: 4px;
+                    vertical-align: middle;
+                    &.icon-chevron-down-thin {
+                        @include lb-icon-font-mask(url('~images/icons/chevron-down.svg'), $lb-btn-dark-bg, 12px);
+                    }
+                    &.icon-chevron-up-thin {
+                        @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 12px);
+                    }
+                }
+            }
+        }
+        .table-body, .table-newest {
+            background: #fff;
+            border-top: none;
+            // Vendor pulls this up 1px (`margin-top: -1px`) to collapse
+            // its own border against the header's — with our own header
+            // border-bottom, that -1px instead sits exactly on top of it
+            // and this element's opaque white background paints over it,
+            // making the border look like it "disappears".
+            margin-top: 0 !important;
+            > li {
+                border-bottom: 1px dotted $lb-input-border;
+                // Selected and hover need to read as two different states,
+                // and neither should be the same teal used for "active"/
+                // success elsewhere in the app — plain blue vs. plain grey.
+                &.selected {
+                    background: darken(#EDF4F8, 5%);
+                }
+                &:hover {
+                    background: #dbe9f1bd;
+                }
+                > div.action {
+                    height: 56px !important;
+                    .item-functions li {
+                        height: 56px !important;
+                        line-height: 56px !important;
+                        border-left-color: $lb-input-border;
+                        &:hover {
+                            background-color: $lb-pill-bg;
+                        }
+                        // Swap the legacy sd_icons glyphs for Lucide
+                        // (Disable user / Clear sessions / Enable user).
+                        a {
+                            display: flex !important;
+                            align-items: center;
+                            justify-content: center;
+                            height: 100%;
+                        }
+                        i.icon-trash, i.icon-kill, i.icon-revert {
+                            margin: 0;
+                        }
+                        i.icon-trash {
+                            @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 18px);
+                        }
+                        i.icon-kill {
+                            @include lb-icon-font-mask(url('~images/icons/skull.svg'), $lb-pill-text, 18px);
+                        }
+                        i.icon-revert {
+                            @include lb-icon-font-mask(url('~images/icons/undo-2.svg'), $lb-pill-text, 18px);
+                        }
+                        &:hover i {
+                            background-color: $lb-rail-active;
+                        }
+                    }
+                }
+            }
+        }
+        .row-wrapper > div.email {
+            color: $lb-rail-active;
+        }
+        .row-wrapper > div.created {
+            color: $lb-timestamp;
+        }
+    }
+}
+
+// Slide-out "full profile" panel (`.user-details-pane`) — only ever
+// rendered inside the Users page.
+.user-details-pane {
+    .header-info {
+        background-color: $lb-pill-bg;
+    }
+    // Same fix as the Edit output modal's .sd-line-input fields — vendor's
+    // own value is 1.4rem, a little tight above the label.
+    .sd-line-input {
+        padding-top: 2rem !important;
+        .sd-line-input__message {
+            padding-top: 0.8rem;
+        }
+    }
+    .profile-pic .avatar {
+        box-shadow: 0 0 0 1px $lb-input-border;
+    }
+    .nav-tabs__link {
+        color: $lb-pill-text;
+    }
+    .nav-tabs__tab--active .nav-tabs__link, .nav-tabs__tab--active:hover .nav-tabs__link {
+        border-bottom-color: $lb-rail-active !important;
+        color: $lb-btn-dark-bg !important;
+    }
+    // Vendor's checked-checkbox fill ($sd-blue-ish #5ea9c8) — retint teal.
+    .sd-checkbox.checked, .sd-checkbox[checked="checked"] {
+        border-color: $lb-rail-active !important;
+        background: $lb-rail-active !important;
+        &:hover {
+            border-color: darken($lb-rail-active, 6%) !important;
+            background: darken($lb-rail-active, 6%) !important;
+        }
+    }
+    .sd-check__wrapper .sd-checkbox+label.label--active {
+        color: $lb-rail-active !important;
+    }
+    .change-btn {
+        @include border-radius($lb-radius-pill !important);
+        color: $lb-rail-active !important;
+        border-color: $lb-rail-active !important;
+        // The new global `.btn--primary` fallback rule fills any
+        // `.btn--primary` with solid dark navy — this one is meant to
+        // stay hollow/outline (it's also `.btn--hollow`), so its own
+        // background needs reasserting.
+        background-color: transparent !important;
+        // 14px wrapped "CHANGE PASSWORD" onto two lines in the space
+        // available next to the label — small button, one line.
+        font-size: 11px !important;
+        padding: 6px 14px !important;
+        white-space: nowrap !important;
+        // The global `.btn--primary:hover` fallback also sets a dark navy
+        // hover background with !important — reassert color too, not just
+        // background, so hover doesn't win on either property.
+        &:hover:not(:disabled) {
+            background-color: $lb-rail-active-bg !important;
+            border-color: $lb-rail-active !important;
+            color: $lb-rail-active !important;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Login / reset-password screens — vendor markup and base CSS live in
+// node_modules/superdesk-core/scripts/core/auth/{login-modal.html,
+// reset-password.html,styles/auth.scss} (sdLoginModal etc., a full-page
+// overlay outside #main-container, not a router view — always mounted,
+// shown/hidden via ng-show). Both screens share the same `.login-screen`/
+// `.login-form-container`/`.form-handler` markup, so this one block skins
+// both. Per the CSS-only redesign rule we never touch that HTML, only
+// override its classes here. Flat treatment on purpose — elements sit
+// directly on the dark navy background, no boxed white card (explicit
+// request 2026-09-04, an earlier white-card version was rejected).
+// Everything below fights either the vendor rule directly (same-ish
+// specificity, bundle order not guaranteed — hence !important throughout,
+// matching this file's convention) or the app-wide `.btn` fallback above,
+// which would otherwise paint the Log In button as its light-blue
+// secondary pill since `.btn--sd-green` isn't `.btn--primary`.
+.login-screen {
+    background: $lb-header-bg !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    .logo-handler {
+        margin-bottom: 32px !important;
+        text-align: center;
+        img {
+            width: 180px !important;
+            height: auto !important;
+        }
+    }
+
+    .login-form-container {
+        position: static !important;
+        top: auto !important; left: auto !important; margin: 0 !important;
+        width: 320px;
+        height: auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+
+        .session-error {
+            position: static;
+            width: auto;
+            margin: 0 0 20px !important;
+            @include border-radius($lb-radius-input);
+            background-color: $lb-star-selected;
+        }
+
+        .form-handler {
+            width: 100% !important;
+
+            .avatar {
+                width: 120px !important;
+                height: 120px !important;
+                margin: 0 auto 24px !important;
+            }
+
+            form {
+                .inputs input {
+                    width: 100%;
+                    @include box-sizing(border-box);
+                    height: 44px;
+                    margin-bottom: 14px;
+                    border: 1px solid $lb-input-border !important;
+                    @include border-radius($lb-radius-input !important);
+                    box-shadow: none !important;
+                    padding: 0 14px;
+                    font-size: 14px;
+                    line-height: normal;
+                    &:focus {
+                        border-color: $lb-rail-active !important;
+                        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                        outline: none;
+                    }
+                }
+                .buttons button {
+                    background-color: $lb-rail-active !important;
+                    border-color: $lb-rail-active !important;
+                    color: #fff !important;
+                    height: 44px;
+                    font-weight: 500;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-rail-active, 6%) !important;
+                    }
+                }
+            }
+
+            .links {
+                border-top: none !important;
+                padding-top: 4px;
+                margin-top: 4px;
+            }
+            .text {
+                color: $lb-rail-active !important;
+                &:hover {
+                    color: lighten($lb-rail-active, 12%);
+                    text-decoration: underline;
+                }
+            }
+            .reset-info {
+                color: rgba(255, 255, 255, 0.75) !important;
+            }
+            .transition-id {
+                color: #fff !important;
+            }
+            .validation-info span {
+                color: $lb-star-selected !important;
+            }
+            .error-handler .error {
+                background: $lb-live-badge-text !important;
+                @include border-radius($lb-radius-input);
+            }
+        }
     }
 }
