@@ -52,11 +52,9 @@ Install `libmagic` which is required by superdesk dependency
 brew install libmagic
 ```
 
-Install Node.js. We suggest using `n` node version manager https://github.com/tj/n to avoid breaking any other project you might have using node.js. For liveblog you will need version `7.10.1`
-
-Install the required npm tools
+Install [volta](https://volta.sh), which installs the Node.js version pinned in `client/package.json`:
 ```bash
-npm install -g grunt-cli
+curl https://get.volta.sh | bash
 ```
 
 Then just go back to main [README](https://github.com/liveblog/liveblog/blob/master/README.md) file and resume instructions from step [**Configure the server**](https://github.com/liveblog/liveblog/blob/master/README.md#configure-the-server)

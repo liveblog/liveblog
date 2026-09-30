@@ -55,19 +55,7 @@ Here it is assumed you are running Ubuntu Linux 20.04.6 LTS
     $ pyenv install 3.6.15
     ```
 
-- Install NodeJS LTS version and npm:
-
-    ```sh
-    $ sudo apt install nodejs npm
-    ```
-
-- Install grunt-cli:
-
-    ```sh
-    $ sudo npm install -g grunt-cli
-    ```
-
-- Install volta:
+- Install volta, which installs the Node.js version pinned in `client/package.json`:
 
     ```sh
     $ curl https://get.volta.sh | bash
@@ -114,10 +102,10 @@ Here it is assumed you are running Ubuntu Linux 20.04.6 LTS
     $ npm install
     ```
 
-- Run the client server:
+- Run the client dev server (it talks to `http://localhost:5000/api` and `ws://localhost:5100` by default; override with `SUPERDESK_URL` and `SUPERDESK_WS_URL`):
 
     ```sh
-    $ grunt --force server --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+    $ npm start
     ```
 
 You can now access your local setup at http://localhost:9000 (user: admin, password: admin)
@@ -200,15 +188,16 @@ behave --format progress2 --logging-level ERROR features/syndication.feature
 
 ```shell
 cd client
-grunt build --force
-grunt connect:build
+npm run build
 ```
+
+The production bundle is written to `client/dist`; serve it with any static file server.
 
 ## Quick start with Claude Code (local dev)
 
 If you use [Claude Code](https://claude.com/claude-code), this repo ships
 scripts and a skill that set up and run a local dev stack for you — no need to
-memorise the Docker / honcho / grunt commands. After a one-time "trust this
+memorise the Docker / honcho / webpack commands. After a one-time "trust this
 project" prompt, just run:
 
 ```
