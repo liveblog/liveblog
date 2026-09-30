@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import MagicMock
 
 import liveblog.themes as themeapp
@@ -9,6 +10,7 @@ import liveblog.client_modules as client_modules_app
 from bson import ObjectId
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 
 from liveblog.blogs.embeds import embed_blueprint
 from liveblog.instance_settings.features_service import FeaturesService
@@ -1508,3 +1510,76 @@ class ThemeSettingsTestCase(TestCase):
             + 'data-max-items-per-page="110"\\n    id="amp-live-list-insert-blog"\\n    class="timeline-body">\\'
         )
         self.assertNotEqual(amp_live_list, -1)
+
+    def test_seo_embed_renders_video_item_without_meta(self):
+        blog_id = "5abe10614d003d5f22ce005e"
+        published = utcnow() - timedelta(hours=1)
+
+        text_item_id = "urn:newsml:localhost:2018-04-05:text-item"
+        video_item_id = "urn:newsml:localhost:2018-04-05:video-item"
+        common = {
+            # Lookups sent through the service turn id-like strings into
+            # ObjectId, so a post stored with a string blog id is never found.
+            "blog": ObjectId(blog_id),
+            "original_creator": "5a9f82dc4d003d1469bbc22d",
+            "_created": published,
+            "_updated": published,
+        }
+
+        self.app.data.insert(
+            "archive",
+            [
+                {
+                    "_id": text_item_id,
+                    "particular_type": "item",
+                    "type": "text",
+                    "item_type": "text",
+                    "text": "<p>Text before the video</p>",
+                    **common,
+                },
+                {
+                    "_id": video_item_id,
+                    "particular_type": "item",
+                    "type": "text",
+                    "item_type": "video",
+                    "text": "",
+                    "meta": {},
+                    **common,
+                },
+                {
+                    "_id": "urn:newsml:localhost:2018-04-05:post",
+                    "particular_type": "post",
+                    "type": "composite",
+                    "post_status": "open",
+                    "deleted": False,
+                    "sticky": False,
+                    "lb_highlight": False,
+                    "order": 1,
+                    "published_date": published,
+                    "content_updated_date": published,
+                    "groups": [
+                        {
+                            "id": "root",
+                            "refs": [{"idRef": "main"}],
+                            "role": "grpRole:NEP",
+                        },
+                        {
+                            "id": "main",
+                            "refs": [
+                                {"residRef": text_item_id},
+                                {"residRef": video_item_id},
+                            ],
+                            "role": "grpRole:Main",
+                        },
+                    ],
+                    **common,
+                },
+            ],
+        )
+
+        response = self.client.get("/embed/{}/theme/default".format(blog_id))
+        data = response.data.decode("utf-8")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Text before the video", data)
+        self.assertIn('<div class="item--embed__element"></div>', data)
