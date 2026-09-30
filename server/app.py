@@ -11,7 +11,6 @@
 
 
 import os
-import jinja2
 import flask_s3
 import settings
 from flask_cache import Cache
@@ -69,12 +68,6 @@ def get_app(config=None):
     app = superdesk_app(config, media_storage)
 
     setup_apm(app, settings.ELASTICSEARCH_INDEX)
-
-    # Add custom jinja2 template loader.
-    custom_loader = jinja2.ChoiceLoader(
-        [jinja2.FileSystemLoader("superdesk/templates"), app.jinja_loader]
-    )
-    app.jinja_loader = custom_loader
 
     # Caching. By default 'simple' cache will be used
     cache_config = {"CACHE_TYPE": settings.LIVEBLOG_CACHE_TYPE}
