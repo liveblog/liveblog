@@ -38,6 +38,7 @@ from .utils import (
     check_content_diff,
     find_ref_items,
     get_associations,
+    get_comment_blog_id,
     get_ref_id,
     get_ref_service_name,
     validate_post_refs,
@@ -472,9 +473,7 @@ class PostsService(TenantAwareArchiveService):
         """
         if original["post_status"] == "comment" and not updates.get("deleted", False):
             item = original["groups"][1]["refs"][0]["item"]
-            blog_id_try = item.get("blog")
-            blog_id_object = ObjectId(item.get("client_blog", blog_id_try))
-            original["blog"] = updates["blog"] = blog_id_object
+            original["blog"] = updates["blog"] = get_comment_blog_id(item)
 
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(item["text"])

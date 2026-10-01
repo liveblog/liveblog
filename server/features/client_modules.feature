@@ -120,3 +120,16 @@ Feature: Client modules operations
         }
         """
         Then we get OK response
+        When we patch "posts/#client_comments._id#"
+        """
+        {"post_status": "open"}
+        """
+        Then we get new resource
+        """
+        {"post_status": "open", "blog": "#blogs._id#"}
+        """
+        When we get "/blogs/#blogs._id#/posts"
+        Then we get list with 1 items
+        """
+        {"_items": [{"post_status": "open", "blog": "#blogs._id#"}]}
+        """

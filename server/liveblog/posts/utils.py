@@ -86,6 +86,25 @@ def validate_post_refs(post, tenant_id):
             )
 
 
+def get_comment_blog_id(item):
+    """Return the blog a public comment item was posted to.
+
+    Comment items created before `blog` was stored on them only carry
+    `client_blog`, which the `items` resource (that post refs resolve through)
+    does not project, so those fall back to the stored document. Raising beats
+    `ObjectId(None)`, which mints a random id and moves the post out of its blog.
+    """
+    blog_id = item.get("blog")
+    if not blog_id:
+        stored = app.data.find_one_raw("archive", item["_id"]) or {}
+        blog_id = stored.get("client_blog") or stored.get("blog")
+    if not blog_id:
+        raise SuperdeskApiError.badRequestError(
+            message="Comment item {} has no blog".format(item["_id"])
+        )
+    return ObjectId(blog_id)
+
+
 def get_related_items(post):
     """
     Returns a list of all the related items for the given post.

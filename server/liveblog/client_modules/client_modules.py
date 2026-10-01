@@ -199,7 +199,7 @@ class ClientItemsResource(ItemsResource):
 
 
 class ClientItemsService(ItemsService):
-    PUBLIC_FIELDS = ("text", "commenter", "client_blog", "blog")
+    PUBLIC_FIELDS = ("text", "commenter", "client_blog")
 
     def find_one(self, req, **lookup):
         with public_tenant_context(self, lookup.get("_id")) as doc:
@@ -211,8 +211,7 @@ class ClientItemsService(ItemsService):
             check_comment_length(doc.get("text") or "")
             _reset_non_public_fields(self, doc, self.PUBLIC_FIELDS)
             doc["item_type"] = "comment"
-            if "blog" in doc:
-                doc["blog"] = doc["client_blog"]
+            doc["blog"] = doc["client_blog"]
 
         with tenant_context_from_blog(blog):
             _check_blog_accepts_comments(blog)
