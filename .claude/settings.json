@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(./scripts/dev/setup.sh*)",
+      "Bash(./scripts/dev/up.sh*)",
+      "Bash(./scripts/dev/down.sh)",
+      "Bash(docker info*)",
+      "Bash(docker compose -f docker/docker-compose-dev-services.yml ps*)",
+      "Bash(docker compose -f docker/docker-compose-dev-services.yml logs*)",
+      "Bash(lsof -i :5000*)",
+      "Bash(lsof -i :5001*)",
+      "Bash(lsof -i :5100*)",
+      "Bash(lsof -i :9000*)",
+      "Bash(lsof -i :9200*)",
+      "Bash(lsof -i :27017*)",
+      "Bash(lsof -i :6379*)",
+      "Bash(node --version*)",
+      "Bash(volta --version*)",
+      "Bash(pyenv --version*)",
+      "Bash(pyenv root*)",
+      "Bash(curl -sS http://localhost:*)",
+      "Bash(curl -sS http://127.0.0.1:*)",
+      "Bash(curl -sS -o /dev/null*http://localhost:*)",
+      "Bash(curl -sS -o /dev/null*http://127.0.0.1:*)",
+      "Bash(cat scripts/dev/.run/*)",
+      "Bash(tail scripts/dev/.run/*)",
+      "Bash(tail -n * scripts/dev/.run/*)",
+      "Bash(tail -f scripts/dev/.run/*)"
+    ]
+  }
+}

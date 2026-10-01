@@ -425,3 +425,63 @@
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);
+
+// Gallery lightbox fix for responsive embeds. Inside the auto-height, non-scrolling
+// iframe, window.innerHeight is the whole blog height and pageYOffset is 0, so
+// PhotoSwipe stretches its overlay over the entire document with the image off-screen.
+// When embedded (iframe-resizer exposes window.parentIFrame), clamp .pswp to the
+// iframe's visible slice via CSS vars (see the html.lb-embed-pswp rule in
+// photoswipe.css) and force a re-measure. Inert on the standalone page (no parentIFrame).
+(function() {
+    'use strict';
+
+    var docEl = document.documentElement;
+    var lastInfo = null;
+
+    function fireResize() {
+        // A forced resize makes PhotoSwipe re-read scrollWrap.clientHeight and re-centre.
+        var evt;
+        try {
+            evt = new Event('resize');
+        } catch (e) {
+            evt = document.createEvent('Event');
+            evt.initEvent('resize', true, true);
+        }
+        window.dispatchEvent(evt);
+    }
+
+    function applyViewport(info) {
+        lastInfo = info;
+        // offsetTop is the iframe's top vs. the parent document; scrollTop is the
+        // parent scroll. Their difference is the visible slice in iframe coordinates.
+        var top = Math.max(0, info.scrollTop - info.offsetTop);
+        var bottom = Math.min(info.scrollTop + info.windowHeight - info.offsetTop, info.iframeHeight);
+        docEl.style.setProperty('--lb-pswp-top', top + 'px');
+        docEl.style.setProperty('--lb-pswp-height', Math.max(0, bottom - top) + 'px');
+        if (document.querySelector('.pswp--open')) {
+            fireResize();
+        }
+    }
+
+    function register() {
+        if (!window.parentIFrame || typeof window.parentIFrame.getPageInfo !== 'function') {
+            return false;
+        }
+        docEl.classList.add('lb-embed-pswp');
+        window.parentIFrame.getPageInfo(applyViewport); // fires now, then on parent scroll/resize
+        return true;
+    }
+
+    // Refresh geometry just before the lightbox opens, in case no scroll fired since load.
+    document.addEventListener('click', function() {
+        if (lastInfo) { applyViewport(lastInfo); }
+    }, true);
+
+    // parentIFrame appears only after iframe-resizer's handshake; poll briefly for it.
+    if (!register()) {
+        var attempts = 0;
+        var timer = setInterval(function() {
+            if (register() || ++attempts >= 50) { clearInterval(timer); }
+        }, 200);
+    }
+})();

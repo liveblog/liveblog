@@ -18,6 +18,7 @@ import zipfile
 import logging
 import flask
 from io import BytesIO
+from functools import lru_cache
 from math import ceil
 
 from bson.objectid import ObjectId
@@ -72,16 +73,39 @@ themes_assets_blueprint = superdesk.Blueprint(
 )
 
 
+@lru_cache(maxsize=1024)
+def log_undefined_access(variable, attribute):
+    """
+    Cached so each distinct path is reported once per process. The embed is
+    rendered again on every post publish and warnings are sent to Sentry, so
+    an uncached warning becomes one event per post per render.
+    """
+    logger.warning(
+        "Template variable `%s` is undefined, cannot read `%s` from it",
+        variable,
+        attribute,
+    )
+
+
 class UndefinedVar(jinja2.Undefined):
-    def __getattribute__(self, name, *args, **kwargs):
-        try:
-            return super(UndefinedVar, self).__getattribute__(name, *args, **kwargs)
-        except Exception:
-            err_msg = "Template variable undefined `{}`, parent reference `{}`".format(
-                self._undefined_name, name
-            )
-            print(err_msg)
-            return UndefinedVar(err_msg)
+    """
+    Undefined that lets templates read attributes of a missing variable, so
+    `{{ a.b.c }}` renders empty instead of failing the whole embed.
+    """
+
+    __slots__ = ()
+
+    def __getattr__(self, name):
+        # Dunder lookups must fail like on any other object. `Markup()` (the
+        # `safe` and `escape` filters) checks `hasattr(value, "__html__")` and
+        # calls whatever it gets, which raises `UndefinedError` if an undefined
+        # is returned here.
+        if name[:2] == "__":
+            raise AttributeError(name)
+
+        path = str(self._undefined_name)
+        log_undefined_access(path, name)
+        return UndefinedVar(name="{}.{}".format(path, name))
 
 
 class ThemesResource(Resource):
@@ -572,13 +596,13 @@ class ThemesService(TenantAwareService, BaseService):
             upload_path = self.get_theme_path(theme_name)
 
         with open(name, "rb") as file:
-            # Set the content type
-            mime = magic.Magic(mime=True)
-            content_type = mime.from_file(name)
-            if content_type == "text/plain" and name.endswith(
-                tuple(CONTENT_TYPES.keys())
-            ):
-                content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
+            # libmagic mislabels svg as "image/svg"; trust our extension map.
+            ext = os.path.splitext(name)[1]
+            if ext in CONTENT_TYPES:
+                content_type = CONTENT_TYPES[ext]
+            else:
+                mime = magic.Magic(mime=True)
+                content_type = mime.from_file(name)
 
             final_file_name = os.path.join(
                 theme_name, os.path.relpath(name, upload_path)
