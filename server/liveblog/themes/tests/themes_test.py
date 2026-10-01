@@ -44,31 +44,37 @@ def service(app, db_service):
     return FeaturesService(app, db_service)
 
 
+def init_themes_test_app(test_case):
+    """Register the resources and blueprints theme tests need, once per app."""
+    if foo.setup_call:
+        return
+
+    test_config = {
+        "LIVEBLOG_DEBUG": True,
+        "EMBED_PROTOCOL": "http://",
+        "CORS_ENABLED": False,
+        "DEBUG": False,
+    }
+    app = test_case.app
+    app.config.update(test_config)
+    foo.setup_called()
+    tenants_app.init_app(app)
+    liveblog_users_app.init_app(app)
+    themeapp.init_app(app)
+    theme_settings_app.init_app(app)
+    blogapp.init_app(app)
+    global_preferences.init_app(app)
+    client_modules_app.init_app(app)
+    app.register_blueprint(embed_blueprint)
+    test_case.client = app.test_client()
+
+    app.features = FeaturesService(app, db_service_mock())
+
+
 class ThemesTestCase(TenantAwareTestCase):
     def setUp(self):
         super().setUp()
-
-        if not foo.setup_call:
-            # update configuration
-            test_config = {
-                "LIVEBLOG_DEBUG": True,
-                "EMBED_PROTOCOL": "http://",
-                "CORS_ENABLED": False,
-                "DEBUG": False,
-            }
-            self.app.config.update(test_config)
-            foo.setup_called()
-            tenants_app.init_app(self.app)
-            liveblog_users_app.init_app(self.app)
-            themeapp.init_app(self.app)
-            theme_settings_app.init_app(self.app)
-            blogapp.init_app(self.app)
-            global_preferences.init_app(self.app)
-            client_modules_app.init_app(self.app)
-            self.app.register_blueprint(embed_blueprint)
-            self.client = self.app.test_client()
-
-            self.app.features = FeaturesService(self.app, db_service_mock())
+        init_themes_test_app(self)
 
         # Set up tenant and user for multi-tenancy
         self.setup_tenant_and_user()
