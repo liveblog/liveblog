@@ -20,6 +20,8 @@ dataclasses==0.8; python_version < "3.7"
 
 redis>=3.2,<4.0
 elasticsearch==1.9.0
+# declared by elasticsearch 1.9.0, but the legacy resolver does not enforce it
+urllib3<2
 werkzeug<1.0
 # Flask 1.0 imports names that Jinja2 3.1, MarkupSafe 2.1 and itsdangerous 2.1 removed
 jinja2>=2.10,<3.1
