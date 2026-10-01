@@ -74,8 +74,8 @@ if [ ! -x "$VENV_BIN/python" ]; then
 
 [liveblog-setup] Create it with:
 
-[liveblog-setup]   pyenv install 3.6.15
-[liveblog-setup]   pyenv virtualenv 3.6.15 $LIVEBLOG_VENV
+[liveblog-setup]   pyenv install 3.8.20
+[liveblog-setup]   pyenv virtualenv 3.8.20 $LIVEBLOG_VENV
 
 [liveblog-setup] (If your virtualenv has a different name, re-run with
 [liveblog-setup]  LIVEBLOG_VENV=<name> ./scripts/dev/setup.sh)
@@ -92,6 +92,10 @@ log "using pyenv virtualenv '$LIVEBLOG_VENV' at $VENV_BIN"
 # ---- 1. Python dependencies ----
 
 log "installing Python dependencies into the '$LIVEBLOG_VENV' virtualenv (slow on a cold cache)"
+# Same pip as the production installs: its legacy resolver lets the pins in
+# requirements.txt override the ones in Eve and eve-elastic, which a current
+# resolver refuses.
+"$VENV_BIN/pip" install "pip==20.2.3"
 (cd "$SERVER_DIR" && "$VENV_BIN/pip" install -r requirements.txt -r dev-requirements.txt)
 
 # ---- 2. Client dependencies ----

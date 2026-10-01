@@ -43,16 +43,16 @@ Here it is assumed you are running Ubuntu Linux 20.04.6 LTS
     libncurses5-dev libreadline-dev libsqlite3-dev
     ```
 
-- Install pyenv for Python environment management since we make use of Python 3.6.15:
+- Install pyenv for Python environment management since we make use of Python 3.8:
 
     ```sh
     $ curl https://pyenv.run | bash
     ```
 
-- Install Python 3.6.15 using pyenv:
+- Install Python 3.8 using pyenv:
 
     ```sh
-    $ pyenv install 3.6.15
+    $ pyenv install 3.8.20
     ```
 
 - Install volta, which installs the Node.js version pinned in `client/package.json`:
@@ -74,10 +74,13 @@ Here it is assumed you are running Ubuntu Linux 20.04.6 LTS
 
     ```sh
     $ cd server
-    $ pyenv virtualenv 3.6.15 env
+    $ pyenv virtualenv 3.8.20 env
     $ pyenv activate env
+    $ pip install "pip==20.2.3"
     $ pip install -r requirements.txt
     ```
+
+  The exact pip version matters: `requirements.txt` pins `Flask` and `elasticsearch` to versions that Eve and eve-elastic declare incompatible, and only pip's legacy resolver accepts that.
 
 - Add the default data:
 
@@ -210,6 +213,6 @@ You can also just tell Claude "set me up to run liveblog" or "start liveblog"
 in plain English. The underlying scripts live in [`scripts/dev/`](scripts/dev/)
 and can be run directly (`./scripts/dev/up.sh`) if you prefer not to use Claude
 Code. Prerequisites: Docker, [pyenv](https://github.com/pyenv/pyenv) with a
-`3.6.15` virtualenv named `liveblog`, and [Volta](https://volta.sh). The
+`3.8` virtualenv named `liveblog`, and [Volta](https://volta.sh). The
 scripts check for these and tell you exactly what to install if anything's
 missing.
