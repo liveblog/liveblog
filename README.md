@@ -203,3 +203,24 @@ cd client
 grunt build --force
 grunt connect:build
 ```
+
+## Quick start with Claude Code (local dev)
+
+If you use [Claude Code](https://claude.com/claude-code), this repo ships
+scripts and a skill that set up and run a local dev stack for you — no need to
+memorise the Docker / honcho / grunt commands. After a one-time "trust this
+project" prompt, just run:
+
+```
+/liveblog-setup    # first time only: installs deps, starts services, inits the DB
+/liveblog-up       # start the app  (then open http://localhost:9000, log in admin / admin)
+/liveblog-down     # stop everything
+```
+
+You can also just tell Claude "set me up to run liveblog" or "start liveblog"
+in plain English. The underlying scripts live in [`scripts/dev/`](scripts/dev/)
+and can be run directly (`./scripts/dev/up.sh`) if you prefer not to use Claude
+Code. Prerequisites: Docker, [pyenv](https://github.com/pyenv/pyenv) with a
+`3.6.15` virtualenv named `liveblog`, and [Volta](https://volta.sh). The
+scripts check for these and tell you exactly what to install if anything's
+missing.
