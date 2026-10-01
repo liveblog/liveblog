@@ -1,11 +1,24 @@
 import logging
+from bson import ObjectId
 from flask import current_app as app
 from itertools import groupby
 from superdesk import get_resource_service
+from superdesk.errors import SuperdeskApiError
 from superdesk.utc import utcnow
 
 
 logger = logging.getLogger("superdesk")
+
+# Services a post ref may resolve through, keyed by the ref `location` (a ref without
+# one points at `archive`). `location` is client input and must never reach
+# `get_resource_service` directly, or a post can embed any resource (`tenants`,
+# `users`) of any tenant. All of these services are tenant-aware.
+REF_LOCATION_SERVICES = {
+    "archive": "items",
+    "items": "items",
+    "polls": "polls",
+    "post_comments": "post_comments",
+}
 
 
 def get_associations(post):
@@ -23,6 +36,54 @@ def get_associations_ids(post):
             ids.append(ref_id)
 
     return ids
+
+
+def get_ref_service_name(ref):
+    """Return the service a ref resolves through, or None when its `location` is not allowed."""
+    return REF_LOCATION_SERVICES.get(ref.get("location", "archive"))
+
+
+def get_ref_id(ref):
+    """Return a ref's `residRef` as a string, or None when it is not an id."""
+    ref_id = ref.get("residRef")
+    return str(ref_id) if isinstance(ref_id, (str, ObjectId)) else None
+
+
+def find_ref_items(refs, tenant_id):
+    """Resolve refs to a {get_ref_id(ref): item} dict, only within `tenant_id`.
+
+    The tenant is passed explicitly because tenant-aware services do not filter
+    outside a request (Celery tasks, system mode). Refs with a location that is not
+    allowed, or that point at another tenant's documents, are left out.
+    """
+    ids_by_service = {}
+    for ref in refs:
+        ref_id = get_ref_id(ref)
+        service_name = get_ref_service_name(ref)
+        if service_name and ref_id:
+            ids_by_service.setdefault(service_name, set()).add(ref_id)
+
+    items = {}
+    for service_name, ids in ids_by_service.items():
+        lookup = {"_id": {"$in": list(ids)}, "tenant_id": tenant_id}
+        for item in get_resource_service(service_name).find(lookup):
+            items[str(item["_id"])] = item
+    return items
+
+
+def validate_post_refs(post, tenant_id):
+    """Reject a post whose refs point outside the allowed resources or `tenant_id`."""
+    refs = [ref for ref in get_associations(post) if not ref.get("idRef")]
+    items = find_ref_items(refs, tenant_id)
+    for ref in refs:
+        if get_ref_service_name(ref) is None:
+            raise SuperdeskApiError.badRequestError(
+                message="Invalid item location: {}".format(ref.get("location"))
+            )
+        if get_ref_id(ref) not in items:
+            raise SuperdeskApiError.badRequestError(
+                message="Invalid item reference: {}".format(ref.get("residRef"))
+            )
 
 
 def get_related_items(post):
@@ -170,10 +231,11 @@ def check_content_diff(updates, original):
     if len(original_refs) != len(updated_refs):
         return True
 
+    items = find_ref_items(updated_refs, original.get("tenant_id"))
     for index, item_ref in enumerate(updated_refs):
-        service_name = item_ref.get("location", "archive")
-        service = get_resource_service(service_name)
-        item = service.find_one(req=None, _id=item_ref["residRef"])
+        item = items.get(get_ref_id(item_ref))
+        if item is None:
+            return True
         item_type = item.get("item_type")
 
         if item_type == "poll":
