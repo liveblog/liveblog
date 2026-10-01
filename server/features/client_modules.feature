@@ -86,7 +86,7 @@ Feature: Client modules operations
         When we login as tenant user "test_admin"
         When we post to "blogs"
         """
-        [{"title": "test_blog_comment", "blog_preferences": {"theme": "classic", "language": "en"}}]
+        [{"title": "test_blog_comment", "users_can_comment": "enabled", "blog_preferences": {"theme": "classic", "language": "en"}}]
         """
         Given empty "client_items"
         When we post to "/client_items"

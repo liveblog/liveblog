@@ -1,6 +1,7 @@
 import json
 import logging
 
+from copy import deepcopy
 from bson import ObjectId
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
@@ -16,7 +17,6 @@ from superdesk.services import BaseService
 from superdesk.errors import SuperdeskApiError
 from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
-from liveblog.tenancy import get_tenant_id
 from liveblog.tenancy.context import tenant_context_from_blog
 from liveblog.client_modules.context import public_tenant_context
 
@@ -38,6 +38,7 @@ from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
+from liveblog.blogs.utils import blog_comments_override
 from liveblog.posts.mixins import AuthorsMixin, BlogPostsMixin
 from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
@@ -198,25 +199,107 @@ class ClientItemsResource(ItemsResource):
 
 
 class ClientItemsService(ItemsService):
+    PUBLIC_FIELDS = ("text", "commenter", "client_blog", "blog")
+
     def find_one(self, req, **lookup):
         with public_tenant_context(self, lookup.get("_id")) as doc:
             return doc
 
     def on_create(self, docs):
+        blog = _get_comment_blog(docs)
         for doc in docs:
-            check_comment_length(doc["text"])
+            check_comment_length(doc.get("text") or "")
+            _reset_non_public_fields(self, doc, self.PUBLIC_FIELDS)
+            doc["item_type"] = "comment"
+            if "blog" in doc:
+                doc["blog"] = doc["client_blog"]
 
-        if docs and not get_tenant_id(required=False):
-            blog_id = docs[0].get("client_blog")
-            if blog_id:
-                blog = get_resource_service("client_blogs").find_one(
-                    req=None, _id=blog_id
-                )
-                with tenant_context_from_blog(blog):
-                    super().on_create(docs)
-                    return
+        with tenant_context_from_blog(blog):
+            _check_blog_accepts_comments(blog)
+            super().on_create(docs)
 
-        super().on_create(docs)
+
+def _get_comment_blog(docs):
+    """Return the blog targeted by public comment docs, which must all target the same one."""
+    blog_ids = {str(doc.get("client_blog") or "") for doc in docs}
+    if len(blog_ids) != 1 or "" in blog_ids:
+        raise SuperdeskApiError.badRequestError(
+            message="Comments must target exactly one blog"
+        )
+
+    blog = get_resource_service("client_blogs").find_one(
+        req=None, _id=docs[0]["client_blog"]
+    )
+    if not blog:
+        raise SuperdeskApiError.notFoundError(message="Blog not found")
+    return blog
+
+
+def _check_blog_accepts_comments(blog):
+    """Apply the same rule the embed uses to show or hide the comment form."""
+    allowed = blog_comments_override(blog)
+    if allowed is None:
+        theme_name = blog.get("blog_preferences", {}).get("theme")
+        theme_settings = get_resource_service("theme_settings").get_settings_for_blog(
+            blog, theme_name
+        )
+        allowed = theme_settings.get("canComment", False)
+
+    if not allowed:
+        raise SuperdeskApiError.forbiddenError(
+            message="Comments are disabled for this blog"
+        )
+
+
+def _reset_non_public_fields(service, doc, public_fields):
+    """Reset every field a public caller may not set to its schema default, or drop it.
+
+    Eve has already validated the payload against the full archive schema, so any
+    field there (e.g. `sticky`, `published_date`, `publisher`, `syndicated_creator`)
+    could otherwise be set by an anonymous reader.
+    """
+    schema = app.config["DOMAIN"][service.datasource]["schema"]
+    keep = set(public_fields) | {config.DATE_CREATED, config.LAST_UPDATED}
+    for field in list(doc):
+        if field in keep:
+            continue
+        if "default" in schema.get(field, {}):
+            doc[field] = deepcopy(schema[field]["default"])
+        else:
+            del doc[field]
+
+
+def _comment_groups(doc, blog):
+    """Rebuild a public comment's groups around its single comment item.
+
+    Refs are resolved later by `location` against any registered resource, so a
+    client-supplied ref could pull another tenant's documents into the public feed.
+    Only a ref to a comment item of the same blog (and tenant) is accepted.
+    """
+    refs = [
+        ref
+        for group in doc.get("groups") or []
+        if group.get("id") == "main"
+        for ref in group.get("refs", [])
+    ]
+    item_id = refs[0].get("residRef") if len(refs) == 1 else None
+    item = (
+        app.data.find_one_raw("archive", item_id) if isinstance(item_id, str) else None
+    )
+    if (
+        not item
+        or item.get("item_type") != "comment"
+        or str(item.get("client_blog")) != str(blog["_id"])
+        or str(item.get("tenant_id")) != str(blog.get("tenant_id"))
+    ):
+        raise SuperdeskApiError.badRequestError(
+            message="A comment must reference one comment item of the same blog"
+        )
+
+    return [
+        {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+        {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
+    ]
 
 
 # TODO: remove this resource and service as it is not needed/used
@@ -258,23 +341,22 @@ class ClientCommentsResource(PostsResource):
 
 
 class ClientCommentsService(PostsService):
+    PUBLIC_FIELDS = ("client_blog", "groups")
+
     def on_create(self, docs):
+        blog = _get_comment_blog(docs)
         for doc in docs:
-            if request.method == "POST":
-                doc["post_status"] = "comment"
-                # blog_id is kept also under the name blog as a string
-                # so that it can be further used to auto-refresh the back-office
-                doc["blog"] = str(doc["client_blog"])
-        if docs and not get_tenant_id(required=False):
-            blog_id = docs[0].get("client_blog")
-            if blog_id:
-                blog = get_resource_service("client_blogs").find_one(
-                    req=None, _id=blog_id
-                )
-                with tenant_context_from_blog(blog):
-                    super().on_create(docs)
-                    return
-        super().on_create(docs)
+            _reset_non_public_fields(self, doc, self.PUBLIC_FIELDS)
+            doc["post_status"] = PostStatus.COMMENT
+            # blog_id is kept also under the name blog as a string
+            # so that it can be further used to auto-refresh the back-office
+            doc["blog"] = str(doc["client_blog"])
+
+        with tenant_context_from_blog(blog):
+            _check_blog_accepts_comments(blog)
+            for doc in docs:
+                doc["groups"] = _comment_groups(doc, blog)
+            super().on_create(docs)
 
     def on_created(self, docs):
         """Overrides parent to avoid logic that we don't need in the public endpoint"""
