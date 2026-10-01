@@ -383,6 +383,16 @@ class ClientOutputPostsResource(ClientBlogPostsResource):
 
 class ClientOutputPostsService(ClientBlogPostsService):
     def get(self, req, lookup):
+        blog = get_resource_service("client_blogs").find_one(
+            req=None, _id=ObjectId(lookup.get("blog_id"))
+        )
+        if not blog:
+            raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+        with tenant_context_from_blog(blog):
+            return self._get_output_posts(req, lookup)
+
+    def _get_output_posts(self, req, lookup):
         output = get_resource_service("outputs").find_one(
             req=None, _id=lookup.get("output_id")
         )
