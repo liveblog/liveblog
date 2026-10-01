@@ -836,9 +836,8 @@ class ThemesService(TenantAwareService, BaseService):
         The _settings_updated flag signals on_updated to inject the effective merged
         settings into the PATCH response.
 
-        TODO MIGRATION: For existing single-tenant instances upgrading to multi-tenancy:
-        Migrate existing theme customizations from themes.settings/styleSettings to
-        theme_settings collection. See MIGRATION_GUIDE.md for details.
+        Customizations saved on the theme document before multi-tenancy are moved
+        to theme_settings by the `liveblog:migrate_tenancy` command.
         """
         settings = updates.pop("settings", None)
         style_settings = updates.pop("styleSettings", None)

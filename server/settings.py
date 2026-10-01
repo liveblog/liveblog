@@ -192,6 +192,7 @@ INSTALLED_APPS = [
     "apps.archive_broadcast",
     "apps.content_types",
     "liveblog.tenancy",
+    "liveblog.migration",
     "liveblog.core",
     "liveblog.users",
     "liveblog.liveblog_users",
