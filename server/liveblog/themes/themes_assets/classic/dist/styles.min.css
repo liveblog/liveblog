@@ -1159,6 +1159,19 @@ lb-dropdown > div.show > div.dropdown-list {
   .pswp img {
     max-width: none; }
 
+/*
+  Responsive-embed fix: inside an auto-height, non-scrolling iframe, PhotoSwipe
+  sizes .pswp from window.innerHeight (= the whole blog height) and pins it to
+  top 0, producing a full-document black overlay with the image off-screen.
+  When embedded, main.js adds `.lb-embed-pswp` to <html> and feeds the visible
+  slice of the iframe into these custom properties; the !important rules below
+  win over PhotoSwipe's inline top/height so the overlay tracks the real
+  viewport. Inert on the standalone page (class is never added).
+*/
+html.lb-embed-pswp .pswp {
+  top:    var(--lb-pswp-top, 0px)     !important;
+  height: var(--lb-pswp-height, 100%) !important; }
+
 /* style is added when JS option showHideOpacity is set to true */
 .pswp--animate_opacity {
   /* 0.001, because opacity:0 doesn't trigger Paint action, which causes lag at start of transition */

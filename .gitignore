@@ -1,5 +1,9 @@
 /.pydevproject
 /.project
+
+# Local dev scripts runtime state (pidfiles, logs, setup sentinel)
+scripts/dev/.run/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
