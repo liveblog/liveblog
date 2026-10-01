@@ -1,6 +1,7 @@
 import json
 import flask
 import datetime
+from unittest import mock
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import liveblog.tenants as tenants
@@ -727,3 +728,122 @@ class ClientModuleTestCase(TestCase):
             self.assertIn(
                 "Error: Option 'Invalid Option' not found", response_data["_error"]
             )
+
+    def _post_amp_comment(self, query="", headers=None):
+        self.app.data.driver.db["blogs"].update_one(
+            {"_id": self.blogs_ids[0]},
+            {"$set": {"public_url": "https://blogs.example.com/abc/index.html"}},
+        )
+        # The comment post's `on_created` needs the syndication app, which this
+        # test case does not register.
+        client_posts_cls = type(get_resource_service("client_posts"))
+        with mock.patch.object(client_posts_cls, "on_created"):
+            return self.client.post(
+                "/api/client_item_comments/" + query,
+                data={
+                    "commenter": "amp commenter",
+                    "text": "amp comment",
+                    "client_blog": str(self.blogs_ids[0]),
+                },
+                headers=headers or {},
+            )
+
+    def _amp_comment_count(self):
+        return self.app.data.driver.db["archive"].count_documents(
+            {"client_blog": str(self.blogs_ids[0]), "post_status": "comment"}
+        )
+
+    def test_amp_comment_rejects_hostile_source_origin(self):
+        response = self._post_amp_comment(
+            "?__amp_source_origin=https://evil.example.org",
+            headers={"Origin": "https://evil.example.org"},
+        )
+
+        # flask-cors still echoes `Origin` on the blueprint, but without
+        # `Access-Control-Allow-Credentials` the credentialed AMP fetch cannot
+        # read the response.
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNone(response.headers.get("Access-Control-Allow-Credentials"))
+        self.assertIsNone(
+            response.headers.get("AMP-Access-Control-Allow-Source-Origin")
+        )
+        self.assertEqual(self._amp_comment_count(), 0)
+
+    def test_amp_comment_rejects_hostile_source_origin_from_amp_cache(self):
+        response = self._post_amp_comment(
+            "?__amp_source_origin=https://evil.example.org",
+            headers={"Origin": "https://evil-example-org.cdn.ampproject.org"},
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self._amp_comment_count(), 0)
+
+    def test_amp_comment_rejects_hostile_origin_without_source_origin(self):
+        response = self._post_amp_comment(
+            headers={"Origin": "https://evil.example.org"}
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self._amp_comment_count(), 0)
+
+    def test_amp_comment_from_amp_cache(self):
+        cache_origin = "https://blogs-example-com.cdn.ampproject.org"
+        response = self._post_amp_comment(
+            "?__amp_source_origin=https://blogs.example.com",
+            headers={"Origin": cache_origin},
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            response.headers.get("Access-Control-Allow-Origin"), cache_origin
+        )
+        self.assertEqual(
+            response.headers.get("Access-Control-Allow-Credentials"), "true"
+        )
+        self.assertEqual(
+            response.headers.get("AMP-Access-Control-Allow-Source-Origin"),
+            "https://blogs.example.com",
+        )
+        self.assertEqual(
+            response.headers.get("Access-Control-Expose-Headers"),
+            "AMP-Access-Control-Allow-Source-Origin",
+        )
+        self.assertEqual(self._amp_comment_count(), 1)
+
+    def test_amp_comment_from_publisher_origin(self):
+        response = self._post_amp_comment(
+            headers={"Origin": "https://blogs.example.com"}
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            response.headers.get("Access-Control-Allow-Origin"),
+            "https://blogs.example.com",
+        )
+        self.assertEqual(
+            response.headers.get("Access-Control-Allow-Credentials"), "true"
+        )
+        self.assertEqual(self._amp_comment_count(), 1)
+
+    def test_amp_comment_from_configured_origin(self):
+        self.app.config["AMP_ALLOWED_SOURCE_ORIGINS"] = ["https://news.example.net"]
+        try:
+            response = self._post_amp_comment(
+                "?__amp_source_origin=https://news.example.net",
+                headers={"Origin": "https://news-example-net.cdn.ampproject.org"},
+            )
+        finally:
+            self.app.config["AMP_ALLOWED_SOURCE_ORIGINS"] = []
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            response.headers.get("AMP-Access-Control-Allow-Source-Origin"),
+            "https://news.example.net",
+        )
+
+    def test_amp_comment_same_origin(self):
+        response = self._post_amp_comment(headers={"AMP-Same-Origin": "true"})
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(response.headers.get("Access-Control-Allow-Credentials"))
+        self.assertEqual(self._amp_comment_count(), 1)
