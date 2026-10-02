@@ -170,6 +170,44 @@ class MigrateTenancyTestCase(TestCase):
         self.assertEqual(self.tenant_ids("blogs"), {second})
         self.assertEqual(self.tenant_ids("users"), {second})
 
+    def test_rerun_with_several_tenants_is_a_noop_once_everything_is_assigned(self):
+        tenants_service = get_resource_service("tenants")
+        first = tenants_service.post([{"name": "First"}])[0]
+        self.command.run()
+        tenants_service.post([{"name": "Second"}])
+
+        summary = self.command.run()
+
+        self.assertEqual(summary, {})
+        self.assertEqual(self.tenant_ids("blogs"), {first})
+
+    def test_leaves_other_tenants_themes_alone(self):
+        tenants_service = get_resource_service("tenants")
+        first, second = tenants_service.post([{"name": "First"}, {"name": "Second"}])
+        other_theme_id = self.db.themes.insert_one(
+            {
+                "name": "other-theme",
+                "tenant_id": second,
+                "settings": {"postOrder": "descending"},
+                "styleSettings": {"background": "#000"},
+            }
+        ).inserted_id
+
+        summary = self.command.run(tenant_id=str(first))
+
+        self.assertEqual(summary["theme_settings_moved"], 1)
+        other_theme = self.db.themes.find_one({"_id": other_theme_id})
+        self.assertEqual(other_theme["tenant_id"], second)
+        self.assertEqual(other_theme["settings"], {"postOrder": "descending"})
+        self.assertEqual(other_theme["styleSettings"], {"background": "#000"})
+        self.assertIsNone(
+            self.db.theme_settings.find_one({"theme_name": "other-theme"})
+        )
+        self.assertEqual(
+            self.db.theme_settings.find_one({"theme_name": "default"})["tenant_id"],
+            first,
+        )
+
     def test_unknown_tenant_id_aborts(self):
         with self.assertRaises(SystemExit):
             self.command.run(tenant_id=str(ObjectId()))

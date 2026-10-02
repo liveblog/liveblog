@@ -51,7 +51,8 @@ class MigrateTenancyCommand(superdesk.Command):
     themes as system themes (`tenant_id` null), links the tenant to its first
     administrator and re-indexes blogs and archive in Elasticsearch so the tenant
     filters there see the new field. Documents that already have a tenant are
-    left alone, so the command can be re-run.
+    left alone, so the command can be re-run; with several tenants it only asks
+    for `--tenant-id` while unassigned documents remain.
 
     Example:
     ::
@@ -105,6 +106,13 @@ class MigrateTenancyCommand(superdesk.Command):
         tenant = self._resolve_tenant(
             tenant_id, tenant_name, subscription_level, dry_run
         )
+        if tenant is None:
+            print(
+                "{}Nothing to migrate: every document already has a tenant".format(
+                    prefix
+                )
+            )
+            return {}
         print("{}Using tenant {} ({})".format(prefix, tenant["name"], tenant["_id"]))
 
         summary = {}
@@ -161,6 +169,8 @@ class MigrateTenancyCommand(superdesk.Command):
         if len(tenants) == 1:
             return tenants[0]
         if len(tenants) > 1:
+            if not self._has_unassigned_documents():
+                return None
             raise SystemExit(
                 "The instance has {} tenants, pass --tenant-id to pick one: {}".format(
                     len(tenants),
@@ -181,6 +191,18 @@ class MigrateTenancyCommand(superdesk.Command):
 
     def _collection(self, name):
         return app.data.mongo.pymongo().db[name]
+
+    def _has_unassigned_documents(self):
+        for collection in TENANT_SCOPED_COLLECTIONS:
+            if self._collection(collection).count_documents(MISSING_TENANT, limit=1):
+                return True
+        custom_without_tenant = {
+            "name": {"$nin": list(system_themes)},
+            "tenant_id": None,
+        }
+        return bool(
+            self._collection("themes").count_documents(custom_without_tenant, limit=1)
+        )
 
     def _backfill(self, collection, tenant_id, dry_run):
         coll = self._collection(collection)
@@ -222,10 +244,11 @@ class MigrateTenancyCommand(superdesk.Command):
         """
         coll = self._collection("themes")
         legacy_filter = {
+            "tenant_id": {"$in": [None, tenant_id]},
             "$or": [
                 {"settings": {"$exists": True, "$nin": [{}, None]}},
                 {"styleSettings": {"$exists": True, "$nin": [{}, None]}},
-            ]
+            ],
         }
         if dry_run:
             return coll.count_documents(legacy_filter)
