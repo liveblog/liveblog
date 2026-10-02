@@ -1,9 +1,22 @@
+import json
 from unittest.mock import MagicMock, patch
 from bson import ObjectId
+from flask import Flask
 from superdesk import register_resource, get_resource_service
 from superdesk.tests import TestCase
 from liveblog.instance_settings import InstanceSettingsService, InstanceSettingsResource
+from liveblog.instance_settings.instance_settings import instance_settings_blueprint
 from liveblog.prepopulate import AppInitializeWithDataCommand
+
+
+def test_current_endpoint_returns_auth_sentinel_without_user():
+    flask_app = Flask(__name__)
+    flask_app.register_blueprint(instance_settings_blueprint)
+
+    response = flask_app.test_client().get("/api/instance_settings/current")
+
+    assert response.status_code == 200
+    assert json.loads(response.get_data()) == {"authenticated": False}
 
 
 class InstanceSettingsTestCase(TestCase):
