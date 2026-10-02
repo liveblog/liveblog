@@ -346,7 +346,12 @@ Feature: Post operations
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """
-        When we upload a file "bike.jpg" to "archive"
+        When we save "text_item" from last response "_id"
+        When we post to "items"
+        """
+        [{"text": "picture", "blog": "#blogs._id#", "item_type": "image"}]
+        """
+        When we save "picture_item" from last response "_id"
         When we post to "/posts" with success
         """
         {
@@ -358,7 +363,7 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with text",
-                            "residRef": "#items._id#",
+                            "residRef": "#text_item#",
                             "slugline": "awesome article"
                         }
                     ],
@@ -378,12 +383,12 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with pic",
-                            "residRef": "#archive._id#",
+                            "residRef": "#picture_item#",
                             "slugline": "awesome picture"
                         },
                         {
                             "headline": "test post with text",
-                            "residRef": "#items._id#",
+                            "residRef": "#text_item#",
                             "slugline": "awesome article"
                         }
                     ],
@@ -402,12 +407,12 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with pic",
-                            "residRef": "#archive._id#",
+                            "residRef": "#picture_item#",
                             "slugline": "awesome picture"
                         },
                         {
                             "headline": "test post with text",
-                            "residRef": "#items._id#",
+                            "residRef": "#text_item#",
                             "slugline": "awesome article"
                         }
                     ],
