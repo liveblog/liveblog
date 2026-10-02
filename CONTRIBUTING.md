@@ -4,13 +4,11 @@ Great you got here! Please follow the guidelines to ease the process of acceptin
 
 ## Test your code
 
-Please write tests whenever it makes sense and make sure the existing tests pass. You can use `grunt` task for this:
+Please write tests whenever it makes sense and make sure the existing tests pass. The end-to-end tests run with:
 
 ```
-grunt test
+npm run e2e
 ```
-
-will run all the existing test using `_spec.js` convetion.
 
 ## Check code style
 
@@ -18,7 +16,7 @@ We use `eslint` to ensure we're all on same page regarding code style. Use the `
 
     npm run eslint
 
-You can also use `grunt ci` which runs both + unit tests all together (used by `travis-ci`).
+`npm run lint` runs `eslint` and `tslint` together, the same as CI does.
 
 ## Use recommended modules/submodules/apps structure
 
