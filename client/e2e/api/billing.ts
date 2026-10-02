@@ -1,6 +1,6 @@
 import { ApiClient, ApiResponse, Credentials } from './client';
 import { e2eEmail, trackCustomer } from './stripe';
-import { getTenant } from './tenants-db';
+import { findTenantByUser, getTenant, TenantBilling } from './tenants-db';
 
 export interface E2EUser extends Credentials {
     email: string;
@@ -59,6 +59,18 @@ export async function registerE2EUser(api: ApiClient, tag = 'user'): Promise<E2E
         tenantId: response.body.tenant_id,
         customerId: tenant.stripe_customer_id ?? null,
     };
+}
+
+/**
+ * Tracks the Stripe customer the backend created for a user who registered
+ * through the UI rather than `registerE2EUser`.
+ */
+export async function trackRegisteredCustomer(emailOrUsername: string): Promise<TenantBilling> {
+    const tenant = await findTenantByUser(emailOrUsername);
+    if (tenant.stripe_customer_id) {
+        trackCustomer(tenant.stripe_customer_id);
+    }
+    return tenant;
 }
 
 export async function getBillingStatus(api: ApiClient, user: Credentials): Promise<BillingStatus> {
