@@ -80,6 +80,41 @@ def get_plan_duration_days(metadata):
     return None
 
 
+def resolve_extend_price_id(price_id):
+    """Return an active one-time price to extend a time-limited plan with.
+
+    Uses ``price_id`` (the tenant's last purchased price) while it is active.
+    Once it has been archived in Stripe, falls back to the product's current
+    default price. Returns None when neither is purchasable as a one-time plan.
+    Expects ``stripe.api_key`` to be set by the caller.
+    """
+    if not price_id:
+        return None
+
+    try:
+        price = stripe.Price.retrieve(price_id, expand=["product.default_price"])
+    except stripe.error.StripeError as e:
+        logger.warning("Failed to retrieve price %s: %s", price_id, e)
+        return None
+
+    if price.get("active"):
+        return price["id"]
+
+    product = price.get("product")
+    if not isinstance(product, dict) or not product.get("active"):
+        return None
+
+    default_price = product.get("default_price")
+    if (
+        isinstance(default_price, dict)
+        and default_price.get("active")
+        and default_price.get("type") == "one_time"
+    ):
+        return default_price["id"]
+
+    return None
+
+
 def find_tenant_by_customer(customer_id):
     """Find a tenant by Stripe customer ID. Returns None if not found."""
     return get_resource_service("tenants").find_one(
@@ -266,36 +301,12 @@ def get_billing_state(tenant):
             "plan_expires_at": None,
         }
 
-    # Time-limited plan: check plan_expires_at instead of subscription status
-    if tenant.get("plan_expires_at"):
-        expires = tenant["plan_expires_at"]
-        if expires > utcnow():
-            return {
-                "access_allowed": True,
-                "redirect": None,
-                "status": "active",
-                "plan_expires_at": expires,
-            }
-        return {
-            "access_allowed": False,
-            "redirect": "extend",
-            "status": "expired",
-            "plan_expires_at": expires,
-        }
-
     sub_status = tenant.get("stripe_subscription_status")
     sub_id = tenant.get("stripe_subscription_id")
+    expires = tenant.get("plan_expires_at")
 
-    # Never subscribed
-    if not sub_id and not sub_status:
-        return {
-            "access_allowed": False,
-            "redirect": "pricing",
-            "status": None,
-            "plan_expires_at": None,
-        }
-
-    # Healthy subscription
+    # Checked before the time-limited plan because plan_expires_at is kept
+    # after a Go tenant moves to a subscription.
     if sub_status in ACTIVE_STATUSES:
         return {
             "access_allowed": True,
@@ -304,12 +315,37 @@ def get_billing_state(tenant):
             "plan_expires_at": None,
         }
 
+    if expires and expires > utcnow():
+        return {
+            "access_allowed": True,
+            "redirect": None,
+            "status": "active",
+            "plan_expires_at": expires,
+        }
+
     # Payment issue — fixable via Customer Portal
     if sub_status in RECOVERABLE_STATUSES:
         return {
             "access_allowed": False,
             "redirect": "portal",
             "status": sub_status,
+            "plan_expires_at": None,
+        }
+
+    if expires:
+        return {
+            "access_allowed": False,
+            "redirect": "extend",
+            "status": "expired",
+            "plan_expires_at": expires,
+        }
+
+    # Never subscribed
+    if not sub_id and not sub_status:
+        return {
+            "access_allowed": False,
+            "redirect": "pricing",
+            "status": None,
             "plan_expires_at": None,
         }
 

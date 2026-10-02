@@ -107,7 +107,7 @@ const sdBillingBanner = ['notify', function(notify) {
         link: function(scope, element) {
             const mountPoint = $(element).get(0);
             const props = {
-                onPortalError: (message) => notify.error(message, 10000),
+                onError: (message) => notify.error(message, 10000),
             };
 
             ReactDOM.render(React.createElement(BillingBanner, props), mountPoint);
