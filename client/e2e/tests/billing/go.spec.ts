@@ -6,6 +6,7 @@ import {
     getBillingStatus,
     registerE2EUser,
     trackRegisteredCustomer,
+    writeProbe,
 } from '../../api/billing';
 import { ApiClient } from '../../api/client';
 import { e2eEmail } from '../../api/stripe';
@@ -49,10 +50,6 @@ function expectGoExpiry(expiresAt: Date | null | undefined, from: number, to: nu
     expect(expires).toBeLessThanOrEqual(to + GO_DAYS * DAY_MS + 60_000);
 }
 
-function writeProbe(api: ApiClient, user: E2EUser) {
-    return api.post('/blogs', { title: `e2e go write probe ${Date.now()}` }, { as: user });
-}
-
 async function registerExpiredGoUser(api: ApiClient, tag: string, priceId: string): Promise<E2EUser> {
     const user = await registerE2EUser(api, tag);
     await setGoPlan(user.tenantId, { priceId, expiresAt: new Date(Date.now() + GO_DAYS * DAY_MS) });
@@ -61,20 +58,11 @@ async function registerExpiredGoUser(api: ApiClient, tag: string, priceId: strin
 }
 
 async function logIn(page: Page, user: E2EUser) {
-    const login = new LoginPage(page);
-    await page.goto('/');
-    await login.login(user.username, user.password);
-    await waitForApp(page);
+    await new LoginPage(page).signIn(user.username, user.password);
 }
 
-/**
- * Waits for the logged-in app. superdeskIsReady and the top bar are already
- * there behind the login form, so neither proves the session is up.
- */
 async function waitForApp(page: Page) {
-    await page.waitForFunction(() => !!localStorage.getItem('sess:token'), undefined, { timeout: 60_000 });
-    await expect(page.locator('#login-username')).toBeHidden({ timeout: 60_000 });
-    await expect(page.locator('button.current-user')).toBeVisible();
+    await new LoginPage(page).waitForSession();
 }
 
 test.describe('LiveBlog Go', () => {

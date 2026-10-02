@@ -90,3 +90,8 @@ export async function createCheckoutSession(
 ): Promise<ApiResponse<{ url: string } | ApiErrorBody>> {
     return api.post('/billing/checkout', { price_id: priceId, return_url: returnUrl }, { as: user });
 }
+
+/** A cheap write that the billing gate blocks when the tenant has no access. */
+export async function writeProbe(api: ApiClient, user: Credentials): Promise<ApiResponse<unknown>> {
+    return api.post('/blogs', { title: `e2e write probe ${Date.now()}` }, { as: user });
+}

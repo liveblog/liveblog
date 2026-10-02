@@ -203,6 +203,35 @@ export async function ensureCatalog(): Promise<E2ECatalog> {
     };
 }
 
+/**
+ * Fails fast unless the sandbox's default Customer Portal configuration (the
+ * one `/billing/portal` sessions get, since they pass no `configuration`)
+ * lets subscribers switch between the e2e Solo and Team monthly prices.
+ * Read-only: the configuration mirrors production and is managed by hand.
+ */
+export async function assertPortalConfig(catalog: E2ECatalog): Promise<void> {
+    const configs = await stripe().billingPortal.configurations.list({
+        is_default: true,
+        limit: 1,
+        expand: ['data.features.subscription_update.products'],
+    });
+    const config = configs.data[0];
+    if (!config) {
+        throw new Error('The Stripe sandbox has no default Customer Portal configuration. Save one in the Dashboard (Settings, Billing, Customer portal).');
+    }
+
+    const update = config.features.subscription_update;
+    if (!update.enabled) {
+        throw new Error(`Customer Portal configuration ${config.id} does not allow subscription updates. Enable "Customers can switch plans" in the sandbox Dashboard.`);
+    }
+
+    const allowedPrices = new Set((update.products ?? []).flatMap((product) => product.prices));
+    const missing = [catalog.solo.monthlyPriceId, catalog.team.monthlyPriceId].filter((id) => !allowedPrices.has(id));
+    if (missing.length) {
+        throw new Error(`Customer Portal configuration ${config.id} does not offer the e2e price(s) ${missing.join(', ')}. Add them to the plan switching products in the sandbox Dashboard.`);
+    }
+}
+
 export function writeCatalog(catalog: E2ECatalog): void {
     fs.mkdirSync(RESULTS_DIR, { recursive: true });
     fs.writeFileSync(CATALOG_FILE, JSON.stringify(catalog, null, 2));
