@@ -8,6 +8,7 @@ from flask import current_app as app
 from superdesk import get_resource_service
 
 from liveblog.system_themes import system_themes
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_LEVELS
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,9 @@ class MigrateTenancyCommand(superdesk.Command):
     left alone, so the command can be re-run; with several tenants it only asks
     for `--tenant-id` while unassigned documents remain.
 
+    Run it before the upgraded API is reachable: `/api/register` is public and
+    creates a tenant, and a lone tenant is adopted as the migration target.
+
     Example:
     ::
 
@@ -83,8 +87,10 @@ class MigrateTenancyCommand(superdesk.Command):
         superdesk.Option(
             "--subscription-level",
             dest="subscription_level",
-            default="network",
-            help="Subscription level for a created tenant (default: network)",
+            choices=SUBSCRIPTION_LEVELS,
+            default=SUBSCRIPTION_LEVEL,
+            help="Subscription level for a created tenant (default: the "
+            "SUBSCRIPTION_LEVEL setting, {})".format(SUBSCRIPTION_LEVEL),
         ),
         superdesk.Option(
             "--skip-elastic",
@@ -99,9 +105,15 @@ class MigrateTenancyCommand(superdesk.Command):
         dry_run=False,
         tenant_id=None,
         tenant_name="Default Tenant",
-        subscription_level="network",
+        subscription_level=SUBSCRIPTION_LEVEL,
         skip_elastic=False,
     ):
+        if subscription_level not in SUBSCRIPTION_LEVELS:
+            raise SystemExit(
+                "Unknown subscription level {}, expected one of: {}".format(
+                    subscription_level, ", ".join(SUBSCRIPTION_LEVELS)
+                )
+            )
         prefix = "[dry run] " if dry_run else ""
         tenant = self._resolve_tenant(
             tenant_id, tenant_name, subscription_level, dry_run

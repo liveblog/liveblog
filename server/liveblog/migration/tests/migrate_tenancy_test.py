@@ -208,6 +208,15 @@ class MigrateTenancyTestCase(TestCase):
             first,
         )
 
+    def test_subscription_level_is_validated(self):
+        with self.assertRaises(SystemExit):
+            self.command.run(subscription_level="enterprise")
+        self.assertEqual(get_resource_service("tenants").find_one(req=None), None)
+
+        self.command.run(subscription_level="solo")
+        tenant = get_resource_service("tenants").find_one(req=None)
+        self.assertEqual(tenant["subscription_level"], "solo")
+
     def test_unknown_tenant_id_aborts(self):
         with self.assertRaises(SystemExit):
             self.command.run(tenant_id=str(ObjectId()))
