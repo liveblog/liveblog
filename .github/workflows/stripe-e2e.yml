@@ -110,7 +110,9 @@ jobs:
         # The listen log contains the webhook signing secret: it lives outside the workspace,
         # is never uploaded, and is only ever printed with the secret redacted.
         log="$RUNNER_TEMP/stripe-listen.log"
+        # The events the billing webhook handles (EVENT_HANDLERS in server/liveblog/billing/webhooks.py).
         nohup stripe listen --api-key "$STRIPE_SECRET_KEY" \
+          --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted \
           --forward-to http://localhost:5000/api/billing/webhook \
           > "$log" 2>&1 &
         for _ in $(seq 1 60); do
