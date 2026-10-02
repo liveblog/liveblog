@@ -14,4 +14,5 @@ export enum EventNames {
     Blog = 'blog',
     Posts = 'posts',
     InstanceSettingsUpdated = 'instance_settings:updated',
+    BillingStatusChanged = 'billing:status_changed',
 }

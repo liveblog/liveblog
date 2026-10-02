@@ -4,6 +4,8 @@ import { getToken } from '../liveblog-common/session';
 
 interface IProps {
     onError?: (message: string) => void;
+    // Changing this reloads the billing status (login, logout, a blocked write).
+    refreshKey?: number;
 }
 
 interface IBillingStatus {
@@ -22,15 +24,29 @@ interface IState {
 
 export class BillingBanner extends React.Component<IProps, IState> {
     state: IState = { billingStatus: null };
+    private latestRequest = 0;
 
     componentDidMount() {
+        this.loadStatus();
+    }
+
+    componentDidUpdate(prevProps: IProps) {
+        if (prevProps.refreshKey !== this.props.refreshKey) {
+            this.loadStatus();
+        }
+    }
+
+    private loadStatus() {
+        const request = ++this.latestRequest;
+
         if (!getToken()) {
+            this.setState({ billingStatus: null });
             return;
         }
 
         apiGet('/billing/status')
             .then((data) => {
-                if (data) {
+                if (data && request === this.latestRequest) {
                     this.setState({
                         billingStatus: {
                             billingRequired: data.billing_required,
