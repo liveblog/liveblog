@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     testDir: './tests',
+    // Needs a Stripe sandbox and billing enabled; runs via playwright.stripe.config.ts.
+    testIgnore: ['billing/**'],
     fullyParallel: false,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,

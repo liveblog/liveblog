@@ -1,0 +1,29 @@
+name: Set up server
+description: Install Python 3.8, the system packages and the server's Python dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.8'
+        cache: 'pip'
+        cache-dependency-path: 'server/dev-requirements.txt'
+
+    - name: Install system packages
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends libmagic1
+
+    - name: Install Python dependencies
+      working-directory: ./server
+      shell: bash
+      run: |
+        # Same pip as the fireq and production installs: its legacy resolver lets
+        # the pins here override the ones in Eve and eve-elastic, which a current
+        # resolver refuses (Flask 1.0 vs Eve's flask<=0.12, elasticsearch 1.9 vs
+        # eve-elastic's >=2.0).
+        pip install "pip==20.2.3"
+        pip install -r dev-requirements.txt

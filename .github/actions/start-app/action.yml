@@ -1,0 +1,34 @@
+name: Start app
+description: >-
+  Initialize the app data, start the backend (honcho) and a debugging SMTP server, then build the
+  client and serve it on :9000. Expects setup-server and setup-client to have run, and the
+  Mongo, Redis and Elasticsearch services to be up. Backend processes inherit the environment of
+  the step that uses this action.
+
+runs:
+  using: composite
+  steps:
+    - name: Initialize app data
+      working-directory: ./server
+      shell: bash
+      run: |
+        python app_init_elastic.py
+        python manage.py app:initialize_data
+        python manage.py users:create -u admin -p admin -fn Admin -ln Admin -e 'admin@example.com' --admin
+        python manage.py register_local_themes
+        python manage.py register_bloglist
+
+    - name: Start backend services
+      working-directory: ./server
+      shell: bash
+      run: |
+        (nohup honcho start &)
+        (nohup python -m smtpd -n -c DebuggingServer localhost:2225 &)
+
+    - name: Build client
+      working-directory: ./client
+      shell: bash
+      run: |
+        npm run build
+        cd dist
+        (nohup python -m http.server 9000 &)
