@@ -16,6 +16,7 @@ import jinja2
 import superdesk
 import zipfile
 import logging
+import flask
 from io import BytesIO
 from functools import lru_cache
 from math import ceil
@@ -34,6 +35,7 @@ from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 from liveblog.utils.api import api_error
 from liveblog.tenancy import get_tenant_id
+from liveblog.tenancy.context import SYSTEM_MODE, get_current_tenant_id
 from liveblog.tenancy.service import TenantAwareService
 
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -193,7 +195,38 @@ class UnknownTheme(Exception):
 
 
 class ThemesService(TenantAwareService, BaseService):
-    def get(self, req, lookup={}):
+    def _visible_tenant_id(self):
+        """
+        Tenant whose themes are visible next to system themes, or None for
+        unrestricted (system) access.
+
+        A tenant set in the execution context is honoured even without a request
+        context: Celery renders embeds under `tenant_context_from_blog`, and theme
+        names are only unique per tenant, so an unrestricted lookup there can pick
+        another tenant's theme.
+        """
+        tenant_id = get_current_tenant_id()
+        if tenant_id == SYSTEM_MODE:
+            return None
+        if tenant_id is None:
+            if not flask.has_request_context():
+                return None
+            tenant_id = get_tenant_id(required=True)
+        return ObjectId(tenant_id) if isinstance(tenant_id, str) else tenant_id
+
+    def _scope_lookup(self, lookup):
+        """
+        Restrict lookup to system themes plus the visible tenant's themes.
+        Returns False when access is unrestricted.
+        """
+        tenant_id = self._visible_tenant_id()
+        if tenant_id is None:
+            return False
+        if "$or" not in lookup:
+            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
+        return True
+
+    def get(self, req, lookup=None):
         """
         Get themes: includes system themes (tenant_id=null) and current tenant's themes.
         Overrides the default TenantAwareService behavior that only filters by tenant_id.
@@ -201,15 +234,13 @@ class ThemesService(TenantAwareService, BaseService):
         """
         if req is None:
             req = ParsedRequest()
+        if lookup is None:
+            lookup = {}
 
         req.max_results = THEMES_MAX_RESULTS
 
-        if self.is_system_request():
+        if not self._scope_lookup(lookup):
             return super(TenantAwareService, self).get(req, lookup)
-
-        tenant_id = get_tenant_id(required=True)
-        if "$or" not in lookup:
-            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
 
         return self.backend.get(self.datasource, req=req, lookup=lookup)
 
@@ -219,13 +250,8 @@ class ThemesService(TenantAwareService, BaseService):
 
         Allows tenants to access system themes by ID (for viewing, but not modifying).
         """
-        if self.is_system_request():
+        if not self._scope_lookup(lookup):
             return super(TenantAwareService, self).find_one(req, **lookup)
-
-        tenant_id = get_tenant_id(required=True)
-
-        if "$or" not in lookup:
-            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
 
         return self.backend.find_one(self.datasource, req=req, **lookup)
 
@@ -238,17 +264,47 @@ class ThemesService(TenantAwareService, BaseService):
         if lookup is None:
             lookup = {}
 
-        if self.is_system_request():
+        if not self._scope_lookup(lookup):
             return super(TenantAwareService, self).get_from_mongo(req, lookup)
 
-        tenant_id = get_tenant_id(required=True)
-
-        if "$or" not in lookup:
-            if isinstance(tenant_id, str):
-                tenant_id = ObjectId(tenant_id)
-            lookup["$or"] = [{"tenant_id": None}, {"tenant_id": tenant_id}]
-
         return self.backend.get(self.datasource, req=req, lookup=lookup)
+
+    def find_parent_theme(self, theme):
+        """
+        Resolve `theme["extends"]` among system themes and themes of the same
+        tenant as `theme`, independently of the execution context.
+        """
+        parent_name = theme.get("extends")
+        if not parent_name:
+            return None
+
+        visible = [{"tenant_id": None}]
+        tenant_id = theme.get("tenant_id")
+        if tenant_id is not None:
+            visible.append({"tenant_id": ObjectId(tenant_id)})
+
+        return self.backend.find_one(
+            self.datasource, req=None, name=parent_name, **{"$or": visible}
+        )
+
+    def _validate_extends(self, docs, batch_names=()):
+        """
+        Reject `extends` values that are not a system theme or a theme of the
+        caller's tenant. `batch_names` are themes being created in the same call.
+        """
+        if self.is_system_request():
+            return
+
+        for doc in docs:
+            parent_name = doc.get("extends")
+            if not parent_name:
+                continue
+            if parent_name != doc.get("name") and parent_name in batch_names:
+                continue
+            if not self.find_one(req=None, name=parent_name):
+                raise SuperdeskApiError.badRequestError(
+                    message='Parent theme "{}" does not exist'.format(parent_name)
+                )
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
@@ -334,9 +390,7 @@ class ThemesService(TenantAwareService, BaseService):
             and theme.get("name") != theme.get("extends")
             and theme.get("name") not in parents
         ):
-            parent_theme = get_resource_service("themes").find_one(
-                req=None, name=theme.get("extends")
-            )
+            parent_theme = self.find_parent_theme(theme)
 
             if parent_theme:
                 parents.append(theme.get("extends"))
@@ -849,7 +903,13 @@ class ThemesService(TenantAwareService, BaseService):
         if not has_system_themes:
             self.check_themes_limit(docs)
 
+        self._validate_extends(docs, batch_names={doc.get("name") for doc in docs})
+
         super().on_create(docs)
+
+    def on_replace(self, document, original):
+        self._validate_extends([document])
+        super().on_replace(document, original)
 
     def on_update(self, updates, original):
         """
@@ -863,6 +923,9 @@ class ThemesService(TenantAwareService, BaseService):
         Customizations saved on the theme document before multi-tenancy are moved
         to theme_settings by the `liveblog:migrate_tenancy` command.
         """
+        if "extends" in updates:
+            self._validate_extends([{**original, **updates}])
+
         settings = updates.pop("settings", None)
         style_settings = updates.pop("styleSettings", None)
         settings_updated = settings is not None or style_settings is not None
