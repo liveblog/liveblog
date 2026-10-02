@@ -117,8 +117,6 @@ test.describe('LiveBlog Go', () => {
         expect(blocked.body).toMatchObject({ _issues: { billing_error: 'SUBSCRIPTION_REQUIRED', redirect: 'extend' } });
 
         await logIn(page, user);
-        // The banner only reads /billing/status when the app boots with a
-        // session, and logging in does not reload the page.
         const banner = new BillingBannerPage(page);
         const status = await banner.load();
         expect(status).toMatchObject({ redirect: 'extend', checkout_price_id: catalog.go.priceId });

@@ -2,9 +2,9 @@ import { Locator, Page } from '@playwright/test';
 import { BillingStatus } from '../api/billing';
 
 /**
- * The app-wide billing banner. It reads /billing/status once, when the app
- * boots with a session, so `reload` waits for that request to settle before
- * specs assert the banner's presence or absence.
+ * The app-wide billing banner. It reads /billing/status asynchronously (on
+ * boot, login, logout and blocked writes), so `load` waits for that request to
+ * settle before specs assert the banner's presence or absence.
  */
 export class BillingBannerPage {
     readonly banner: Locator;
