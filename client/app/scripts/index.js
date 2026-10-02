@@ -109,16 +109,30 @@ import {BillingBanner} from './liveblog-billing/BillingBanner';
 import {ImpersonationBanner} from './liveblog-impersonation/ImpersonationBanner';
 import {isImpersonating, restoreSupportSession} from './liveblog-impersonation/impersonation';
 
-const sdBillingBanner = ['notify', function(notify) {
+const sdBillingBanner = ['notify', 'SESSION_EVENTS', function(notify, SESSION_EVENTS) {
     return {
         restrict: 'E',
         link: function(scope, element) {
             const mountPoint = $(element).get(0);
-            const props = {
-                onPortalError: (message) => notify.error(message, 10000),
+            let refreshKey = 0;
+            const render = () => {
+                const props = {
+                    onError: (message) => notify.error(message, 10000),
+                    refreshKey: refreshKey,
+                };
+
+                ReactDOM.render(React.createElement(BillingBanner, props), mountPoint);
+            };
+            const refresh = () => {
+                refreshKey += 1;
+                render();
             };
 
-            ReactDOM.render(React.createElement(BillingBanner, props), mountPoint);
+            // The directive mounts before login and logging in does not reload the page.
+            scope.$on(SESSION_EVENTS.LOGIN, refresh);
+            scope.$on(SESSION_EVENTS.LOGOUT, refresh);
+            scope.$on(EventNames.BillingStatusChanged, refresh);
+            render();
 
             scope.$on('$destroy', () => {
                 ReactDOM.unmountComponentAtNode(mountPoint);
@@ -231,6 +245,8 @@ liveblog.factory('billingInterceptor', ['$q', '$injector', function($q, $injecto
                 && rejection.data._issues.billing_error === 'SUBSCRIPTION_REQUIRED') {
                 var notify = $injector.get('notify');
                 var $timeout = $injector.get('$timeout');
+
+                $injector.get('$rootScope').$broadcast(EventNames.BillingStatusChanged);
 
                 // Clear any existing notifications first, then
                 // show billing message after a short delay to
