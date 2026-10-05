@@ -1,9 +1,11 @@
 import React from 'react';
-import { apiGet, apiPost } from '../liveblog-common/api';
+import { apiGet, apiPost, ApiError } from '../liveblog-common/api';
 import { getToken } from '../liveblog-common/session';
 
 interface IProps {
-    onPortalError?: (message: string) => void;
+    onError?: (message: string) => void;
+    // Changing this reloads the billing status (login, logout, a blocked write).
+    refreshKey?: number;
 }
 
 interface IBillingStatus {
@@ -22,15 +24,29 @@ interface IState {
 
 export class BillingBanner extends React.Component<IProps, IState> {
     state: IState = { billingStatus: null };
+    private latestRequest = 0;
 
     componentDidMount() {
+        this.loadStatus();
+    }
+
+    componentDidUpdate(prevProps: IProps) {
+        if (prevProps.refreshKey !== this.props.refreshKey) {
+            this.loadStatus();
+        }
+    }
+
+    private loadStatus() {
+        const request = ++this.latestRequest;
+
         if (!getToken()) {
+            this.setState({ billingStatus: null });
             return;
         }
 
         apiGet('/billing/status')
             .then((data) => {
-                if (data) {
+                if (data && request === this.latestRequest) {
                     this.setState({
                         billingStatus: {
                             billingRequired: data.billing_required,
@@ -58,7 +74,7 @@ export class BillingBanner extends React.Component<IProps, IState> {
     }
 
     private handleAction = () => {
-        const { onPortalError } = this.props;
+        const { onError } = this.props;
 
         if (!getToken()) {
             return;
@@ -71,19 +87,21 @@ export class BillingBanner extends React.Component<IProps, IState> {
                     return;
                 }
 
-                if (onPortalError) {
-                    onPortalError('Unable to open billing portal. Please try again.');
+                if (onError) {
+                    onError('Unable to open billing portal. Please try again.');
                 }
             })
             .catch(() => {
-                if (onPortalError) {
-                    onPortalError('Unable to open billing portal. Please try again.');
+                if (onError) {
+                    onError('Unable to open billing portal. Please try again.');
                 }
             });
     }
 
     private handleExtend = () => {
+        const { onError } = this.props;
         const { billingStatus } = this.state;
+        const fallbackMessage = 'Unable to extend your plan. Please try again or contact support.';
 
         if (!getToken() || !billingStatus?.checkoutPriceId) {
             return;
@@ -96,9 +114,18 @@ export class BillingBanner extends React.Component<IProps, IState> {
             .then((data) => {
                 if (data && data.url) {
                     window.location.href = data.url;
+                    return;
+                }
+
+                if (onError) {
+                    onError(fallbackMessage);
                 }
             })
-            .catch(() => undefined);
+            .catch((error) => {
+                if (onError) {
+                    onError(error instanceof ApiError ? error.message : fallbackMessage);
+                }
+            });
     }
 
     render() {
