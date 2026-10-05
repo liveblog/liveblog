@@ -85,7 +85,9 @@ def resolve_extend_price_id(price_id):
 
     Uses ``price_id`` (the tenant's last purchased price) while it is active.
     Once it has been archived in Stripe, falls back to the product's current
-    default price. Returns None when neither is purchasable as a one-time plan.
+    default price. Returns None when neither is purchasable as a one-time plan,
+    including when the price no longer exists. Other Stripe errors propagate so
+    the caller can tell a transient failure from a missing price.
     Expects ``stripe.api_key`` to be set by the caller.
     """
     if not price_id:
@@ -93,8 +95,10 @@ def resolve_extend_price_id(price_id):
 
     try:
         price = stripe.Price.retrieve(price_id, expand=["product.default_price"])
-    except stripe.error.StripeError as e:
-        logger.warning("Failed to retrieve price %s: %s", price_id, e)
+    except stripe.error.InvalidRequestError as e:
+        if e.code != "resource_missing":
+            raise
+        logger.warning("Price %s no longer exists in Stripe", price_id)
         return None
 
     if price.get("active"):
