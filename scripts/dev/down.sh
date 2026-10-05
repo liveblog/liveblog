@@ -27,7 +27,7 @@ COMPOSE_FILE="$REPO_ROOT/docker/docker-compose-dev-services.yml"
 DATA_DIR="$REPO_ROOT/data"
 RUN_DIR="$SCRIPT_DIR/.run"
 HONCHO_PIDFILE="$RUN_DIR/honcho.pid"
-GRUNT_PIDFILE="$RUN_DIR/grunt.pid"
+CLIENT_PIDFILE="$RUN_DIR/client.pid"
 SETUP_SENTINEL="$RUN_DIR/.setup-done"
 
 log() { printf '\n[liveblog-down] %s\n' "$*"; }
@@ -85,7 +85,7 @@ kill_pidfile() {
 }
 
 # 1. Client dev server.
-kill_pidfile "$GRUNT_PIDFILE" "client dev server"
+kill_pidfile "$CLIENT_PIDFILE" "client dev server"
 kill_port 9000 "client"
 
 # 2. Backend. Killing honcho signals its children (gunicorn, ws, celery

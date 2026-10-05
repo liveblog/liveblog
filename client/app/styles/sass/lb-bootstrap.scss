@@ -49,17 +49,11 @@
 // Components: Misc
 @import '~superdesk-core/styles/sass/labels';
 
-// Custom
-@import 'liveblog';
-
-// Vendor
-@import '~jquery-jcrop/css/jquery.Jcrop.css';
-@import '~jquery-ui/themes/smoothness/jquery-ui.css';
-@import '~superdesk-ui-framework/dist/superdesk-ui.bundle.css';
-@import '~sir-trevor/sir-trevor.css';
-
 @import '~superdesk-core/styles/sass/sf-additional';
 @import '~superdesk-core/styles/sass/sf-icons';
 @import '~superdesk-core/styles/sass/search-list';
+
+// Custom
+@import 'liveblog';
 
 @import 'responsive';
