@@ -6,6 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import flask
+import stripe
 from bson import ObjectId
 
 from superdesk.errors import SuperdeskApiError
@@ -251,6 +252,21 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
         data = json.loads(response.get_data(as_text=True))
         self.assertEqual(data["redirect"], "pricing")
         self.assertNotIn("checkout_price_id", data)
+
+    def test_status_keeps_extend_with_stored_price_when_stripe_fails(self):
+        _, user_id = self._create_expired_go_tenant_user()
+        headers = self._create_auth_headers(user_id)
+
+        with patch(
+            "liveblog.billing.service.resolve_extend_price_id",
+            side_effect=stripe.error.RateLimitError("Too many requests"),
+        ):
+            response = self.client.get("/api/billing/status", headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["redirect"], "extend")
+        self.assertEqual(data["checkout_price_id"], "price_old")
 
     def test_checkout_rejects_archived_price(self):
         _, user_id = self._create_expired_go_tenant_user(

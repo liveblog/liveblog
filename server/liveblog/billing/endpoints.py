@@ -205,7 +205,14 @@ def billing_status():
 
     if state["redirect"] == "extend":
         stripe.api_key = app.config.get("STRIPE_SECRET_KEY")
-        price_id = service.resolve_extend_price_id(tenant.get("plan_price_id"))
+        stored_price_id = tenant.get("plan_price_id")
+        try:
+            price_id = service.resolve_extend_price_id(stored_price_id)
+        except stripe.error.StripeError as e:
+            # A transient failure must not hide Extend. Checkout validates the
+            # price again, so offering the stored one is safe.
+            logger.warning("Could not resolve extend price %s: %s", stored_price_id, e)
+            price_id = stored_price_id
         if price_id:
             response["checkout_price_id"] = price_id
         else:

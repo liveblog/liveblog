@@ -372,12 +372,21 @@ class ResolveExtendPriceTest(TestCase):
         self.assertIsNone(resolve_extend_price_id("price_old"))
 
     @patch("stripe.Price.retrieve")
-    def test_returns_none_on_stripe_error(self, mock_retrieve):
+    def test_returns_none_when_price_no_longer_exists(self, mock_retrieve):
         mock_retrieve.side_effect = stripe_sdk.error.InvalidRequestError(
-            "No such price", "id"
+            "No such price", "id", code="resource_missing"
         )
 
         self.assertIsNone(resolve_extend_price_id("price_missing"))
+
+    @patch("stripe.Price.retrieve")
+    def test_raises_on_transient_stripe_error(self, mock_retrieve):
+        mock_retrieve.side_effect = stripe_sdk.error.APIConnectionError(
+            "Connection reset"
+        )
+
+        with self.assertRaises(stripe_sdk.error.APIConnectionError):
+            resolve_extend_price_id("price_old")
 
 
 class SubscriptionLevelTest(TestCase):

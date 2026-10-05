@@ -1,5 +1,5 @@
 import React from 'react';
-import { apiGet, apiPost } from '../liveblog-common/api';
+import { apiGet, apiPost, ApiError } from '../liveblog-common/api';
 import { getToken } from '../liveblog-common/session';
 
 interface IProps {
@@ -123,7 +123,7 @@ export class BillingBanner extends React.Component<IProps, IState> {
             })
             .catch((error) => {
                 if (onError) {
-                    onError(error?.message || fallbackMessage);
+                    onError(error instanceof ApiError ? error.message : fallbackMessage);
                 }
             });
     }
