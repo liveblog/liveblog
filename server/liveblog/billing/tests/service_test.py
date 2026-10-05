@@ -20,6 +20,7 @@ from liveblog.billing.service import (
     get_subscription_level,
     is_time_limited_plan_active,
     reset_tenant_subscription,
+    resolve_extend_price_id,
     sync_subscription_from_stripe,
     update_tenant_subscription,
     ACTIVE_STATUSES,
@@ -221,6 +222,60 @@ class TimeLimitedPlanTest(TestCase):
         self.assertFalse(state["access_allowed"])
         self.assertEqual(state["redirect"], "pricing")
 
+    def test_active_subscription_wins_over_expired_plan(self):
+        tenant = {
+            "_id": "t1",
+            "subscription_level": "team",
+            "plan_expires_at": self._past(10),
+            "stripe_subscription_id": "sub_123",
+            "stripe_subscription_status": "active",
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertTrue(state["access_allowed"])
+        self.assertIsNone(state["redirect"])
+        self.assertEqual(state["status"], "active")
+
+    def test_active_plan_allows_access_with_canceled_subscription(self):
+        tenant = {
+            "_id": "t1",
+            "plan_expires_at": self._future(3),
+            "stripe_subscription_id": "sub_123",
+            "stripe_subscription_status": "canceled",
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertTrue(state["access_allowed"])
+        self.assertIsNone(state["redirect"])
+
+    def test_recoverable_subscription_wins_over_expired_plan(self):
+        tenant = {
+            "_id": "t1",
+            "plan_expires_at": self._past(1),
+            "stripe_subscription_id": "sub_123",
+            "stripe_subscription_status": "unpaid",
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertFalse(state["access_allowed"])
+        self.assertEqual(state["redirect"], "portal")
+
+    def test_expired_plan_with_canceled_subscription_redirects_to_extend(self):
+        tenant = {
+            "_id": "t1",
+            "plan_expires_at": self._past(1),
+            "stripe_subscription_id": "sub_123",
+            "stripe_subscription_status": "canceled",
+        }
+
+        state = get_billing_state(tenant)
+
+        self.assertFalse(state["access_allowed"])
+        self.assertEqual(state["redirect"], "extend")
+
     def test_is_time_limited_plan_active_with_future_expiry(self):
         tenant = {"plan_expires_at": self._future(1)}
         self.assertTrue(is_time_limited_plan_active(tenant))
@@ -243,6 +298,95 @@ class TimeLimitedPlanTest(TestCase):
 
     def test_get_plan_duration_days_returns_none_for_invalid(self):
         self.assertIsNone(get_plan_duration_days({"plan_duration_days": "abc"}))
+
+
+class ResolveExtendPriceTest(TestCase):
+    """Test resolve_extend_price_id() fallback for archived prices."""
+
+    def _price(self, active=True, product_active=True, default_price=None):
+        return {
+            "id": "price_old",
+            "active": active,
+            "type": "one_time",
+            "product": {
+                "id": "prod_go",
+                "active": product_active,
+                "default_price": default_price,
+            },
+        }
+
+    def test_returns_none_without_price_id(self):
+        self.assertIsNone(resolve_extend_price_id(None))
+        self.assertIsNone(resolve_extend_price_id(""))
+
+    @patch("stripe.Price.retrieve")
+    def test_returns_stored_price_when_active(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(active=True)
+
+        self.assertEqual(resolve_extend_price_id("price_old"), "price_old")
+        mock_retrieve.assert_called_once_with(
+            "price_old", expand=["product.default_price"]
+        )
+
+    @patch("stripe.Price.retrieve")
+    def test_falls_back_to_active_default_price(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(
+            active=False,
+            default_price={"id": "price_new", "active": True, "type": "one_time"},
+        )
+
+        self.assertEqual(resolve_extend_price_id("price_old"), "price_new")
+
+    @patch("stripe.Price.retrieve")
+    def test_rejects_recurring_default_price(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(
+            active=False,
+            default_price={"id": "price_new", "active": True, "type": "recurring"},
+        )
+
+        self.assertIsNone(resolve_extend_price_id("price_old"))
+
+    @patch("stripe.Price.retrieve")
+    def test_rejects_inactive_default_price(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(
+            active=False,
+            default_price={"id": "price_new", "active": False, "type": "one_time"},
+        )
+
+        self.assertIsNone(resolve_extend_price_id("price_old"))
+
+    @patch("stripe.Price.retrieve")
+    def test_rejects_archived_product(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(
+            active=False,
+            product_active=False,
+            default_price={"id": "price_new", "active": True, "type": "one_time"},
+        )
+
+        self.assertIsNone(resolve_extend_price_id("price_old"))
+
+    @patch("stripe.Price.retrieve")
+    def test_returns_none_without_default_price(self, mock_retrieve):
+        mock_retrieve.return_value = self._price(active=False)
+
+        self.assertIsNone(resolve_extend_price_id("price_old"))
+
+    @patch("stripe.Price.retrieve")
+    def test_returns_none_when_price_no_longer_exists(self, mock_retrieve):
+        mock_retrieve.side_effect = stripe_sdk.error.InvalidRequestError(
+            "No such price", "id", code="resource_missing"
+        )
+
+        self.assertIsNone(resolve_extend_price_id("price_missing"))
+
+    @patch("stripe.Price.retrieve")
+    def test_raises_on_transient_stripe_error(self, mock_retrieve):
+        mock_retrieve.side_effect = stripe_sdk.error.APIConnectionError(
+            "Connection reset"
+        )
+
+        with self.assertRaises(stripe_sdk.error.APIConnectionError):
+            resolve_extend_price_id("price_old")
 
 
 class SubscriptionLevelTest(TestCase):

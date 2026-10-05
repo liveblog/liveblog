@@ -1,3 +1,4 @@
+import datetime
 import json
 import uuid
 from base64 import b64encode
@@ -5,6 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import flask
+import stripe
 from bson import ObjectId
 
 from superdesk.errors import SuperdeskApiError
@@ -211,3 +213,86 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
             req=None, _id=result["tenant_id"]
         )
         self.assertEqual(tenant.get("stripe_customer_id"), "cus_lazy_123")
+
+    def _create_expired_go_tenant_user(self, tenant_updates=None):
+        updates = {
+            "subscription_level": "liveblog-go",
+            "plan_expires_at": utcnow() - datetime.timedelta(days=1),
+            "plan_price_id": "price_old",
+        }
+        updates.update(tenant_updates or {})
+        return self._create_user_with_tenant(updates)
+
+    def test_status_returns_resolved_extend_price(self):
+        _, user_id = self._create_expired_go_tenant_user()
+        headers = self._create_auth_headers(user_id)
+
+        with patch(
+            "liveblog.billing.service.resolve_extend_price_id",
+            return_value="price_new",
+        ) as mock_resolve:
+            response = self.client.get("/api/billing/status", headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["redirect"], "extend")
+        self.assertEqual(data["checkout_price_id"], "price_new")
+        mock_resolve.assert_called_once_with("price_old")
+
+    def test_status_redirects_to_pricing_when_no_extend_price(self):
+        _, user_id = self._create_expired_go_tenant_user()
+        headers = self._create_auth_headers(user_id)
+
+        with patch(
+            "liveblog.billing.service.resolve_extend_price_id", return_value=None
+        ):
+            response = self.client.get("/api/billing/status", headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["redirect"], "pricing")
+        self.assertNotIn("checkout_price_id", data)
+
+    def test_status_keeps_extend_with_stored_price_when_stripe_fails(self):
+        _, user_id = self._create_expired_go_tenant_user()
+        headers = self._create_auth_headers(user_id)
+
+        with patch(
+            "liveblog.billing.service.resolve_extend_price_id",
+            side_effect=stripe.error.RateLimitError("Too many requests"),
+        ):
+            response = self.client.get("/api/billing/status", headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["redirect"], "extend")
+        self.assertEqual(data["checkout_price_id"], "price_old")
+
+    def test_checkout_rejects_archived_price(self):
+        _, user_id = self._create_expired_go_tenant_user(
+            {"stripe_customer_id": "cus_go_123"}
+        )
+        headers = self._create_auth_headers(user_id)
+
+        with patch("stripe.Price.retrieve") as mock_retrieve, patch(
+            "stripe.checkout.Session.create"
+        ) as mock_session_create:
+            mock_retrieve.return_value = {
+                "id": "price_old",
+                "active": False,
+                "product": {
+                    "metadata": {
+                        "subscription_level": "liveblog-go",
+                        "plan_duration_days": "3",
+                    }
+                },
+            }
+            response = self.client.post(
+                "/api/billing/checkout",
+                data=json.dumps({"price_id": "price_old"}),
+                headers=headers,
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("no longer available", response.get_data(as_text=True))
+        mock_session_create.assert_not_called()
