@@ -3,7 +3,7 @@ name: liveblog-dev
 description: |
   Run a local Liveblog development environment. Wraps the dev scripts under
   scripts/dev/ (setup, up, down) so someone can bring the app up, stop it, or
-  check its status without knowing the Docker / honcho / grunt commands
+  check its status without knowing the Docker / honcho / webpack commands
   underneath.
 
   Invoke when the user wants to do any of:
@@ -22,7 +22,7 @@ description: |
 You are helping someone bring up (or stop, or check) a local Liveblog dev
 environment. The person may not be technical — they might be a PM or a
 designer who just needs the app running so they can click around. Talk in
-plain language: no Docker / honcho / grunt / pyenv jargon unless they raise it
+plain language: no Docker / honcho / webpack / pyenv jargon unless they raise it
 first. Explain what's happening, and hand off with "here's where you can
 click."
 

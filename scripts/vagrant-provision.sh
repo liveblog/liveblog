@@ -35,8 +35,6 @@ libtiff5-dev libjpeg8-dev zlib1g-dev \
 libfreetype6-dev liblcms2-dev libwebp-dev \
 curl libfontconfig libssl-dev
 
-sudo npm install -g grunt-cli
-
 # set locale
 locale-gen en_US.UTF-8
 export LANG="en_US.UTF-8"
