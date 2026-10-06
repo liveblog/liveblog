@@ -78,14 +78,11 @@ def _handle_checkout_completed(event):
 
     stripe.api_key = app.config.get("STRIPE_SECRET_KEY")
 
-    # Retrieve the session with line items expanded to get product metadata
-    try:
-        session = stripe.checkout.Session.retrieve(
-            session["id"], expand=["line_items.data.price.product"]
-        )
-    except stripe.error.StripeError as e:
-        logger.error("Failed to retrieve checkout session: %s", e)
-        return
+    # Retrieve the session with line items expanded to get product metadata.
+    # Errors must propagate so the webhook answers non-2xx and Stripe retries.
+    session = stripe.checkout.Session.retrieve(
+        session["id"], expand=["line_items.data.price.product"]
+    )
 
     line_items = session.get("line_items", {}).get("data", [])
     if not line_items:
@@ -150,7 +147,9 @@ def handle_webhook():
         try:
             handler(event)
         except Exception:
-            logger.exception("Error handling Stripe event %s", event_type)
+            logger.exception(
+                "Error handling Stripe event %s (%s)", event_type, event.get("id")
+            )
             return api_error("Webhook handler error", 500)
     else:
         logger.debug("Ignoring Stripe event: %s", event_type)
