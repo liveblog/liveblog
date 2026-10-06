@@ -2,7 +2,7 @@ import { Page } from '@playwright/test';
 import { test, expect } from '../../fixtures/billing';
 import { createCheckoutSession, E2EUser, registerE2EUser, writeProbe } from '../../api/billing';
 import { advanceClock, createClockCustomer, stripe, subscribeWithTestCard } from '../../api/stripe';
-import { expireGoPlan, getTenant, setGoPlan, setStripeCustomer, TenantBilling } from '../../api/tenants-db';
+import { expireGoPlan, getTenant, setGoPlan, setStripeCustomer, waitForTenant } from '../../api/tenants-db';
 import { BillingBannerPage } from '../../pages/billing-banner.page';
 import { LoginPage } from '../../pages/login.page';
 import { StripeCheckoutPage } from '../../pages/stripe-checkout.page';
@@ -27,18 +27,6 @@ const CLOCK_TEST_TIMEOUT = 600_000;
 const CLOCK_ADVANCE_TIMEOUT = 300_000;
 const CLOCK_WEBHOOK_TIMEOUT = 180_000;
 
-/**
- * Polls the tenant in Mongo. /billing/status can sync a subscription from
- * Stripe by itself, so only the stored tenant proves the webhook ran.
- */
-async function waitForTenant(tenantId: string, expected: Partial<TenantBilling>, timeout = WEBHOOK_TIMEOUT): Promise<TenantBilling> {
-    await expect.poll(async () => {
-        const tenant = await getTenant(tenantId);
-        return Object.fromEntries(Object.keys(expected).map((key) => [key, tenant[key as keyof TenantBilling]]));
-    }, { timeout, message: `tenant ${tenantId} never reached ${JSON.stringify(expected)}` }).toEqual(expected);
-    return getTenant(tenantId);
-}
-
 async function subscribe(user: E2EUser, customerId: string, plan: Plan, priceId: string) {
     const subscription = await subscribeWithTestCard(customerId, priceId);
     await waitForTenant(user.tenantId, {
@@ -51,23 +39,6 @@ async function subscribe(user: E2EUser, customerId: string, plan: Plan, priceId:
 
 async function logIn(page: Page, user: E2EUser) {
     await new LoginPage(page).signIn(user.username, user.password);
-}
-
-/** Opens the Customer Portal the way a subscriber does: avatar, then "Subscription". */
-async function openPortalFromUserMenu(page: Page): Promise<StripePortalPage> {
-    // The link only gets its click handler once its own /billing/status
-    // request resolves, and the menu renders it only when opened.
-    const linkReady = page.waitForResponse(
-        (response) => response.url().includes('/billing/status') && response.request().method() === 'GET',
-        { timeout: 30_000 },
-    );
-    await page.locator('button.current-user').click();
-    await linkReady;
-    await page.locator('[sd-manage-subscription]').click();
-
-    const portal = new StripePortalPage(page);
-    await portal.waitForOverview();
-    return portal;
 }
 
 /**
@@ -154,7 +125,7 @@ test.describe('Subscriptions', () => {
         await logIn(page, user);
         await shot('app as team subscriber');
 
-        const portal = await openPortalFromUserMenu(page);
+        const portal = await StripePortalPage.openFromUserMenu(page);
         await expect(portal.activePlan(PRODUCT_NAMES.team)).toBeVisible();
         await shot('portal overview team');
 
@@ -197,7 +168,7 @@ test.describe('Subscriptions', () => {
         const subscription = await subscribe(user, customer.id, 'team', catalog.team.monthlyPriceId);
 
         await logIn(page, user);
-        const portal = await openPortalFromUserMenu(page);
+        const portal = await StripePortalPage.openFromUserMenu(page);
         await shot('portal overview before cancel');
 
         await portal.openPlan(PRODUCT_NAMES.team);

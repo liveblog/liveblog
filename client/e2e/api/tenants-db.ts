@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test';
 import { Db, MongoClient, ObjectId } from 'mongodb';
 
 // The 3.x driver is pinned on purpose: the stack runs MongoDB 3.4 (wire
@@ -62,6 +63,19 @@ export async function getTenant(tenantId: string): Promise<TenantBilling> {
         throw new Error(`tenant ${tenantId} not found in ${MONGO_URI}`);
     }
     return { ...doc, _id: String(doc._id) } as TenantBilling;
+}
+
+/**
+ * Polls the tenant until it has the `expected` fields. /billing/status can
+ * sync a subscription from Stripe by itself, so only the stored tenant proves
+ * that a webhook ran.
+ */
+export async function waitForTenant(tenantId: string, expected: Partial<TenantBilling>, timeout = 60_000): Promise<TenantBilling> {
+    await expect.poll(async () => {
+        const tenant = await getTenant(tenantId);
+        return Object.fromEntries(Object.keys(expected).map((key) => [key, tenant[key as keyof TenantBilling]]));
+    }, { timeout, message: `tenant ${tenantId} never reached ${JSON.stringify(expected)}` }).toEqual(expected);
+    return getTenant(tenantId);
 }
 
 /** Finds the tenant of the user with this email or username. */

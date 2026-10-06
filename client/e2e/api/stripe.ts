@@ -477,6 +477,25 @@ export async function subscribeWithTestCard(customerId: string, priceId: string)
     });
 }
 
+/**
+ * Makes a Stripe test PaymentMethod the card a subscription renews with,
+ * without charging anything. With `pm_card_chargeCustomerFail` the card
+ * attaches fine and every later charge is declined.
+ *
+ * The subscription's own default payment method wins over the customer's, so
+ * both are set.
+ */
+export async function setRenewalCard(subscriptionId: string, testPaymentMethod: string): Promise<Stripe.PaymentMethod> {
+    const subscription = await stripe().subscriptions.retrieve(subscriptionId);
+    const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id;
+    const paymentMethod = await stripe().paymentMethods.attach(testPaymentMethod, { customer: customerId });
+    await stripe().customers.update(customerId, {
+        invoice_settings: { default_payment_method: paymentMethod.id },
+    });
+    await stripe().subscriptions.update(subscriptionId, { default_payment_method: paymentMethod.id });
+    return paymentMethod;
+}
+
 /** Moves a subscription's single item to another price, prorating like the portal does. */
 export async function changeSubscriptionPrice(subscriptionId: string, priceId: string): Promise<Stripe.Subscription> {
     const subscription = await stripe().subscriptions.retrieve(subscriptionId);

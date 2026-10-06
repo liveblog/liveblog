@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { SUCCESS_CARD, TestCard } from './stripe-checkout.page';
 
 const LOAD_TIMEOUT = 60_000;
 // Plan changes and cancellations update the subscription before the next
@@ -18,13 +19,32 @@ export type CancelReason = 'It\'s too expensive' | 'I found an alternative' | 'I
  */
 export class StripePortalPage {
     readonly activePlans: Locator;
+    readonly outstandingInvoices: Locator;
     readonly heading: Locator;
     readonly returnLink: Locator;
 
     constructor(private page: Page) {
         this.activePlans = page.getByRole('region', { name: 'Active plans' });
+        this.outstandingInvoices = page.getByRole('region', { name: 'Outstanding invoices' });
         this.heading = page.getByRole('main').getByRole('heading', { level: 1 });
         this.returnLink = page.getByRole('link', { name: /^Return to / });
+    }
+
+    /** Opens the portal the way a subscriber does: avatar, then "Subscription". */
+    static async openFromUserMenu(page: Page): Promise<StripePortalPage> {
+        // The link only gets its click handler once its own /billing/status
+        // request resolves, and the menu renders it only when opened.
+        const linkReady = page.waitForResponse(
+            (response) => response.url().includes('/billing/status') && response.request().method() === 'GET',
+            { timeout: 30_000 },
+        );
+        await page.locator('button.current-user').click();
+        await linkReady;
+        await page.locator('[sd-manage-subscription]').click();
+
+        const portal = new StripePortalPage(page);
+        await portal.waitForOverview();
+        return portal;
     }
 
     /** Waits for the portal overview listing the active subscriptions. */
@@ -88,6 +108,55 @@ export class StripePortalPage {
     async done() {
         await this.page.getByRole('main').getByRole('button', { name: 'Done' }).click();
         await expect(this.heading).not.toHaveText('Plan canceled', { timeout: LOAD_TIMEOUT });
+    }
+
+    async openWallet() {
+        await this.page.getByRole('link', { name: 'Wallet' }).click();
+        await expect(this.heading).toHaveText('Wallet', { timeout: LOAD_TIMEOUT });
+    }
+
+    /** A card in the wallet's payment method list, e.g. `walletCard('4242')`. */
+    walletCard(last4: string): Locator {
+        return this.page.getByRole('main').getByRole('listitem').filter({ hasText: `•••• ${last4}` });
+    }
+
+    /** From the wallet, opens "Add payment method" and fills in a card, kept as the default. */
+    async fillNewCard(card: TestCard = SUCCESS_CARD) {
+        await this.page.getByRole('link', { name: 'Add payment method' }).click();
+        await expect(this.heading).toHaveText('Add payment method', { timeout: LOAD_TIMEOUT });
+
+        const element = this.page.frameLocator('iframe[src*="elements-inner-payment"]');
+        await element.locator('input[name="number"]').fill(card.number, { timeout: LOAD_TIMEOUT });
+        await element.locator('input[name="expiry"]').fill(card.expiry);
+        await element.locator('input[name="cvc"]').fill(card.cvc);
+        // Only some billing countries (geo-IP default) ask for a postal code.
+        const postalCode = element.locator('input[name="postalCode"]');
+        if (await postalCode.isVisible()) {
+            await postalCode.fill(card.postalCode);
+        }
+        await expect(this.page.getByRole('checkbox', { name: 'Use as default payment method' })).toBeChecked();
+    }
+
+    /** Submits the card filled in by `fillNewCard` and waits to be back on the wallet. */
+    async saveNewCard() {
+        // The Payment Element prefills the customer's email into its optional
+        // Link sign-up box, and some submits only focus that field without
+        // sending anything. Submitting again goes through.
+        const submit = this.page.getByRole('main').getByRole('button', { name: /^Add payment method/ });
+        const leftForm = (timeout: number) => this.page
+            .waitForURL((url) => !url.pathname.includes('add-payment-method'), { timeout })
+            .then(() => true, () => false);
+        let accepted = false;
+        for (let attempt = 1; attempt <= 3 && !accepted; attempt++) {
+            // A submit that is still processing keeps the button disabled;
+            // the URL check below is what decides.
+            await submit.click({ timeout: 10_000 }).catch(() => undefined);
+            accepted = await leftForm(attempt < 3 ? 20_000 : SUBMIT_TIMEOUT);
+        }
+        if (!accepted) {
+            throw new Error('The Customer Portal did not accept the new card after 3 submits');
+        }
+        await expect(this.heading).toHaveText('Wallet', { timeout: LOAD_TIMEOUT });
     }
 
     /** Follows the portal's return link back to the session's `return_url` under `origin`. */

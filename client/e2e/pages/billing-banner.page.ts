@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, Request, Response } from '@playwright/test';
 import { BillingStatus } from '../api/billing';
 
 /**
@@ -21,16 +21,44 @@ export class BillingBannerPage {
 
     /** Navigates to `path` (default: reloads) and returns the status the banner rendered from. */
     async load(path?: string): Promise<BillingStatus> {
-        const statusResponse = this.page.waitForResponse(
-            (response) => response.url().includes('/billing/status') && response.request().method() === 'GET',
-            { timeout: 60_000 },
-        );
-        if (path === undefined) {
-            await this.page.reload();
-        } else {
-            await this.page.goto(path);
+        // The banner also refreshes on login, so a request from before the
+        // navigation can still be in flight, and its body is gone once the
+        // navigation commits. Only requests made from here on count, and one
+        // whose body cannot be read is skipped.
+        const requests = new Set<Request>();
+        const responses: Response[] = [];
+        const onRequest = (request: Request) => {
+            if (request.url().includes('/billing/status') && request.method() === 'GET') {
+                requests.add(request);
+            }
+        };
+        const onResponse = (response: Response) => {
+            if (requests.has(response.request())) {
+                responses.push(response);
+            }
+        };
+        this.page.on('request', onRequest);
+        this.page.on('response', onResponse);
+        try {
+            if (path === undefined) {
+                await this.page.reload();
+            } else {
+                await this.page.goto(path);
+            }
+            for (let next = 0; ; next++) {
+                await expect.poll(() => responses.length, {
+                    timeout: 60_000,
+                    message: 'the banner never got a readable /billing/status response',
+                }).toBeGreaterThan(next);
+                try {
+                    return await responses[next].json() as BillingStatus;
+                } catch {
+                    // Answered while the navigation was committing.
+                }
+            }
+        } finally {
+            this.page.off('request', onRequest);
+            this.page.off('response', onResponse);
         }
-        const response = await statusResponse;
-        return await response.json() as BillingStatus;
     }
 }
