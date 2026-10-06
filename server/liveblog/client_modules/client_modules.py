@@ -256,7 +256,9 @@ def _check_blog_accepts_comments(blog):
 
 def _blog_theme_settings(blog):
     theme_names = [blog.get("blog_preferences", {}).get("theme")]
-    outputs = get_resource_service("outputs").find({"blog": blog["_id"], "deleted": {"$ne": True})
+    outputs = get_resource_service("outputs").find(
+        {"blog": blog["_id"], "deleted": {"$ne": True}}
+    )
     theme_names.extend(output.get("theme") for output in outputs)
     theme_settings_service = get_resource_service("theme_settings")
     for theme_name in dict.fromkeys(name for name in theme_names if name):

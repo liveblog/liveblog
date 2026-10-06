@@ -147,6 +147,17 @@ Feature: Public comments land in the blog's tenant
         """
         {"item_type": "comment", "blog": "#mixed_blog#"}
         """
+        When we find for "outputs" the id as "commenting_output" by "where={"name": "commenting output"}"
+        When we patch "/outputs/#commenting_output#"
+        """
+        {"deleted": true}
+        """
+        Then we get OK response
+        When we post anonymously to "/client_items"
+        """
+        {"text": "hi", "commenter": "reader", "client_blog": "#mixed_blog#", "item_type": "comment"}
+        """
+        Then we get error 403
 
     @auth
     Scenario: Bulk comments must target a single blog
