@@ -235,19 +235,32 @@ def _get_comment_blog(docs):
 
 
 def _check_blog_accepts_comments(blog):
-    """Apply the same rule the embed uses to show or hide the comment form."""
+    """Apply the same rule the embed uses to show or hide the comment form.
+
+    A comment request does not say which embed it came from, and output channels
+    render the blog with their own theme, so when the blog defers to the theme
+    the main theme and every output theme are consulted.
+    """
     allowed = blog_comments_override(blog)
     if allowed is None:
-        theme_name = blog.get("blog_preferences", {}).get("theme")
-        theme_settings = get_resource_service("theme_settings").get_settings_for_blog(
-            blog, theme_name
+        allowed = any(
+            theme_settings.get("canComment", False)
+            for theme_settings in _blog_theme_settings(blog)
         )
-        allowed = theme_settings.get("canComment", False)
 
     if not allowed:
         raise SuperdeskApiError.forbiddenError(
             message="Comments are disabled for this blog"
         )
+
+
+def _blog_theme_settings(blog):
+    theme_names = [blog.get("blog_preferences", {}).get("theme")]
+    outputs = get_resource_service("outputs").find({"blog": blog["_id"]})
+    theme_names.extend(output.get("theme") for output in outputs)
+    theme_settings_service = get_resource_service("theme_settings")
+    for theme_name in dict.fromkeys(name for name in theme_names if name):
+        yield theme_settings_service.get_settings_for_blog(blog, theme_name)
 
 
 def _reset_non_public_fields(service, doc, public_fields):

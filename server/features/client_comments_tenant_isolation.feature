@@ -113,6 +113,42 @@ Feature: Public comments land in the blog's tenant
         Then we get error 403
 
     @auth
+    Scenario: Comments are accepted when an output channel theme allows them
+        Given system themes
+        Given a tenant "Tenant B"
+        And a user "b_admin" for current tenant
+        When we login as tenant user "b_admin"
+        When we post to "themes"
+        """
+        [{"name": "commenting-theme", "extends": "classic", "options": [{"name": "canComment", "type": "checkbox", "default": true}]}]
+        """
+        Then we get OK response
+        When we post to "blogs"
+        """
+        [{"title": "theme default", "blog_preferences": {"theme": "classic", "language": "en"}}]
+        """
+        When we save "mixed_blog" from last response "_id"
+        # the classic theme ships with canComment off
+        When we post anonymously to "/client_items"
+        """
+        {"text": "hi", "commenter": "reader", "client_blog": "#mixed_blog#", "item_type": "comment"}
+        """
+        Then we get error 403
+        When we post to "outputs"
+        """
+        [{"name": "commenting output", "blog": "#mixed_blog#", "theme": "commenting-theme"}]
+        """
+        Then we get OK response
+        When we post anonymously to "/client_items"
+        """
+        {"text": "hi", "commenter": "reader", "client_blog": "#mixed_blog#", "item_type": "comment"}
+        """
+        Then we get new resource
+        """
+        {"item_type": "comment", "blog": "#mixed_blog#"}
+        """
+
+    @auth
     Scenario: Bulk comments must target a single blog
         Given system themes
         Given a tenant "Tenant A"
