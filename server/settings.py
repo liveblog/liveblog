@@ -137,7 +137,10 @@ if env("REDIS_PORT"):
 BROKER_URL = env("CELERY_BROKER_URL", REDIS_URL)
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", REDIS_URL)
 CELERY_ALWAYS_EAGER = env("CELERY_ALWAYS_EAGER", False) == "True"
-CELERY_TASK_SERIALIZER = "json"
+# Tasks already use the "eve/json" serializer registered in superdesk.celery_app
+# (AppContextTask.serializer), which handles ObjectId. In eager mode Celery >= 4.3
+# ignores the task-level setting and uses this one instead.
+CELERY_TASK_SERIALIZER = "eve/json"
 CELERY_ACCEPT_CONTENT = ["pickle", "json"]  # it's using pickle when in eager mode
 CELERY_TASK_PROTOCOL = 1
 

@@ -44,7 +44,7 @@
     "imagesloaded": "^4.1.4",
     "liveblog-shared-tools": "eos87/liveblog-shared-tools",
     "lory.js": "^2.5.3",
-    "moment": "^2.18.1",
+    "moment": "2.30.1",
     "natives": "^1.1.6",
     "npm-exists": "^1.0.1",
     "nunjucks": "~3.0.1",

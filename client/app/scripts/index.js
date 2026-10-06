@@ -1,5 +1,13 @@
 import 'lb-bootstrap.scss';
 
+// Vendor CSS imported after lb-bootstrap so they appear later in the DOM.
+// css-loader 6.x injects @import dependencies before the main content,
+// so these must be separate imports to preserve the correct cascade order.
+import 'jquery-jcrop/css/jquery.Jcrop.css';
+import 'jquery-ui/themes/smoothness/jquery-ui.css';
+import 'superdesk-ui-framework/dist/superdesk-ui.bundle.css';
+import 'sir-trevor/sir-trevor.css';
+
 import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';

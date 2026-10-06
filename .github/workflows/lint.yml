@@ -4,9 +4,9 @@ on: [push, pull_request]
 
 jobs:
   black:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - uses: psf/black@stable
         with:
           options: "--check"
@@ -14,20 +14,15 @@ jobs:
           version: "~= 22.0"
 
   flake8:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -el {0}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          activate-environment: lint-env
-          python-version: 3.6
-          auto-activate-base: false
+          python-version: '3.8'
       - name: Install flake8
         run: |
-          conda install -y flake8
+          pip install flake8
       - name: Run flake8
         run: |
           flake8 --config=./server/setup.cfg server/

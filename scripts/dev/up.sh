@@ -4,7 +4,7 @@
 #   1. Backing services (Redis, Elasticsearch, MongoDB) in Docker.
 #   2. Backend: honcho running gunicorn (API), the websocket server, and the
 #      Celery worker + beat — natively, in the pyenv virtualenv.
-#   3. Client: the grunt/webpack dev server.
+#   3. Client: the webpack dev server.
 #
 # Idempotent: each layer is skipped if it's already healthy, so re-running
 # this on a live stack is a quick no-op. The backend and client run in the
@@ -25,8 +25,8 @@ RUN_DIR="$SCRIPT_DIR/.run"
 
 HONCHO_PIDFILE="$RUN_DIR/honcho.pid"
 HONCHO_LOGFILE="$RUN_DIR/honcho.log"
-GRUNT_PIDFILE="$RUN_DIR/grunt.pid"
-GRUNT_LOGFILE="$RUN_DIR/grunt.log"
+CLIENT_PIDFILE="$RUN_DIR/client.pid"
+CLIENT_LOGFILE="$RUN_DIR/client.log"
 
 LIVEBLOG_VENV="${LIVEBLOG_VENV:-liveblog}"
 
@@ -163,27 +163,27 @@ else
     wait_until_reachable "$API_URL" "backend API" 120 "$HONCHO_LOGFILE" backend_up
 fi
 
-# --- Layer 3: client (grunt) ----------------------------------------------
+# --- Layer 3: client (webpack dev server) -----------------------------------
 
 warn_if_port_busy 9000 "client"
 
 if reachable "$CLIENT_URL"; then
-    log "client already answering; skipping grunt start"
+    log "client already answering; skipping dev server start"
 else
     log "starting client dev server in the background (first build is slow: ~2-5 min)"
-    log "  logs: $GRUNT_LOGFILE"
+    log "  logs: $CLIENT_LOGFILE"
     log "  client will talk to backend at: $SUPERDESK_URL"
     ( cd "$CLIENT_DIR" \
-        && nohup ./node_modules/.bin/grunt --debug-mode=true \
-            > "$GRUNT_LOGFILE" 2>&1 & echo $! > "$GRUNT_PIDFILE" )
-    wait_until_reachable "$CLIENT_URL" "client" 300 "$GRUNT_LOGFILE"
+        && nohup npm start \
+            > "$CLIENT_LOGFILE" 2>&1 & echo $! > "$CLIENT_PIDFILE" )
+    wait_until_reachable "$CLIENT_URL" "client" 300 "$CLIENT_LOGFILE"
 
-    # The PID captured above is the nohup/subshell wrapper, which exits once
-    # grunt forks. Overwrite the pidfile with the real listener on :9000 so
+    # The PID captured above is the npm wrapper, not the webpack process it
+    # spawns. Overwrite the pidfile with the real listener on :9000 so
     # down.sh can find it.
     if command -v lsof > /dev/null; then
         listener_pid=$(lsof -ti:9000 -sTCP:LISTEN 2>/dev/null | head -1) || true
-        [ -n "${listener_pid:-}" ] && echo "$listener_pid" > "$GRUNT_PIDFILE"
+        [ -n "${listener_pid:-}" ] && echo "$listener_pid" > "$CLIENT_PIDFILE"
     fi
 fi
 
@@ -196,6 +196,6 @@ log "  API:           $API_URL"
 log "  Websocket:     ws://localhost:$WSPORT"
 log ""
 log "  Backend log:   $HONCHO_LOGFILE"
-log "  Client log:    $GRUNT_LOGFILE"
+log "  Client log:    $CLIENT_LOGFILE"
 log ""
 log "  Stop everything with:  ./scripts/dev/down.sh"
