@@ -8,7 +8,7 @@ from superdesk.resource import build_custom_hateoas
 from settings import MOBILE_APP_WORKAROUND
 from liveblog.polls.polls import poll_calculations
 from . import utils as post_utils
-from .utils import get_associations
+from .utils import find_ref_items, get_associations
 
 logger = logging.getLogger("superdesk")
 
@@ -190,24 +190,17 @@ class BlogPostsMixin:
     def related_items_map(self, docs):
         """
         Receives an array of posts, extracts their associations' IDs, hits the
-        database once per resource and returns them as a {residRef: item} dict.
+        database once per resource and tenant and returns them as a
+        {residRef: item} dict.
         """
-        items_map = {}
-        ids_by_service = {}
-
+        refs_by_tenant = {}
         for doc in docs:
-            for assoc in self.packageService._get_associations(doc):
-                item_ref_id = assoc.get("residRef")
-                if item_ref_id:
-                    service_name = assoc.get("location", "archive")
-                    ids = ids_by_service.get(service_name, [])
-                    ids.append(item_ref_id)
-                    ids_by_service[service_name] = ids
+            refs = refs_by_tenant.setdefault(doc.get("tenant_id"), [])
+            refs.extend(get_associations(doc))
 
-        for service_name, ids in ids_by_service.items():
-            for item in get_resource_service(service_name).find({"_id": {"$in": ids}}):
-                items_map[str(item.get("_id"))] = item
-
+        items_map = {}
+        for tenant_id, refs in refs_by_tenant.items():
+            items_map.update(find_ref_items(refs, tenant_id))
         return items_map
 
     def remove_post_from_list_and_db(self, docs, post):

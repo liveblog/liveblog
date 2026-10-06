@@ -157,6 +157,19 @@ def can_delete_blog(blog):
     return True
 
 
+def blog_comments_override(blog):
+    """Blog-level decision on reader comments, or None to defer to the theme's `canComment`.
+
+    Closed or deleted blogs never accept comments, and a `users_can_comment` other
+    than "unset" overrides the theme setting.
+    """
+    if blog.get("blog_status") in ("closed", "deleted"):
+        return False
+
+    blog_setting = blog.get("users_can_comment", "unset")
+    return None if blog_setting == "unset" else blog_setting == "enabled"
+
+
 def build_blog_public_url(app, blog_id, theme=None, output_id=None):
     """
     Creates the public url for a given blog. If `output_id` is provided

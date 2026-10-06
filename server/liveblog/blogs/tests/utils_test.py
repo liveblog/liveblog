@@ -1,5 +1,5 @@
 import pytest
-from ..utils import build_blog_public_url, get_blog_path
+from ..utils import blog_comments_override, build_blog_public_url, get_blog_path
 
 
 @pytest.fixture
@@ -43,3 +43,18 @@ def test_get_blog_path_without_output_id():
     expected_url = "blogs/123/index.html"
 
     assert get_blog_path(blog_id, theme, output_id) == expected_url
+
+
+@pytest.mark.parametrize(
+    "blog, expected",
+    [
+        ({"blog_status": "open"}, None),
+        ({"blog_status": "open", "users_can_comment": "unset"}, None),
+        ({"blog_status": "open", "users_can_comment": "enabled"}, True),
+        ({"blog_status": "open", "users_can_comment": "disabled"}, False),
+        ({"blog_status": "closed", "users_can_comment": "enabled"}, False),
+        ({"blog_status": "deleted", "users_can_comment": "enabled"}, False),
+    ],
+)
+def test_blog_comments_override(blog, expected):
+    assert blog_comments_override(blog) is expected
