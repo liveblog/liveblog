@@ -134,28 +134,28 @@ export class StripePortalPage {
         if (await postalCode.isVisible()) {
             await postalCode.fill(card.postalCode);
         }
+        // The Payment Element offers Link sign-up ("Save my information for
+        // faster checkout") with the customer's email and name prefilled.
+        // While any of it is set, the submit hangs or waits for a phone
+        // number. Depending on the geo-IP country the offer is a ticked
+        // checkbox (US, as on CI) or optional fields (EU), so both are undone.
+        const linkOptIn = element.getByRole('checkbox', { name: 'Save my information for faster checkout' });
+        if (await linkOptIn.isChecked({ timeout: 5_000 }).catch(() => false)) {
+            await linkOptIn.uncheck();
+        }
+        for (const prefilled of ['Email', 'Full name']) {
+            const field = element.getByRole('textbox', { name: prefilled, exact: true });
+            if (await field.isVisible()) {
+                await field.clear();
+            }
+        }
         await expect(this.page.getByRole('checkbox', { name: 'Use as default payment method' })).toBeChecked();
     }
 
     /** Submits the card filled in by `fillNewCard` and waits to be back on the wallet. */
     async saveNewCard() {
-        // The Payment Element prefills the customer's email into its optional
-        // Link sign-up box, and some submits only focus that field without
-        // sending anything. Submitting again goes through.
-        const submit = this.page.getByRole('main').getByRole('button', { name: /^Add payment method/ });
-        const leftForm = (timeout: number) => this.page
-            .waitForURL((url) => !url.pathname.includes('add-payment-method'), { timeout })
-            .then(() => true, () => false);
-        let accepted = false;
-        for (let attempt = 1; attempt <= 3 && !accepted; attempt++) {
-            // A submit that is still processing keeps the button disabled;
-            // the URL check below is what decides.
-            await submit.click({ timeout: 10_000 }).catch(() => undefined);
-            accepted = await leftForm(attempt < 3 ? 20_000 : SUBMIT_TIMEOUT);
-        }
-        if (!accepted) {
-            throw new Error('The Customer Portal did not accept the new card after 3 submits');
-        }
+        await this.page.getByRole('main').getByRole('button', { name: /^Add payment method/ }).click();
+        await this.page.waitForURL((url) => !url.pathname.includes('add-payment-method'), { timeout: SUBMIT_TIMEOUT });
         await expect(this.heading).toHaveText('Wallet', { timeout: LOAD_TIMEOUT });
     }
 
