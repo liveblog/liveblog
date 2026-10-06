@@ -23,7 +23,12 @@ from liveblog.posts.tasks import (
     update_post_blog_embed,
     update_scheduled_post_blog_data,
 )
-from liveblog.posts.utils import check_content_diff
+from liveblog.posts.utils import (
+    check_content_diff,
+    find_ref_items,
+    validate_post_refs,
+)
+from liveblog.tenancy.context import system_context
 from liveblog.common import run_once
 
 
@@ -1070,3 +1075,74 @@ class PostsModuleTestCase(TenantAwareTestCase):
             post_from_tenant_a,
             "Tenant B should not see Tenant A's posts",
         )
+
+    def _insert_ref_items(self):
+        other_tenant_id = ObjectId()
+        own_id, other_id = self.app.data.insert(
+            "archive",
+            [
+                {
+                    "_id": "urn:test:ref-own-item",
+                    "particular_type": "item",
+                    "text": "own",
+                    "tenant_id": self.tenant_id,
+                },
+                {
+                    "_id": "urn:test:ref-other-item",
+                    "particular_type": "item",
+                    "text": "other",
+                    "tenant_id": other_tenant_id,
+                },
+            ],
+        )
+        refs = [
+            {"residRef": own_id},
+            {"residRef": other_id, "location": "archive"},
+            {"residRef": str(self.tenant_id), "location": "tenants"},
+            {"residRef": str(self.user["_id"]), "location": "users"},
+            {"residRef": {"$ne": None}},
+        ]
+        return own_id, other_id, other_tenant_id, refs
+
+    def test_find_ref_items_is_scoped_to_the_given_tenant(self):
+        own_id, other_id, other_tenant_id, refs = self._insert_ref_items()
+
+        self.assertEqual(set(find_ref_items(refs, self.tenant_id)), {own_id})
+
+        # Celery tasks and system mode run without tenant filtering in the services
+        with system_context():
+            self.assertEqual(set(find_ref_items(refs, self.tenant_id)), {own_id})
+            self.assertEqual(set(find_ref_items(refs, other_tenant_id)), {other_id})
+
+    def test_validate_post_refs_rejects_foreign_and_unknown_resources(self):
+        own_id, other_id, _, refs = self._insert_ref_items()
+        root = {"id": "root", "refs": [{"idRef": "main"}]}
+
+        validate_post_refs(
+            {"groups": [root, {"id": "main", "refs": [{"residRef": own_id}]}]},
+            self.tenant_id,
+        )
+        for ref in refs[1:]:
+            post = {
+                "groups": [root, {"id": "main", "refs": [{"residRef": own_id}, ref]}]
+            }
+            with self.assertRaises(SuperdeskApiError) as ctx:
+                validate_post_refs(post, self.tenant_id)
+            self.assertEqual(ctx.exception.status_code, 400, ref)
+
+    def test_package_service_ignores_disallowed_locations(self):
+        own_id, _, _, _ = self._insert_ref_items()
+        package_service = self.posts_service.packageService
+        users_ref = {"residRef": str(self.user["_id"]), "location": "users"}
+
+        with self.assertRaises(SuperdeskApiError):
+            package_service.get_associated_item(users_ref)
+        self.assertEqual(
+            package_service.get_associated_item(users_ref, throw_if_not_found=False),
+            (None, users_ref["residRef"], None),
+        )
+
+        item, item_id, endpoint = package_service.get_associated_item(
+            {"residRef": own_id}
+        )
+        self.assertEqual((item["_id"], item_id, endpoint), (own_id, own_id, "items"))
