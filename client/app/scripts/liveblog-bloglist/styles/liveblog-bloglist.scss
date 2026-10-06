@@ -13,17 +13,423 @@
     margin:0px;
 }
 
+// Float the Blog List as a card, matching Settings/Analytics/Advertising —
+// `.main-section` is vendor's `position:absolute; top/right/bottom/left`
+// with no width/height set, so a plain margin shrinks it inward on all
+// sides without touching any of the offset math children rely on.
+.main-section.bloglist {
+    margin: 12px 20px 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+// "Active blogs"/"Archived blogs"/"Deleted blogs" — a segmented pill toggle
+// group, same technique as the Adverts/Collections toggle on the
+// Advertising page (client/app/scripts/liveblog-advertising/styles/
+// advertising.scss). `.subnav` here is a SIBLING of `.main-section.
+// bloglist`, not a descendant, so `:has()` scopes it correctly.
+.subnav:has(+ .main-section.bloglist) {
+    // Taller row for the pill toggle + "Create blog" button to breathe
+    // in — same height already used for the Settings page's own subnav
+    // (client/app/scripts/liveblog-edit/styles/settings.scss).
+    height: 5.8rem;
+    // Bulk-select bar ("N item(s) selected" / Cancel / Archive / Delete)
+    // — vendor's plain light-blue bar becomes the app's teal "selected"
+    // tint, matching the checkbox/active-state accent used everywhere
+    // else in this redesign.
+    .subnav__sliding-toolbar {
+        background-color: $lb-rail-active-bg !important;
+        box-shadow: none;
+        .sliding-toolbar__info-text {
+            color: $lb-pill-text;
+            font-weight: 500;
+            opacity: 1;
+        }
+        .btn {
+            @include border-radius($lb-radius-pill !important);
+            text-transform: none;
+            font-weight: 500;
+            font-size: 13px;
+            box-shadow: none !important;
+        }
+        // "Cancel" — the one `.btn` here that's neither primary nor
+        // alert — plain white pill instead of vendor's bare-link look.
+        .btn:not(.btn--primary):not(.btn--alert) {
+            background: #fff !important;
+            border: 1px solid $lb-input-border !important;
+            color: $lb-pill-text !important;
+            &:hover {
+                background: #fff !important;
+                border-color: $lb-rail-active !important;
+                color: $lb-rail-active !important;
+            }
+        }
+        // "Delete"/"Delete Permanently" — hollow danger pill with a
+        // masked Lucide trash icon instead of vendor's icon-font glyph
+        // (same invisible-glyph issue fixed elsewhere in this redesign).
+        .btn--alert {
+            background: #fff !important;
+            border: 1px solid rgba($btnDangerColor, .35) !important;
+            color: $btnDangerColor !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            i.icon-trash {
+                &:before {
+                    content: none;
+                }
+                @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $btnDangerColor, 16px);
+            }
+            &:hover {
+                background: rgba($btnDangerColor, .08) !important;
+                border-color: $btnDangerColor !important;
+            }
+        }
+    }
+    // Vendor's wrapper only sets a LEFT margin (16px) — fine for the
+    // original small round icon-only button, but this pill is wider and
+    // was landing flush against the right edge of the screen with no
+    // breathing room at all.
+    .subnav__button-stack--square-buttons {
+        margin-right: 20px;
+        // Vendor's wrapper is `display:flex` with no `align-items`, which
+        // defaults to `stretch` — harmless for the old icon-only button
+        // (it filled the wrapper anyway), but our explicit `height:40px`
+        // button now has a definite cross-size, so it aligns to the
+        // flex-start (top) edge of the 48px-tall wrapper instead of
+        // centering, unlike the pill toggle next to it.
+        align-items: center;
+    }
+    // Vendor's `.button-stack` is a fixed `height:48px !important` box
+    // with `position:relative` but no `display:flex` — its children (the
+    // grid-icon nav button, the tabs pill) sit top-aligned in normal flow
+    // instead of centered, unlike the "Create blog" pill on the other
+    // side of the row (its wrapper IS flex — see above), which made the
+    // two ends of the row look vertically uneven.
+    .button-stack {
+        display: flex;
+        align-items: center;
+        // The "back to grid" icon button (`.navbtn.hover.pull-left`,
+        // links to `/#/liveblog` — i.e. this exact page) isn't in the
+        // design and only pushed the tabs pill away from the left edge.
+        // Scoped to THIS page's `.subnav` only (`:has(+ .main-section.
+        // bloglist)` above) — other pages that reuse the same subnav/
+        // button-stack markup keep the icon.
+        .navbtn.hover.pull-left {
+            display: none;
+        }
+    }
+    .button-stack .nav-tabs {
+        display: inline-flex;
+        height: auto;
+        // 20px, not 4px — with the grid-icon button above hidden, this
+        // margin is now the only thing standing between the pill and the
+        // subnav's left edge. Match the 20px left margin the floating
+        // card below (`.main-section.bloglist`) already uses so the two
+        // line up.
+        margin: 0 0 0 20px;
+        background: #fff;
+        padding: 4px;
+        @include border-radius($lb-radius-pill);
+        > li {
+            margin-bottom: 0;
+            > button {
+                margin: 0;
+                height: auto;
+                line-height: normal;
+                background: none;
+                border: none !important;
+                @include border-radius($lb-radius-pill);
+                padding: 8px 18px;
+                color: $lb-pill-text;
+                font-weight: 500;
+                font-size: 13px;
+                transition: background-color .15s ease, color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            &.active > button, &.active > button:hover {
+                background-color: $lb-btn-dark-bg;
+                color: #fff;
+            }
+        }
+    }
+
+    // "Create blog" — vendor's plain round "+" (`.sd-create-btn`, themed
+    // teal + white circle-plus icon app-wide in liveblog.scss) becomes a
+    // labeled pill button here to match the design, via the shared
+    // `lb-create-btn-pill` mixin (lb-mixins.scss) — same technique now
+    // reused for Users/Free Types/Theme Manager's own "+" buttons.
+    .sd-create-btn {
+        @include lb-create-btn-pill('Create blog');
+    }
+}
+
+// On narrow screens the tabs pill + "Create blog" button together are
+// wider than the fixed-height row can hold on one line — they were simply
+// overflowing past the screen's right edge instead of wrapping, which also
+// forced the whole page wider than the viewport (that's what was clipping
+// the shared top bar's "Blog List" title on the left too — same class of
+// bug as the blog editor page, see responsive.scss). Rather than making
+// the row scroll horizontally, free up the width instead: let each tab's
+// label wrap onto two lines (vendor's own older mobile layout did this —
+// "Active"/"blogs" stacked). "Create blog" collapsing to an icon-only
+// circle at this same breakpoint is handled by the `lb-create-btn-pill`
+// mixin itself now (lb-mixins.scss).
+@media(max-width: 800px) {
+    .subnav:has(+ .main-section.bloglist) {
+        .button-stack .nav-tabs {
+            margin-left: 12px;
+            > li > button {
+                padding: 6px 12px;
+                white-space: normal;
+                text-align: center;
+                line-height: 1.25;
+            }
+        }
+    }
+    .main-section.bloglist {
+        overflow-x: hidden;
+    }
+}
+
 .bloglist {
     header {
         position: absolute;
         top: 0; left: 0; right: 0;
-        height: $nav-height;
-        border-bottom: 1px solid #e0e0e0;
+        height: 68px;
+        box-sizing: border-box;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        border-top-left-radius: $lb-radius-card;
+        border-top-right-radius: $lb-radius-card;
+        // Vendor floats this left; inside the new flex row that's inert,
+        // but give it a fixed basis so it reads as a search field, not a
+        // stretched-full-width bar. ~45% of the row, matching the design
+        // (a much wider search field than a typical toolbar search icon).
+        [sd-searchbar] {
+            flex: 1 1 45%;
+            max-width: 600px;
+        }
+        .flat-searchbar {
+            background: #F5F6F7;
+            border: 1px solid transparent;
+            @include border-radius($lb-radius-pill);
+            transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+            // Same active/focus treatment as the plain text inputs
+            // elsewhere ($lb-rail-active border + soft ring) — vendor's
+            // input itself is what receives focus, so `:focus-within` on
+            // the pill is what actually lights up when it's clicked into
+            // or being typed in.
+            &:focus-within {
+                background: #fff;
+                border-color: $lb-rail-active;
+                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+            }
+            .search-handler {
+                border: none !important;
+                padding: 6px 14px;
+                position: relative;
+            }
+            // `.trigger-icon` is a real `<label for="search-input">` —
+            // clicking it natively focuses the input, which is why only
+            // the tiny icon was clickable. The input itself only ever
+            // gets its full-width flex sizing under vendor's `.extended`
+            // state (toggled by clicking that label, JS-only — CSS can't
+            // flip an Angular scope flag), so most of this bar's visible
+            // width is actually just `.search-handler`'s own background,
+            // not the input, and clicks there hit a plain, inert div.
+            // Stretching the label itself to cover the whole bar turns
+            // that whole area into the same clickable label — no JS
+            // needed, `for="search-input"` already does the focusing.
+            .trigger-icon {
+                position: absolute !important;
+                inset: 0 !important;
+                // Vendor sets an explicit 28x28 `width`/`height` — those
+                // win over `inset:0` regardless of cascade order (inset
+                // only sizes an element when width/height is auto), so
+                // this needs `!important` to actually stretch the label.
+                width: 100% !important;
+                height: 100% !important;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                padding-left: 14px;
+                margin: 0;
+                cursor: text;
+                opacity: 1;
+                // Same old icon-font glyph pattern as everywhere else —
+                // swap it for a masked Lucide SVG instead of just tinting
+                // vendor's `\E618` glyph.
+                i.icon-search {
+                    &:before {
+                        content: none;
+                    }
+                    @include lb-icon-font-mask(url('~images/icons/search.svg'), $lb-subnav-icon-square, 16px);
+                }
+            }
+            // Vendor's actual default is `width: 0` (a collapsed state —
+            // it only grows once the "extended" class is toggled by
+            // clicking the trigger label, JS-only), which is what threw
+            // off both the icon centering (the flex row's real content
+            // was just this 0-width input) and let typed text render
+            // outside any real box instead of on one line next to the
+            // icon. Force it to actually fill the bar.
+            input {
+                position: relative;
+                z-index: 2;
+                width: 100% !important;
+                flex: 1 1 auto !important;
+                height: 100% !important;
+                // The icon (drawn by the absolutely-positioned label
+                // behind this) sits at ~28px from the bar's left edge —
+                // without this, typed text starts underneath it.
+                padding-left: 26px !important;
+                font-size: 13px;
+            }
+            // Same story as the input's `width:0` above: vendor's base
+            // rule is `display:none`, only flipped to `inline-block`
+            // under `.flat-searchbar.extended` (JS-only, clicking the
+            // trigger label). Force it visible always — the existing
+            // `opacity` (0 → .4 via the `.visible` class Angular already
+            // toggles off `q`) still does the actual show/hide fade.
+            .search-close {
+                display: inline-block !important;
+                position: relative;
+                z-index: 2;
+            }
+        }
+        // Vendor floats both of these right, which visually reverses their
+        // DOM order (last-floated lands leftmost) — under `display:flex`
+        // float is inert, so `order` + `margin-left:auto` reproduce the
+        // same "pagination, then grid/link icons" reading order explicitly.
+        [sd-pagination] {
+            order: 2;
+            margin-left: auto;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            // `[sd-pagination]` (this attribute wrapper) and the real
+            // `.sd-pagination` element are NOT the same node — the
+            // directive renders `.sd-pagination` as a child of this div.
+            // Flexing the wrapper only lays out that one child; the
+            // vendor `.sd-pagination` itself is still `display:block`
+            // with `inline-block` children (page-info/select/btn-group),
+            // which wrap onto a second line once this wrapper is narrower
+            // than their combined width. Flex it too, on one line.
+            .sd-pagination {
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+                gap: 10px;
+                padding: 0;
+            }
+            .page-info {
+                color: $lb-pill-text;
+                font-size: 13px;
+                white-space: nowrap;
+                margin-right: 0;
+            }
+            em.page-info {
+                font-style: normal;
+            }
+            // These icon classes carry a real `font-family: sd_icons` (the
+            // webfont IS loaded, unlike the "Create blog" button's
+            // `icon-plus-large` earlier), so they already rendered SOME
+            // glyph — just the old icon set's, not Lucide's. Masked SVGs
+            // replace the glyph itself, same technique as pencil/trash
+            // elsewhere; `content:none` drops the old `::before` glyph so
+            // it doesn't paint underneath.
+            .btn-group {
+                display: flex;
+                gap: 2px;
+                .btn {
+                    border: none;
+                    // The shared global `.btn` fallback (liveblog.scss)
+                    // sets its own background with `!important` — this
+                    // local, no-!important `background: none` was losing
+                    // to it regardless of source order or specificity.
+                    background: none !important;
+                    width: 28px;
+                    height: 28px;
+                    padding: 0;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    @include border-radius($lb-radius-pill);
+                    i {
+                        &:before {
+                            content: none;
+                        }
+                    }
+                    i.icon-backward-thin {
+                        @include lb-icon-font-mask(url('~images/icons/chevrons-left.svg'), $lb-pill-text, 16px);
+                    }
+                    i.icon-chevron-left-thin {
+                        // Vendor reuses the right-chevron glyph for "left"
+                        // by rotating it 180deg elsewhere in the app — a
+                        // dedicated icon here doesn't need that rotation,
+                        // and without resetting it, vendor's rule would
+                        // flip this mask into pointing right instead.
+                        transform: none;
+                        @include lb-icon-font-mask(url('~images/icons/chevron-left.svg'), $lb-pill-text, 16px);
+                    }
+                    i.icon-chevron-right-thin {
+                        @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 16px);
+                    }
+                    i.icon-forward-thin {
+                        @include lb-icon-font-mask(url('~images/icons/chevrons-right.svg'), $lb-pill-text, 16px);
+                    }
+                    &:hover:not(:disabled) {
+                        background: $lb-rail-active-bg;
+                        i {
+                            background-color: $lb-rail-active;
+                        }
+                    }
+                    &:disabled i {
+                        background-color: $lb-timestamp;
+                    }
+                }
+            }
+        }
         .view-select {
+            order: 3;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 12px;
             button {
                 border: 0;
                 background: none;
-                padding: 10px;
+                width: 32px;
+                height: 32px;
+                padding: 0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                @include border-radius($lb-radius-pill);
+                i {
+                    &:before {
+                        content: none;
+                    }
+                }
+                i.icon-th {
+                    @include lb-icon-font-mask(url('~images/icons/layout-grid.svg'), $lb-pill-text, 18px);
+                }
+                i.icon-th-list {
+                    @include lb-icon-font-mask(url('~images/icons/list.svg'), $lb-pill-text, 18px);
+                }
+                i.icon-link {
+                    @include lb-icon-font-mask(url('~images/icons/link.svg'), $lb-pill-text, 18px);
+                }
+                &:hover {
+                    background: $lb-rail-active-bg;
+                    i {
+                        background-color: $lb-rail-active;
+                    }
+                }
             }
         }
     }
@@ -32,50 +438,146 @@
     }
     .list-container {
         position: absolute;
-        top: $nav-height + 1;
+        top: 68px;
         left: 0; right: 0; bottom: 0;
-        padding: 30px;
+        background: #fff;
+        border-bottom-left-radius: $lb-radius-card;
+        border-bottom-right-radius: $lb-radius-card;
+        padding: 20px;
         overflow-y: auto;
         .empty-state {
+            // Was a flat 32px top+bottom — fine for the genuinely-empty
+            // "No blogs found." state, but this same class also wraps the
+            // Deleted tab's "time remaining" notice (shown even when blogs
+            // ARE present, right above the list), where 32px read as an
+            // oversized gap under the search bar.
+            padding: 0 0 24px;
             > div {
-                font-size: 1.25em;
+                font-size: 15px;
+                color: $lb-pill-text;
+                margin-bottom: 4px;
             }
-            button {
+            // Vendor's global `.btn.btn--primary` fallback fills this
+            // dark navy `!important` — override at equal specificity
+            // (also two classes) so it comes out teal/green, matching
+            // the "Create blog" button in the header above.
+            button.btn--primary {
                 height: 40px;
-                margin: 20px 0;
+                margin: 20px 0 0;
+                padding: 0 20px 0 16px;
+                display: inline-flex;
+                align-items: center;
+                background-color: $lb-rail-active !important;
+                border-color: $lb-rail-active !important;
+                @include border-radius($lb-radius-pill !important);
+                &:hover {
+                    background-color: lighten($lb-rail-active, 8%) !important;
+                }
+                // `svg-icon-add` has no actual glyph defined anywhere in
+                // this app any more — same invisible-icon issue as the
+                // "Create blog" button originally had. Same fix: mask
+                // the same `circle-plus` Lucide icon used there instead.
+                i.svg-icon-add {
+                    background-image: none !important;
+                    margin: 0;
+                    @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+                }
                 .title {
-                    top: -4px;
-                    position: relative;
-                    left: 4px;
+                    top: auto;
+                    position: static;
+                    left: auto;
+                    margin-left: 8px;
                     color: #fff;
+                    text-transform: none;
+                    font-weight: 600;
+                    font-size: 13px;
                 }
             }
         }
+        // List view — same row-card treatment as Output Channels/Adverts
+        // (border + radius + white bg, stacked with a gap) instead of
+        // vendor's plain striped table. `display:block` throughout takes
+        // `<table>/<tbody>/<tr>/<td>` out of table layout so `tr` can be
+        // a normal bordered, rounded, padded box — a `<tr>` can't take a
+        // border-radius or margin while still laid out as a table row.
         .row-list {
+            width: 100%;
+            display: block;
+            border: none;
+            tbody, tr, td {
+                display: block;
+            }
+            // Bootstrap's `.table-striped`/`.table` (both classes are
+            // also on this `<table>`) paint an alternating grey `td`
+            // background and a `border-top` on every cell — both fight
+            // the plain white row-card look above. `!important` since
+            // neither vendor rule uses it, so specificity doesn't matter.
+            td, th {
+                background: transparent !important;
+                border-top: none !important;
+                border-bottom: none !important;
+            }
             tr {
+                background: #fff !important;
+                border: 1px solid $lb-input-border;
+                @include border-radius($lb-radius-input);
+                margin-bottom: 12px;
+                padding: 16px 20px;
+                cursor: pointer;
+                transition: box-shadow .15s ease;
+                &:last-child {
+                    margin-bottom: 0;
+                }
                 &.can-access {
                     opacity: 1;
+                    &:hover {
+                        box-shadow: $lb-card-shadow;
+                    }
                 }
-                opacity: .5;
+                &:not(.can-access) {
+                    opacity: .5;
+                    cursor: default;
+                }
                 .content {
-                    .time {
-                        font-size: 13px;
-                        font-style: italic;
-                        color: #bcbcbc;
+                    padding: 0;
+                    h3 {
+                        margin: 0 0 4px;
+                        font-size: 15px;
+                        font-weight: 600;
+                        color: $lb-btn-dark-bg;
+                        small {
+                            margin-left: 6px;
+                            font-size: 13px;
+                            font-weight: 400;
+                            color: $lb-pill-text;
+                        }
                     }
                     .description {
+                        font-size: 13px;
+                        line-height: 18px;
+                        color: $lb-pill-text;
+                        margin-bottom: 4px;
                         overflow: hidden;
                         display: -webkit-box;
                         -webkit-box-orient: vertical;
-                        -webkit-line-clamp: 3; 
+                        -webkit-line-clamp: 3;
                         text-overflow: ellipsis;
+                    }
+                    .time {
+                        font-size: 12px;
+                        font-style: normal;
+                        color: $lb-timestamp;
                     }
                 }
             }
         }
+        // Responsive card grid — vendor's fixed-260px flex-wrap is replaced
+        // with auto-fill columns so the grid reflows from 1 to N columns
+        // instead of always packing fixed-width boxes with leftover gaps.
         .card-list {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
             > li {
                 &:not(.can-access):hover {
                   @include box-shadow(none);
@@ -86,92 +588,163 @@
                 }
                 cursor: default;
                 opacity: .5;
-                border: 1px solid #d4d4d4;
+                position: relative;
+                border: 1px solid $lb-input-border;
                 background-color: white;
-                margin: 0 0 20px 20px;
-                padding: 10px;
-                max-width: 260px;
-                flex: 0 1 260px;
+                margin: 0;
+                padding: 0;
+                @include border-radius($lb-radius-card);
                 @include border-box();
                 cursor: pointer;
+                transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+                &:hover {
+                    box-shadow: $lb-card-shadow;
+                }
+                &.can-access:hover {
+                    transform: translateY(-2px);
+                    border-color: $lb-rail-active;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                    .media div {
+                        transform: scale(1.05);
+                    }
+                }
                 .close {
                     position: absolute;
                     right: 10px;
                     top: 10px;
                 }
                 .media {
+                    position: relative;
                     max-width: 100%;
-                    height: 140px;
+                    height: 150px;
                     @include border-box();
-                    background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
+                    background-color: #f8f8f8;
+                    border-top-left-radius: $lb-radius-card;
+                    border-top-right-radius: $lb-radius-card;
+                    overflow: hidden;
+                    // Placeholder icon — a masked Lucide `image` glyph on a
+                    // centered `:before`, kept separate from `.media`'s own
+                    // `background-color` above. Masking `.media` itself
+                    // (an earlier attempt) clips its `background-color` to
+                    // just the icon's silhouette, leaving the rest of the
+                    // box transparent (the white card behind shows through
+                    // instead of the light-grey fill) — a dedicated
+                    // pseudo-element avoids that.
+                    &:before {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 56px;
+                        height: 56px;
+                        @include lb-icon-bg-mask(url('~images/icons/image.svg'), #d7dbe0);
+                    }
                     div {
-                        width: 238px;
-                        height: 140px;
+                        // Real blog picture (when set) needs to sit above
+                        // the placeholder `:before` — both are absolutely
+                        // stacked in the same paint bucket otherwise, and
+                        // `:before` being first in source order isn't
+                        // enough on its own to lose that fight.
+                        position: relative;
+                        z-index: 1;
+                        width: 100%;
+                        height: 150px;
                         background-position: center center;
                         background-size: cover;
+                        transition: transform .2s ease;
                     }
                 }
                 .content {
                     min-height: 60px;
                     @include border-box();
-                    padding: 0;
+                    padding: 16px 16px 0;
                     overflow: hidden;
-                    margin: 10px 0;
+                    margin: 0;
                     .time {
                         font-size: 13px;
                         font-style: italic;
                         color: #bcbcbc;
                     }
                     h3 {
-                        color: $sd-blue;
-                        padding: 0 0 5px 0;
-                        max-height: 54px;
+                        color: $lb-btn-dark-bg;
+                        padding: 0;
+                        margin: 0 0 6px;
                         font-size: 16px;
+                        font-weight: 700;
                         line-height: 20px;
-                        white-space: nowrap;
-                          overflow: hidden;
-                          text-overflow: ellipsis;
-                    }
-                    .description {
-                        min-height: 30px;
-                        font-size: 12px;
-                        line-height: 15px;
-                        color: $gray;
+                        white-space: normal;
                         overflow: hidden;
                         display: -webkit-box;
                         -webkit-box-orient: vertical;
-                        -webkit-line-clamp: 3; 
+                        -webkit-line-clamp: 2;
+                        text-overflow: ellipsis;
+                    }
+                    .description {
+                        min-height: 30px;
+                        font-size: 13px;
+                        line-height: 18px;
+                        color: $lb-pill-text;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 4;
                         text-overflow: ellipsis;
                     }
                 }
+                // Metadata block — a shaded, rounded box inset in the card
+                // (vendor's plain top-border footer), each `dt`/`dd` pair
+                // laid out as label-left/value-right via CSS grid instead
+                // of the old float/fixed-width columns. A fixed label
+                // column (not `max-content`) is used so the nested `<dl>`
+                // (see main.ng1 — "Last updated" onward is a second `<dl>`
+                // inside this one) lines up with the outer one without
+                // `subgrid`.
                 .footer {
-                    height: 65px;
-                    border-top: 1px solid #ebebeb;
-                    padding: 10px 10px 5px 10px;
-                    margin: 0 -10px;
+                    height: auto;
+                    border-top: none;
+                    padding: 12px;
+                    // Even 16px on all sides — `.content` above has no
+                    // bottom padding of its own, so a zeroed top margin
+                    // here left the description text touching this box
+                    // with no breathing room at all.
+                    margin: 16px;
+                    background: #e9f0f2;
+                    @include border-radius($lb-radius-input);
                     @include border-box();
                     dl {
+                        display: grid;
+                        grid-template-columns: 96px 1fr;
+                        column-gap: 8px;
+                        row-gap: 6px;
                         margin: 0;
-                        font-size: 11px;
+                        font-size: 12px;
+                        // The nested `<dl>` spans both parent columns and
+                        // repeats the same grid for its own rows.
+                        dl {
+                            grid-column: 1 / -1;
+                        }
                         dt {
                             @include text-light();
-                            clear: both;
-                            float: left;
-                            color: #b4b4b4;
+                            float: none;
+                            clear: none;
+                            color: $lb-pill-text;
                             font-weight: 400;
-                            line-height: 12px;
-                            min-width: 82px;
-                            text-transform: uppercase;
-                            margin: 2px 0;
+                            line-height: 16px;
+                            min-width: 0;
+                            text-transform: none;
+                            margin: 0;
                         }
                         dd {
                             @include text-light();
-                            float: left;
-                            width: 145px;
+                            float: none;
+                            width: auto;
                             font-weight: 400;
-                            line-height: 12px;
+                            color: $lb-btn-dark-bg;
+                            line-height: 16px;
                             word-wrap: break-word;
-                            margin: 2px 0 2px 9px;
+                            text-align: right;
+                            margin: 0;
                         }
                     }
                 }
@@ -261,8 +834,12 @@ div.button-stack.right-stack.create-blog {
     right: 0;
 }
 
+// Tuned for the card-list redesign above: the card's `<li>` no longer has
+// its own padding (the image sits flush with the card edges), so this now
+// sits directly over the top-left corner of that image instead of 2rem in.
 .bulk-select {
     position: absolute;
-    top: 2rem;
-    left: 2rem;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
 }

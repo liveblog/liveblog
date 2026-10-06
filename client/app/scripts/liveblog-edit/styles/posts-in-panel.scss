@@ -7,14 +7,25 @@
         color: #3a87ad;
     }
     &--comments {
-        .avatar-comment {
+        // `.avatar-comment` is the inner `<figure>`; hiding just that left
+        // its parent `.lb-post__figure` (float: left; width: 30px; from
+        // post.scss) rendered as an empty invisible floated box, which
+        // still displaces the comment text to the right by ~30px with
+        // nothing there to show for it. Hide the whole wrapper instead.
+        .lb-post__figure {
             display: none !important;
         }
     }
     .lb-post {
         &__holder {
             background-color: transparent;
-            padding: 14px 10px 0 12px;
+            // Right padding was only 10px (vs. 20px on the Timeline card
+            // variant) — the right-aligned action icons (star/pin/trash/
+            // edit/send) sat almost flush against the edge because of it.
+            // 20px matched Timeline but read as too much empty space on
+            // wide/desktop screens for this denser list variant — 15px
+            // splits the difference.
+            padding: 14px 15px 0 12px;
             border-bottom: 1px solid #DBDBDB;
             @include border-radius(0);
         }

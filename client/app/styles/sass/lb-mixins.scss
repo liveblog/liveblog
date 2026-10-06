@@ -1,5 +1,112 @@
 @import '~superdesk-core/styles/sass/mixins';
 
+// Replace an icon-font glyph (font-family/content coming from the vendored
+// sd_icons font) with a Lucide SVG rendered via mask, tinted through
+// background-color since currentColor can't reach a masked element.
+@mixin lb-icon-font-mask($url, $color: #333, $size: 16px) {
+    display: inline-block;
+    width: $size;
+    height: $size;
+    font-size: 0;
+    &:before {
+        content: none;
+    }
+    background-color: $color;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// Same, but for icons that were a background-image sprite instead of a
+// font-icon glyph (no `:before` content to suppress).
+@mixin lb-icon-bg-mask($url, $color: #333) {
+    background-image: none !important;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: $color;
+}
+
+// Turns a vendor `.sd-create-btn` (a bare circular "+" — the directive
+// replaces whatever's in the template with its own icon/`.circle` markup,
+// see the app-wide `.sd-create-btn`/`.sd-create-btn i` rules in
+// liveblog.scss for the icon/circle color) into a labeled teal pill, e.g.
+// the Blog List's "Create blog" button. The icon itself still comes from
+// that shared app-wide rule — this only handles the pill shape, hiding the
+// now-redundant `.circle` badge (the icon already draws its own ring), and
+// injecting the label via `content:` since these buttons have no text node
+// of their own in the template.
+@mixin lb-create-btn-pill($label) {
+    position: relative;
+    width: auto !important;
+    height: 40px !important;
+    padding: 0 20px 0 16px !important;
+    display: inline-flex !important;
+    align-items: center;
+    overflow: visible !important;
+    @include border-radius($lb-radius-pill !important);
+    background-color: $lb-rail-active !important;
+    // Vendor's `.navbtn` base class (present on most of these buttons)
+    // draws a faint `border-left` divider meant for a row of icon-only
+    // buttons sitting flush against each other — on a standalone pill/
+    // circle it's a stray hairline, and since it's one-sided it also
+    // throws off the icon's horizontal centering once collapsed to a
+    // bare circle (see the @media block below).
+    border: none !important;
+    // No lift/shadow hover here (or on any other green "+" create button
+    // app-wide) — that treatment is reserved for the blog editor's
+    // Publish button specifically (liveblog-edit.scss's
+    // `.actions .btn.btn--primary:hover`), not every teal pill.
+    // Vendor's own icon-font CSS absolutely-centers this assuming the old
+    // bare 48×48 icon-only button — drop back into normal inline flow so
+    // it sits before the injected label instead of centered under it.
+    i {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 2;
+    }
+    .circle {
+        display: none !important;
+    }
+    &::after {
+        content: $label;
+        position: relative;
+        z-index: 2;
+        margin-left: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    // On narrow screens there's no room left for a labeled pill next to
+    // the page title/tabs (it was overlapping or overflowing off-screen —
+    // Blog List hit this first, see its own subnav rules), so collapse
+    // back down to the vendor's original icon-only circle for every page
+    // using this mixin.
+    @media (max-width: 800px) {
+        width: 40px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        &::after {
+            content: none !important;
+        }
+        i {
+            margin: 0 !important;
+        }
+    }
+}
+
 @mixin buttonStates($background:$btnDefaultColor, $color: $sd-text){
     color: $color;
     background-color: $background;

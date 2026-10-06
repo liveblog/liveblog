@@ -24,11 +24,14 @@
         display:block;
         padding: 20px 20px 8px 20px;
         background-color: white;
-        @include border-radius(3px);
+        @include border-radius($lb-radius-card);
     }
-    &__content {margin-left: 45px;}
+    &__content {
+        margin-left: 45px;
+        color: black;
+    }
     &__header {
-        .name, .producer {font-weight: 600;}
+        .name, .producer {font-weight: 600; color: black;}
         .producer::before {
             content: "("
         }
@@ -39,14 +42,14 @@
             font-family: 'Roboto', sans-serif;
             font-weight: 400;
             font-size: 10px;
-            color: #999999;
+            color: $lb-timestamp;
             text-transform: uppercase;
         }
         .updated-time {
             font-family: 'Roboto', sans-serif;
             font-weight: 500;
             font-size: 12px;
-            color: #333333;
+            color: $lb-timestamp;
         }
         .inline {
             display: inline-block;
@@ -77,17 +80,71 @@
         li {
             display: inline-block;
             a {
+                display: inline-block;
+                vertical-align: middle;
+                // Kills the inline-block "phantom" bottom space reserved
+                // for a text line-box (descenders) by matching the line box
+                // to the icon's own height — font-size: 0 also zeroed sizing
+                // that icon-unpublish/icon-publish rely on, so use line-height
+                // instead of touching font-size.
+                line-height: 16px;
                 padding: 5px 5px;
+                border-radius: 6px;
+                transition: background-color .15s ease;
                 > i {
-                    @include transition(opacity .25s linear);
-                    opacity: .3;
+                    @include transition(opacity .15s ease);
+                    opacity: .5;
+                    color: $lb-btn-dark-bg;
                 }
                 &:hover {
-                    background-color: #F0F0F0;
+                    background-color: #EDF4F8;
                     > i {
                         opacity: 1;
                     }
                 }
+            }
+            // Lucide replacements for the sd_icons glyphs/sprites above.
+            // Descendant selector (not `a > i`) so it also reaches the
+            // disabled reorder state, which renders the icon inside a
+            // plain <div class="reorder-disabled"> instead of an <a>.
+            // opacity: 1 overrides the `> i { opacity: .5 }` fade above —
+            // these render solid in $lb-btn-dark-bg, not faded.
+            i.icon-star {
+                @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+                &.orange {
+                    background-color: #f89406;
+                }
+            }
+            i.icon-pin {
+                @include lb-icon-font-mask(url('~images/icons/pin.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+                &.blue {
+                    background-color: $sd-blue;
+                }
+            }
+            i.icon-close-thick {
+                @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-pencil {
+                @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-move {
+                @include lb-icon-font-mask(url('~images/icons/grip.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+            }
+            i.icon-unpublish {
+                @include lb-icon-bg-mask(url('~images/icons/undo-2.svg'), $lb-btn-dark-bg);
+                opacity: 1;
+                // Cancel the legacy sprite rule's rotate(180deg) (liveblog.scss)
+                // which otherwise bleeds through and flips this icon backwards.
+                transform: none;
+            }
+            i.icon-publish {
+                @include lb-icon-bg-mask(url('~images/icons/send.svg'), $lb-btn-dark-bg);
+                opacity: 1;
             }
         }
     }
@@ -98,7 +155,7 @@
             text-align: center;
             display: block;
             background-color: white;
-            @include border-radius(0 0 3px 3px);
+            @include border-radius(0 0 $lb-radius-card $lb-radius-card);
         }
         &-single-item {
             position: relative;
@@ -166,7 +223,11 @@
         &--even {
             border-top: 1px solid #ebebeb;
         }
-        img {max-width: 100%;}
+        img {
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
         iframe {max-width: 100%;}
         ul {
             list-style-type: disc;
@@ -272,4 +333,18 @@
             }
         }
     }
+}
+
+// The post's tags line is a plain inline-styled `<div style="text-align:
+// right">` in the template (no class to hook), sitting as the last direct
+// child of `.lb-post__holder` — its own bottom padding (8px, vs. 20px on
+// every other side) left the right-aligned text crowding the card's
+// rounded bottom-right corner. Give it a divider off the content above and
+// room to breathe, and mute it to secondary-text color instead of plain
+// black, like a small meta footer rather than a stray floating label.
+.lb-post__holder > div[style*="text-align: right"] {
+    padding-top: 10px;
+    padding-bottom: 2px;
+    color: $lb-timestamp !important;
+    b { color: $lb-timestamp; font-weight: 600; }
 }

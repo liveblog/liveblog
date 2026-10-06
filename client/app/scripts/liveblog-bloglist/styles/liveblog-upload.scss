@@ -43,19 +43,43 @@ blog image uploader
             .dropzone {
                 height: 100%;
                 @include box-sizing(border-box);
-                border: 2px dashed #e0e0e0;
+                border: 2px dashed $lb-input-border;
+                @include border-radius($lb-radius-input);
+                // Every other card/panel in this redesign is plain white —
+                // vendor's grey fill here read as out of place.
+                background-color: white;
                 padding: 15px;
+                transition: border-color .15s ease;
+                // Border-color change only — border + background shifting
+                // together read as too much for a plain drop target.
+                &:hover {
+                    border-color: $lb-rail-active;
+                }
 
                 .text {
                     text-align: center;
-                    margin-top: 35px;
-                    color: #ccc;
-                    font-size: 30px;
+                    margin-top: 20px;
+                    color: $lb-timestamp;
+                    font-size: 14px;
+                    font-weight: 500;
                     @include text-light();
+                    &:before {
+                        content: '';
+                        margin: 0 auto 10px;
+                        width: 22px;
+                        height: 22px;
+                        // The mixin sets its own `display: inline-block` —
+                        // include it first so this explicit `display: block`
+                        // (needed to stack the icon above the text instead
+                        // of flowing inline next to it, which is what was
+                        // pushing/misaligning it) wins.
+                        @include lb-icon-font-mask(url('~images/icons/image.svg'), $lb-timestamp, 22px);
+                        display: block;
+                    }
                 }
                 .input-holder {
                     text-align: center;
-                    margin: 30px auto 0;
+                    margin: 15px auto 0;
                     width: 175px;
 
                     input {
@@ -69,16 +93,17 @@ blog image uploader
                     input:before {
                       content: 'or Select from computer';
                       display: inline-block;
-                      background: -webkit-linear-gradient(top, #f9f9f9, #fff);
-                      border: 1px solid #d0d0d0;
-                      border-radius: 2px;
-                      padding: 0 10px;
+                      background: white;
+                      border: 1px solid $lb-input-border;
+                      @include border-radius($lb-radius-pill);
+                      padding: 6px 14px;
                       outline: none;
                       white-space: nowrap;
                       -webkit-user-select: none;
-                      text-shadow: 1px 1px #fff;
                       font-size: 12px;
-                      color: #787878;
+                      font-weight: 600;
+                      color: $lb-pill-text;
+                      transition: background-color .15s ease, border-color .15s ease;
                       @include box-sizing(border-box);
                       width: 100%;
                       text-align: center;
@@ -88,11 +113,16 @@ blog image uploader
                         outline: none !important;
                     }
                     input:hover:before {
-                      border-color: #c0c0c0;
+                      // A flat swap to $lb-pill-bg read as barely different
+                      // from the button's own white resting state — darken
+                      // it so the hover is actually visible.
+                      background: darken($lb-pill-bg, 10%);
+                      border-color: darken($lb-pill-bg, 10%);
                       cursor: pointer !important;
                     }
                     input:active:before {
-                      background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+                      background: darken($lb-pill-bg, 18%);
+                      border-color: darken($lb-pill-bg, 18%);
                       outline: none;
                     }
                 }
