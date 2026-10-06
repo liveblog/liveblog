@@ -1,6 +1,8 @@
 import json
 import logging
 
+from copy import deepcopy
+from bson import ObjectId
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
 from flask_cors import CORS
@@ -15,6 +17,8 @@ from superdesk.services import BaseService
 from superdesk.errors import SuperdeskApiError
 from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
+from liveblog.tenancy.context import tenant_context_from_blog
+from liveblog.client_modules.context import public_tenant_context
 
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
@@ -26,14 +30,16 @@ from liveblog.advertisements.advertisements import (
 from liveblog.posts.posts import (
     PostsService,
     PostsResource,
-    BlogPostsService,
+    PostStatus,
     BlogPostsResource,
 )
+from liveblog.tenancy.service import TenantAwareArchiveService
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.polls.polls import PollsResource, PollsService, poll_calculations
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
-from liveblog.posts.mixins import AuthorsMixin
+from liveblog.blogs.utils import blog_comments_override
+from liveblog.posts.mixins import AuthorsMixin, BlogPostsMixin
 from liveblog.posts import utils as post_utils
 from liveblog.utils.api import api_error, api_response
 
@@ -74,7 +80,7 @@ class ClientUsersResource(Resource):
     public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(UsersResource.schema)
     schema.update(
@@ -92,10 +98,10 @@ class ClientUsersService(BaseService):
 
 class ClientBlogsResource(BlogsResource):
     datasource = {"source": "blogs", "default_sort": [("_updated", -1)]}
-    public_methods = ["GET"]
+    public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(BlogsResource.schema)
 
@@ -110,20 +116,26 @@ class ClientPostsResource(PostsResource):
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET"]
+    public_methods = []
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(PostsResource.schema)
 
 
 class ClientPostsService(PostsService, AuthorsMixin):
-    def find_one(self, req, **lookup):
-        post = super().find_one(req, **lookup)
-        if not post:
-            return None
+    VISIBLE_STATUSES = (PostStatus.OPEN, PostStatus.COMMENT)
 
+    def find_one(self, req, **lookup):
+        with public_tenant_context(self, lookup.get("_id")) as post:
+            if post is not None:
+                return self._enrich_post(post)
+        return None
+
+    def _enrich_post(self, post):
+        if post.get("post_status") not in self.VISIBLE_STATUSES:
+            return None
         post_utils.calculate_post_type(post)
         post_utils.attach_syndication(post)
         self.complete_posts_info([post])
@@ -132,10 +144,10 @@ class ClientPostsService(PostsService, AuthorsMixin):
 
 class ClientCollectionsResource(CollectionsResource):
     datasource = {"source": "collections", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(CollectionsResource.schema)
 
@@ -146,10 +158,10 @@ class ClientCollectionsService(CollectionsService):
 
 class ClientOutputsResource(OutputsResource):
     datasource = {"source": "outputs", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(OutputsResource.schema)
 
@@ -160,10 +172,10 @@ class ClientOutputsService(OutputsService):
 
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {"source": "advertisements", "default_sort": [("name", 1)]}
-    public_methods = ["GET"]
+    internal_resource = True
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
+    resource_methods = []
     schema = {}
     schema.update(AdvertisementsResource.schema)
 
@@ -178,21 +190,133 @@ class ClientItemsResource(ItemsResource):
         "elastic_filter": {"term": {"particular_type": "item"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "POST"]
+    public_methods = ["POST"]
     public_item_methods = ["GET", "POST"]
     item_methods = ["GET"]
-    resource_methods = ["GET", "POST"]
-    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    resource_methods = ["POST"]
+    schema = {"client_blog": Resource.rel("client_blogs")}
     schema.update(ItemsResource.schema)
 
 
 class ClientItemsService(ItemsService):
+    PUBLIC_FIELDS = ("text", "commenter", "client_blog")
+
+    def find_one(self, req, **lookup):
+        with public_tenant_context(self, lookup.get("_id")) as doc:
+            return doc
+
     def on_create(self, docs):
+        blog = _get_comment_blog(docs)
         for doc in docs:
-            check_comment_length(doc["text"])
-        super().on_create(docs)
+            check_comment_length(doc.get("text") or "")
+            _reset_non_public_fields(self, doc, self.PUBLIC_FIELDS)
+            doc["item_type"] = "comment"
+            doc["blog"] = doc["client_blog"]
+
+        with tenant_context_from_blog(blog):
+            _check_blog_accepts_comments(blog)
+            super().on_create(docs)
 
 
+def _get_comment_blog(docs):
+    """Return the blog targeted by public comment docs, which must all target the same one."""
+    blog_ids = {str(doc.get("client_blog") or "") for doc in docs}
+    if len(blog_ids) != 1 or "" in blog_ids:
+        raise SuperdeskApiError.badRequestError(
+            message="Comments must target exactly one blog"
+        )
+
+    blog = get_resource_service("client_blogs").find_one(
+        req=None, _id=docs[0]["client_blog"]
+    )
+    if not blog:
+        raise SuperdeskApiError.notFoundError(message="Blog not found")
+    return blog
+
+
+def _check_blog_accepts_comments(blog):
+    """Apply the same rule the embed uses to show or hide the comment form.
+
+    A comment request does not say which embed it came from, and output channels
+    render the blog with their own theme, so when the blog defers to the theme
+    the main theme and every output theme are consulted.
+    """
+    allowed = blog_comments_override(blog)
+    if allowed is None:
+        allowed = any(
+            theme_settings.get("canComment", False)
+            for theme_settings in _blog_theme_settings(blog)
+        )
+
+    if not allowed:
+        raise SuperdeskApiError.forbiddenError(
+            message="Comments are disabled for this blog"
+        )
+
+
+def _blog_theme_settings(blog):
+    theme_names = [blog.get("blog_preferences", {}).get("theme")]
+    outputs = get_resource_service("outputs").find(
+        {"blog": blog["_id"], "deleted": {"$ne": True}}
+    )
+    theme_names.extend(output.get("theme") for output in outputs)
+    theme_settings_service = get_resource_service("theme_settings")
+    for theme_name in dict.fromkeys(name for name in theme_names if name):
+        yield theme_settings_service.get_settings_for_blog(blog, theme_name)
+
+
+def _reset_non_public_fields(service, doc, public_fields):
+    """Reset every field a public caller may not set to its schema default, or drop it.
+
+    Eve has already validated the payload against the full archive schema, so any
+    field there (e.g. `sticky`, `published_date`, `publisher`, `syndicated_creator`)
+    could otherwise be set by an anonymous reader.
+    """
+    schema = app.config["DOMAIN"][service.datasource]["schema"]
+    keep = set(public_fields) | {config.DATE_CREATED, config.LAST_UPDATED}
+    for field in list(doc):
+        if field in keep:
+            continue
+        if "default" in schema.get(field, {}):
+            doc[field] = deepcopy(schema[field]["default"])
+        else:
+            del doc[field]
+
+
+def _comment_groups(doc, blog):
+    """Rebuild a public comment's groups around its single comment item.
+
+    Refs are resolved later by `location` against any registered resource, so a
+    client-supplied ref could pull another tenant's documents into the public feed.
+    Only a ref to a comment item of the same blog (and tenant) is accepted.
+    """
+    refs = [
+        ref
+        for group in doc.get("groups") or []
+        if group.get("id") == "main"
+        for ref in group.get("refs", [])
+    ]
+    item_id = refs[0].get("residRef") if len(refs) == 1 else None
+    item = (
+        app.data.find_one_raw("archive", item_id) if isinstance(item_id, str) else None
+    )
+    if (
+        not item
+        or item.get("item_type") != "comment"
+        or str(item.get("client_blog")) != str(blog["_id"])
+        or str(item.get("tenant_id")) != str(blog.get("tenant_id"))
+    ):
+        raise SuperdeskApiError.badRequestError(
+            message="A comment must reference one comment item of the same blog"
+        )
+
+    return [
+        {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+        {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
+    ]
+
+
+# TODO: remove this resource and service as it is not needed/used
 class ClientPollsResource(PollsResource):
     datasource = {
         "source": "polls",
@@ -202,13 +326,15 @@ class ClientPollsResource(PollsResource):
     public_methods = ["GET"]
     public_item_methods = ["GET"]
     item_methods = ["GET"]
-    resource_methods = ["GET"]
-    schema = {"client_blog": Resource.rel("client_blogs", True)}
+    resource_methods = []
+    schema = {"client_blog": Resource.rel("client_blogs")}
     schema.update(PollsResource.schema)
 
 
 class ClientPollsService(PollsService):
-    pass
+    def find_one(self, req, **lookup):
+        with public_tenant_context(self, lookup.get("_id")) as doc:
+            return doc
 
 
 class ClientCommentsResource(PostsResource):
@@ -217,26 +343,38 @@ class ClientCommentsResource(PostsResource):
         "elastic_filter": {"term": {"particular_type": "post"}},
         "default_sort": [("order", -1)],
     }
-    public_methods = ["GET", "POST"]
-    public_item_methods = ["GET", "POST"]
+    public_methods = ["POST"]
+    public_item_methods = []
     item_methods = ["GET"]
-    resource_methods = ["GET", "POST"]
+    resource_methods = ["POST"]
     schema = {
-        "client_blog": Resource.rel("client_blogs", True),
+        "client_blog": Resource.rel("client_blogs"),
         "blog": {"type": "string"},
     }
     schema.update(PostsResource.schema)
 
 
 class ClientCommentsService(PostsService):
+    PUBLIC_FIELDS = ("client_blog", "groups")
+
     def on_create(self, docs):
+        blog = _get_comment_blog(docs)
         for doc in docs:
-            if request.method == "POST":
-                doc["post_status"] = "comment"
-                # blog_id is kept also under the name blog as a string
-                # so that it can be further used to auto-refresh the back-office
-                doc["blog"] = str(doc["client_blog"])
-        super().on_create(docs)
+            _reset_non_public_fields(self, doc, self.PUBLIC_FIELDS)
+            doc["post_status"] = PostStatus.COMMENT
+            # blog_id is kept also under the name blog as a string
+            # so that it can be further used to auto-refresh the back-office
+            doc["blog"] = str(doc["client_blog"])
+
+        with tenant_context_from_blog(blog):
+            _check_blog_accepts_comments(blog)
+            for doc in docs:
+                doc["groups"] = _comment_groups(doc, blog)
+            super().on_create(docs)
+
+    def on_created(self, docs):
+        """Overrides parent to avoid logic that we don't need in the public endpoint"""
+        pass
 
 
 class ClientBlogPostsResource(BlogPostsResource):
@@ -255,7 +393,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     item_url = item_url
 
 
-class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
+class ClientBlogPostsService(TenantAwareArchiveService, BlogPostsMixin, AuthorsMixin):
     def get(self, req, lookup):
         allowed_params = {
             "start_date",
@@ -279,43 +417,53 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
             "source",
         }
 
-        # check for unknown query parameters
         _check_for_unknown_params(request, allowed_params)
 
         sufix = hash(json.dumps(req.__dict__, sort_keys=True))
         cache_key = "lb_ClientBlogPostsService_get_%s" % sufix
         blog_id = lookup.get("blog_id")
 
-        # ElasticCursor is returned so we can loop and modify docs inside
         blog_posts = app.blog_cache.get(blog_id, cache_key)
 
         if blog_posts is None:
-            new_args = req.args.copy()
-            query_source = json.loads(new_args.get("source", "{}"))
+            blog = get_resource_service("client_blogs").find_one(
+                req=None, _id=ObjectId(blog_id)
+            )
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
 
-            post_filter = query_source.setdefault("post_filter", {})
-            filter_must = post_filter.setdefault("bool", {}).setdefault("must", [])
+            with tenant_context_from_blog(blog):
+                lookup["blog"] = ObjectId(blog_id)
+                del lookup["blog_id"]
 
-            for must_el in filter_must:
-                if "range" in must_el:
-                    must_el["range"]["published_date"] = {"lte": date_to_str(utcnow())}
-                    break
-            else:
-                filter_must.append(
-                    {"range": {"published_date": {"lte": date_to_str(utcnow())}}}
-                )
+                new_args = req.args.copy()
+                query_source = json.loads(new_args.get("source", "{}"))
 
-            new_args["source"] = json.dumps(query_source)
-            req.args = new_args
+                post_filter = query_source.setdefault("post_filter", {})
+                filter_must = post_filter.setdefault("bool", {}).setdefault("must", [])
 
-            blog_posts = super().get(req, lookup)
+                for must_el in filter_must:
+                    if "range" in must_el:
+                        must_el["range"]["published_date"] = {
+                            "lte": date_to_str(utcnow())
+                        }
+                        break
+                else:
+                    filter_must.append(
+                        {"range": {"published_date": {"lte": date_to_str(utcnow())}}}
+                    )
 
-            # let's complete the post info before cache
-            for post in blog_posts.docs:
-                post_utils.calculate_post_type(post)
-                post_utils.attach_syndication(post)
+                new_args["source"] = json.dumps(query_source)
+                req.args = new_args
 
-            app.blog_cache.set(blog_id, cache_key, blog_posts)
+                blog_posts = super().get(req, lookup)
+                self._enrich_blog_posts(blog_posts)
+
+                for post in blog_posts.docs:
+                    post_utils.calculate_post_type(post)
+                    post_utils.attach_syndication(post)
+
+                app.blog_cache.set(blog_id, cache_key, blog_posts)
 
         return blog_posts
 
@@ -432,26 +580,33 @@ def create_amp_comment():
     data = request.values
     check_comment_length(data["text"])
 
-    item_data = dict()
-    item_data["text"] = data["text"]
-    item_data["commenter"] = data["commenter"]
-    item_data["blog"] = item_data["client_blog"] = data["client_blog"]
-    item_data["item_type"] = "comment"
-    items = get_resource_service("client_items")
-    item_id = items.post([item_data])[0]
+    blog = get_resource_service("client_blogs").find_one(
+        req=None, _id=ObjectId(data["client_blog"])
+    )
+    if not blog:
+        return api_error("Blog not found", 404)
 
-    comment_data = dict()
-    comment_data["post_status"] = "comment"
-    comment_data["blog"] = comment_data["client_blog"] = item_data["blog"]
-    comment_data["groups"] = [
-        {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-        {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
-    ]
+    with tenant_context_from_blog(blog):
+        item_data = dict()
+        item_data["text"] = data["text"]
+        item_data["commenter"] = data["commenter"]
+        item_data["blog"] = item_data["client_blog"] = data["client_blog"]
+        item_data["item_type"] = "comment"
+        items = get_resource_service("client_items")
+        item_id = items.post([item_data])[0]
 
-    post_comments = get_resource_service("client_posts")
-    post_comment = post_comments.post([comment_data])[0]
+        comment_data = dict()
+        comment_data["post_status"] = "comment"
+        comment_data["blog"] = comment_data["client_blog"] = item_data["blog"]
+        comment_data["groups"] = [
+            {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+            {"id": "main", "refs": [{"residRef": item_id}], "role": "grpRole:Main"},
+        ]
 
-    comment = post_comments.find_one(req=None, _id=post_comment)
+        post_comments = get_resource_service("client_posts")
+        post_comment = post_comments.post([comment_data])[0]
+
+        comment = post_comments.find_one(req=None, _id=post_comment)
 
     resp = api_response(comment, 201)
     resp.headers["Access-Control-Allow-Credentials"] = "true"
@@ -505,8 +660,9 @@ def get_blog_posts(blog_id):
     if app.config.get("SUPERDESK_TESTING", False) and all_posts:
         kwargs["all_posts"] = True
 
-    response_data = blog.posts(wrap=True, **kwargs)
-    result_data = convert_posts(response_data, blog)
+    with tenant_context_from_blog(blog._blog):
+        response_data = blog.posts(wrap=True, **kwargs)
+        result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
 
 
@@ -536,8 +692,7 @@ def client_poll_vote(poll_id):
     if option_selected is None:
         return api_error("Please select a voting option.", 400)
 
-    polls = get_resource_service("polls")
-    poll = polls.find_one(req=None, _id=poll_id)
+    poll = get_resource_service("client_polls").find_one(req=None, _id=poll_id)
     if poll is None:
         return api_error("Error: Poll not found", 404)
 
@@ -549,17 +704,19 @@ def client_poll_vote(poll_id):
             f"Error: Option '{option_selected}' not found in poll answers", 404
         )
 
-    result = polls.find_and_modify(
-        query={"_id": poll_id, "poll_body.answers.option": option_selected},
-        update={"$inc": {"poll_body.answers.$.votes": 1}},
-        new=True,
-    )
+    with tenant_context_from_blog(poll):
+        polls = get_resource_service("polls")
+        result = polls.find_and_modify(
+            query={"_id": poll_id, "poll_body.answers.option": option_selected},
+            update={"$inc": {"poll_body.answers.$.votes": 1}},
+            new=True,
+        )
 
-    if result is None:
-        return api_error("Error: Unable to update poll votes", 422)
+        if result is None:
+            return api_error("Error: Unable to update poll votes", 422)
 
-    blog_id = poll.get("blog")
-    post_utils.update_associated_post(blog_id, poll_id)
+        blog_id = poll.get("blog")
+        post_utils.update_associated_post(blog_id, poll_id)
 
     return api_response({"_status": "OK", "message": "Vote placed successfully"}, 201)
 

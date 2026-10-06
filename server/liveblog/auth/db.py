@@ -30,6 +30,7 @@ class AccessAuthService(DbAuthService):
             )
 
     def disable_sd_desktop_notification(self, credentials):
+        # Use system_find_one to bypass tenant filtering during authentication
         user = get_resource_service("users").find_one(
             req=None, username=credentials.get("username")
         )

@@ -68,6 +68,7 @@ module.exports = (env, argv) => {
         entry: {
             app: './app/scripts/index.js',
             embed: './app/scripts/liveblog-embed-script/embed.ts',
+            register: './app/scripts/liveblog-registration/index.tsx',
         },
 
         output: {
@@ -116,6 +117,7 @@ module.exports = (env, argv) => {
                     { from: 'app/favicon.ico', to: 'favicon.ico' },
                     { from: 'app/favicon-alert.ico', to: 'favicon-alert.ico' },
                     { from: 'app/index.html', to: 'index.html' },
+                    { from: 'app/register.html', to: 'register.html' },
                     { from: 'app/config.js', to: 'config.js' },
                     { from: 'node_modules/sir-trevor/sir-trevor.js', to: 'sir-trevor.js' },
                     {
