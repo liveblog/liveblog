@@ -1,9 +1,9 @@
 from superdesk.resource import Resource
-from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareService
 
 
 class PostCommentResource(Resource):
-    datasource = {"source": "post_comments"}
+    datasource = {"source": "post_comments", "search_backend": None}
     schema = {
         "post_id": Resource.rel("posts", type="string", required=True),
         "blog_id": Resource.rel("blogs", required=True),
@@ -21,6 +21,7 @@ class PostCommentResource(Resource):
             "default": "post_comment",
         },
         "parent_id": Resource.rel("post_comments", nullable=True),
+        "tenant_id": Resource.rel("tenants"),
     }
 
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
@@ -35,7 +36,7 @@ class PostCommentResource(Resource):
     resource_methods = ["GET", "POST"]
 
 
-class PostCommentService(BaseService):
+class PostCommentService(TenantAwareService):
     """
     Simple CRUD service handler for post's comments
     """

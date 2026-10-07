@@ -15,7 +15,8 @@ from requests.exceptions import RequestException, ConnectionError, ConnectTimeou
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from apps.auth import SuperdeskTokenAuth
+from liveblog.auth.token_auth import LiveBlogTokenAuth
+from liveblog.posts.utils import find_ref_items, get_ref_id, get_ref_service_name
 from .exceptions import APIConnectionError, DownloadError
 from werkzeug.datastructures import FileStorage
 
@@ -107,7 +108,7 @@ def fetch_url(url, timeout=5):
 
 
 def blueprint_superdesk_token_auth():
-    auth = SuperdeskTokenAuth()
+    auth = LiveBlogTokenAuth()
     authorized = auth.authorized(allowed_roles=[], resource="producers", method="GET")
     if not authorized:
         return abort(401, "Authorization failed.")
@@ -134,7 +135,8 @@ def extract_creator_data(doc):
         "_updated",
     )
 
-    users_service = get_resource_service("users")
+    users_service = get_resource_service("liveblog_users")
+    # Use system_find_one to allow cross-tenant syndication
     original_creator = users_service.find_one(req=None, _id=doc.get("original_creator"))
 
     if not original_creator:
@@ -157,41 +159,44 @@ def extract_post_items_data(original_doc):
             'Post item_type "{}" not supported.'.format(item_type)
         )
 
+    refs = [
+        ref
+        for group in original_doc["groups"]
+        if group["id"] == "main"
+        for ref in group["refs"]
+    ]
+    items_map = find_ref_items(refs, original_doc.get("tenant_id"))
+
     items = []
-    for group in original_doc["groups"]:
-        if group["id"] == "main":
-            for ref in group["refs"]:
-                service_name = ref.get("location", "items")
-                service = get_resource_service(service_name)
+    for ref in refs:
+        item = items_map.get(get_ref_id(ref))
+        if item is None:
+            continue
 
-                item = service.find_one(req=None, _id=ref["residRef"])
-                if item is None:
-                    continue
+        # TODO: consider with the team if comments should be syndicated or not
+        if item.get("item_type") == "post_comment":
+            continue
 
-                # TODO: consider with the team if comments should be syndicated or not
-                if item.get("item_type") == "post_comment":
-                    continue
+        text = item.get("text")
+        item_type = item.get("item_type")
+        group_type = item.get("group_type")
+        meta = item.get("meta", {})
+        data = {
+            "text": text,
+            "item_type": item_type,
+            "group_type": group_type,
+            "commenter": item.get("commenter"),
+            "syndicated_creator": extract_creator_data(item),
+            "meta": meta,
+        }
 
-                text = item.get("text")
-                item_type = item.get("item_type")
-                group_type = item.get("group_type")
-                meta = item.get("meta", {})
-                data = {
-                    "text": text,
-                    "item_type": item_type,
-                    "group_type": group_type,
-                    "commenter": item.get("commenter"),
-                    "syndicated_creator": extract_creator_data(item),
-                    "meta": meta,
-                }
+        # Add specific fields based on service used to get item, if necessary
+        # This assumes different origins can indicate specific handling
+        # For example, when handling polls
+        if get_ref_service_name(ref) == "polls":
+            data["poll_body"] = item.get("poll_body")
 
-                # Add specific fields based on service used to get item, if necessary
-                # This assumes different origins can indicate specific handling
-                # For example, when handling polls
-                if service_name == "polls":
-                    data["poll_body"] = item.get("poll_body")
-
-                items.append(data)
+        items.append(data)
     return items
 
 

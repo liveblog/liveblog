@@ -2,6 +2,7 @@ from eve.auth import BasicAuth
 from flask import abort, request
 from superdesk import get_resource_service
 from superdesk.resource import Resource
+from liveblog.tenancy.context import system_context
 
 
 class SyndicationTokenAuth(BasicAuth):
@@ -26,9 +27,12 @@ class SyndicationTokenAuth(BasicAuth):
         abort(401, description="Please provide proper credentials")
 
     def check_auth(self, auth_token, allowed_roles, resource, method):
-        return get_resource_service(self.resource_name).find_one(
-            req=None, **{self.token_field: auth_token}
-        )
+        # Syndication tokens (api_key, blog_token) are globally unique secrets
+        # used by external instances. The lookup must search across all tenants.
+        with system_context():
+            return get_resource_service(self.resource_name).find_one(
+                req=None, **{self.token_field: auth_token}
+            )
 
 
 class ConsumerApiKeyAuth(SyndicationTokenAuth):

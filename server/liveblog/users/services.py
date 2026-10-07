@@ -3,7 +3,7 @@ from flask import current_app as app
 from superdesk.users.services import DBUsersService
 
 
-class LiveBlogUserService(DBUsersService):
+class LiveBlogSystemUsersService(DBUsersService):
     """
     Extends superdesk.users default app to add some additional functionality
     only concerning Live Blog, like hiding users' sensitive information for users
