@@ -204,7 +204,19 @@ def billing_status():
     }
 
     if state["redirect"] == "extend":
-        response["checkout_price_id"] = tenant.get("plan_price_id", "")
+        stripe.api_key = app.config.get("STRIPE_SECRET_KEY")
+        stored_price_id = tenant.get("plan_price_id")
+        try:
+            price_id = service.resolve_extend_price_id(stored_price_id)
+        except stripe.error.StripeError as e:
+            # A transient failure must not hide Extend. Checkout validates the
+            # price again, so offering the stored one is safe.
+            logger.warning("Could not resolve extend price %s: %s", stored_price_id, e)
+            price_id = stored_price_id
+        if price_id:
+            response["checkout_price_id"] = price_id
+        else:
+            response["redirect"] = "pricing"
 
     return api_response(response, 200)
 
@@ -246,6 +258,10 @@ def create_checkout_session():
             return api_error("Invalid plan", 400)
     except stripe.error.StripeError:
         return api_error("Invalid price_id", 400)
+
+    # Stripe still returns archived prices but rejects them at checkout.
+    if not price.get("active"):
+        return api_error("This plan is no longer available", 400)
 
     duration_days = service.get_plan_duration_days(metadata)
     is_one_time = duration_days is not None

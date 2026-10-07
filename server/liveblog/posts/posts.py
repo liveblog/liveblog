@@ -12,7 +12,9 @@ from eve.utils import ParsedRequest, date_to_str
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas, not_analyzed
 from apps.archive.archive import ArchiveResource
+from apps.packages import PackageService
 from superdesk.services import BaseService
+from liveblog.tenancy import get_tenant_id
 from liveblog.tenancy.service import TenantAwareArchiveService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
 from superdesk.utc import utcnow
@@ -32,7 +34,15 @@ from .tasks import (
     update_scheduled_post_blog_data,
 )
 from .mixins import AuthorsMixin, BlogPostsMixin
-from .utils import check_content_diff
+from .utils import (
+    check_content_diff,
+    find_ref_items,
+    get_associations,
+    get_comment_blog_id,
+    get_ref_id,
+    get_ref_service_name,
+    validate_post_refs,
+)
 
 
 logger = logging.getLogger("superdesk")
@@ -221,20 +231,47 @@ class PostsResource(ArchiveResource):
             request.environ["HTTP_IF_MATCH"] = etag_in_mongo
 
 
+class PostPackageService(PackageService):
+    """Package service whose refs only resolve through the allowed tenant-aware services.
+
+    Superdesk resolves, and writes `linked_in_packages` back to, whatever resource a
+    ref's `location` names. Posts validate their refs on create and update, so this
+    mainly guards refs stored before that validation existed.
+    """
+
+    def get_associated_item(self, assoc, throw_if_not_found=True):
+        service_name = get_ref_service_name(assoc)
+        if service_name is None:
+            if throw_if_not_found:
+                raise SuperdeskApiError.badRequestError(
+                    message="Invalid item location: {}".format(assoc.get("location"))
+                )
+            return None, assoc.get("residRef"), None
+
+        return super().get_associated_item(
+            dict(assoc, location=service_name), throw_if_not_found
+        )
+
+
 class PostsService(TenantAwareArchiveService):
+    packageService = PostPackageService()
+
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
+        if not doc:
+            return doc
+
+        refs = list(get_associations(doc))
+        items = find_ref_items(refs, doc.get("tenant_id"))
         try:
             # include items in the response
-            for assoc in self.packageService._get_associations(doc):
-                residRef = assoc.get("residRef")
-                if residRef:
-                    service_name = assoc.get("location", "archive")
-                    item_service = get_resource_service(service_name)
-                    item = item_service.find_one(req=None, _id=residRef)
-                    if item.get("type") == "poll":
-                        item["poll_body"] = poll_calculations(item["poll_body"])
-                    assoc["item"] = item
+            for assoc in refs:
+                item = items.get(get_ref_id(assoc))
+                if item is None:
+                    continue
+                if item.get("type") == "poll":
+                    item["poll_body"] = poll_calculations(item["poll_body"])
+                assoc["item"] = item
         except Exception:
             pass
         return doc
@@ -342,6 +379,7 @@ class PostsService(TenantAwareArchiveService):
         # If type is not set before super() call, groups won't be created, causing KeyError later.
         for doc in docs:
             self.check_post_permission(doc)
+            validate_post_refs(doc, get_tenant_id() or doc.get("tenant_id"))
             doc["type"] = "composite"
             doc["order"] = self.get_next_order_sequence(doc.get("blog"))
 
@@ -412,6 +450,9 @@ class PostsService(TenantAwareArchiveService):
         )
 
     def on_update(self, updates, original):
+        if updates.get("groups"):
+            validate_post_refs(updates, original.get("tenant_id"))
+
         # check if the timeline is reordered
         if updates.get("order"):
             blog = get_resource_service("blogs").find_one(
@@ -432,9 +473,7 @@ class PostsService(TenantAwareArchiveService):
         """
         if original["post_status"] == "comment" and not updates.get("deleted", False):
             item = original["groups"][1]["refs"][0]["item"]
-            blog_id_try = item.get("blog")
-            blog_id_object = ObjectId(item.get("client_blog", blog_id_try))
-            original["blog"] = updates["blog"] = blog_id_object
+            original["blog"] = updates["blog"] = get_comment_blog_id(item)
 
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(item["text"])

@@ -28,7 +28,7 @@ from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 from liveblog.blogposting_schema.utils import generate_liveblog_posting_schema
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
-from .utils import is_relative_to_current_folder
+from .utils import blog_comments_override, is_relative_to_current_folder
 from .embeds_utils import generate_theme_styles, google_fonts_url
 from settings import TRIGGER_HOOK_URLS, ACTIVATE_WATERMARK
 from liveblog.tenancy.context import tenant_context_from_blog
@@ -225,18 +225,9 @@ def _embed(blog, blog_id, theme, output, api_host):
 
     i18n = theme.get("i18n", {})
 
-    # the blog level setting overrides the one in theme level
-    # this way we allow user to enable/disable commenting only for certain blog(s)
-    unset = "unset"
-    blog_users_can_comment = blog.get("users_can_comment", unset)
-    is_users_can_comment_set = blog_users_can_comment != unset
-
-    if is_users_can_comment_set:
-        theme_settings["canComment"] = blog_users_can_comment == "enabled"
-
-    is_blog_closed = blog.get("blog_status") == "closed"
-    if is_blog_closed:
-        theme_settings["canComment"] = False
+    comments_override = blog_comments_override(blog)
+    if comments_override is not None:
+        theme_settings["canComment"] = comments_override
 
     theme_settings["watermark"] = ACTIVATE_WATERMARK
 
