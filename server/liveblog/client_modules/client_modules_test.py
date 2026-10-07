@@ -769,10 +769,15 @@ class ClientModuleTestCase(TestCase):
                 "Error: Option 'Invalid Option' not found", response_data["_error"]
             )
 
-    def _post_amp_comment(self, query="", headers=None):
+    def _post_amp_comment(self, query="", headers=None, users_can_comment="enabled"):
         self.app.data.driver.db["blogs"].update_one(
             {"_id": self.blogs_ids[0]},
-            {"$set": {"public_url": "https://blogs.example.com/abc/index.html"}},
+            {
+                "$set": {
+                    "public_url": "https://blogs.example.com/abc/index.html",
+                    "users_can_comment": users_can_comment,
+                }
+            },
         )
         # The comment post's `on_created` needs the syndication app, which this
         # test case does not register.
@@ -880,6 +885,15 @@ class ClientModuleTestCase(TestCase):
             response.headers.get("AMP-Access-Control-Allow-Source-Origin"),
             "https://news.example.net",
         )
+
+    def test_amp_comment_rejected_when_blog_does_not_accept_comments(self):
+        response = self._post_amp_comment(
+            headers={"Origin": "https://blogs.example.com"},
+            users_can_comment="disabled",
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self._amp_comment_count(), 0)
 
     def test_amp_comment_same_origin(self):
         response = self._post_amp_comment(headers={"AMP-Same-Origin": "true"})
