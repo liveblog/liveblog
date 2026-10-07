@@ -72,22 +72,12 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version-file: 'client/package.json'
-        cache: 'npm'
-        cache-dependency-path: 'client/package-lock.json'
+    - uses: ./.github/actions/setup-client
 
-    - name: Install Nodejs dependencies and lint
+    - name: Lint client
       working-directory: ./client
       shell: bash
-      run: |
-        git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-        git config --global --add url."https://github.com/".insteadOf git+ssh://git@github.com/
-        npm config set loglevel warn
-        npm ci --ignore-scripts
-        npm run lint
+      run: npm run lint
 
   e2e:
     name: e2e (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
@@ -120,46 +110,9 @@ jobs:
 
     - uses: ./.github/actions/setup-server
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version-file: 'client/package.json'
-        cache: 'npm'
-        cache-dependency-path: 'client/package-lock.json'
+    - uses: ./.github/actions/setup-client
 
-    - name: Install Nodejs dependencies
-      working-directory: ./client
-      shell: bash
-      run: |
-        git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-        git config --global --add url."https://github.com/".insteadOf git+ssh://git@github.com/
-        node --version
-        npm --version
-        npm config set loglevel warn
-        npm ci --ignore-scripts
-
-    - name: Initialize app data
-      working-directory: ./server
-      run: |
-        python app_init_elastic.py
-        python manage.py app:initialize_data
-        python manage.py users:create -u admin -p admin -fn Admin -ln Admin -e 'admin@example.com' --admin
-        python manage.py register_local_themes
-        python manage.py register_bloglist
-
-    - name: Start backend services
-      working-directory: ./server
-      run: |
-        (nohup honcho start &)
-        (nohup python -m smtpd -n -c DebuggingServer localhost:2225 &)
-
-    - name: Build client
-      working-directory: ./client
-      shell: bash
-      run: |
-        npm run build
-        cd dist
-        (nohup python -m http.server 9000 &)
+    - uses: ./.github/actions/start-app
 
     - name: Setup Node 24 for Playwright
       uses: actions/setup-node@v6
