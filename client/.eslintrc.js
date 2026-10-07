@@ -1,6 +1,9 @@
 const superdeskRules = require('superdesk-code-style');
 
 module.exports = Object.assign({}, superdeskRules, {
+    'globals': Object.assign({}, superdeskRules.globals, {
+        '__SUPERDESK_CONFIG__': 'readonly',
+    }),
     'overrides': [
         {
             files: ['*.ts', '*.tsx'],

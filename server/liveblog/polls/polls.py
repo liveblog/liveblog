@@ -5,9 +5,7 @@ from superdesk.utc import utcnow
 from superdesk.metadata.item import metadata_schema
 
 from liveblog.common import get_user, update_dates_for
-
-from superdesk.resource import Resource
-from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareService
 
 
 class PollsResource(Resource):
@@ -57,12 +55,13 @@ class PollsResource(Resource):
         },
         "original_creator": metadata_schema["original_creator"],
         "syndicated_creator": {"type": "dict"},
+        "tenant_id": Resource.rel("tenants"),
     }
     item_methods = ["GET", "PATCH", "PUT", "DELETE"]
     privileges = {"GET": "posts", "POST": "posts", "PATCH": "posts", "DELETE": "posts"}
 
 
-class PollsService(BaseService):
+class PollsService(TenantAwareService):
     """
     Provides service methods for handling the lifecycle events of polls
     including CRUD operations. It extends from the Superdesk BaseService

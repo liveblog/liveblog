@@ -1,4 +1,3 @@
-import flask
 import logging
 
 from copy import deepcopy
@@ -11,6 +10,7 @@ from superdesk.resource import Resource
 from superdesk.errors import SuperdeskApiError
 from superdesk.services import BaseService
 from superdesk.notification import push_notification
+from liveblog.auth.token_auth import is_support_user
 from liveblog.utils.api import api_response
 
 logger = logging.getLogger(__name__)
@@ -55,10 +55,7 @@ class InstanceSettingsService(BaseService):
         """
         Checks if the user is allowed to execute actions over instance settings
         """
-        if not getattr(flask.g, "user", None):
-            return False
-
-        return flask.g.user.get("is_support", False)
+        return is_support_user()
 
     def create(self, docs, **kwargs):
         # skip permissions if it's comming from initialize_data command
@@ -176,12 +173,32 @@ class InstanceSettingsService(BaseService):
 @instance_settings_blueprint.route("/api/instance_settings/current", methods=["GET"])
 def get_instance_settings():
     """
-    Returns the instance settings for the current subscription level
+    Returns the instance settings for the current subscription level.
+
+    Hydrates user context from the auth token so get_tenant() can resolve
+    the tenant's subscription_level. Without this, the endpoint falls back
+    to the global SUBSCRIPTION_LEVEL setting.
     """
+    from liveblog.auth.token_auth import (
+        get_authenticated_user_from_context,
+        get_request_auth_token,
+        hydrate_request_context_from_token,
+    )
+
+    user = get_authenticated_user_from_context()
+    if not user:
+        user = hydrate_request_context_from_token(
+            get_request_auth_token(), touch_session=False
+        )
+
+    if not user:
+        return api_response({"authenticated": False}, 200)
+
     subscription_level = app.features.current_sub_level()
     all_settings = app.features.get_settings()
 
     current_settings = all_settings.get(subscription_level, {})
+    current_settings["authenticated"] = True
     current_settings["isNetworkSubscription"] = app.features.is_network_subscription()
 
     return api_response(current_settings, 200)

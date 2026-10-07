@@ -1,10 +1,11 @@
 import datetime
-import flask
 
 import liveblog.blogs as blogs
 import liveblog.items as items
 import liveblog.polls as polls
 import liveblog.posts as posts
+import liveblog.tenants as tenants
+import liveblog.syndication as syndication
 import superdesk.users as users_app
 import liveblog.themes as themes
 import liveblog.client_modules as client_modules_app
@@ -13,7 +14,7 @@ import liveblog.advertisements as advertisements
 from bson import ObjectId
 from unittest.mock import patch
 
-from superdesk.tests import TestCase
+from liveblog.tests.tenant_test_case import TenantAwareTestCase
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import get_publisher, private_draft_filter
@@ -22,11 +23,16 @@ from liveblog.posts.tasks import (
     update_post_blog_embed,
     update_scheduled_post_blog_data,
 )
-from liveblog.posts.utils import check_content_diff
+from liveblog.posts.utils import (
+    check_content_diff,
+    find_ref_items,
+    validate_post_refs,
+)
+from liveblog.tenancy.context import system_context
 from liveblog.common import run_once
 
 
-class PostsModuleTestCase(TestCase):
+class PostsModuleTestCase(TenantAwareTestCase):
     @run_once
     def setup_test_case(self):
         test_config = {
@@ -38,8 +44,10 @@ class PostsModuleTestCase(TestCase):
         self.app.config.update(test_config)
 
         init_apps = [
+            tenants,
             blogs,
             posts,
+            syndication,
             client_modules_app,
             users_app,
             themes,
@@ -53,24 +61,31 @@ class PostsModuleTestCase(TestCase):
         self.client = self.app.test_client()
 
     def setUp(self):
+        super().setUp()
         self.setup_test_case()
+        self.setup_tenant_and_user()
         self.posts_service = get_resource_service("posts")
         self.blog_posts_service = get_resource_service("blog_posts")
 
+        # Use the tenant-aware user from parent class
         self.user_list = [
             {
-                "_id": "0",
+                "_id": self.user["_id"],
+                "tenant_id": self.tenant_id,
                 "_etag": "hash",
                 "_created": "now",
                 "_updated": "nowish",
-                "username": "admin",
+                "username": self.user["username"],
                 "display_name": "admin",
                 "sign_off": "off",
                 "byline": "by",
                 "email": "admin@example.com",
             }
         ]
-        self.user_ids = self.app.data.insert("users", self.user_list)
+
+        self.user_ids = [self.user["_id"]]
+        self.user["privileges"] = {"publish_post": 1, "submit_post": 1}
+        self.set_user_context(self.user)
 
         self.private_draft_filter = {
             "bool": {
@@ -86,6 +101,7 @@ class PostsModuleTestCase(TestCase):
         self.blogs_list = [
             {
                 "_id": "blog_one",
+                "tenant_id": self.tenant_id,
                 "_created": "2018-03-27T12:04:58+00:00",
                 "_etag": "b962afec2413ddf43fcf0273a1a422a2fec1e34d",
                 "_type": "blogs",
@@ -201,6 +217,7 @@ class PostsModuleTestCase(TestCase):
                 },
                 "text": "Sample poll",
                 "versioncreated": "2024-02-07T07:18:11+00:00",
+                "tenant_id": self.tenant_id,
             },
             {
                 "_created": "2024-02-07T07:18:11+00:00",
@@ -228,6 +245,7 @@ class PostsModuleTestCase(TestCase):
                 },
                 "text": "Sample poll",
                 "versioncreated": "2024-02-07T07:18:11+00:00",
+                "tenant_id": self.tenant_id,
             },
         ]
 
@@ -235,6 +253,7 @@ class PostsModuleTestCase(TestCase):
 
         self.items = [
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-03T05:42:43+00:00",
                 "_current_version": 1,
                 "_id": "urn:newsml:localhost:2018-04-03T11:12:43.086751:9472f874-6fae-4050-be10-419845e33c06",
@@ -281,6 +300,7 @@ class PostsModuleTestCase(TestCase):
                 "versioncreated": "2018-04-03T05:42:43+00:00",
             },
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-13T06:48:23+00:00",
                 "_current_version": 1,
                 "_etag": "544b8670ad6e16154e4d71730ae01cd68cb6b539",
@@ -383,6 +403,7 @@ class PostsModuleTestCase(TestCase):
                 "_created": "2024-02-09T21:42:09.000Z",
                 "item_type": "post_comment",
                 "_etag": "680f7656e1ea09eae89bee39d370f9594d9c6e18",
+                "tenant_id": self.tenant_id,
             }
         ]
 
@@ -392,6 +413,7 @@ class PostsModuleTestCase(TestCase):
 
         self.blog_posts = [
             {
+                "tenant_id": self.tenant_id,
                 "_created": "2018-04-03T05:42:43+00:00",
                 "_current_version": 1,
                 "_etag": "0ad2b3f00e13ebad62e74d8d9a500991ba09f1b7",
@@ -523,26 +545,26 @@ class PostsModuleTestCase(TestCase):
         self.themes_ids = self.app.data.insert("themes", self.themes)
 
     def test_get_publisher_clean(self):
-        with self.app.app_context():
-            with_session = self.user_list[0].copy()
-            with_session.update({"session": "nothing"})
-            flask.g.user = with_session
-            publisher = get_publisher()
-            self.assertEqual(publisher, self.user_list[0])
+        with_session = self.user_list[0].copy()
+        with_session["session"] = "nothing"
+        self.set_user_context(with_session)
+        publisher = get_publisher()
+        # Publisher should match user_list[0] (without session, already has tenant_id)
+        self.assertEqual(publisher, self.user_list[0])
 
     def test_get_publisher_none(self):
-        with self.app.app_context():
-            publisher = get_publisher()
-            self.assertEqual(publisher, None)
+        # Clear user to test case where no user is set
+        self.cleanup_user_context()
+        publisher = get_publisher()
+        self.assertEqual(publisher, None)
 
     def test_private_draft_filter_with_user(self):
-        with self.app.app_context():
-            flask.g.user = self.user_list[0]
-            private_filter = self.private_draft_filter.copy()
-            private_filter["bool"]["should"].append(
-                {"term": {"original_creator": str(self.user_list[0]["_id"])}}
-            )
-            self.assertEqual(private_draft_filter(), self.private_draft_filter)
+        self.set_user_context(self.user_list[0])
+        private_filter = self.private_draft_filter.copy()
+        private_filter["bool"]["should"].append(
+            {"term": {"original_creator": str(self.user_list[0]["_id"])}}
+        )
+        self.assertEqual(private_draft_filter(), self.private_draft_filter)
 
     def test_get_next_order_sequence(self):
         blog_id = str(self.blogs_ids[0])
@@ -680,17 +702,15 @@ class PostsModuleTestCase(TestCase):
         `related_items_map` should fetch from related locations and from
         archive by default if location attribute is not present
         """
+        related_items = self.blog_posts_service.related_items_map(self.blog_posts)
 
-        with self.app.app_context():
-            related_items = self.blog_posts_service.related_items_map(self.blog_posts)
+        assert len(related_items.keys()) == 4
 
-            assert len(related_items.keys()) == 4
+        # default archieve item should be fetched
+        assert self.items[0]["_id"] in related_items
 
-            # default archieve item should be fetched
-            assert self.items[0]["_id"] in related_items
-
-            # item from `post_comment` should be also fetched
-            assert str(self.post_comments[0]["_id"]) in related_items
+        # item from `post_comment` should be also fetched
+        assert str(self.post_comments[0]["_id"]) in related_items
 
     def test_check_content_diff_missing_groups(self):
         updates = {}
@@ -765,3 +785,364 @@ class PostsModuleTestCase(TestCase):
         }
         assert check_content_diff(updates, original)
         assert not check_content_diff(original, original)
+
+    def test_tenant_isolation_posts_not_visible_across_tenants(self):
+        """Test that posts from one tenant are not visible to another tenant."""
+        # Create a post in Tenant A (current tenant) using direct insert to archive
+        post_tenant_a = {
+            "_id": "urn:newsml:localhost:2026-02-04T10:00:00.000000:tenant-a-post",
+            "tenant_id": self.tenant_id,
+            "blog": self.blogs_ids[0],
+            "post_status": "open",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 1.0,
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_a_ids = self.app.data.insert("archive", [post_tenant_a])
+        post_a_id = post_a_ids[0]
+
+        # Verify post was created with tenant_id
+        post_a = self.posts_service.find_one(req=None, _id=post_a_id)
+        self.assertEqual(post_a["tenant_id"], self.tenant_id)
+
+        # Create Tenant B with a different user
+        tenants_service = get_resource_service("tenants")
+        tenant_b_id = tenants_service.post([{"name": "Tenant B"}])[0]
+
+        user_b = {
+            "_id": ObjectId(),
+            "username": "user_b",
+            "tenant_id": tenant_b_id,
+            "privileges": {"publish_post": 1, "submit_post": 1},
+        }
+
+        # Create a blog for Tenant B using direct insert
+        blog_b = {
+            "_id": "blog_b",
+            "title": "Blog B",
+            "description": "Blog for Tenant B",
+            "blog_status": "open",
+            "tenant_id": tenant_b_id,
+        }
+        blog_b_ids = self.app.data.insert("blogs", [blog_b])
+
+        # Switch to Tenant B user context
+        self.set_user_context(user_b)
+
+        # Create a post in Tenant B using direct insert to archive
+        post_tenant_b = {
+            "_id": "urn:newsml:localhost:2026-02-04T10:00:00.000000:tenant-b-post",
+            "tenant_id": tenant_b_id,
+            "blog": blog_b_ids[0],
+            "post_status": "open",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 1.0,
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_b_ids = self.app.data.insert("archive", [post_tenant_b])
+        post_b_id = post_b_ids[0]
+
+        # Verify Tenant B's post has correct tenant_id
+        post_b = self.posts_service.find_one(req=None, _id=post_b_id)
+        self.assertEqual(post_b["tenant_id"], tenant_b_id)
+
+        # Verify Tenant B cannot see Tenant A's post
+        result = self.posts_service.find_one(req=None, _id=post_a_id)
+        self.assertIsNone(result, "Tenant B should not see Tenant A's post")
+
+        # Verify Tenant B can only see their own posts
+        all_posts_b = list(self.posts_service.find({}))
+        post_ids_b = [str(p["_id"]) for p in all_posts_b]
+        self.assertIn(str(post_b_id), post_ids_b)
+        self.assertNotIn(str(post_a_id), post_ids_b)
+
+        # Switch back to Tenant A
+        self.set_user_context(self.user)
+
+        # Verify Tenant A can still see their post
+        post_a_check = self.posts_service.find_one(req=None, _id=post_a_id)
+        self.assertIsNotNone(post_a_check)
+        self.assertEqual(post_a_check["tenant_id"], self.tenant_id)
+
+        # Verify Tenant A cannot see Tenant B's post
+        result = self.posts_service.find_one(req=None, _id=post_b_id)
+        self.assertIsNone(result, "Tenant A should not see Tenant B's post")
+
+    def test_tenant_filter_blocks_posts_without_tenant_id(self):
+        """Test that posts without tenant_id or with wrong tenant_id are filtered out."""
+        # Insert a post WITH the correct tenant_id - should be visible
+        post_with_tenant = {
+            "_id": "urn:newsml:localhost:2026-02-04T10:30:00.000000:with-tenant-post",
+            "blog": self.blogs_ids[0],
+            "post_status": "draft",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 1.0,
+            "tenant_id": self.tenant_id,  # Correct tenant
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_with_tenant_ids = self.app.data.insert("archive", [post_with_tenant])
+
+        # Should be able to retrieve it because it has the correct tenant_id
+        visible_post = self.posts_service.find_one(
+            req=None, _id=post_with_tenant_ids[0]
+        )
+        self.assertIsNotNone(visible_post, "Should see post with matching tenant_id")
+        self.assertEqual(visible_post["tenant_id"], self.tenant_id)
+
+        # Insert a post WITHOUT tenant_id - should NOT be visible
+        post_without_tenant = {
+            "_id": "urn:newsml:localhost:2026-02-04T10:31:00.000000:no-tenant-post",
+            "blog": self.blogs_ids[0],
+            "post_status": "draft",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 2.0,
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_without_tenant_ids = self.app.data.insert("archive", [post_without_tenant])
+
+        # Should NOT be able to retrieve it
+        invisible_post = self.posts_service.find_one(
+            req=None, _id=post_without_tenant_ids[0]
+        )
+        self.assertIsNone(invisible_post, "Should not see post without tenant_id")
+
+        # Insert a post with DIFFERENT tenant_id - should NOT be visible
+        other_tenant_id = ObjectId()
+        post_other_tenant = {
+            "_id": "urn:newsml:localhost:2026-02-04T10:32:00.000000:other-tenant-post",
+            "blog": self.blogs_ids[0],
+            "post_status": "draft",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 3.0,
+            "tenant_id": other_tenant_id,  # Different tenant
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_other_tenant_ids = self.app.data.insert("archive", [post_other_tenant])
+
+        # Should NOT be able to retrieve the other tenant's post
+        other_post = self.posts_service.find_one(req=None, _id=post_other_tenant_ids[0])
+        self.assertIsNone(other_post, "Should not see post from different tenant")
+
+    def test_tenant_filter_in_queries(self):
+        """Test that queries automatically filter by tenant_id."""
+        # Create multiple posts for Tenant A using direct insert
+        posts_a = [
+            {
+                "_id": f"urn:newsml:localhost:2026-02-04T10:00:0{i}.000000:tenant-a-post-{i}",
+                "tenant_id": self.tenant_id,
+                "blog": self.blogs_ids[0],
+                "post_status": "open",
+                "particular_type": "post",
+                "type": "composite",
+                "deleted": False,
+                "order": float(i),
+                "groups": [
+                    {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                    {"id": "main", "refs": [], "role": "grpRole:Main"},
+                ],
+            }
+            for i in range(3)
+        ]
+        post_a_ids = self.app.data.insert("client_blog_posts", posts_a)
+
+        # Verify we can find all Tenant A posts
+        all_posts_a = list(self.posts_service.find({}))
+        self.assertGreaterEqual(len(all_posts_a), 3)
+
+        # All posts should have the correct tenant_id
+        for post in all_posts_a:
+            self.assertEqual(post["tenant_id"], self.tenant_id)
+
+        # Create Tenant B
+        tenants_service = get_resource_service("tenants")
+        tenant_b_id = tenants_service.post([{"name": "Tenant B"}])[0]
+
+        user_b = {
+            "_id": ObjectId(),
+            "username": "user_b",
+            "tenant_id": tenant_b_id,
+            "privileges": {"publish_post": 1, "submit_post": 1},
+        }
+
+        blog_b = {
+            "title": "Blog B",
+            "description": "Blog for Tenant B",
+            "tenant_id": tenant_b_id,
+        }
+        blog_b_ids = self.app.data.insert("client_blogs", [blog_b])
+
+        # Switch to Tenant B
+        self.set_user_context(user_b)
+
+        # Create posts for Tenant B using direct insert
+        posts_b = [
+            {
+                "_id": f"urn:newsml:localhost:2026-02-04T10:00:1{i}.000000:tenant-b-post-{i}",
+                "tenant_id": tenant_b_id,
+                "blog": blog_b_ids[0],
+                "post_status": "open",
+                "particular_type": "post",
+                "type": "composite",
+                "deleted": False,
+                "order": float(i),
+                "groups": [
+                    {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                    {"id": "main", "refs": [], "role": "grpRole:Main"},
+                ],
+            }
+            for i in range(2)
+        ]
+        self.app.data.insert("client_blog_posts", posts_b)
+
+        # Query all posts - should only see Tenant B's posts
+        all_posts_b = list(self.posts_service.find({}))
+        self.assertEqual(len(all_posts_b), 2)
+
+        # All posts should belong to Tenant B
+        for post in all_posts_b:
+            self.assertEqual(post["tenant_id"], tenant_b_id)
+
+        # None of Tenant A's posts should be visible
+        for post_a_id in post_a_ids:
+            self.assertNotIn(str(post_a_id), [str(p["_id"]) for p in all_posts_b])
+
+    def test_blog_posts_service_tenant_isolation(self):
+        """Test that BlogPostsService also respects tenant isolation."""
+        # Create a post for Tenant A using direct insert
+        post_a = {
+            "_id": "urn:newsml:localhost:2026-02-04T11:00:00.000000:blog-posts-test-a",
+            "tenant_id": self.tenant_id,
+            "blog": self.blogs_ids[0],
+            "post_status": "open",
+            "particular_type": "post",
+            "type": "composite",
+            "deleted": False,
+            "order": 1.0,
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {"id": "main", "refs": [], "role": "grpRole:Main"},
+            ],
+        }
+        post_a_ids = self.app.data.insert("archive", [post_a])
+
+        # Verify we can retrieve it via posts service (BlogPostsService is complex)
+        post_a_check = self.posts_service.find_one(req=None, _id=post_a_ids[0])
+        self.assertIsNotNone(post_a_check)
+        self.assertEqual(post_a_check["tenant_id"], self.tenant_id)
+
+        # Create Tenant B
+        tenants_service = get_resource_service("tenants")
+        tenant_b_id = tenants_service.post([{"name": "Tenant B"}])[0]
+
+        user_b = {
+            "_id": ObjectId(),
+            "username": "user_b",
+            "tenant_id": tenant_b_id,
+            "privileges": {"publish_post": 1, "submit_post": 1},
+        }
+
+        # Switch to Tenant B
+        self.set_user_context(user_b)
+
+        # Tenant B should not see Tenant A's post
+        post_from_tenant_a = self.posts_service.find_one(req=None, _id=post_a_ids[0])
+        self.assertIsNone(
+            post_from_tenant_a,
+            "Tenant B should not see Tenant A's posts",
+        )
+
+    def _insert_ref_items(self):
+        other_tenant_id = ObjectId()
+        own_id, other_id = self.app.data.insert(
+            "archive",
+            [
+                {
+                    "_id": "urn:test:ref-own-item",
+                    "particular_type": "item",
+                    "text": "own",
+                    "tenant_id": self.tenant_id,
+                },
+                {
+                    "_id": "urn:test:ref-other-item",
+                    "particular_type": "item",
+                    "text": "other",
+                    "tenant_id": other_tenant_id,
+                },
+            ],
+        )
+        refs = [
+            {"residRef": own_id},
+            {"residRef": other_id, "location": "archive"},
+            {"residRef": str(self.tenant_id), "location": "tenants"},
+            {"residRef": str(self.user["_id"]), "location": "users"},
+            {"residRef": {"$ne": None}},
+        ]
+        return own_id, other_id, other_tenant_id, refs
+
+    def test_find_ref_items_is_scoped_to_the_given_tenant(self):
+        own_id, other_id, other_tenant_id, refs = self._insert_ref_items()
+
+        self.assertEqual(set(find_ref_items(refs, self.tenant_id)), {own_id})
+
+        # Celery tasks and system mode run without tenant filtering in the services
+        with system_context():
+            self.assertEqual(set(find_ref_items(refs, self.tenant_id)), {own_id})
+            self.assertEqual(set(find_ref_items(refs, other_tenant_id)), {other_id})
+
+    def test_validate_post_refs_rejects_foreign_and_unknown_resources(self):
+        own_id, other_id, _, refs = self._insert_ref_items()
+        root = {"id": "root", "refs": [{"idRef": "main"}]}
+
+        validate_post_refs(
+            {"groups": [root, {"id": "main", "refs": [{"residRef": own_id}]}]},
+            self.tenant_id,
+        )
+        for ref in refs[1:]:
+            post = {
+                "groups": [root, {"id": "main", "refs": [{"residRef": own_id}, ref]}]
+            }
+            with self.assertRaises(SuperdeskApiError) as ctx:
+                validate_post_refs(post, self.tenant_id)
+            self.assertEqual(ctx.exception.status_code, 400, ref)
+
+    def test_package_service_ignores_disallowed_locations(self):
+        own_id, _, _, _ = self._insert_ref_items()
+        package_service = self.posts_service.packageService
+        users_ref = {"residRef": str(self.user["_id"]), "location": "users"}
+
+        with self.assertRaises(SuperdeskApiError):
+            package_service.get_associated_item(users_ref)
+        self.assertEqual(
+            package_service.get_associated_item(users_ref, throw_if_not_found=False),
+            (None, users_ref["residRef"], None),
+        )
+
+        item, item_id, endpoint = package_service.get_associated_item(
+            {"residRef": own_id}
+        )
+        self.assertEqual((item["_id"], item_id, endpoint), (own_id, own_id, "items"))
