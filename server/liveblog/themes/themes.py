@@ -287,24 +287,35 @@ class ThemesService(TenantAwareService, BaseService):
             self.datasource, req=None, name=parent_name, **{"$or": visible}
         )
 
-    def _validate_extends(self, docs, batch_names=()):
+    def _validate_extends(self, docs):
         """
-        Reject `extends` values that are not a system theme or a theme of the
-        caller's tenant. `batch_names` are themes being created in the same call.
+        Reject `extends` chains that reach a theme which is neither a system theme
+        nor a theme of the caller's tenant, or that lead back to a theme already in
+        the chain. Themes in `docs` can extend each other.
         """
         if self.is_system_request():
             return
 
+        pending = {doc.get("name"): doc for doc in docs}
         for doc in docs:
+            seen = {doc.get("name")}
             parent_name = doc.get("extends")
-            if not parent_name:
-                continue
-            if parent_name != doc.get("name") and parent_name in batch_names:
-                continue
-            if not self.find_one(req=None, name=parent_name):
-                raise SuperdeskApiError.badRequestError(
-                    message='Parent theme "{}" does not exist'.format(parent_name)
+            while parent_name:
+                if parent_name in seen:
+                    raise SuperdeskApiError.badRequestError(
+                        message='Theme "{}" has a cyclic `extends` chain'.format(
+                            doc.get("name")
+                        )
+                    )
+                seen.add(parent_name)
+                parent = pending.get(parent_name) or self.find_one(
+                    req=None, name=parent_name
                 )
+                if not parent:
+                    raise SuperdeskApiError.badRequestError(
+                        message='Parent theme "{}" does not exist'.format(parent_name)
+                    )
+                parent_name = parent.get("extends")
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
@@ -903,7 +914,7 @@ class ThemesService(TenantAwareService, BaseService):
         if not has_system_themes:
             self.check_themes_limit(docs)
 
-        self._validate_extends(docs, batch_names={doc.get("name") for doc in docs})
+        self._validate_extends(docs)
 
         super().on_create(docs)
 
@@ -1007,7 +1018,7 @@ class ThemesService(TenantAwareService, BaseService):
                 blog,
             )
 
-    def get_dependencies(self, theme_name, deps=[]):
+    def get_dependencies(self, theme_name, deps=None):
         """
         Return a list of the dependencies names.
 
@@ -1015,6 +1026,9 @@ class ThemesService(TenantAwareService, BaseService):
         :param deps:
         :return:
         """
+        deps = [] if deps is None else deps
+        if theme_name in deps:
+            raise SuperdeskError(400, "Dependencies are cyclic")
         deps.append(theme_name)
         theme = self.find_one(req=None, name=theme_name)
         if not theme:

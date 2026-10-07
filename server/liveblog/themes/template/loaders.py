@@ -47,10 +47,15 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
         self.loaders = []
         themes = get_resource_service("themes")
 
+        # Names already added, so an `extends` cycle stored in the database ends
+        # the walk instead of recursing until the interpreter gives up.
+        seen = set()
+
         def recursive_add(theme):
             theme_name = theme["name"]
             parent_name = theme.get("extends")
             parent = None
+            seen.update({theme_name, parent_name})
 
             if parent_name:
                 parent = themes.find_parent_theme(theme)
@@ -79,7 +84,7 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
             # now check if parent theme extends another and repeat the story :)
             if parent and parent.get("extends"):
                 ancestor = themes.find_parent_theme(parent)
-                if ancestor:
+                if ancestor and ancestor["name"] not in seen:
                     recursive_add(ancestor)
 
         recursive_add(theme)

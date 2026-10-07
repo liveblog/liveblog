@@ -10,13 +10,14 @@ from unittest.mock import MagicMock, patch
 import flask
 from bson import ObjectId
 from superdesk import get_resource_service
-from superdesk.errors import SuperdeskApiError
+from superdesk.errors import SuperdeskApiError, SuperdeskError
 
 import liveblog.blogs.embeds as embeds
 import liveblog.themes.themes as themes_module
 from liveblog.tenancy.context import system_context
 from liveblog.tests.tenant_test_case import TenantAwareTestCase
 from liveblog.themes import UnknownTheme
+from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .themes_test import init_themes_test_app
 
@@ -158,6 +159,59 @@ class ThemeTenantIsolationTestCase(TenantAwareTestCase):
         self.themes.post([{"name": "b-grandchild", "extends": "b-child"}])
 
         self.assertIsNotNone(self.themes.find_one(req=None, name="b-grandchild"))
+
+    def test_cannot_patch_theme_to_extend_itself(self):
+        b_theme = self._create_theme(self.user_b, {"name": "b-theme"})
+
+        with self.assertRaises(SuperdeskApiError) as ctx:
+            self.themes.patch(b_theme["_id"], {"extends": "b-theme"})
+
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_cannot_create_cyclic_extends_in_one_batch(self):
+        self.set_user_context(self.user_b)
+
+        with self.assertRaises(SuperdeskApiError) as ctx:
+            self.themes.post(
+                [
+                    {"name": "b-one", "extends": "b-two"},
+                    {"name": "b-two", "extends": "b-one"},
+                ]
+            )
+
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIsNone(self.themes.find_one(req=None, name="b-one"))
+
+    def test_cannot_patch_extends_into_a_cycle(self):
+        b_parent = self._create_theme(self.user_b, {"name": "b-parent"})
+        self._create_theme(self.user_b, {"name": "b-child", "extends": "b-parent"})
+        self._create_theme(self.user_b, {"name": "b-grandchild", "extends": "b-child"})
+
+        with self.assertRaises(SuperdeskApiError) as ctx:
+            self.themes.patch(b_parent["_id"], {"extends": "b-grandchild"})
+
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_stored_extends_cycle_does_not_recurse_forever(self):
+        # Written through the data layer to model a cycle already stored in the
+        # database, which validation on write cannot reach.
+        self.app.data.insert(
+            "themes",
+            [
+                {"name": "b-one", "extends": "b-two", "tenant_id": self.tenant_b},
+                {"name": "b-two", "extends": "b-one", "tenant_id": self.tenant_b},
+                {"name": "b-self", "extends": "b-self", "tenant_id": self.tenant_b},
+            ],
+        )
+        self.set_user_context(self.user_b)
+
+        for name in ("b-one", "b-self"):
+            theme = self.themes.find_one(req=None, name=name)
+            loader = CompiledThemeTemplateLoader(theme)
+            self.assertTrue(loader.loaders)
+            with self.assertRaises(SuperdeskError) as ctx:
+                self.themes.get_dependencies(name)
+            self.assertEqual(ctx.exception.status_code, 400)
 
     def test_public_embed_does_not_resolve_parent_from_other_tenant(self):
         self._create_a_custom()
