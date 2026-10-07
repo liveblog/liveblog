@@ -2,30 +2,46 @@ name: Liveblog CI
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
+env:
+  CI: true
+  SYNDICATION_VALIDATE_AUTH: 0
+  MAIL_SERVER: 'localhost'
+  MAIL_PORT: 2225
+  MAIL_USERNAME: __EMPTY__
+  MAIL_PASSWORD: __EMPTY__
+  MAIL_USE_TLS: 0
+  MAIL_USE_SSL: 0
+  MAIL_DEBUG: 1
+  MAIL_SUPPRESS_SEND: true
+  IFRAMELY_KEY: ${{ secrets.IFRAMELY_KEY }}
+  SUPERDESK_URL: 'http://localhost:5000/api'
+  SUPERDESK_WS_URL: 'ws://localhost:5100'
+  SUPERDESK_CLIENT_URL: 'http://localhost:9000'
+  WEB_CONCURRENCY: 3
+  WEB_TIMEOUT: 8
+  SUPERDESK_TESTING: true
+  MARKETPLACE: true
+  SYNDICATION: true
+  # The lowest cost bcrypt accepts. Every e2e test reseeds the users and logs
+  # in, so hashing at the production cost takes about half of the suite's time.
+  BCRYPT_GENSALT_WORK_FACTOR: 4
+
 jobs:
-  build:
+  server:
+    name: ${{ matrix.suite }}
     runs-on: ubuntu-24.04
 
-    env:
-      CI: true
-      SYNDICATION_VALIDATE_AUTH: 0
-      MAIL_SERVER: 'localhost'
-      MAIL_PORT: 2225
-      MAIL_USERNAME: __EMPTY__
-      MAIL_PASSWORD: __EMPTY__
-      MAIL_USE_TLS: 0
-      MAIL_USE_SSL: 0
-      MAIL_DEBUG: 1
-      MAIL_SUPPRESS_SEND: true
-      IFRAMELY_KEY: ${{ secrets.IFRAMELY_KEY }}
-      SUPERDESK_URL: 'http://localhost:5000/api'
-      SUPERDESK_WS_URL: 'ws://localhost:5100'
-      SUPERDESK_CLIENT_URL: 'http://localhost:9000'
-      WEB_CONCURRENCY: 3
-      WEB_TIMEOUT: 8
-      SUPERDESK_TESTING: true
-      MARKETPLACE: true
-      SYNDICATION: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: pytest
+            command: pytest --ignore=src/ --disable-pytest-warnings -v
+          - suite: behave
+            command: behave --format progress2 --logging-level ERROR
 
     services:
       mongodb:
@@ -44,25 +60,59 @@ jobs:
     steps:
     - uses: actions/checkout@v5
 
-    - name: Set up server
-      uses: ./.github/actions/setup-server
+    - uses: ./.github/actions/setup-server
 
-    - name: Run Python tests
+    - name: Run ${{ matrix.suite }}
       working-directory: ./server
-      run: |
-        pytest --ignore=src/ --disable-pytest-warnings -v
-        behave --format progress2 --logging-level ERROR
+      run: ${{ matrix.command }}
 
-    - name: Set up client
-      uses: ./.github/actions/setup-client
+  client-lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: ./.github/actions/setup-client
 
     - name: Lint client
       working-directory: ./client
       shell: bash
       run: npm run lint
 
-    - name: Start app
-      uses: ./.github/actions/start-app
+  e2e:
+    name: e2e (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    runs-on: ubuntu-24.04
+
+    # Each shard is its own job with its own databases: every test wipes and
+    # reseeds them, so the specs cannot share a backend across parallel workers.
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      elasticsearch:
+        image: liveblog3/elasticsearch:1.7.2
+        ports:
+          - 9200:9200
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: ./.github/actions/setup-server
+
+    - uses: ./.github/actions/setup-client
+
+    - uses: ./.github/actions/start-app
 
     - name: Setup Node 24 for Playwright
       uses: actions/setup-node@v6
@@ -79,4 +129,4 @@ jobs:
     - name: Run Playwright e2e tests
       working-directory: ./client/e2e
       shell: bash
-      run: npx playwright test --reporter=line
+      run: npx playwright test --reporter=line --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
