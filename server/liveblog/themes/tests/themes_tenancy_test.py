@@ -213,6 +213,78 @@ class ThemeTenantIsolationTestCase(TenantAwareTestCase):
                 self.themes.get_dependencies(name)
             self.assertEqual(ctx.exception.status_code, 400)
 
+    def _system_theme(self, name="angular"):
+        self.app.data.insert(
+            "themes", [{"name": name, "version": "1.0.0", "tenant_id": None}]
+        )
+        return self.themes.find_one(req=None, name=name)
+
+    def test_tenant_cannot_modify_system_theme(self):
+        system_theme = self._system_theme()
+        self.set_user_context(self.user_b)
+
+        for updates in (
+            {"version": "9.9.9"},
+            {"scripts": ["https://evil.example/x.js"]},
+            {"template": "<script>alert(1)</script>"},
+            {"extends": "angular"},
+        ):
+            with self.assertRaises(SuperdeskApiError) as ctx:
+                self.themes.patch(system_theme["_id"], updates)
+            self.assertEqual(ctx.exception.status_code, 403, updates)
+
+        with self.assertRaises(SuperdeskApiError) as ctx:
+            self.themes.put(system_theme["_id"], {"name": "angular"})
+        self.assertEqual(ctx.exception.status_code, 403)
+
+        stored = self.app.data.find_one("themes", req=None, _id=system_theme["_id"])
+        self.assertEqual(stored["version"], "1.0.0")
+        self.assertNotIn("scripts", stored)
+        self.assertNotIn("template", stored)
+
+    def test_tenant_can_customise_system_theme_settings(self):
+        system_theme = self._system_theme()
+        self.set_user_context(self.user_b)
+
+        # Saving settings republishes the blogs using the theme, which needs
+        # resources this test app does not register.
+        with patch.object(type(self.themes), "publish_related_blogs"):
+            self.themes.patch(
+                system_theme["_id"],
+                {"settings": {"postsPerPage": 5}, "version": "1.0.0"},
+            )
+
+        stored = self.app.data.find_one("themes", req=None, _id=system_theme["_id"])
+        self.assertNotIn("settings", stored)
+        customised = get_resource_service("theme_settings").get_settings_for_tenant(
+            self.tenant_b, "angular"
+        )
+        self.assertEqual(customised, {"postsPerPage": 5})
+
+    def test_tenant_cannot_change_the_tenant_of_a_theme(self):
+        b_theme = self._create_theme(self.user_b, {"name": "b-theme"})
+
+        for tenant_id in (None, self.tenant_a):
+            with self.assertRaises(SuperdeskApiError) as ctx:
+                self.themes.patch(b_theme["_id"], {"tenant_id": tenant_id})
+            self.assertEqual(ctx.exception.status_code, 403, tenant_id)
+
+        with self.assertRaises(SuperdeskApiError) as ctx:
+            self.themes.put(b_theme["_id"], {"name": "b-theme", "tenant_id": None})
+        self.assertEqual(ctx.exception.status_code, 403)
+
+        stored = self.app.data.find_one("themes", req=None, _id=b_theme["_id"])
+        self.assertEqual(stored["tenant_id"], self.tenant_b)
+
+    def test_replacing_a_theme_keeps_its_tenant(self):
+        b_theme = self._create_theme(self.user_b, {"name": "b-theme"})
+
+        self.themes.put(b_theme["_id"], {"name": "b-theme", "version": "2.0.0"})
+
+        stored = self.app.data.find_one("themes", req=None, _id=b_theme["_id"])
+        self.assertEqual(stored["tenant_id"], self.tenant_b)
+        self.assertEqual(stored["version"], "2.0.0")
+
     def test_public_embed_does_not_resolve_parent_from_other_tenant(self):
         self._create_a_custom()
         # Written through the data layer to skip `extends` validation and model

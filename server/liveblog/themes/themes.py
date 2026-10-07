@@ -918,7 +918,46 @@ class ThemesService(TenantAwareService, BaseService):
 
         super().on_create(docs)
 
+    def _check_tenant_write(self, original, changes, replacing=False):
+        """
+        Refuse the writes a tenant must not make on a theme. A theme never moves to
+        another tenant or becomes a system theme, and system themes are shared by
+        every tenant, so they only take `settings`/`styleSettings`, which are
+        stored per tenant.
+        """
+        if self.is_system_request():
+            return
+
+        changed = {
+            field
+            for field, value in changes.items()
+            if not field.startswith("_") and original.get(field) != value
+        }
+        if replacing:
+            # a replaced document also loses every field it does not carry
+            changed.update(
+                field
+                for field in original
+                if not field.startswith("_") and field not in changes
+            )
+
+        if "tenant_id" in changed:
+            raise SuperdeskApiError.forbiddenError(
+                message="The tenant of a theme cannot be changed"
+            )
+
+        if original.get("tenant_id") is None and changed - {
+            "settings",
+            "styleSettings",
+        }:
+            raise SuperdeskApiError.forbiddenError(
+                message="System themes cannot be modified"
+            )
+
     def on_replace(self, document, original):
+        if not self.is_system_request():
+            document.setdefault("tenant_id", original.get("tenant_id"))
+        self._check_tenant_write(original, document, replacing=True)
         self._validate_extends([document])
         super().on_replace(document, original)
 
@@ -934,6 +973,8 @@ class ThemesService(TenantAwareService, BaseService):
         Customizations saved on the theme document before multi-tenancy are moved
         to theme_settings by the `liveblog:migrate_tenancy` command.
         """
+        self._check_tenant_write(original, updates)
+
         if "extends" in updates:
             self._validate_extends([{**original, **updates}])
 
