@@ -74,8 +74,8 @@ tenants_schema = {
     "plan_expires_at": {"type": "datetime", "nullable": True},
     # Proof that the account agreed to the Terms of Use and the Privacy Policy.
     # Checkout refuses tenants without it. `accepted_at` is only set when the
-    # acceptance happened in the app ("registration"); records for accounts
-    # that agreed on the website carry `backfilled_at` instead.
+    # acceptance happened in the app ("registration"); for accounts that
+    # agreed on the website ("website") the time is not known.
     "terms_acceptance": {
         "type": "dict",
         "nullable": True,
@@ -83,7 +83,6 @@ tenants_schema = {
             "version": {"type": "string"},
             "source": {"type": "string", "allowed": ["registration", "website"]},
             "accepted_at": {"type": "datetime"},
-            "backfilled_at": {"type": "datetime"},
         },
     },
     # Price ID used for the last one-time plan purchase, used by the "Extend" button.

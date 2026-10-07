@@ -25,7 +25,6 @@ export interface TermsAcceptance {
     version: string;
     source: 'registration' | 'website';
     accepted_at?: Date;
-    backfilled_at?: Date;
 }
 
 let clientPromise: Promise<MongoClient> | undefined;
