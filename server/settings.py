@@ -420,6 +420,11 @@ STRIPE_BILLING_REQUIRED = env("STRIPE_BILLING_REQUIRED", False)
 
 STRIPE_PRICING_URL = env("STRIPE_PRICING_URL", "https://liveblog.pro/en/pricing/")
 
+# Identifies the Terms of Use a new account agrees to at registration. It is
+# stored with every acceptance record, so it has to change whenever the
+# published terms change.
+TERMS_VERSION = env("TERMS_VERSION", "2018-03-09")
+
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
 NO_TAKES = True
 

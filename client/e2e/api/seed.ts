@@ -103,7 +103,7 @@ export async function createUser(api: ApiClient, user: SeedUser): Promise<string
 export async function registerTenantOwner(api: ApiClient, owner: SeedUser): Promise<RegisteredTenant> {
     const response = await api.post<{ user_id: string; tenant_id: string; tenant_name: string }>(
         '/register',
-        { needs_activation: false, ...owner },
+        { needs_activation: false, terms_accepted: true, ...owner },
     );
 
     if (!response.ok) {

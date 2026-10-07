@@ -14,6 +14,7 @@ interface IFormState {
 
 interface IState {
     form: IFormState;
+    termsAccepted: boolean;
     globalError: string | null;
     submitting: boolean;
     focusedField: string | null;
@@ -29,6 +30,9 @@ const INITIAL_FORM: IFormState = {
     email: '',
     password: '',
 };
+
+const TERMS_OF_USE_URL = 'https://liveblog.pro/en/termsofuse/';
+const PRIVACY_POLICY_URL = 'https://www.sourcefabric.org/about/policies#sourcefabricprivacyanddatapolicy';
 
 const styles: {[key: string]: React.CSSProperties} = {
     card: {
@@ -99,6 +103,24 @@ const styles: {[key: string]: React.CSSProperties} = {
         fontSize: 13,
         marginBottom: 16,
     },
+    terms: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 8,
+        fontSize: 13,
+        lineHeight: '18px',
+        color: '#374151',
+        cursor: 'pointer',
+    },
+    termsCheckbox: {
+        margin: '2px 0 0',
+        flexShrink: 0,
+        cursor: 'pointer',
+    },
+    termsLink: {
+        color: '#1eb06c',
+        fontWeight: 500,
+    },
     submitBtn: {
         width: '100%',
         height: 42,
@@ -142,6 +164,7 @@ const styles: {[key: string]: React.CSSProperties} = {
 export class RegisterPage extends React.Component<{}, IState> {
     state: IState = {
         form: { ...INITIAL_FORM },
+        termsAccepted: false,
         globalError: null,
         submitting: false,
         focusedField: null,
@@ -259,15 +282,22 @@ export class RegisterPage extends React.Component<{}, IState> {
 
     private handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
+
+        const { form, termsAccepted } = this.state;
+
+        if (!termsAccepted) {
+            return;
+        }
+
         this.setState({ submitting: true, globalError: null });
 
-        const { form } = this.state;
-        const payload: Record<string, string> = {
+        const payload: Record<string, string | boolean> = {
             first_name: form.firstName,
             last_name: form.lastName,
             username: form.username,
             email: form.email,
             password: form.password,
+            terms_accepted: termsAccepted,
         };
 
         if (form.organizationName.trim()) {
@@ -296,7 +326,8 @@ export class RegisterPage extends React.Component<{}, IState> {
     }
 
     private renderForm() {
-        const { form, globalError, submitting, planInfo } = this.state;
+        const { form, termsAccepted, globalError, submitting, planInfo } = this.state;
+        const submitDisabled = submitting || !termsAccepted;
         const cardStyle = planInfo
             ? { ...styles.card, boxShadow: 'none', borderRadius: 0, maxWidth: 'none', margin: 0 }
             : styles.card;
@@ -389,10 +420,43 @@ export class RegisterPage extends React.Component<{}, IState> {
                         </div>
                     ))}
 
+                    <label style={styles.terms} htmlFor="termsAccepted">
+                        <input
+                            id="termsAccepted"
+                            name="termsAccepted"
+                            type="checkbox"
+                            checked={termsAccepted}
+                            onChange={(e) => this.setState({
+                                termsAccepted: e.target.checked,
+                            })}
+                            style={styles.termsCheckbox}
+                        />
+                        <span>
+                            I agree to the{' '}
+                            <a
+                                href={TERMS_OF_USE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={styles.termsLink}
+                            >
+                                Terms of Use
+                            </a>
+                            {' '}and the{' '}
+                            <a
+                                href={PRIVACY_POLICY_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={styles.termsLink}
+                            >
+                                Privacy Policy
+                            </a>.
+                        </span>
+                    </label>
+
                     <button
                         type="submit"
-                        disabled={submitting}
-                        style={submitting
+                        disabled={submitDisabled}
+                        style={submitDisabled
                             ? {
                                 ...styles.submitBtn,
                                 ...styles.submitBtnDisabled,

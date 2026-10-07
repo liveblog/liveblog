@@ -74,6 +74,23 @@ def _get_tenant_for_request():
     return tenant, None
 
 
+def _require_terms_acceptance():
+    """Return an error response unless the tenant has a terms acceptance record.
+
+    Guards every endpoint that can lead to a purchase. Call it before
+    _get_tenant_for_request, which creates a Stripe Customer, so nothing
+    reaches Stripe for an account that has not agreed to the terms.
+    """
+    tenant = get_tenant(required=False)
+    if tenant and not tenant.get("terms_acceptance"):
+        return api_error(
+            "You must agree to the Terms of Use and the Privacy Policy "
+            "before purchasing a plan. Please contact support.",
+            403,
+        )
+    return None
+
+
 def _require_stripe():
     """Return the Stripe API key or an error response."""
     key = app.config.get("STRIPE_SECRET_KEY")
@@ -242,6 +259,10 @@ def create_checkout_session():
     if not price_id:
         return api_error("price_id is required", 400)
 
+    error = _require_terms_acceptance()
+    if error:
+        return error
+
     tenant, error = _get_tenant_for_request()
     if error:
         return error
@@ -323,6 +344,12 @@ def create_portal_session():
 def create_customer_session():
     """Create a Stripe Customer Session for embedded components."""
     stripe_key, error = _require_stripe()
+    if error:
+        return error
+
+    # The pricing table this session unlocks creates Checkout Sessions on
+    # Stripe's side, without going through /api/billing/checkout.
+    error = _require_terms_acceptance()
     if error:
         return error
 

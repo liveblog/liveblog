@@ -5,7 +5,7 @@ This module provides a public REST API endpoint for user registration that
 automatically creates a tenant for each new user.
 """
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 from flask_cors import cross_origin
 from liveblog.tenancy.registration import RegistrationService
 from liveblog.utils.api import api_response, api_error
@@ -37,7 +37,8 @@ def register():
             "email": "john@example.com",
             "password": "secret123",
             "first_name": "John",
-            "last_name": "Doe"
+            "last_name": "Doe",
+            "terms_accepted": true
         }
 
     Response (201 Created):
@@ -76,6 +77,13 @@ def register():
     if missing:
         return api_error(f'Missing required fields: {", ".join(missing)}', 400)
 
+    # Only a JSON `true` counts as consent: a truthy value such as the string
+    # "false" must not. Popped so the flag is not stored on the user document.
+    if data.pop("terms_accepted", None) is not True:
+        return api_error(
+            "You must agree to the Terms of Use and the Privacy Policy", 400
+        )
+
     # Basic validation
     if len(data["password"]) < 6:
         return api_error("Password must be at least 6 characters", 400)
@@ -101,7 +109,9 @@ def register():
     registration_service = RegistrationService()
 
     try:
-        result = registration_service.register_new_user(data)
+        result = registration_service.register_new_user(
+            data, terms_version=current_app.config["TERMS_VERSION"]
+        )
 
         logger.info(
             f"Successfully registered user {result['user_id']} "
