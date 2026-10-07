@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import Stripe from 'stripe';
@@ -28,7 +29,7 @@ export function stripe(): Stripe {
 }
 
 export function e2eEmail(tag = 'user'): string {
-    const unique = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    const unique = `${Date.now().toString(36)}${randomBytes(2).toString('hex')}`;
     return `e2e+${tag}-${unique}@example.com`;
 }
 
