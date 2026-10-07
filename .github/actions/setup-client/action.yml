@@ -1,0 +1,23 @@
+name: Set up client
+description: Install the Node.js version pinned in client/package.json and the client's dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: 'client/package.json'
+        cache: 'npm'
+        cache-dependency-path: 'client/package-lock.json'
+
+    - name: Install Nodejs dependencies
+      working-directory: ./client
+      shell: bash
+      run: |
+        git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+        git config --global --add url."https://github.com/".insteadOf git+ssh://git@github.com/
+        node --version
+        npm --version
+        npm config set loglevel warn
+        npm ci --ignore-scripts
