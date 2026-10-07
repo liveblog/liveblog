@@ -2,6 +2,9 @@ name: Liveblog CI
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 env:
   CI: true
   SYNDICATION_VALIDATE_AUTH: 0
