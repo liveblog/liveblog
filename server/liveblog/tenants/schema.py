@@ -72,6 +72,19 @@ tenants_schema = {
         "data_relation": {"resource": "users", "field": "_id"},
     },
     "plan_expires_at": {"type": "datetime", "nullable": True},
+    # Proof that the account agreed to the Terms of Use and the Privacy Policy.
+    # Checkout refuses tenants without it. `accepted_at` is only set when the
+    # acceptance happened in the app ("registration"); for accounts that
+    # agreed on the website ("website") the time is not known.
+    "terms_acceptance": {
+        "type": "dict",
+        "nullable": True,
+        "schema": {
+            "version": {"type": "string"},
+            "source": {"type": "string", "allowed": ["registration", "website"]},
+            "accepted_at": {"type": "datetime"},
+        },
+    },
     # Price ID used for the last one-time plan purchase, used by the "Extend" button.
     # TODO: handle the case where this price is archived in Stripe (validate before checkout)
     "plan_price_id": {"type": "string", "nullable": True},

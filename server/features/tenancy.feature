@@ -8,7 +8,8 @@ Feature: Multi-tenancy and tenant isolation
             "email": "tenant1@example.com",
             "password": "securepass123",
             "first_name": "Tenant",
-            "last_name": "One"
+            "last_name": "One",
+            "terms_accepted": true
         }
         """
         Then we get response code 201
@@ -25,7 +26,8 @@ Feature: Multi-tenancy and tenant isolation
             "email": "user1@example.com",
             "password": "securepass123",
             "first_name": "User",
-            "last_name": "One"
+            "last_name": "One",
+            "terms_accepted": true
         }
         """
         Then we get response code 201
@@ -36,7 +38,8 @@ Feature: Multi-tenancy and tenant isolation
             "email": "user2@example.com",
             "password": "securepass123",
             "first_name": "User",
-            "last_name": "Two"
+            "last_name": "Two",
+            "terms_accepted": true
         }
         """
         Then we get error 400
@@ -49,7 +52,8 @@ Feature: Multi-tenancy and tenant isolation
             "email": "duplicate@example.com",
             "password": "securepass123",
             "first_name": "User",
-            "last_name": "One"
+            "last_name": "One",
+            "terms_accepted": true
         }
         """
         Then we get response code 201
@@ -60,7 +64,21 @@ Feature: Multi-tenancy and tenant isolation
             "email": "duplicate@example.com",
             "password": "securepass123",
             "first_name": "User",
-            "last_name": "Two"
+            "last_name": "Two",
+            "terms_accepted": true
+        }
+        """
+        Then we get error 400
+
+    Scenario: Registration requires accepting the terms
+        When we post to "/api/register"
+        """
+        {
+            "username": "notermsuser",
+            "email": "noterms@example.com",
+            "password": "securepass123",
+            "first_name": "No",
+            "last_name": "Terms"
         }
         """
         Then we get error 400

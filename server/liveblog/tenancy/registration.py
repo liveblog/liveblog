@@ -8,6 +8,7 @@ relationship between users and tenants.
 
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
+from superdesk.utc import utcnow
 import logging
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class RegistrationService:
         })
     """
 
-    def register_new_user(self, user_data):
+    def register_new_user(self, user_data, terms_version=None):
         """
         Register new user and create their personal tenant.
 
@@ -53,6 +54,10 @@ class RegistrationService:
                 - password (str, required): Plain-text password (will be hashed)
                 - first_name (str, required): User's first name
                 - last_name (str, required): User's last name
+            terms_version (str, optional): Version of the Terms of Use the
+                user agreed to. When given, the acceptance is recorded on the
+                new tenant. Callers that create accounts without a person
+                agreeing to anything (prepopulate) leave it out.
 
         Returns:
             dict: Registration result containing:
@@ -113,6 +118,15 @@ class RegistrationService:
         }
         if organization_name:
             tenant_data["organization_name"] = organization_name
+
+        # Written with the tenant itself rather than in a later patch, so an
+        # account that agreed to the terms never exists without the record.
+        if terms_version is not None:
+            tenant_data["terms_acceptance"] = {
+                "version": terms_version,
+                "source": "registration",
+                "accepted_at": utcnow(),
+            }
 
         tenant_ids = tenants_service.post([tenant_data])
         tenant_id = tenant_ids[0]

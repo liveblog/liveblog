@@ -18,6 +18,13 @@ export interface TenantBilling {
     stripe_customer_id?: string | null;
     stripe_subscription_id?: string | null;
     stripe_subscription_status?: string | null;
+    terms_acceptance?: TermsAcceptance | null;
+}
+
+export interface TermsAcceptance {
+    version: string;
+    source: 'registration' | 'website';
+    accepted_at?: Date;
 }
 
 let clientPromise: Promise<MongoClient> | undefined;
@@ -48,6 +55,7 @@ const BILLING_FIELDS = {
     stripe_customer_id: 1,
     stripe_subscription_id: 1,
     stripe_subscription_status: 1,
+    terms_acceptance: 1,
 };
 
 function toObjectId(id: string | ObjectId): ObjectId {
@@ -129,4 +137,12 @@ export async function setGoPlan(tenantId: string, { priceId, expiresAt }: GoPlan
  */
 export async function setStripeCustomer(tenantId: string, customerId: string): Promise<void> {
     await updateTenant(tenantId, { stripe_customer_id: customerId });
+}
+
+/**
+ * Removes the terms acceptance record, leaving the tenant as an account
+ * created before acceptance was recorded.
+ */
+export async function clearTermsAcceptance(tenantId: string): Promise<void> {
+    await updateTenant(tenantId, { terms_acceptance: null });
 }

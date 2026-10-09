@@ -135,6 +135,28 @@ class RegistrationServiceTestCase(TestCase):
         user = get_resource_service("users").find_one(req=None, _id=result["user_id"])
         self.assertFalse(user.get("is_support", False))
 
+    def test_terms_version_is_recorded_on_the_tenant(self):
+        result = self.registration_service.register_new_user(
+            self.valid_user_data, terms_version="2026-01-15"
+        )
+
+        tenant = get_resource_service("tenants").find_one(
+            req=None, _id=result["tenant_id"]
+        )
+        self.assertEqual(tenant["terms_acceptance"]["version"], "2026-01-15")
+        self.assertEqual(tenant["terms_acceptance"]["source"], "registration")
+        self.assertIsNotNone(tenant["terms_acceptance"]["accepted_at"])
+
+    def test_no_terms_version_records_no_acceptance(self):
+        """Accounts created without a person agreeing (prepopulate) must not
+        end up with a record that says someone did."""
+        result = self.registration_service.register_new_user(self.valid_user_data)
+
+        tenant = get_resource_service("tenants").find_one(
+            req=None, _id=result["tenant_id"]
+        )
+        self.assertIsNone(tenant.get("terms_acceptance"))
+
     def test_generate_tenant_name(self):
         """Test tenant name generation from user data (internal method)."""
         tenant_name = self.registration_service._generate_tenant_name(

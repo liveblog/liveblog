@@ -219,6 +219,11 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
             "subscription_level": "liveblog-go",
             "plan_expires_at": utcnow() - datetime.timedelta(days=1),
             "plan_price_id": "price_old",
+            "terms_acceptance": {
+                "version": "2026-01-15",
+                "source": "registration",
+                "accepted_at": utcnow(),
+            },
         }
         updates.update(tenant_updates or {})
         return self._create_user_with_tenant(updates)
@@ -296,3 +301,77 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("no longer available", response.get_data(as_text=True))
         mock_session_create.assert_not_called()
+
+    def test_checkout_rejects_tenant_without_terms_acceptance(self):
+        tenant_id, user_id = self._create_expired_go_tenant_user(
+            {"terms_acceptance": None}
+        )
+        headers = self._create_auth_headers(user_id)
+
+        with patch("liveblog.billing.service.stripe") as mock_service_stripe, patch(
+            "liveblog.billing.endpoints.stripe"
+        ) as mock_endpoint_stripe:
+            response = self.client.post(
+                "/api/billing/checkout",
+                data=json.dumps({"price_id": "price_old"}),
+                headers=headers,
+            )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("Terms of Use", response.get_data(as_text=True))
+        mock_service_stripe.Customer.create.assert_not_called()
+        mock_endpoint_stripe.Price.retrieve.assert_not_called()
+        mock_endpoint_stripe.checkout.Session.create.assert_not_called()
+        tenant = get_resource_service("tenants").find_one(req=None, _id=tenant_id)
+        self.assertIsNone(tenant.get("stripe_customer_id"))
+
+    def test_checkout_creates_session_for_tenant_with_terms_acceptance(self):
+        _, user_id = self._create_expired_go_tenant_user(
+            {"stripe_customer_id": "cus_go_123"}
+        )
+        headers = self._create_auth_headers(user_id)
+
+        with patch("stripe.Price.retrieve") as mock_retrieve, patch(
+            "stripe.checkout.Session.create"
+        ) as mock_session_create:
+            mock_retrieve.return_value = {
+                "id": "price_new",
+                "active": True,
+                "product": {
+                    "metadata": {
+                        "subscription_level": "liveblog-go",
+                        "plan_duration_days": "3",
+                    }
+                },
+            }
+            mock_session_create.return_value = type(
+                "CheckoutSession", (), {"url": "https://stripe.example.test/checkout"}
+            )()
+            response = self.client.post(
+                "/api/billing/checkout",
+                data=json.dumps({"price_id": "price_new"}),
+                headers=headers,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            json.loads(response.get_data(as_text=True))["url"],
+            "https://stripe.example.test/checkout",
+        )
+        mock_session_create.assert_called_once()
+
+    def test_customer_session_rejects_tenant_without_terms_acceptance(self):
+        _, user_id = self._create_expired_go_tenant_user({"terms_acceptance": None})
+        headers = self._create_auth_headers(user_id)
+
+        with patch("liveblog.billing.service.stripe") as mock_service_stripe, patch(
+            "liveblog.billing.endpoints.stripe"
+        ) as mock_endpoint_stripe:
+            response = self.client.post(
+                "/api/billing/customer-session", data="{}", headers=headers
+            )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("Terms of Use", response.get_data(as_text=True))
+        mock_service_stripe.Customer.create.assert_not_called()
+        mock_endpoint_stripe.api_requestor.APIRequestor.assert_not_called()

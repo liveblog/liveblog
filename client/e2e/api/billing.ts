@@ -41,6 +41,7 @@ export async function registerE2EUser(api: ApiClient, tag = 'user'): Promise<E2E
         password,
         first_name: 'E2E',
         last_name: tag,
+        terms_accepted: true,
     });
     if (response.status !== 201) {
         throw new Error(`register ${email} failed: ${response.status} ${JSON.stringify(response.body)}`);

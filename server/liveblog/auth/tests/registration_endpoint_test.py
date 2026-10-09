@@ -11,6 +11,7 @@ from bson import ObjectId
 
 from superdesk.tests import TestCase
 from superdesk import get_resource_service
+from superdesk.utc import utcnow
 from liveblog.auth.registration import registration_blueprint
 from liveblog import tenants, users
 from liveblog.common import run_once
@@ -24,6 +25,7 @@ class RegistrationEndpointTestCase(TestCase):
         test_config = {
             "LIVEBLOG_DEBUG": True,
             "DEBUG": False,
+            "TERMS_VERSION": "2026-01-15",
         }
         self.app.config.update(test_config)
 
@@ -50,6 +52,7 @@ class RegistrationEndpointTestCase(TestCase):
             "password": "securepass123",
             "first_name": "New",
             "last_name": "User",
+            "terms_accepted": True,
         }
 
     def test_successful_registration_returns_201(self):
@@ -83,6 +86,55 @@ class RegistrationEndpointTestCase(TestCase):
         self.assertIsNotNone(tenant)
         self.assertEqual(tenant["subscription_level"], "solo")
         self.assertEqual(tenant["owner_user_id"], ObjectId(data["user_id"]))
+
+    def test_registration_records_terms_acceptance(self):
+        before = utcnow().replace(microsecond=0)
+
+        response = self.client.post(
+            "/api/register",
+            data=json.dumps(self.valid_registration_data),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        data = json.loads(response.data)
+
+        tenant = get_resource_service("tenants").find_one(
+            req=None, _id=ObjectId(data["tenant_id"])
+        )
+        acceptance = tenant["terms_acceptance"]
+        self.assertEqual(acceptance["version"], "2026-01-15")
+        self.assertEqual(acceptance["source"], "registration")
+        self.assertGreaterEqual(acceptance["accepted_at"], before)
+        self.assertLessEqual(acceptance["accepted_at"], utcnow())
+
+        user = get_resource_service("users").find_one(req=None, _id=data["user_id"])
+        self.assertNotIn("terms_accepted", user)
+
+    def test_registration_without_terms_acceptance_returns_400(self):
+        """Only a JSON true is consent; anything else creates no account."""
+        users_service = get_resource_service("users")
+
+        for value in (None, False, "true", "false", 1, "on"):
+            payload = self.valid_registration_data.copy()
+            if value is None:
+                del payload["terms_accepted"]
+            else:
+                payload["terms_accepted"] = value
+
+            response = self.client.post(
+                "/api/register",
+                data=json.dumps(payload),
+                content_type="application/json",
+            )
+
+            self.assertEqual(response.status_code, 400, value)
+            data = json.loads(response.data)
+            self.assertEqual(data["_status"], "ERR")
+            self.assertIn("terms of use", data["_error"].lower())
+            self.assertIsNone(
+                users_service.find_one(req=None, username=payload["username"])
+            )
 
     def test_missing_username_returns_400(self):
         """Test missing username field returns 400 Bad Request."""

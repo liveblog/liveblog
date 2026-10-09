@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../../fixtures/billing';
 import {
+    ApiErrorBody,
     E2EUser,
     createCheckoutSession,
     getBillingStatus,
@@ -9,8 +10,8 @@ import {
     writeProbe,
 } from '../../api/billing';
 import { ApiClient } from '../../api/client';
-import { e2eEmail } from '../../api/stripe';
-import { expireGoPlan, findTenantByUser, getTenant, setGoPlan } from '../../api/tenants-db';
+import { e2eEmail, stripe } from '../../api/stripe';
+import { clearTermsAcceptance, expireGoPlan, findTenantByUser, getTenant, setGoPlan } from '../../api/tenants-db';
 import { BillingBannerPage } from '../../pages/billing-banner.page';
 import { LoginPage } from '../../pages/login.page';
 import { RegisterPage } from '../../pages/register.page';
@@ -86,6 +87,12 @@ test.describe('LiveBlog Go', () => {
             await trackRegisteredCustomer(email).catch(() => undefined);
         }
         await shot('stripe checkout go landing');
+
+        // The account that reached Checkout carries a record from this registration.
+        const { terms_acceptance: acceptance } = await findTenantByUser(email);
+        expect(acceptance).toMatchObject({ source: 'registration', version: expect.stringMatching(/\S/) });
+        expect(acceptance?.accepted_at).toBeInstanceOf(Date);
+        expect(Date.now() - (acceptance?.accepted_at as Date).getTime()).toBeLessThan(CHECKOUT_TEST_TIMEOUT);
 
         await checkout.selectCard();
         await checkout.fillCard();
@@ -211,5 +218,19 @@ test.describe('LiveBlog Go', () => {
         const response = await createCheckoutSession(api, user, catalog.go.priceId);
         expect(response.status).toBe(400);
         expect(response.body).toMatchObject({ _error: 'You already have an active plan' });
+    });
+
+    test('checkout is refused for an account without a terms acceptance record', async ({ api, catalog }) => {
+        const user = await registerE2EUser(api, 'go-no-terms');
+        await clearTermsAcceptance(user.tenantId);
+
+        const response = await createCheckoutSession(api, user, catalog.go.priceId);
+        expect(response.status).toBe(403);
+        expect((response.body as ApiErrorBody)._error).toContain('Terms of Use');
+
+        // Without a customer the "no session" check below would prove nothing.
+        expect(user.customerId).toBeTruthy();
+        const sessions = await stripe().checkout.sessions.list({ customer: user.customerId as string, limit: 1 });
+        expect(sessions.data).toHaveLength(0);
     });
 });
