@@ -326,6 +326,11 @@ LIVEBLOG_DEBUG = env("LIVEBLOG_DEBUG", "false").lower() == "true"
 
 EMBED_PROTOCOL = env("EMBED_PROTOCOL", "http://" if LIVEBLOG_DEBUG else "https://")
 
+# Extra publisher origins (comma separated) allowed to submit AMP comments, for
+# AMP pages served from a host other than the blog's public URL or this server,
+# e.g. a custom CDN domain in front of the media storage.
+AMP_ALLOWED_SOURCE_ORIGINS = env("AMP_ALLOWED_SOURCE_ORIGINS", [])
+
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 
