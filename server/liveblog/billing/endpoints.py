@@ -9,6 +9,8 @@ import flask
 import logging
 import stripe
 
+from urllib.parse import urlsplit, urlunsplit
+
 from flask import Blueprint, abort, request, current_app as app
 from flask_cors import CORS
 
@@ -183,9 +185,37 @@ def billing_config():
         {
             "billing_required": app.config.get("STRIPE_BILLING_REQUIRED", False),
             "pricing_url": app.config.get("STRIPE_PRICING_URL", ""),
+            "conversions": _conversions_config(),
         },
         200,
     )
+
+
+def _conversions_config():
+    """Ad conversion tags the client fires on signup and purchase, keyed by network."""
+    tag_id = app.config.get("GOOGLE_ADS_TAG_ID")
+    if not tag_id:
+        return {}
+
+    return {
+        "google_ads": {
+            "tag_id": tag_id,
+            "signup_label": app.config.get("GOOGLE_ADS_SIGNUP_LABEL", ""),
+            "purchase_label": app.config.get("GOOGLE_ADS_PURCHASE_LABEL", ""),
+        }
+    }
+
+
+def _checkout_success_url(return_url):
+    """Mark the return from a paid Checkout so the client can report the purchase.
+
+    `{CHECKOUT_SESSION_ID}` is a Stripe placeholder filled in on redirect, so it
+    must reach Stripe unencoded. Do not build this query with urlencode.
+    """
+    parts = urlsplit(return_url)
+    marker = "checkout=success&session_id={CHECKOUT_SESSION_ID}"
+    query = "&".join(part for part in (parts.query, marker) if part)
+    return urlunsplit(parts._replace(query=query))
 
 
 @billing_blueprint.route("/api/billing/status", methods=["GET"])
@@ -296,7 +326,7 @@ def create_checkout_session():
             "customer": tenant["stripe_customer_id"],
             "mode": checkout_mode,
             "line_items": [{"price": price_id, "quantity": 1}],
-            "success_url": return_url,
+            "success_url": _checkout_success_url(return_url),
             "cancel_url": return_url,
             "allow_promotion_codes": True,
         }

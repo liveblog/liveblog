@@ -2,6 +2,7 @@ import React from 'react';
 import { IPlanInfo, PlanInfoPanel } from './PlanInfoPanel';
 import { apiGet, apiPost, ApiError } from '../liveblog-common/api';
 import { formatToken, setSession, setIdentity } from '../liveblog-common/session';
+import { initConversions, rememberCheckoutValue, trackSignup } from '../liveblog-billing/conversions';
 
 interface IFormState {
     firstName: string;
@@ -184,14 +185,20 @@ export class RegisterPage extends React.Component<{}, IState> {
                     }
                 })
                 .catch(() => undefined);
-            return;
         }
 
         apiGet('/billing/config', { anonymous: true })
             .then((config) => {
-                if (config && config.billing_required && config.pricing_url) {
-                    window.location.href = config.pricing_url;
+                if (!config) {
+                    return;
                 }
+
+                if (!priceId && config.billing_required && config.pricing_url) {
+                    window.location.href = config.pricing_url;
+                    return;
+                }
+
+                initConversions(config.conversions);
             })
             .catch(() => undefined);
     }
@@ -220,6 +227,16 @@ export class RegisterPage extends React.Component<{}, IState> {
 
             return { form: { ...prev.form, ...updated } };
         });
+    }
+
+    private goToCheckout(url: string) {
+        const { planInfo } = this.state;
+
+        if (planInfo) {
+            rememberCheckoutValue(planInfo.price.amount, planInfo.price.currency);
+        }
+
+        window.location.href = url;
     }
 
     private startSession = async(username: string, password: string) => {
@@ -256,7 +273,7 @@ export class RegisterPage extends React.Component<{}, IState> {
                 });
 
                 if (checkout.url) {
-                    window.location.href = checkout.url;
+                    this.goToCheckout(checkout.url);
                     return;
                 }
             } catch (error) {
@@ -306,6 +323,7 @@ export class RegisterPage extends React.Component<{}, IState> {
 
         try {
             await apiPost('/register', payload, { anonymous: true });
+            trackSignup();
             await this.startSession(form.username, form.password);
         } catch (error) {
             this.setState({
