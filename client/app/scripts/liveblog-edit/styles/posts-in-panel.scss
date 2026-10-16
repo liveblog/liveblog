@@ -10,6 +10,13 @@
         .avatar-comment {
             display: none !important;
         }
+        :where(.lb-refresh) & {
+            // Hiding only `.avatar-comment` leaves its floated 30px `.lb-post__figure`
+            // wrapper (post.scss) pushing the comment text right.
+            .lb-post__figure {
+                display: none !important;
+            }
+        }
     }
     .lb-post {
         &__holder {
@@ -17,6 +24,10 @@
             padding: 14px 10px 0 12px;
             border-bottom: 1px solid #DBDBDB;
             @include border-radius(0);
+            :where(.lb-refresh) & {
+                // 15px right: 10px crowds the action icons, the Timeline's 20px is too loose here.
+                padding: 14px 15px 0 12px;
+            }
         }
         &__content {margin-left: 0;}
         &__figure { // smaller figure

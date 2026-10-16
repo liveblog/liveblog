@@ -1,17 +1,51 @@
 @import '~lb-variables.scss';
+@import '~lb-ui-mixins.scss';
 
 section.marketer {
     top: 48px;
 }
 
+:where(.lb-refresh) {
+    .main-section.marketer {
+        margin: 12px 20px 20px;
+        background-color: #fff;
+        border-radius: $lb-radius-card;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+}
+
 section.marketer header {
     z-index: 11;
     background: rgba(245, 245, 245, 0.9);
+    :where(.lb-refresh) & {
+        background: #fff;
+        border-bottom: 1px solid $lb-input-border;
+        border-top-left-radius: $lb-radius-card;
+        border-top-right-radius: $lb-radius-card;
+    }
 
     div.alert-info {
         float: right;
         margin-right: 10px;
         margin-top: 5px;
+        :where(.lb-refresh) & {
+            margin-right: 0;
+            margin-left: 20px;
+            margin-top: 15px;
+            background-color: $lb-rail-active-bg;
+            border: 1px solid rgba($lb-rail-active, 0.25);
+            border-radius: $lb-radius-input;
+            color: $lb-btn-dark-bg;
+            text-shadow: none;
+            font-size: 13px;
+            padding: 10px 35px 10px 14px;
+            a {
+                color: $lb-btn-dark-bg;
+                font-weight: 600;
+                text-decoration: underline;
+            }
+        }
     }
 }
 
@@ -21,20 +55,159 @@ section.marketer button.filter-trigger {
     height: 48px;
     background: $sd-blue;
     border: none;
+    :where(.lb-refresh) & {
+        background: $lb-rail-active;
+        transition: background-color .15s ease;
+        &:hover, &.filter-trigger--active {
+            background: darken($lb-rail-active, 6%);
+        }
+    }
 
     i.icon-filter-large {
         color: $white;
+        :where(.lb-refresh) & {
+            @include lb-icon-font-mask(url('~images/icons/list.svg'), #fff, 20px);
+        }
     }
 }
 
 section.marketer div.archive-sidebar div.filter-title {
     clear: both;
     float: left;
+    :where(.lb-refresh) & {
+        clear: none;
+        float: none;
+    }
 
     ul li {
         width: 100%;
         line-height: inherit;
         height: auto;
+    }
+}
+
+:where(.lb-refresh) {
+    section.marketer div.archive-sidebar {
+        background: #fff;
+        border-right: 1px solid $lb-input-border;
+        min-height: 100%;
+        box-sizing: border-box;
+
+        .header, .content {
+            box-shadow: none;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid $lb-input-border;
+            .backlink-toolbar {
+                // Vendor's `.backlink-toolbar` (archive-filtering.scss) carries its own popup-header
+                // shadow, height, margin and background.
+                box-shadow: none;
+                margin-bottom: 0;
+                height: auto;
+                background: transparent;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                h4 {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: $lb-btn-dark-bg;
+                }
+                // `.icon-close-small` is a real glyph that follows `color`, so it needs no mask.
+                .doopen {
+                    cursor: pointer;
+                    color: $lb-timestamp;
+                    transition: color .15s ease;
+                    &:hover {
+                        color: $lb-btn-dark-bg;
+                    }
+                }
+            }
+        }
+
+        .content {
+            padding: 8px 24px;
+        }
+
+        div.filter-title {
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid $lb-input-border;
+            padding: 14px 0;
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .toggle-box__header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+            }
+            .toggle-box__chevron {
+                display: flex;
+                i.icon-chevron-right-thin {
+                    @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-timestamp, 14px);
+                    transition: transform .15s ease;
+                }
+            }
+            .toggle-box--open .toggle-box__chevron i.icon-chevron-right-thin,
+            .toggle-box.open .toggle-box__chevron i.icon-chevron-right-thin {
+                transform: rotate(90deg);
+            }
+            .toggle-box__label {
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .02em;
+                color: $lb-timestamp;
+            }
+            .toggle-box__content {
+                margin-top: 10px;
+            }
+
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            ul li {
+                width: 100%;
+                box-sizing: border-box;
+                line-height: inherit;
+                height: auto;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 6px 4px;
+                border-radius: $lb-radius-input;
+                cursor: pointer;
+                transition: background-color .15s ease;
+                &:hover {
+                    background: $lb-rail-active-bg;
+                }
+                span i {
+                    font-style: normal;
+                    font-size: 13px;
+                    color: $lb-btn-dark-bg;
+                }
+            }
+
+            .sd-checkbox {
+                border-color: $lb-input-border;
+                &.checked, &[checked="checked"] {
+                    border-color: $lb-rail-active !important;
+                    background: $lb-rail-active !important;
+                }
+            }
+        }
     }
 }
 
@@ -47,20 +220,41 @@ section.marketer div.marketer-banner {
     left: 0;
     height: 100px;
     max-height: 100px;
+    :where(.lb-refresh) & {
+        padding: 20px 24px;
+        border-bottom: 1px solid $lb-input-border;
+        background: #fff;
+    }
 
     h3 {
         color: $sd-blue;
+        :where(.lb-refresh) & {
+            color: $lb-btn-dark-bg;
+            font-size: 16px;
+            font-weight: 600;
+        }
     }
 
     dt, dd {
         float: left;
         padding-right: 10px;
+        :where(.lb-refresh) & {
+            color: $lb-timestamp;
+            font-size: 13px;
+        }
+    }
+
+    :where(.lb-refresh) & a {
+        color: $lb-rail-active;
     }
 
     img {
         width: 100px;
         float: left;
         margin-left: 30px;
+        :where(.lb-refresh) & {
+            border-radius: $lb-radius-input;
+        }
     }
 
     div.content {
@@ -76,9 +270,18 @@ section.marketer div.card-list-container {
     left: 0;
     right: 0;
     overflow-y: auto;
+    :where(.lb-refresh) & {
+        background: $lb-subnav-bg;
+    }
 
     h3 {
         padding: 0 19px 15px;
+        :where(.lb-refresh) & {
+            padding: 20px 19px 15px;
+            color: $lb-btn-dark-bg;
+            font-size: 16px;
+            font-weight: 600;
+        }
     }
 
     div.blogs-list {
@@ -124,4 +327,9 @@ div.not-found {
     text-align: center;
     font-weight: 700;
     padding-top: 70px;
+    :where(.lb-refresh) & {
+        font-size: 40px;
+        font-weight: 500;
+        color: $lb-timestamp;
+    }
 }

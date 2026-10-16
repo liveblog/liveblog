@@ -10,6 +10,9 @@
   width: 100%;
   background: #FFF;
   @include box-shadow(0 1px 3px rgba(0,0,0,.2));
+  :where(.lb-refresh) & {
+    box-shadow: none;
+  }
 }
 
 .analytics-list-row-item {
@@ -21,6 +24,9 @@
   border-style: solid;
   border-color: #ddd;
   border-width: 0 0 1px 0;
+  :where(.lb-refresh) & {
+    border-color: $lb-input-border;
+  }
 }
 
 .analytics-list-row-item:nth-of-type(2) {
@@ -29,11 +35,28 @@
 
 .analytics-list-row {
   display: table-row;
+  :where(.lb-refresh) &:last-of-type .analytics-list-row-item {
+    border-bottom: none;
+  }
   &--header {
     background: #eee;
     font-weight: 500;
+    :where(.lb-refresh) & {
+      // Borders on a table-row don't paint in the separate border model, only cell borders do.
+      display: flex;
+      align-items: center;
+      background: $lb-pill-bg;
+      font-weight: 600;
+      color: $lb-btn-dark-bg;
+      border: 1px solid darken($lb-pill-bg, 15%);
+      @include border-radius($lb-radius-input);
+    }
     .analytics-list-row-item {
       border-color: #ccc;
+      :where(.lb-refresh) & {
+        border-color: $lb-input-border;
+        border-bottom: none;
+      }
     }
   }
 }
@@ -46,6 +69,20 @@
 .content--analytics input {
     @include box-sizing(border-box);
     padding: 14px 10px;
+    :where(.lb-refresh) & {
+        padding: 8px 12px;
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-input);
+        font-size: 13px;
+        color: #000;
+        box-shadow: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+        &:focus {
+            box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            border-color: $lb-rail-active !important;
+            outline: 0 !important;
+        }
+    }
 }
 
 .orderby__button:after {
@@ -55,10 +92,23 @@
   position: relative;
   top: -1px;
   padding: 0px 6px 0px 6px;
+  :where(.lb-refresh) & {
+    content: '';
+    @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 12px);
+    vertical-align: middle;
+    margin-left: 6px;
+    position: static;
+    top: auto;
+    padding: 0;
+  }
 }
 
 .orderby__button--reverse:after {
   content: "\25BC";
+  :where(.lb-refresh) & {
+    content: '';
+    @include lb-icon-font-mask(url('~images/icons/chevron-down.svg'), $lb-btn-dark-bg, 12px);
+  }
 }
 
 .orderby__button--active:after {
@@ -83,6 +133,9 @@
     height: 26px;
     border-radius: 2px;
     margin: 0 2px;
+    :where(.lb-refresh) & {
+      @include border-radius($lb-radius-pill);
+    }
 
     button {
       color: $grayDark;
@@ -93,18 +146,44 @@
       padding: 0 10px;
       line-height: 26px;
       text-decoration: none;
+      :where(.lb-refresh) & {
+        color: $lb-pill-text;
+        transition: background-color .15s ease, color .15s ease;
+      }
       &:hover,
       &:hover i {
         color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-rail-active;
+        }
+      }
+      :where(.lb-refresh) & {
+        i.icon-chevron-left-thin, i.icon-chevron-right-thin {
+          @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 14px);
+          vertical-align: middle;
+        }
+        i.icon-chevron-left-thin {
+          transform: rotate(180deg);
+        }
+        &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
+          background-color: $lb-rail-active;
+        }
       }
     }
     &--active {
       background-color: $sd-blue;
       border-radius: 2px;
+      :where(.lb-refresh) & {
+        background-color: $lb-rail-active;
+        @include border-radius($lb-radius-pill);
+      }
       button { 
         color: #fff;
         &:hover {
           color: $white;
+          :where(.lb-refresh) & {
+            color: #fff;
+          }
         }
       }
     }
@@ -112,9 +191,21 @@
       button {
         cursor: default;
         color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-timestamp;
+          i.icon-chevron-left-thin, i.icon-chevron-right-thin {
+            background-color: $lb-timestamp;
+          }
+          &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
+            background-color: $lb-timestamp;
+          }
+        }
       }
       i {
         color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-timestamp;
+        }
       }
     }
   }

@@ -35,8 +35,13 @@ export class BlogsListPage extends BasePage {
     }
 
     async search(query: string): Promise<void> {
-        await this.page.locator('label.trigger-icon').click();
-        await this.page.locator('input#search-input').fill(query);
+        const input = this.page.locator('input#search-input');
+
+        // the classic UI collapses the bar behind its icon; the refreshed one keeps it open
+        if (!(await input.isVisible())) {
+            await this.page.locator('label.trigger-icon').click();
+        }
+        await input.fill(query);
     }
 
     async openBlogSettings(index = 0): Promise<void> {

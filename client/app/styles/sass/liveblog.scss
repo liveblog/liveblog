@@ -1,3 +1,11 @@
+// Vendor `.btn:hover/:focus` (superdesk-ui bundle) and Bootstrap `.btn:active` add shadows
+// and load after this file, hence !important.
+:where(.lb-refresh) {
+    .btn:hover, .btn:focus, .btn:active, .btn.active {
+        box-shadow: none !important;
+    }
+}
+
 .main-section {
 	z-index: auto;
 }
@@ -33,6 +41,13 @@
 .button-stack.right-stack {
   float: right;
   margin: -10px -20px 0 5px;
+  :where(.lb-refresh) & {
+    // !important: the ID-scoped `#main-container > div.subnav div.button-stack.right-stack`
+    // rule below sets margin: 0.
+    margin: 4px 20px 0 5px !important;
+    display: flex;
+    align-items: center;
+  }
 }
 
 .button-stack.right-stack .navbtn {
@@ -42,6 +57,9 @@
   width: auto;
   min-width: 48px;
   padding: 0 14px;
+  :where(.lb-refresh) & {
+    border-left: none !important;
+  }
 }
 
 .button-stack.right-stack .navbtn .dropdown-toggle {
@@ -92,6 +110,36 @@
 
 .button-stack .navbtn {
 	text-decoration: none;
+
+	:where(.lb-refresh) & {
+		// The Settings page renders this pair without .analytics-link/.settings-link,
+		// so also match on the icon itself.
+		&.analytics-link, &.settings-link,
+		&:has(> .big-icon--analytics), &:has(> .big-icon--cog) {
+			position: relative !important;
+			// !important: vendor `.button-stack.right-stack .navbtn` and the Settings page's
+			// `.active`/`.settings-disabled` rules have the same specificity.
+			width: 40px !important;
+			height: 40px !important;
+			min-width: 40px !important;
+			padding: 0 !important;
+			border-radius: 50% !important;
+			&:hover {
+				background-color: #dee7eca6 !important;
+			}
+			&.navbtn-active {
+				background-color: #dee7ec !important;
+				border-right: none !important;
+				margin-right: 0 !important;
+				box-shadow: none !important;
+				// Vendor `.button-stack .navbtn.navbtn-active` sets height: 48px at equal specificity.
+				height: 40px !important;
+				&:hover {
+					background-color: #dee7ec !important;
+				}
+			}
+		}
+	}
 
 	&.analytics-link,
 	&.settings-link {
@@ -163,7 +211,8 @@
     color: white;
     position: relative !important;
     float: right;
-    z-index: 2000;
+    // above .btn--contact-support so the open menu is not covered by it
+    z-index: 2002;
     right: 60px;
     top: 15px;
     margin-right: 15px;
@@ -328,6 +377,13 @@
 /* UI fixes */
 #main-container > div.subnav div.button-stack.right-stack {
     margin: 0;
+    :where(.lb-refresh) & {
+        border: none !important;
+        box-shadow: none !important;
+        .navbtn {
+            border-left: none !important;
+        }
+    }
 }
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -453,6 +509,928 @@ i.icon-star.orange {
     .sd-line-input {
         padding-top: 0.8em !important;
         margin-bottom: 0.8em !important;
+    }
+}
+
+:where(.lb-refresh) {
+    #top-menu {
+        background-color: $lb-header-bg !important;
+    }
+
+    #top-menu a, #top-menu button {
+        background: #01131c !important;
+    }
+
+    #main-menu {
+        background: $lb-header-bg !important;
+        @include box-shadow(inset -5px 0 6px -0px darken($lb-header-bg, 5%));
+        .header {
+            @include box-shadow(0 2px 3px 0px darken($lb-header-bg, 5%));
+        }
+        .content {
+            > ul > li {
+                > a:hover {
+                    background: #1a313c !important;
+                    border-top-color: #1a313c !important;
+                }
+                &.open > a {
+                    border-bottom-color: darken($lb-header-bg, 8%);
+                }
+                &.open ul {
+                    @include box-shadow(inset 0 7px 5px -5px darken($lb-header-bg, 5%));
+                }
+                &.active > a {
+                    background: #01131c !important;
+                }
+                + li > a {
+                    border-top-color: darken($lb-header-bg, 3%);
+                }
+            }
+        }
+        .footer {
+            border-top: none !important;
+            box-shadow: none !important;
+        }
+    }
+
+    .notification-pane {
+        background: $lb-header-bg !important;
+        > .header {
+            background: #01131c !important;
+            border-bottom-color: $lb-header-bg !important;
+            @include box-shadow(inset 0 4px 4px -2px darken($lb-header-bg, 8%));
+            .avatar {
+                width: 46px !important;
+                height: 46px !important;
+            }
+            .user-info {
+                .name {
+                    font-size: 13px;
+                }
+                .displayname {
+                    font-size: 12px;
+                }
+            }
+            .actions {
+                a, button {
+                    font-size: 11px;
+                }
+            }
+        }
+        > .content {
+            border-top-color: darken($lb-header-bg, 3%) !important;
+            @include box-shadow(inset 4px 0 4px -2px darken($lb-header-bg, 6%));
+            .notification-list .info {
+                color: rgba(255, 255, 255, 0.5);
+                padding: 0 10px;
+            }
+        }
+    }
+
+    // Icon on `:before`, since masking `.title` would also clip its text. It sits in
+    // vendor's 100px padding-top.
+    .upload-media .drag-area .title {
+        background: none !important;
+        position: relative;
+        &:before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 64px;
+            height: 64px;
+            @include lb-icon-bg-mask(url('~images/icons/image.svg'), #c2c2c2);
+        }
+    }
+
+    // superdesk-core's menu.scss sets this with !important outside this file's import
+    // chain, so the doubled class wins on specificity whatever the load order.
+    #top-menu a.collapse-nav.collapse-nav, #top-menu button.collapse-nav.collapse-nav {
+        width: 78px !important;
+    }
+
+    #top-menu .collapse-nav .icon-collapse {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        font-size: 0;
+        &:before {
+            content: none;
+        }
+        background-color: white;
+        -webkit-mask-image: url('~images/icons/menu.svg');
+        mask-image: url('~images/icons/menu.svg');
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+    }
+
+    // !important: vendor `[class^="big-icon--"]` sets 26px at equal specificity and
+    // loads after this file.
+    .big-icon--analytics {
+        @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text, 20px);
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 0 !important;
+    }
+
+    .big-icon--cog {
+        @include lb-icon-font-mask(url('~images/icons/settings.svg'), $lb-subnav-text, 20px);
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 0 !important;
+    }
+
+    // Absolute centering sidesteps vendor's `.navbtn i { vertical-align: baseline !important }`.
+    .navbtn .big-icon--analytics, .navbtn .big-icon--cog {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    // Three classes: several page stylesheets redeclare `.btn.btn--primary` with
+    // !important at (0,2,0), and which loads last in the bundle varies.
+    .btn.btn--primary.btn--contact-support {
+        background-color: $lb-contact-support-bg !important;
+        border-color: $lb-contact-support-bg !important;
+        color: white !important;
+        border-radius: $lb-radius-pill !important;
+        text-transform: none !important;
+        transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+        &:hover {
+            background-color: lighten($lb-contact-support-bg, 8%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba($lb-contact-support-bg, 0.4) !important;
+        }
+    }
+
+    // Widens the avatar's dark block so the avatar lines up with the 20px page gutter.
+    #top-menu button.current-user {
+        width: auto !important;
+        padding: 0 14px 0 10px !important;
+    }
+    .btn--contact-support, .help-link {
+        right: 72px;
+    }
+
+    #top-menu .current-user figure.avatar.initials {
+        background-color: white !important;
+        span {
+            color: $lb-contact-support-bg;
+        }
+    }
+
+    #main-container {
+        background-color: #F5F6F7;
+    }
+
+    .subnav {
+        // Deliberately #F5F6F7, not $lb-subnav-bg (#F6F7F8).
+        background-color: #F5F6F7 !important;
+        border: none !important;
+        box-shadow: none !important;
+        height: 5.8rem;
+    }
+    .subnav__button-stack--square-buttons {
+        align-items: center;
+    }
+
+    .btn {
+        @include border-radius($lb-radius-pill !important);
+        text-transform: none;
+        font-weight: 400;
+        box-shadow: none !important;
+        transition: background-color .15s ease;
+        &.btn--primary, &.btn-primary {
+            background-color: $lb-btn-dark-bg !important;
+            border-color: $lb-btn-dark-bg !important;
+            color: #fff !important;
+            &:hover:not(:disabled) {
+                background-color: lighten($lb-btn-dark-bg, 8%) !important;
+            }
+        }
+        &:not(.btn--primary):not(.btn-primary) {
+            background-color: #d2e4ee !important;
+            border-color: #d2e4ee !important;
+            color: #224558 !important;
+            &:hover:not(:disabled) {
+                background-color: darken(#d2e4ee, 8%) !important;
+            }
+        }
+    }
+
+    // `.blogedit` wraps the editor's main/post views only, not settings.ng1.
+    .blogedit .btn:not(.btn--primary):not(.btn-primary) {
+        background-color: $lb-pill-bg !important;
+        border-color: $lb-pill-bg !important;
+        color: $lb-pill-text !important;
+        &:hover:not(:disabled) {
+            background-color: darken($lb-pill-bg, 4%) !important;
+        }
+    }
+
+    // Same specificity as the app-wide `.btn:not():not()` rule above, so this must
+    // stay after it.
+    .btn-group .btn.btn--text-only {
+        background: none !important;
+        border: none !important;
+    }
+
+    .sd-create-btn .circle {
+        background-color: $lb-rail-active !important;
+    }
+    // Replaces vendor's glyph, which is missing on some pages and the same color as
+    // the `.circle` on others.
+    .sd-create-btn i {
+        @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+    }
+
+    // Vendor draws its own arrow as a border triangle here; hide it or both arrows show.
+    .sd-line-input--is-select::after {
+        content: none !important;
+    }
+    .sd-line-input.sd-line-input--is-select select.sd-line-input__select {
+        background-image: url('~images/icons/chevron-down.svg') !important;
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    .page-nav-title {
+        color: $lb-subnav-text;
+    }
+
+    .homebtn {
+        background-color: $lb-subnav-icon-square !important;
+        border-radius: 50% !important;
+        width: 38px !important;
+        height: 38px !important;
+        margin: 6px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        i {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            font-size: 0;
+            &:before {
+                content: none;
+            }
+            background-color: white;
+            -webkit-mask-image: url('~images/icons/layout-grid.svg');
+            mask-image: url('~images/icons/layout-grid.svg');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+        }
+    }
+
+    div.subnav div.button-stack.left-stack a.homebtn {
+        margin-left: 24px;
+        border-right: none !important;
+    }
+
+    div.subnav div.button-stack .navbtn i,
+    .button-stack.right-stack .navbtn {
+        color: $lb-subnav-text;
+    }
+
+    // sd-modal's directive sets an inline z-index only on the first `.modal__backdrop`,
+    // which ng-if recreates on every reopen. The backdrop is appended after the modal,
+    // so it needs the lower value or it covers the dialog and eats its clicks.
+    .modal {
+        z-index: 100001 !important;
+    }
+    .modal__backdrop {
+        z-index: 100000 !important;
+    }
+
+    .modal .modal__content {
+        border: none;
+        box-shadow: $lb-card-shadow !important;
+        // No overflow:hidden here (it would clip the box-shadow), so the header and footer
+        // round their own corners.
+        .modal__header {
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
+            padding: 18px 24px !important;
+            border-bottom-color: $lb-input-border;
+            .modal__heading {
+                font-size: 18px;
+                font-weight: 600;
+                color: $lb-btn-dark-bg;
+            }
+            .modal__close {
+                color: $lb-timestamp;
+                transition: color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+        }
+        .modal__body {
+            background: #fff !important;
+            padding: 20px 24px;
+            // Rounds the bottom for modals with no `.modal__footer` (buttons in `.modal__body-footer`).
+            border-bottom-left-radius: $lb-radius-card;
+            border-bottom-right-radius: $lb-radius-card;
+            // `.modal--tabs` gives this flex: 1 1 auto and its own grey fill, which stretches
+            // into an empty scrolling box below short forms.
+            .modal__body-content {
+                background: #fff !important;
+                flex: 0 1 auto !important;
+                min-height: 0 !important;
+                overflow-y: visible !important;
+            }
+            // Text uses three colors: dark for headings and values, $lb-subnav-text for labels
+            // and inactive tabs, $lb-timestamp for hints.
+            .modal__body-header .nav-tabs > li {
+                > button {
+                    color: $lb-subnav-text;
+                }
+                &.active > button {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            .sd-line-input__label, .field > label {
+                color: $lb-subnav-text;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+            }
+            .add-label {
+                color: $lb-timestamp;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .02em;
+                margin-bottom: 6px;
+            }
+            // !important radius to beat vendor `.searchbar`'s own 2px !important.
+            input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
+                border: 1px solid $lb-input-border;
+                @include border-radius($lb-radius-input !important);
+                padding: 8px 12px;
+                box-sizing: border-box;
+                // Vendor `.sd-line-input__input`/`__select` set a fixed height that squeezes this
+                // padding under border-box.
+                height: auto !important;
+                font-size: 14px;
+                color: $lb-btn-dark-bg;
+                &:focus {
+                    outline: 0;
+                    border-color: $lb-rail-active !important;
+                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                }
+            }
+            // Safari keeps its native select look unless appearance is reset.
+            select:not([multiple]) {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background: #fff url('~images/icons/chevron-down.svg') no-repeat right 12px center / 16px;
+                padding-right: 40px;
+            }
+            // Vendor sets `height: 32px !important` here at higher specificity than the
+            // input rule above.
+            .searchbar.searchbar-large {
+                height: auto !important;
+                // Matches `.flat-searchbar .search-handler` in liveblog-bloglist.scss.
+                padding: 6px 12px 6px 35px !important;
+                @include border-radius($lb-radius-pill !important);
+                font-size: 13px;
+                // Vendor's fixed `9px 7px` offset only centers the icon in its own 32px box.
+                background-position: 12px center !important;
+                &:focus {
+                    outline: 0;
+                    border-color: $lb-rail-active !important;
+                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                }
+            }
+            .modal__body-footer {
+                // No negative-margin bleed to the modal edge: it causes a horizontal scrollbar.
+                margin-top: 20px;
+                padding-top: 14px;
+                border-top: 1px solid $lb-input-border;
+                .btn {
+                    @include border-radius($lb-radius-pill);
+                    text-transform: none;
+                    font-weight: 400;
+                    box-shadow: none !important;
+                    height: 40px;
+                    padding: 0 20px;
+                    font-size: 14px;
+                    letter-spacing: normal;
+                    &.btn--primary, &.btn-primary, &.btn-info {
+                        background-color: $lb-btn-dark-bg !important;
+                        border-color: $lb-btn-dark-bg !important;
+                        color: #fff !important;
+                        &:hover:not(:disabled) {
+                            background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                        }
+                    }
+                    &:not(.btn--primary):not(.btn-primary):not(.btn-info) {
+                        background-color: darken($lb-pill-bg, 10%) !important;
+                        border-color: darken($lb-pill-bg, 10%) !important;
+                        color: $lb-pill-text !important;
+                        &:hover:not(:disabled) {
+                            background-color: darken($lb-pill-bg, 18%) !important;
+                        }
+                    }
+                }
+            }
+        }
+        .modal__footer {
+            border-bottom-left-radius: $lb-radius-card;
+            border-bottom-right-radius: $lb-radius-card;
+            padding: 14px 24px !important;
+            border-top-color: $lb-input-border;
+            .btn {
+                @include border-radius($lb-radius-pill);
+                text-transform: none;
+                font-weight: 400;
+                box-shadow: none !important;
+                height: 40px;
+                padding: 0 20px;
+                font-size: 14px;
+                letter-spacing: normal;
+                &.btn--primary, &.btn-primary, &.btn-info {
+                    background-color: $lb-btn-dark-bg !important;
+                    border-color: $lb-btn-dark-bg !important;
+                    color: #fff !important;
+                    &:hover:not(:disabled) {
+                        background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                    }
+                }
+                &:not(.btn--primary):not(.btn-primary):not(.btn-info) {
+                    background-color: darken($lb-pill-bg, 10%) !important;
+                    border-color: darken($lb-pill-bg, 10%) !important;
+                    color: $lb-pill-text !important;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-pill-bg, 18%) !important;
+                    }
+                }
+            }
+        }
+    }
+
+    // Vendor's `.main-section` is absolutely positioned on all four sides, so margin
+    // insets it and its absolutely positioned children follow.
+    .main-section.users {
+        margin: 12px 20px 20px;
+        // Vendor's own values, pinned so these panes stay under sd-modal's backdrop
+        // (z-index 1049+).
+        .list-pane {
+            z-index: 1 !important;
+        }
+        .preview-pane {
+            z-index: 2 !important;
+        }
+    }
+
+    .subnav--absolute:has(+ .main-section.user-profile-page) .page-nav-title {
+        margin-left: 20px;
+    }
+
+    .subnav__page-title {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        color: #143A4D !important;
+    }
+
+    .subnav--absolute:has(+ .main-section.users) .sd-create-btn {
+        @include lb-create-btn-pill('Create user');
+    }
+    // A taller bar rather than flex centering: another core `.subnav` rule at equal
+    // specificity drops `display: flex`, depending on load order.
+    .subnav--absolute:has(+ .main-section.users) {
+        height: 5.8rem;
+    }
+    .subnav--absolute:has(+ .main-section.users) .subnav__button-stack--square-buttons {
+        margin-right: 20px;
+        align-items: center;
+    }
+
+    .users {
+        .disabled-label {
+            height: auto;
+            line-height: normal;
+            padding: 3px 8px;
+            @include border-radius($lb-radius-pill);
+        }
+
+        .list-pane {
+            background: #fff !important;
+            border-right: none !important;
+            @include border-radius($lb-radius-card);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+            // Opaque, so it needs its own radius or it squares off `.list-pane`'s corners.
+            > .subnav {
+                background-color: #fff !important;
+                border-bottom: 1px solid $lb-input-border !important;
+                border-top-left-radius: $lb-radius-card;
+                border-top-right-radius: $lb-radius-card;
+                display: flex !important;
+                align-items: center !important;
+                // `.extended` gives `.search-handler` a square opaque fill over the toolbar's corner.
+                .flat-searchbar.extended {
+                    border-top-left-radius: $lb-radius-card !important;
+                    .search-handler {
+                        border-top-left-radius: $lb-radius-card !important;
+                    }
+                }
+            }
+        }
+        .preview-pane {
+            background: #fff;
+            border-left: 1px solid $lb-input-border;
+            box-shadow: none;
+            border-top-right-radius: $lb-radius-card;
+            border-bottom-right-radius: $lb-radius-card;
+            > header {
+                background-color: #fff;
+                border-bottom: 1px solid $lb-input-border;
+                box-shadow: none;
+                border-top-right-radius: $lb-radius-card;
+                #open-user-profile {
+                    margin-left: 20px;
+                }
+            }
+        }
+
+        .toggle-button {
+            @include border-radius($lb-radius-pill);
+            border-color: $lb-input-border;
+            color: $lb-pill-text;
+            background: #fff;
+            box-shadow: none;
+            &:hover {
+                border-color: $lb-rail-active;
+                color: $lb-rail-active;
+                box-shadow: none;
+            }
+            &:active {
+                box-shadow: none;
+            }
+        }
+        .toggle-button--active {
+            background-color: $lb-btn-dark-bg !important;
+            border-color: $lb-btn-dark-bg !important;
+            color: #fff !important;
+            box-shadow: none !important;
+            &:hover {
+                background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                border-color: lighten($lb-btn-dark-bg, 8%) !important;
+                box-shadow: none !important;
+            }
+            &:active {
+                box-shadow: none !important;
+            }
+        }
+
+        .sd-line-input.sd-line-input--is-select select.sd-line-input__select {
+            border: 1px solid $lb-input-border !important;
+            // Vendor sets a `border-bottom` longhand on this selector that still showed
+            // through the shorthand.
+            border-bottom: 1px solid $lb-input-border !important;
+            @include border-radius($lb-radius-input !important);
+            box-sizing: border-box !important;
+            height: 32px !important;
+            line-height: 20px !important;
+            padding: 6px 26px 6px 10px !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .sd-pagination .btn-group .btn {
+            color: $lb-pill-text;
+            &:hover:not(:disabled) {
+                color: $lb-rail-active;
+            }
+            &:disabled {
+                color: $lb-timestamp;
+            }
+        }
+
+        .users-table {
+            border-top: none;
+            // !important throughout: vendor users styles load after this file at equal
+            // specificity. Row height and avatar size must change together to stay centered.
+            .table-header, .table-newest, .table-body {
+                > li {
+                    height: 56px !important;
+                    .avatar {
+                        width: 36px !important;
+                        height: 36px !important;
+                        margin: 10px 8px 10px 14px !important;
+                        &.initials {
+                            font-size: 13px !important;
+                            line-height: 36px !important;
+                        }
+                    }
+                    // Positioned against the `<li>`, not the avatar (avatar box is 14,10 to 50,46).
+                    // drop-shadow fakes the white halo, since a masked icon can't take a stroke.
+                    .admin-label {
+                        width: 18px !important;
+                        height: 18px !important;
+                        top: 5px !important;
+                        left: 5px !important;
+                        // Not transparent: the row's hover/selected tint would show inside the ring.
+                        background-color: #fff !important;
+                        border: 2px solid #fff !important;
+                        @include border-radius(50%);
+                        box-sizing: border-box;
+                        box-shadow: none !important;
+                        &:before {
+                            content: none;
+                        }
+                        &:after {
+                            content: '';
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            background-color: #000;
+                            -webkit-mask-image: url('~images/icons/settings.svg');
+                            mask-image: url('~images/icons/settings.svg');
+                            -webkit-mask-repeat: no-repeat;
+                            mask-repeat: no-repeat;
+                            -webkit-mask-position: center;
+                            mask-position: center;
+                            -webkit-mask-size: contain;
+                            mask-size: contain;
+                            filter:
+                                drop-shadow(1px 0 0 #fff)
+                                drop-shadow(-1px 0 0 #fff)
+                                drop-shadow(0 1px 0 #fff)
+                                drop-shadow(0 -1px 0 #fff);
+                        }
+                    }
+                    // Positioned against the avatar figure, not the `<li>`.
+                    .logged-info {
+                        width: 14.4px !important;
+                        height: 14.4px !important;
+                        bottom: -4px !important;
+                        right: -4px !important;
+                        top: auto !important;
+                        border: 2px solid $lb-timestamp !important;
+                        box-sizing: border-box;
+                        box-shadow: 0 0 0 2px #fff !important;
+                        background-color: #fff !important;
+                    }
+                    .user-logged .logged-info {
+                        background-color: $lb-rail-active !important;
+                        border-color: $lb-rail-active !important;
+                    }
+                    > div.row-wrapper {
+                        top: 13px !important;
+                    }
+                }
+            }
+            .table-header {
+                background: #d0e2ed47;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                > li {
+                    // !important: vendor's equal-specificity rule loads later and drops it on
+                    // hovered/selected rows.
+                    border-bottom: 1px solid #99c0d878 !important;
+                    > div, .name, .email, .created {
+                        color: $lb-btn-dark-bg !important;
+                    }
+                    .sortable i {
+                        opacity: .6;
+                        margin-left: 4px;
+                        vertical-align: middle;
+                        &.icon-chevron-down-thin {
+                            @include lb-icon-font-mask(url('~images/icons/chevron-down.svg'), $lb-btn-dark-bg, 12px);
+                        }
+                        &.icon-chevron-up-thin {
+                            @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 12px);
+                        }
+                    }
+                }
+            }
+            .table-body, .table-newest {
+                background: #fff;
+                border-top: none;
+                // Vendor's -1px margin-top puts this opaque list over the header's border-bottom.
+                margin-top: 0 !important;
+                > li {
+                    border-bottom: 1px dotted $lb-input-border;
+                    &.selected {
+                        background: darken(#EDF4F8, 5%);
+                    }
+                    &:hover {
+                        background: #dbe9f1bd;
+                    }
+                    > div.action {
+                        height: 56px !important;
+                        .item-functions li {
+                            height: 56px !important;
+                            line-height: 56px !important;
+                            border-left-color: $lb-input-border;
+                            &:hover {
+                                background-color: $lb-pill-bg;
+                            }
+                            a {
+                                display: flex !important;
+                                align-items: center;
+                                justify-content: center;
+                                height: 100%;
+                            }
+                            i.icon-trash, i.icon-kill, i.icon-revert {
+                                margin: 0;
+                            }
+                            i.icon-trash {
+                                @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 18px);
+                            }
+                            i.icon-kill {
+                                @include lb-icon-font-mask(url('~images/icons/skull.svg'), $lb-pill-text, 18px);
+                            }
+                            i.icon-revert {
+                                @include lb-icon-font-mask(url('~images/icons/undo-2.svg'), $lb-pill-text, 18px);
+                            }
+                            &:hover i {
+                                background-color: $lb-rail-active;
+                            }
+                        }
+                    }
+                }
+            }
+            .row-wrapper > div.email {
+                color: $lb-rail-active;
+            }
+            .row-wrapper > div.created {
+                color: $lb-timestamp;
+            }
+        }
+    }
+
+    .user-details-pane {
+        .header-info {
+            background-color: $lb-pill-bg;
+        }
+        .sd-line-input {
+            padding-top: 2rem !important;
+            .sd-line-input__message {
+                padding-top: 0.8rem;
+            }
+        }
+        .profile-pic .avatar {
+            box-shadow: 0 0 0 1px $lb-input-border;
+        }
+        .nav-tabs__link {
+            color: $lb-pill-text;
+        }
+        .nav-tabs__tab--active .nav-tabs__link, .nav-tabs__tab--active:hover .nav-tabs__link {
+            border-bottom-color: $lb-rail-active !important;
+            color: $lb-btn-dark-bg !important;
+        }
+        .sd-checkbox.checked, .sd-checkbox[checked="checked"] {
+            border-color: $lb-rail-active !important;
+            background: $lb-rail-active !important;
+            &:hover {
+                border-color: darken($lb-rail-active, 6%) !important;
+                background: darken($lb-rail-active, 6%) !important;
+            }
+        }
+        .sd-check__wrapper .sd-checkbox+label.label--active {
+            color: $lb-rail-active !important;
+        }
+        .change-btn {
+            @include border-radius($lb-radius-pill !important);
+            color: $lb-rail-active !important;
+            border-color: $lb-rail-active !important;
+            // The app-wide `.btn--primary` rule would fill this hollow button.
+            background-color: transparent !important;
+            // 14px wraps the label onto two lines.
+            font-size: 11px !important;
+            padding: 6px 14px !important;
+            white-space: nowrap !important;
+            // The app-wide `.btn--primary:hover` rule is also !important, so reassert both
+            // properties.
+            &:hover:not(:disabled) {
+                background-color: $lb-rail-active-bg !important;
+                border-color: $lb-rail-active !important;
+                color: $lb-rail-active !important;
+            }
+        }
+    }
+
+    // Login and reset-password screens (superdesk-core auth templates, shared markup).
+    // !important throughout: vendor auth.scss order isn't guaranteed, and the app-wide
+    // `.btn` rule would otherwise style `.btn--sd-green` as a secondary pill.
+    .login-screen {
+        background: $lb-header-bg !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        .logo-handler {
+            margin-bottom: 32px !important;
+            text-align: center;
+            img {
+                width: 180px !important;
+                height: auto !important;
+            }
+        }
+
+        .login-form-container {
+            position: static !important;
+            top: auto !important; left: auto !important; margin: 0 !important;
+            width: 320px;
+            height: auto !important;
+            padding: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+
+            .session-error {
+                position: static;
+                width: auto;
+                margin: 0 0 20px !important;
+                @include border-radius($lb-radius-input);
+                background-color: $lb-star-selected;
+            }
+
+            .form-handler {
+                width: 100% !important;
+
+                .avatar {
+                    width: 120px !important;
+                    height: 120px !important;
+                    margin: 0 auto 24px !important;
+                }
+
+                form {
+                    .inputs input {
+                        width: 100%;
+                        @include box-sizing(border-box);
+                        height: 44px;
+                        margin-bottom: 14px;
+                        border: 1px solid $lb-input-border !important;
+                        @include border-radius($lb-radius-input !important);
+                        box-shadow: none !important;
+                        padding: 0 14px;
+                        font-size: 14px;
+                        line-height: normal;
+                        &:focus {
+                            border-color: $lb-rail-active !important;
+                            box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                            outline: none;
+                        }
+                    }
+                    .buttons button {
+                        background-color: $lb-rail-active !important;
+                        border-color: $lb-rail-active !important;
+                        color: #fff !important;
+                        height: 44px;
+                        font-weight: 500;
+                        &:hover:not(:disabled) {
+                            background-color: darken($lb-rail-active, 6%) !important;
+                        }
+                    }
+                }
+
+                .links {
+                    border-top: none !important;
+                    padding-top: 4px;
+                    margin-top: 4px;
+                }
+                .text {
+                    color: $lb-rail-active !important;
+                    &:hover {
+                        color: lighten($lb-rail-active, 12%);
+                        text-decoration: underline;
+                    }
+                }
+                .reset-info {
+                    color: rgba(255, 255, 255, 0.75) !important;
+                }
+                .transition-id {
+                    color: #fff !important;
+                }
+                .validation-info span {
+                    color: $lb-star-selected !important;
+                }
+                .error-handler .error {
+                    background: $lb-live-badge-text !important;
+                    @include border-radius($lb-radius-input);
+                }
+            }
+        }
     }
 }
 

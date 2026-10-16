@@ -13,17 +13,421 @@
     margin:0px;
 }
 
+:where(.lb-refresh) {
+    // `.main-section` is absolutely positioned on all four sides, so a margin insets it evenly.
+    .main-section.bloglist {
+        margin: 12px 20px 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        @include border-radius($lb-radius-card);
+    }
+
+    // Scopes the shared `.subnav` to this page: it is the sibling right before `.main-section.bloglist`.
+    .subnav:has(+ .main-section.bloglist) {
+        height: 5.8rem;
+        .subnav__sliding-toolbar {
+            background-color: $lb-rail-active-bg !important;
+            box-shadow: none;
+            .sliding-toolbar__info-text {
+                color: $lb-pill-text;
+                font-weight: 500;
+                opacity: 1;
+            }
+            .btn {
+                @include border-radius($lb-radius-pill !important);
+                text-transform: none;
+                font-weight: 500;
+                font-size: 13px;
+                box-shadow: none !important;
+            }
+            // The Cancel button, the only one that is neither primary nor alert.
+            .btn:not(.btn--primary):not(.btn--alert) {
+                background: #fff !important;
+                border: 1px solid $lb-input-border !important;
+                color: $lb-pill-text !important;
+                &:hover {
+                    background: #fff !important;
+                    border-color: $lb-rail-active !important;
+                    color: $lb-rail-active !important;
+                }
+            }
+            .btn--alert {
+                background: #fff !important;
+                border: 1px solid rgba($btnDangerColor, .35) !important;
+                color: $btnDangerColor !important;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                i.icon-trash {
+                    &:before {
+                        content: none;
+                    }
+                    @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $btnDangerColor, 16px);
+                }
+                &:hover {
+                    background: rgba($btnDangerColor, .08) !important;
+                    border-color: $btnDangerColor !important;
+                }
+            }
+        }
+        .subnav__button-stack--square-buttons {
+            margin-right: 20px;
+            align-items: center;
+        }
+        .button-stack {
+            display: flex;
+            align-items: center;
+            // The "back to grid" button links to this same page.
+            .navbtn.hover.pull-left {
+                display: none;
+            }
+        }
+        .button-stack .nav-tabs {
+            display: inline-flex;
+            height: auto;
+            // Lines up with the 20px left margin of `.main-section.bloglist`.
+            margin: 0 0 0 20px;
+            background: #fff;
+            padding: 4px;
+            @include border-radius($lb-radius-pill);
+            > li {
+                margin-bottom: 0;
+                > button {
+                    margin: 0;
+                    height: auto;
+                    line-height: normal;
+                    background: none;
+                    border: none !important;
+                    @include border-radius($lb-radius-pill);
+                    padding: 8px 18px;
+                    color: $lb-pill-text;
+                    font-weight: 500;
+                    font-size: 13px;
+                    transition: background-color .15s ease, color .15s ease;
+                    &:hover {
+                        color: $lb-btn-dark-bg;
+                    }
+                }
+                &.active > button, &.active > button:hover {
+                    background-color: $lb-btn-dark-bg;
+                    color: #fff;
+                }
+            }
+        }
+
+        .sd-create-btn {
+            @include lb-create-btn-pill('Create blog');
+        }
+    }
+
+    .lb-empty-state {
+        text-align: center;
+        padding: 64px 20px;
+        &__icon {
+            display: inline-flex;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            @include border-radius(50%);
+            background: $lb-pill-bg;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 18px;
+            }
+            &--search::before {
+                @include lb-icon-bg-mask(url('~images/icons/search.svg'), $lb-subnav-icon-square);
+            }
+            &--blogs::before {
+                @include lb-icon-bg-mask(url('~images/icons/file-text.svg'), $lb-subnav-icon-square);
+            }
+            &--archived::before {
+                @include lb-icon-bg-mask(url('~images/icons/clock.svg'), $lb-subnav-icon-square);
+            }
+            &--deleted::before {
+                @include lb-icon-bg-mask(url('~images/icons/trash-2.svg'), $lb-subnav-icon-square);
+            }
+        }
+        &__title {
+            margin: 0 0 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: $lb-btn-dark-bg;
+        }
+        &__text {
+            margin: 0 auto;
+            max-width: 420px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: $lb-subnav-text;
+        }
+        // Vendor's global `.btn` and `.btn--primary` fills are `!important`.
+        .btn {
+            margin-top: 20px;
+            height: 40px;
+            padding: 0 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: normal;
+            box-shadow: none !important;
+            @include border-radius($lb-radius-pill !important);
+        }
+        &__primary {
+            padding-left: 16px !important;
+            background-color: $lb-rail-active !important;
+            border-color: $lb-rail-active !important;
+            color: #fff !important;
+            &:hover {
+                background-color: lighten($lb-rail-active, 8%) !important;
+            }
+        }
+        &__plus {
+            @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+        }
+        &__secondary {
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            &:hover {
+                background-color: darken($lb-pill-bg, 6%) !important;
+            }
+        }
+    }
+
+    // Below 800px the tabs and "Create blog" overflow the fixed-height row and widen the page,
+    // so the tab labels wrap. The button collapses to an icon inside `lb-create-btn-pill`.
+    @media(max-width: 800px) {
+        .subnav:has(+ .main-section.bloglist) {
+            .button-stack .nav-tabs {
+                margin-left: 12px;
+                > li > button {
+                    padding: 6px 12px;
+                    white-space: normal;
+                    text-align: center;
+                    line-height: 1.25;
+                }
+            }
+        }
+        .main-section.bloglist {
+            overflow-x: hidden;
+        }
+    }
+}
+
 .bloglist {
     header {
         position: absolute;
         top: 0; left: 0; right: 0;
         height: $nav-height;
         border-bottom: 1px solid #e0e0e0;
+        :where(.lb-refresh) & {
+            // 20px around the 36px search box, the same gutter as the page around the panel
+            height: 76px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
+            border-bottom: none;
+            [sd-searchbar] {
+                flex: 0 1 340px;
+                min-width: 0;
+            }
+            .flat-searchbar {
+                height: 36px;
+                box-sizing: border-box;
+                background: #F5F6F7;
+                border: 1px solid transparent;
+                @include border-radius($lb-radius-pill);
+                transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+                &:focus-within {
+                    background: #fff;
+                    border-color: $lb-rail-active;
+                    box-shadow: 0 0 0 2px rgba($lb-rail-active, 0.12);
+                }
+                .search-handler {
+                    border: none !important;
+                    height: 100%;
+                    padding: 0 4px 0 12px;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                }
+                // `.trigger-icon` is a `<label for="search-input">`. Stretching it over the whole bar makes
+                // any click focus the input, which otherwise only fills the bar after JS adds `.extended`.
+                .trigger-icon {
+                    position: absolute !important;
+                    inset: 0 !important;
+                    // Vendor sets an explicit 28x28 size, and `inset` only sizes an element when width/height are auto.
+                    width: 100% !important;
+                    height: 100% !important;
+                    z-index: 1;
+                    display: flex;
+                    align-items: center;
+                    padding-left: 12px;
+                    margin: 0;
+                    cursor: text;
+                    opacity: 1;
+                    i.icon-search {
+                        &:before {
+                            content: none;
+                        }
+                        @include lb-icon-font-mask(url('~images/icons/search.svg'), $lb-subnav-icon-square, 16px);
+                    }
+                }
+                // Vendor collapses the input to `width: 0` until JS adds `.extended`.
+                input {
+                    position: relative;
+                    z-index: 2;
+                    width: 100% !important;
+                    flex: 1 1 auto !important;
+                    height: 100% !important;
+                    // Clears the search icon drawn by the label underneath.
+                    padding-left: 26px !important;
+                    font-size: 13px;
+                }
+                // Vendor hides this until `.extended`. The `.visible` opacity toggle still does the show/hide.
+                .search-close {
+                    display: inline-flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    flex: none;
+                    position: relative;
+                    z-index: 2;
+                    width: 28px;
+                    height: 28px;
+                    padding: 0;
+                    margin: 0;
+                    border: none;
+                    background: none;
+                    @include border-radius(50%);
+                    i {
+                        margin: 0;
+                        position: static;
+                    }
+                    &:hover {
+                        background: $lb-pill-bg;
+                    }
+                }
+            }
+            // Vendor floats these right, which reverses their DOM order. `order` keeps that visual order under flex.
+            [sd-pagination] {
+                order: 2;
+                margin-left: auto;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                // The directive renders `.sd-pagination` inside this wrapper. It needs flex too, or its
+                // inline-block children wrap onto a second line.
+                .sd-pagination {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 0;
+                }
+                .page-info {
+                    color: $lb-pill-text;
+                    font-size: 13px;
+                    white-space: nowrap;
+                    margin-right: 0;
+                }
+                em.page-info {
+                    font-style: normal;
+                }
+                .btn-group {
+                    display: flex;
+                    gap: 2px;
+                    .btn {
+                        border: none;
+                        // Must beat the `!important` background of the global `.btn` fallback (liveblog.scss).
+                        background: none !important;
+                        width: 28px;
+                        height: 28px;
+                        padding: 0;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        @include border-radius($lb-radius-pill);
+                        i {
+                            &:before {
+                                content: none;
+                            }
+                        }
+                        i.icon-backward-thin {
+                            @include lb-icon-font-mask(url('~images/icons/chevrons-left.svg'), $lb-pill-text, 16px);
+                        }
+                        i.icon-chevron-left-thin {
+                            // Vendor rotates this icon 180deg to reuse the right chevron. The mask is already a left chevron.
+                            transform: none;
+                            @include lb-icon-font-mask(url('~images/icons/chevron-left.svg'), $lb-pill-text, 16px);
+                        }
+                        i.icon-chevron-right-thin {
+                            @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 16px);
+                        }
+                        i.icon-forward-thin {
+                            @include lb-icon-font-mask(url('~images/icons/chevrons-right.svg'), $lb-pill-text, 16px);
+                        }
+                        &:hover:not(:disabled) {
+                            background: $lb-rail-active-bg;
+                            i {
+                                background-color: $lb-rail-active;
+                            }
+                        }
+                        &:disabled i {
+                            background-color: $lb-timestamp;
+                        }
+                    }
+                }
+            }
+        }
         .view-select {
+            :where(.lb-refresh) & {
+                order: 3;
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                margin-left: 12px;
+            }
             button {
                 border: 0;
                 background: none;
                 padding: 10px;
+                :where(.lb-refresh) & {
+                    width: 32px;
+                    height: 32px;
+                    padding: 0;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    @include border-radius($lb-radius-pill);
+                    i {
+                        &:before {
+                            content: none;
+                        }
+                    }
+                    i.icon-th {
+                        @include lb-icon-font-mask(url('~images/icons/layout-grid.svg'), $lb-pill-text, 18px);
+                    }
+                    i.icon-th-list {
+                        @include lb-icon-font-mask(url('~images/icons/list.svg'), $lb-pill-text, 18px);
+                    }
+                    i.icon-link {
+                        @include lb-icon-font-mask(url('~images/icons/link.svg'), $lb-pill-text, 18px);
+                    }
+                    &:hover {
+                        background: $lb-rail-active-bg;
+                        i {
+                            background-color: $lb-rail-active;
+                        }
+                    }
+                }
             }
         }
     }
@@ -36,9 +440,25 @@
         left: 0; right: 0; bottom: 0;
         padding: 30px;
         overflow-y: auto;
+        :where(.lb-refresh) & {
+            top: 76px;
+            background: #fff;
+            border-bottom-left-radius: $lb-radius-card;
+            border-bottom-right-radius: $lb-radius-card;
+            padding: 0 20px 20px;
+        }
         .empty-state {
+            :where(.lb-refresh) & {
+                // `.empty-state` also wraps the Deleted tab's notice shown above a non-empty list.
+                padding: 0 0 24px;
+            }
             > div {
                 font-size: 1.25em;
+                :where(.lb-refresh) & {
+                    font-size: 15px;
+                    color: $lb-pill-text;
+                    margin-bottom: 4px;
+                }
             }
             button {
                 height: 40px;
@@ -50,18 +470,104 @@
                     color: #fff;
                 }
             }
+            // Vendor's global `.btn.btn--primary` fill is `!important`, so these overrides need it too.
+            :where(.lb-refresh) & button.btn--primary {
+                height: 40px;
+                margin: 20px 0 0;
+                padding: 0 20px 0 16px;
+                display: inline-flex;
+                align-items: center;
+                background-color: $lb-rail-active !important;
+                border-color: $lb-rail-active !important;
+                @include border-radius($lb-radius-pill !important);
+                &:hover {
+                    background-color: lighten($lb-rail-active, 8%) !important;
+                }
+                // `svg-icon-add` has no glyph defined in this app.
+                i.svg-icon-add {
+                    background-image: none !important;
+                    margin: 0;
+                    @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+                }
+                .title {
+                    top: auto;
+                    position: static;
+                    left: auto;
+                    margin-left: 8px;
+                    color: #fff;
+                    text-transform: none;
+                    font-weight: 600;
+                    font-size: 13px;
+                }
+            }
         }
         .row-list {
+            // `display: block` drops table layout so each `tr` can take a border-radius and margin.
+            :where(.lb-refresh) & {
+                width: 100%;
+                display: block;
+                border: none;
+                tbody, tr, td {
+                    display: block;
+                }
+                // Bootstrap's `.table`/`.table-striped` (also on this table) stripe and border every cell.
+                td, th {
+                    background: transparent !important;
+                    border-top: none !important;
+                    border-bottom: none !important;
+                }
+            }
             tr {
                 &.can-access {
                     opacity: 1;
+                    :where(.lb-refresh) & {
+                        &:hover {
+                            box-shadow: $lb-card-shadow;
+                        }
+                    }
                 }
                 opacity: .5;
+                :where(.lb-refresh) & {
+                    background: #fff !important;
+                    border: 1px solid $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    margin-bottom: 12px;
+                    padding: 16px 20px;
+                    cursor: pointer;
+                    transition: box-shadow .15s ease;
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    &:not(.can-access) {
+                        opacity: .5;
+                        cursor: default;
+                    }
+                }
                 .content {
+                    :where(.lb-refresh) & {
+                        padding: 0;
+                        h3 {
+                            margin: 0 0 4px;
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: $lb-btn-dark-bg;
+                            small {
+                                margin-left: 6px;
+                                font-size: 13px;
+                                font-weight: 400;
+                                color: $lb-pill-text;
+                            }
+                        }
+                    }
                     .time {
                         font-size: 13px;
                         font-style: italic;
                         color: #bcbcbc;
+                        :where(.lb-refresh) & {
+                            font-size: 12px;
+                            font-style: normal;
+                            color: $lb-timestamp;
+                        }
                     }
                     .description {
                         overflow: hidden;
@@ -69,6 +575,12 @@
                         -webkit-box-orient: vertical;
                         -webkit-line-clamp: 3; 
                         text-overflow: ellipsis;
+                        :where(.lb-refresh) & {
+                            font-size: 13px;
+                            line-height: 18px;
+                            color: $lb-pill-text;
+                            margin-bottom: 4px;
+                        }
                     }
                 }
             }
@@ -76,6 +588,12 @@
         .card-list {
             display: flex;
             flex-wrap: wrap;
+            :where(.lb-refresh) & {
+                display: grid;
+                flex-wrap: nowrap;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 20px;
+            }
             > li {
                 &:not(.can-access):hover {
                   @include box-shadow(none);
@@ -94,6 +612,27 @@
                 flex: 0 1 260px;
                 @include border-box();
                 cursor: pointer;
+                :where(.lb-refresh) & {
+                    position: relative;
+                    border: 1px solid $lb-input-border;
+                    margin: 0;
+                    padding: 0;
+                    max-width: none;
+                    flex: 0 1 auto;
+                    @include border-radius($lb-radius-card);
+                    transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+                    &:hover {
+                        box-shadow: $lb-card-shadow;
+                    }
+                    &.can-access:hover {
+                        transform: translateY(-2px);
+                        border-color: $lb-rail-active;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                        .media div {
+                            transform: scale(1.05);
+                        }
+                    }
+                }
                 .close {
                     position: absolute;
                     right: 10px;
@@ -104,11 +643,40 @@
                     height: 140px;
                     @include border-box();
                     background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
+                    :where(.lb-refresh) & {
+                        position: relative;
+                        height: 150px;
+                        background: none;
+                        background-color: #f8f8f8;
+                        border-top-left-radius: $lb-radius-card;
+                        border-top-right-radius: $lb-radius-card;
+                        overflow: hidden;
+                        // The placeholder icon goes on a pseudo-element: masking `.media` itself would clip its
+                        // background color to the icon shape.
+                        &:before {
+                            content: '';
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 56px;
+                            height: 56px;
+                            @include lb-icon-bg-mask(url('~images/icons/image.svg'), #d7dbe0);
+                        }
+                    }
                     div {
                         width: 238px;
                         height: 140px;
                         background-position: center center;
                         background-size: cover;
+                        :where(.lb-refresh) & {
+                            // Stacks the blog picture above the absolutely positioned placeholder `:before`.
+                            position: relative;
+                            z-index: 1;
+                            width: 100%;
+                            height: 150px;
+                            transition: transform .2s ease;
+                        }
                     }
                 }
                 .content {
@@ -117,6 +685,10 @@
                     padding: 0;
                     overflow: hidden;
                     margin: 10px 0;
+                    :where(.lb-refresh) & {
+                        padding: 16px 16px 0;
+                        margin: 0;
+                    }
                     .time {
                         font-size: 13px;
                         font-style: italic;
@@ -131,6 +703,17 @@
                         white-space: nowrap;
                           overflow: hidden;
                           text-overflow: ellipsis;
+                        :where(.lb-refresh) & {
+                            color: $lb-btn-dark-bg;
+                            padding: 0;
+                            margin: 0 0 6px;
+                            max-height: none;
+                            font-weight: 700;
+                            white-space: normal;
+                            display: -webkit-box;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 2;
+                        }
                     }
                     .description {
                         min-height: 30px;
@@ -142,6 +725,12 @@
                         -webkit-box-orient: vertical;
                         -webkit-line-clamp: 3; 
                         text-overflow: ellipsis;
+                        :where(.lb-refresh) & {
+                            font-size: 13px;
+                            line-height: 18px;
+                            color: $lb-pill-text;
+                            -webkit-line-clamp: 4;
+                        }
                     }
                 }
                 .footer {
@@ -150,9 +739,29 @@
                     padding: 10px 10px 5px 10px;
                     margin: 0 -10px;
                     @include border-box();
+                    :where(.lb-refresh) & {
+                        height: auto;
+                        border-top: none;
+                        padding: 12px;
+                        margin: 16px;
+                        background: #e9f0f2;
+                        @include border-radius($lb-radius-input);
+                    }
                     dl {
                         margin: 0;
                         font-size: 11px;
+                        :where(.lb-refresh) & {
+                            display: grid;
+                            grid-template-columns: 96px 1fr;
+                            column-gap: 8px;
+                            row-gap: 6px;
+                            font-size: 12px;
+                            // The nested `<dl>` spans both columns and gets this same grid. The fixed label column
+                            // (not `max-content`) keeps both aligned without `subgrid`.
+                            dl {
+                                grid-column: 1 / -1;
+                            }
+                        }
                         dt {
                             @include text-light();
                             clear: both;
@@ -163,6 +772,15 @@
                             min-width: 82px;
                             text-transform: uppercase;
                             margin: 2px 0;
+                            :where(.lb-refresh) & {
+                                float: none;
+                                clear: none;
+                                color: $lb-pill-text;
+                                line-height: 16px;
+                                min-width: 0;
+                                text-transform: none;
+                                margin: 0;
+                            }
                         }
                         dd {
                             @include text-light();
@@ -172,6 +790,14 @@
                             line-height: 12px;
                             word-wrap: break-word;
                             margin: 2px 0 2px 9px;
+                            :where(.lb-refresh) & {
+                                float: none;
+                                width: auto;
+                                color: $lb-btn-dark-bg;
+                                line-height: 16px;
+                                text-align: right;
+                                margin: 0;
+                            }
                         }
                     }
                 }
@@ -265,4 +891,9 @@ div.button-stack.right-stack.create-blog {
     position: absolute;
     top: 2rem;
     left: 2rem;
+    :where(.lb-refresh) & {
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+    }
 }

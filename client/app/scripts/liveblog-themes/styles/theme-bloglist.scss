@@ -7,6 +7,50 @@
 .theme-settings-modal {
     form { padding: 0; }
 
+    :where(.lb-refresh) & {
+        .sd-toggle {
+            border-radius: 9px;
+            .inner {
+                border-radius: 8px;
+            }
+            &.checked {
+                background: $lb-rail-active !important;
+            }
+        }
+
+        .nav.nav-tabs {
+            display: inline-flex;
+            height: auto;
+            border-bottom: none;
+            margin: 12px 0 0 24px;
+            padding: 4px;
+            @include border-radius($lb-radius-pill);
+            > li {
+                margin-bottom: 0;
+                > button {
+                    margin: 0;
+                    height: auto;
+                    line-height: normal;
+                    background: none;
+                    border: none !important;
+                    @include border-radius($lb-radius-pill);
+                    padding: 8px 18px;
+                    color: $lb-pill-text;
+                    font-weight: 500;
+                    font-size: 13px;
+                    transition: background-color .15s ease, color .15s ease;
+                    &:hover {
+                        color: $lb-btn-dark-bg;
+                    }
+                }
+                &.active > button, &.active > button:hover {
+                    background-color: $lb-btn-dark-bg;
+                    color: #fff;
+                }
+            }
+        }
+    }
+
     .form__row {
         padding-bottom: 0px;
 
@@ -20,6 +64,9 @@
         margin: 0;
         padding-top: 0;
         margin-bottom: 20px;
+        :where(.lb-refresh) & {
+            margin-bottom: 26px;
+        }
 
         // settings groups headline
         &.sd-line-input--is-groupheading {
@@ -32,12 +79,20 @@
                 position: relative;
                 margin-top: 0;
                 display: block;
+                :where(.lb-refresh) & {
+                    margin-top: 4px;
+                    color: $lb-timestamp;
+                }
             }
 
         }
 
         .sd-line-input__label {
             position: relative;
+            :where(.lb-refresh) & {
+                margin-bottom: 8px;
+                display: block;
+            }
         }
 
         .lb-group-heading {
@@ -64,6 +119,21 @@
             .datetime__text {
                 width: 50%;
                 margin: 0 0 0 5px;
+                // The Custom field is a bare `<input>` with no `type`, so the global modal
+                // `input[type=...]` rule (liveblog.scss) does not reach it.
+                :where(.lb-refresh) & input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    border: 1px solid $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    &:focus {
+                        outline: 0;
+                        border-color: $lb-rail-active;
+                        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                    }
+                }
             }
             .datetime__example {
                 margin: 0 0 0 15px;
@@ -140,17 +210,129 @@
     }
 }
 .themes-manager {
+    :where(.lb-refresh) & {
+        height: 5.8rem;
+    }
     form {
         float: left;
         .navbtn {
             cursor: pointer;
+            :where(.lb-refresh) & {
+                margin-bottom: 0px;
+            }
         }
         #uploadAThemeFile {
             display: none;
         }
     }
+    :where(.lb-refresh) & {
+        // Both a `<label>` and a `<button>` carry this class.
+        .sd-create-btn {
+            @include lb-create-btn-pill('New Theme');
+        }
+        .subnav__button-stack--square-buttons {
+            margin-right: 20px;
+        }
+    }
+}
+:where(.lb-refresh) {
+    // `.main-section` is absolutely positioned on all four sides, so a margin insets it evenly.
+    .main-section.themelist {
+        margin: 12px 20px 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    }
 }
 .themelist {
+    :where(.lb-refresh) & {
+        .alert.alert-info {
+            background: $lb-pill-bg;
+            border: 1px solid darken($lb-pill-bg, 12%);
+            color: $lb-pill-text;
+            @include border-radius($lb-radius-input);
+            padding: 16px 40px 16px 48px;
+            font-size: 13px;
+            line-height: 1.7;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                left: 18px;
+                top: 16px;
+                width: 18px;
+                height: 18px;
+                background-color: $lb-rail-active;
+                -webkit-mask-image: url('~images/icons/info.svg');
+                mask-image: url('~images/icons/info.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+                -webkit-mask-size: contain;
+                mask-size: contain;
+            }
+            a {
+                color: $lb-rail-active;
+                font-weight: 600;
+                text-decoration: underline;
+                text-underline-offset: 2px;
+                &:hover {
+                    color: darken($lb-rail-active, 10%);
+                }
+            }
+            .close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                color: $lb-timestamp;
+                opacity: 1;
+                transition: color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                    opacity: 1;
+                }
+            }
+        }
+        .alert.alert-error {
+            // Styled like `.alert-info` on purpose: the AMP notice is a heads-up, not an error.
+            background: $lb-pill-bg;
+            border: 1px solid darken($lb-pill-bg, 12%);
+            color: $lb-pill-text;
+            @include border-radius($lb-radius-input);
+            padding: 16px 40px 16px 48px;
+            font-size: 13px;
+            line-height: 1.7;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                left: 18px;
+                top: 16px;
+                width: 18px;
+                height: 18px;
+                background-color: $lb-rail-active;
+                -webkit-mask-image: url('~images/icons/info.svg');
+                mask-image: url('~images/icons/info.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+                -webkit-mask-size: contain;
+                mask-size: contain;
+            }
+            .close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                color: $lb-timestamp;
+                opacity: 1;
+                transition: color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                    opacity: 1;
+                }
+            }
+        }
+    }
     .list-container {
         position: absolute;
         top: 0px;
@@ -159,6 +341,14 @@
         overflow-y: auto;
         ul {
             li {
+                margin-left: 40px;
+                // Only theme variants (`li li`) are indented. Each top-level theme is its own root
+                // `<ul><li>`, so `:first-child` cannot tell the two apart.
+                :where(.lb-refresh) & {
+                    margin-left: 0;
+                }
+            }
+            :where(.lb-refresh) & li li {
                 margin-left: 40px;
             }
             .theme {
@@ -174,6 +364,18 @@
                 cursor: default;
                 margin-bottom: 10px;
                 @include border-box();
+                :where(.lb-refresh) & {
+                    border: 1px solid $lb-input-border;
+                    box-shadow: none;
+                    padding: 16px;
+                    margin-bottom: 12px;
+                    position: relative;
+                    @include border-radius($lb-radius-card);
+                    transition: box-shadow .15s ease;
+                    &:hover {
+                        box-shadow: $lb-card-shadow;
+                    }
+                }
                 .media {
                     &.no-screenshot {
                         cursor: default;
@@ -187,6 +389,27 @@
                     background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
                     float: left;
                     position: relative;
+                    :where(.lb-refresh) & {
+                        // Floated with no width of its own, and the inner div is `width: 100%`, so without
+                        // an explicit width this collapses to 0.
+                        width: 220px;
+                        @include border-radius($lb-radius-input);
+                        background: none;
+                        background-color: #f8f8f8;
+                        overflow: hidden;
+                        // The placeholder icon goes on a pseudo-element: masking `.media` itself would clip its
+                        // background color to the icon shape.
+                        &:before {
+                            content: '';
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 48px;
+                            height: 48px;
+                            @include lb-icon-bg-mask(url('~images/icons/image.svg'), #d7dbe0);
+                        }
+                    }
                     &:hover {
                         > .overlay {
                             opacity: 1;
@@ -200,8 +423,24 @@
                         top: 0; leff: 0; bottom: 0; right: 0;
                         background-position: center center;
                         background-size: 20%;
+                        :where(.lb-refresh) & {
+                            background-color: rgba(12, 37, 49, 0.75);
+                            left: 0;
+                            background-position: 0% 0%;
+                            background-size: auto;
+                            transition: opacity .15s ease;
+                        }
                         &.big-icon-search {
                             background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyOCAyNCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjggMjQiPjxwYXRoIGZpbGw9IiNjY2MiIGQ9Im0yMy4wNyAxOC45NzVsLTMuODkzLTMuODU3YzEuMTYzLTEuNTc2IDEuODU5LTMuNTE2IDEuODU5LTUuNjIxIDAtNS4yMzYtNC4yNTktOS40OTctOS40OTYtOS40OTdzLTkuNDk3IDQuMjYxLTkuNDk3IDkuNDk2YzAgNS4yMzcgNC4yNiA5LjQ5NyA5LjQ5NyA5LjQ5NyAxLjc1MiAwIDMuMzg5LS40ODUgNC44LTEuMzE2LjkxNSAxIDMuMDIgMy4yODYgMy45MDIgNC4xNDEgMS4xNDYgMS4xMDcgMi4wNTkgMi4yOTcgMi43MTkgMi4xNzMuNjY3LS4xMjUgMS44MDQtMS40MDIgMi4zNzUtMi4wNDguNjQ1LS43MjktMi4yNjYtMi45NjgtMi4yNjYtMi45NjhtLTE4LjI5Mi05LjQ3OWMwLTMuNzI5IDMuMDMtNi43NjEgNi43NjItNi43NjEgMy43MjggMCA2Ljc2MSAzLjAzIDYuNzYxIDYuNzYxIDAgMy43MjktMy4wMyA2Ljc2My02Ljc2MSA2Ljc2My0zLjcyOCAwLTYuNzYyLTMuMDMtNi43NjItNi43NjMiLz48L3N2Zz4=);
+                            :where(.lb-refresh) & {
+                                @include lb-icon-bg-mask(url('~images/icons/search.svg'), #fff);
+                                background-position: center;
+                                background-size: 28px;
+                                -webkit-mask-size: 28px;
+                                mask-size: 28px;
+                                -webkit-mask-position: center;
+                                mask-position: center;
+                            }
                         }
                     }
                     div {
@@ -209,6 +448,13 @@
                         height: 140px;
                         background-position: top center;
                         background-size: 150%;
+                        :where(.lb-refresh) & {
+                            position: relative;
+                            z-index: 1;
+                            width: 100%;
+                            background-position: center center;
+                            background-size: cover;
+                        }
                     }
                 }
                 .content {
@@ -217,9 +463,21 @@
                     overflow: hidden;
                     margin: 0 30px 0;
                     float: left;
+                    :where(.lb-refresh) & {
+                        margin: 0 24px;
+                        h3 {
+                            margin: 0 0 10px;
+                            font-size: 16px;
+                            font-weight: 700;
+                            color: $lb-btn-dark-bg;
+                        }
+                    }
                     dl {
                         margin: 0;
                         font-size: 11px;
+                        :where(.lb-refresh) & {
+                            font-size: 12px;
+                        }
                         dt {
                             @include text-light();
                             clear: both;
@@ -229,12 +487,28 @@
                             line-height: 20px;
                             min-width: 160px;
                             text-transform: uppercase;
+                            :where(.lb-refresh) & {
+                                color: $lb-timestamp;
+                                font-weight: 500;
+                                line-height: 22px;
+                                letter-spacing: .02em;
+                            }
                         }
                         dd {
                             @include text-light();
                             float: left;
                             font-weight: 400;
                             line-height: 16px;
+                            :where(.lb-refresh) & {
+                                color: $lb-pill-text;
+                                line-height: 22px;
+                                a {
+                                    color: $lb-rail-active;
+                                    &:hover {
+                                        color: darken($lb-rail-active, 10%);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -255,15 +529,57 @@
                     width: 90px;
                     height: 65px;
                     background: url('~images/default-icon.png') no-repeat left bottom;
+                    // This element has no text, so the label comes from `content:`.
+                    :where(.lb-refresh) & {
+                        right: 16px;
+                        top: 16px;
+                        width: auto;
+                        height: auto;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 4px;
+                        background: $lb-rail-active !important;
+                        color: #fff;
+                        font-size: 11px;
+                        font-weight: 700;
+                        letter-spacing: .04em;
+                        text-transform: uppercase;
+                        padding: 5px 12px 5px 8px;
+                        @include border-radius($lb-radius-pill);
+                        &:before {
+                            content: '';
+                            width: 13px;
+                            height: 13px;
+                            @include lb-icon-bg-mask(url('~images/icons/circle-check-big.svg'), #fff);
+                        }
+                        &:after {
+                            content: 'Default';
+                        }
+                    }
                 }
                 &.default {
                     background-color: #eff7fa;
                     border: 1px solid #D1E5ED;
                     @include box-shadow(0 1px 0 #D1E5ED);
+                    :where(.lb-refresh) & {
+                        background-color: $lb-rail-active-bg;
+                        border-color: $lb-rail-active;
+                        // Same specificity as `.card:hover` but later in source, so the hover shadow is repeated.
+                        box-shadow: none;
+                        &:hover {
+                            box-shadow: $lb-card-shadow;
+                        }
+                    }
                     .btn-default {
                         background-color: #d9d9d9;
+                        :where(.lb-refresh) & {
+                            background-color: darken($lb-pill-bg, 10%);
+                        }
                         &:hover {
                             background-color: #c3c3c3;
+                            :where(.lb-refresh) & {
+                                background-color: darken($lb-pill-bg, 18%);
+                            }
                         }
                     }
                 }
