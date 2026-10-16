@@ -5,6 +5,7 @@ Feature: Billing endpoints
         Then we get response code 200
         And response has key "billing_required"
         And response has key "pricing_url"
+        And response has key "conversions"
 
     @auth
     Scenario: Status endpoint requires authentication

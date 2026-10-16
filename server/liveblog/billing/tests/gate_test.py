@@ -16,6 +16,7 @@ from superdesk.utc import utcnow
 
 from liveblog import auth, billing, items, tenants, users
 from liveblog.billing import _check_billing_gate
+from liveblog.billing.endpoints import _checkout_success_url
 from liveblog.common import run_once
 from liveblog.items.items import drag_and_drop_blueprint
 from liveblog.tenancy.registration import RegistrationService
@@ -359,6 +360,42 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
             "https://stripe.example.test/checkout",
         )
         mock_session_create.assert_called_once()
+        session_params = mock_session_create.call_args.kwargs
+        self.assertEqual(
+            session_params["success_url"],
+            "http://localhost/?checkout=success&session_id={CHECKOUT_SESSION_ID}",
+        )
+        self.assertEqual(session_params["cancel_url"], "http://localhost/")
+
+    def test_config_has_no_conversions_without_google_ads_tag(self):
+        with patch.dict(self.app.config, {"GOOGLE_ADS_TAG_ID": ""}):
+            response = self.client.get("/api/billing/config")
+
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(data["conversions"], {})
+
+    def test_config_returns_google_ads_conversions(self):
+        with patch.dict(
+            self.app.config,
+            {
+                "GOOGLE_ADS_TAG_ID": "AW-123",
+                "GOOGLE_ADS_SIGNUP_LABEL": "signup",
+                "GOOGLE_ADS_PURCHASE_LABEL": "purchase",
+            },
+        ):
+            response = self.client.get("/api/billing/config")
+
+        data = json.loads(response.get_data(as_text=True))
+        self.assertEqual(
+            data["conversions"],
+            {
+                "google_ads": {
+                    "tag_id": "AW-123",
+                    "signup_label": "signup",
+                    "purchase_label": "purchase",
+                }
+            },
+        )
 
     def test_customer_session_rejects_tenant_without_terms_acceptance(self):
         _, user_id = self._create_expired_go_tenant_user({"terms_acceptance": None})
@@ -375,3 +412,12 @@ class BillingIntegrationTestCase(SuperdeskTestCase):
         self.assertIn("Terms of Use", response.get_data(as_text=True))
         mock_service_stripe.Customer.create.assert_not_called()
         mock_endpoint_stripe.api_requestor.APIRequestor.assert_not_called()
+
+
+class CheckoutSuccessUrlTest(TestCase):
+    def test_keeps_existing_query_and_fragment(self):
+        self.assertEqual(
+            _checkout_success_url("https://app.example.com/?lang=de#/liveblog"),
+            "https://app.example.com/?lang=de"
+            "&checkout=success&session_id={CHECKOUT_SESSION_ID}#/liveblog",
+        )
