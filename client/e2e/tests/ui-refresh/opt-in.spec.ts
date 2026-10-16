@@ -18,7 +18,7 @@ test.describe('refreshed UI opt-in', () => {
     });
 
     test.afterEach(async () => {
-        await context.close();
+        await context?.close();
     });
 
     test('banner switches to the refreshed UI and the Help menu switches back', async () => {
