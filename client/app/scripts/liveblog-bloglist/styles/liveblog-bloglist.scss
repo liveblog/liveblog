@@ -18,6 +18,7 @@
     .main-section.bloglist {
         margin: 12px 20px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+        @include border-radius($lb-radius-card);
     }
 
     // Scopes the shared `.subnav` to this page: it is the sibling right before `.main-section.bloglist`.
@@ -118,6 +119,85 @@
         }
     }
 
+    .lb-empty-state {
+        text-align: center;
+        padding: 64px 20px;
+        &__icon {
+            display: inline-flex;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            @include border-radius(50%);
+            background: $lb-pill-bg;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 18px;
+            }
+            &--search::before {
+                @include lb-icon-bg-mask(url('~images/icons/search.svg'), $lb-subnav-icon-square);
+            }
+            &--blogs::before {
+                @include lb-icon-bg-mask(url('~images/icons/file-text.svg'), $lb-subnav-icon-square);
+            }
+            &--archived::before {
+                @include lb-icon-bg-mask(url('~images/icons/clock.svg'), $lb-subnav-icon-square);
+            }
+            &--deleted::before {
+                @include lb-icon-bg-mask(url('~images/icons/trash-2.svg'), $lb-subnav-icon-square);
+            }
+        }
+        &__title {
+            margin: 0 0 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: $lb-btn-dark-bg;
+        }
+        &__text {
+            margin: 0 auto;
+            max-width: 420px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: $lb-subnav-text;
+        }
+        // Vendor's global `.btn` and `.btn--primary` fills are `!important`.
+        .btn {
+            margin-top: 20px;
+            height: 40px;
+            padding: 0 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: normal;
+            box-shadow: none !important;
+            @include border-radius($lb-radius-pill !important);
+        }
+        &__primary {
+            padding-left: 16px !important;
+            background-color: $lb-rail-active !important;
+            border-color: $lb-rail-active !important;
+            color: #fff !important;
+            &:hover {
+                background-color: lighten($lb-rail-active, 8%) !important;
+            }
+        }
+        &__plus {
+            @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
+        }
+        &__secondary {
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            &:hover {
+                background-color: darken($lb-pill-bg, 6%) !important;
+            }
+        }
+    }
+
     // Below 800px the tabs and "Create blog" overflow the fixed-height row and widen the page,
     // so the tab labels wrap. The button collapses to an icon inside `lb-create-btn-pill`.
     @media(max-width: 800px) {
@@ -145,20 +225,23 @@
         height: $nav-height;
         border-bottom: 1px solid #e0e0e0;
         :where(.lb-refresh) & {
-            height: 68px;
+            // 20px around the 36px search box, the same gutter as the page around the panel
+            height: 76px;
             box-sizing: border-box;
             background: #fff;
             display: flex;
             align-items: center;
-            padding: 0 24px;
+            padding: 0 20px;
             border-top-left-radius: $lb-radius-card;
             border-top-right-radius: $lb-radius-card;
             border-bottom: none;
             [sd-searchbar] {
-                flex: 1 1 45%;
-                max-width: 600px;
+                flex: 0 1 340px;
+                min-width: 0;
             }
             .flat-searchbar {
+                height: 36px;
+                box-sizing: border-box;
                 background: #F5F6F7;
                 border: 1px solid transparent;
                 @include border-radius($lb-radius-pill);
@@ -166,12 +249,15 @@
                 &:focus-within {
                     background: #fff;
                     border-color: $lb-rail-active;
-                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                    box-shadow: 0 0 0 2px rgba($lb-rail-active, 0.12);
                 }
                 .search-handler {
                     border: none !important;
-                    padding: 6px 14px;
+                    height: 100%;
+                    padding: 0 4px 0 12px;
                     position: relative;
+                    display: flex;
+                    align-items: center;
                 }
                 // `.trigger-icon` is a `<label for="search-input">`. Stretching it over the whole bar makes
                 // any click focus the input, which otherwise only fills the bar after JS adds `.extended`.
@@ -184,7 +270,7 @@
                     z-index: 1;
                     display: flex;
                     align-items: center;
-                    padding-left: 14px;
+                    padding-left: 12px;
                     margin: 0;
                     cursor: text;
                     opacity: 1;
@@ -208,9 +294,26 @@
                 }
                 // Vendor hides this until `.extended`. The `.visible` opacity toggle still does the show/hide.
                 .search-close {
-                    display: inline-block !important;
+                    display: inline-flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    flex: none;
                     position: relative;
                     z-index: 2;
+                    width: 28px;
+                    height: 28px;
+                    padding: 0;
+                    margin: 0;
+                    border: none;
+                    background: none;
+                    @include border-radius(50%);
+                    i {
+                        margin: 0;
+                        position: static;
+                    }
+                    &:hover {
+                        background: $lb-pill-bg;
+                    }
                 }
             }
             // Vendor floats these right, which reverses their DOM order. `order` keeps that visual order under flex.
@@ -338,11 +441,11 @@
         padding: 30px;
         overflow-y: auto;
         :where(.lb-refresh) & {
-            top: 68px;
+            top: 76px;
             background: #fff;
             border-bottom-left-radius: $lb-radius-card;
             border-bottom-right-radius: $lb-radius-card;
-            padding: 20px;
+            padding: 0 20px 20px;
         }
         .empty-state {
             :where(.lb-refresh) & {

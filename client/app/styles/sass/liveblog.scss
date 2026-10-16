@@ -612,7 +612,6 @@ i.icon-star.orange {
 
     #top-menu .collapse-nav .icon-collapse {
         display: inline-block;
-        margin-left: 8px;
         width: 20px;
         height: 20px;
         font-size: 0;
@@ -668,6 +667,15 @@ i.icon-star.orange {
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba($lb-contact-support-bg, 0.4) !important;
         }
+    }
+
+    // Widens the avatar's dark block so the avatar lines up with the 20px page gutter.
+    #top-menu button.current-user {
+        width: auto !important;
+        padding: 0 14px 0 10px !important;
+    }
+    .btn--contact-support, .help-link {
+        right: 72px;
     }
 
     #top-menu .current-user figure.avatar.initials {
@@ -820,7 +828,7 @@ i.icon-star.orange {
             padding: 18px 24px !important;
             border-bottom-color: $lb-input-border;
             .modal__heading {
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: 600;
                 color: $lb-btn-dark-bg;
             }
@@ -846,6 +854,23 @@ i.icon-star.orange {
                 min-height: 0 !important;
                 overflow-y: visible !important;
             }
+            // Text uses three colors: dark for headings and values, $lb-subnav-text for labels
+            // and inactive tabs, $lb-timestamp for hints.
+            .modal__body-header .nav-tabs > li {
+                > button {
+                    color: $lb-subnav-text;
+                }
+                &.active > button {
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            .sd-line-input__label, .field > label {
+                color: $lb-subnav-text;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: .08em;
+                text-transform: uppercase;
+            }
             .add-label {
                 color: $lb-timestamp;
                 font-size: 11px;
@@ -863,12 +888,21 @@ i.icon-star.orange {
                 // Vendor `.sd-line-input__input`/`__select` set a fixed height that squeezes this
                 // padding under border-box.
                 height: auto !important;
-                font-size: 13px;
+                font-size: 14px;
+                color: $lb-btn-dark-bg;
                 &:focus {
                     outline: 0;
                     border-color: $lb-rail-active !important;
                     box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
                 }
+            }
+            // Safari keeps its native select look unless appearance is reset.
+            select:not([multiple]) {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background: #fff url('~images/icons/chevron-down.svg') no-repeat right 12px center / 16px;
+                padding-right: 40px;
             }
             // Vendor sets `height: 32px !important` here at higher specificity than the
             // input rule above.
@@ -896,6 +930,10 @@ i.icon-star.orange {
                     text-transform: none;
                     font-weight: 400;
                     box-shadow: none !important;
+                    height: 40px;
+                    padding: 0 20px;
+                    font-size: 14px;
+                    letter-spacing: normal;
                     &.btn--primary, &.btn-primary, &.btn-info {
                         background-color: $lb-btn-dark-bg !important;
                         border-color: $lb-btn-dark-bg !important;
@@ -925,6 +963,10 @@ i.icon-star.orange {
                 text-transform: none;
                 font-weight: 400;
                 box-shadow: none !important;
+                height: 40px;
+                padding: 0 20px;
+                font-size: 14px;
+                letter-spacing: normal;
                 &.btn--primary, &.btn-primary, &.btn-info {
                     background-color: $lb-btn-dark-bg !important;
                     border-color: $lb-btn-dark-bg !important;
