@@ -12,7 +12,10 @@ export const UI_REFRESH_CLASS = 'lb-refresh';
 const ENABLED_COOKIE = 'lb_ui_refresh';
 const BANNER_DISMISSED_COOKIE = 'lb_ui_refresh_banner_dismissed';
 const CHANGED_EVENT = 'lb:uiRefreshChanged';
-const ONE_YEAR = 60 * 60 * 24 * 365;
+const DAY = 60 * 60 * 24;
+const ONE_YEAR = 365 * DAY;
+// "Not now" only snoozes the banner; making a choice retires it for good
+const SNOOZE = 14 * DAY;
 
 const readCookie = (name: string): string | null => {
     const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
@@ -20,10 +23,8 @@ const readCookie = (name: string): string | null => {
     return match ? match[1] : null;
 };
 
-const writeCookie = (name: string, value: string | null): void => {
-    const maxAge = value === null ? 0 : ONE_YEAR;
-
-    document.cookie = `${name}=${value || ''}; path=/; max-age=${maxAge}; SameSite=Lax`;
+const writeCookie = (name: string, value: string | null, maxAge = ONE_YEAR): void => {
+    document.cookie = `${name}=${value || ''}; path=/; max-age=${value === null ? 0 : maxAge}; SameSite=Lax`;
 };
 
 const notifyChange = (): void => {
@@ -40,14 +41,13 @@ export const applyUiRefresh = (): void => {
 
 export const setUiRefreshEnabled = (enabled: boolean): void => {
     writeCookie(ENABLED_COOKIE, enabled ? '1' : null);
-    // a choice either way retires the banner
     writeCookie(BANNER_DISMISSED_COOKIE, '1');
     applyUiRefresh();
     notifyChange();
 };
 
 export const dismissUiRefreshBanner = (): void => {
-    writeCookie(BANNER_DISMISSED_COOKIE, '1');
+    writeCookie(BANNER_DISMISSED_COOKIE, '1', SNOOZE);
     notifyChange();
 };
 

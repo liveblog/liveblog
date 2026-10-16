@@ -53,11 +53,17 @@ test.describe('refreshed UI opt-in', () => {
         await expect(page.getByTestId('ui-refresh-banner')).toBeHidden();
     });
 
-    test('dismissing the banner keeps the classic UI and hides it for good', async () => {
+    test('dismissing the banner keeps the classic UI and snoozes it for two weeks', async () => {
         const banner = page.getByTestId('ui-refresh-banner');
 
         await page.getByTestId('ui-refresh-dismiss').click();
         await expect(banner).toBeHidden();
+
+        const snooze = (await context.cookies()).find((c) => c.name === 'lb_ui_refresh_banner_dismissed');
+        const days = (snooze!.expires - Date.now() / 1000) / 86400;
+
+        expect(days).toBeGreaterThan(13.9);
+        expect(days).toBeLessThanOrEqual(14);
 
         await page.reload();
         await expect(page.locator('button.current-user')).toBeVisible();
