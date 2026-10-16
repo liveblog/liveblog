@@ -100,11 +100,8 @@
                 :where(.lb-refresh) & {
                     display: inline-block;
                     vertical-align: middle;
-                    // Kills the inline-block "phantom" bottom space reserved
-                    // for a text line-box (descenders) by matching the line box
-                    // to the icon's own height — font-size: 0 also zeroed sizing
-                    // that icon-unpublish/icon-publish rely on, so use line-height
-                    // instead of touching font-size.
+                    // Line box matches the icon height to drop the descender gap. Don't use
+                    // font-size: 0 instead, icon-publish/icon-unpublish size off it.
                     line-height: 16px;
                     border-radius: 6px;
                     transition: background-color .15s ease;
@@ -129,12 +126,8 @@
                 }
             }
             :where(.lb-refresh) & {
-                // Lucide replacements for the sd_icons glyphs/sprites above.
-                // Descendant selector (not `a > i`) so it also reaches the
-                // disabled reorder state, which renders the icon inside a
-                // plain <div class="reorder-disabled"> instead of an <a>.
-                // opacity: 1 overrides the `> i { opacity: .5 }` fade above —
-                // these render solid in $lb-btn-dark-bg, not faded.
+                // Descendant selector (not `a > i`) so it also matches the icon
+                // inside the disabled reorder state's `div.reorder-disabled`.
                 i.icon-star {
                     @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-btn-dark-bg);
                     opacity: 1;
@@ -164,8 +157,7 @@
                 i.icon-unpublish {
                     @include lb-icon-bg-mask(url('~images/icons/undo-2.svg'), $lb-btn-dark-bg);
                     opacity: 1;
-                    // Cancel the legacy sprite rule's rotate(180deg) (liveblog.scss)
-                    // which otherwise bleeds through and flips this icon backwards.
+                    // Cancels the sprite rule's rotate(180deg) in liveblog.scss.
                     transform: none;
                 }
                 i.icon-publish {
@@ -368,13 +360,7 @@
     }
 }
 
-// The post's tags line is a plain inline-styled `<div style="text-align:
-// right">` in the template (no class to hook), sitting as the last direct
-// child of `.lb-post__holder` — its own bottom padding (8px, vs. 20px on
-// every other side) left the right-aligned text crowding the card's
-// rounded bottom-right corner. Give it a divider off the content above and
-// room to breathe, and mute it to secondary-text color instead of plain
-// black, like a small meta footer rather than a stray floating label.
+// The post's tags line: the template gives it no class, only an inline style.
 :where(.lb-refresh) .lb-post__holder > div[style*="text-align: right"] {
     padding-top: 10px;
     padding-bottom: 2px;

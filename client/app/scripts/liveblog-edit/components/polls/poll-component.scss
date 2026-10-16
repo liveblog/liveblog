@@ -68,9 +68,7 @@
             background-color: rgba($lb-btn-dark-bg, 0.08);
             color: $lb-btn-dark-bg;
         }
-        // No Lucide "x" asset in the icon set — same CSS-drawn crossed-bar
-        // technique already used for the Contributions filter pill's remove
-        // button, which centers pixel-perfectly regardless of font metrics.
+        // Drawn in CSS (no Lucide "x" asset) so it centers regardless of font metrics.
         .icon-close-small {
             position: relative;
             width: 10px;
@@ -157,28 +155,18 @@
 }
 
 :where(.lb-refresh) {
-    // Question/answer/duration fields — plain unstyled `<input>`s (no class of
-    // their own in the React component), so they fell back to the browser's
-    // default text-input chrome instead of matching the rest of the app.
+    // The React component renders these inputs without classes.
     .poll_component input[type="text"],
     .poll_component input[type="number"] {
         width: 100%;
         box-sizing: border-box !important;
-        // Explicit on every state (base/hover/focus) so nothing — a vendor
-        // default focus style included — can swap in a different border
-        // width and shift the box size, which is what read as the text
-        // around it "jumping" on click.
+        // !important so no vendor focus style can change the border width and resize the box.
         border-width: 1px !important;
         border-style: solid !important;
         border-color: $lb-input-border;
         border-radius: $lb-radius-input !important;
-        // sir-trevor's own vendor CSS (`.st-block input[type="text"]` /
-        // `:active` / `:focus`, inputs.scss) sets `padding: .6em` at the exact
-        // same specificity as this rule — a tie whose winner depends on build
-        // order, and can flip between this rule's plain/`:focus` selectors and
-        // vendor's three near-identical ones. That's what was actually
-        // "jumping": the box briefly resizing to vendor's padding on
-        // interaction. `!important` settles it for good.
+        // sir-trevor's `.st-block input[type="text"]` (and :active/:focus, inputs.scss) sets
+        // `padding: .6em` at equal specificity, so without !important build order decides.
         padding: 8px 12px !important;
         font-size: 13px;
         transition: border-color .15s ease;
@@ -188,9 +176,7 @@
         &:focus {
             outline: 0 !important;
             border-color: $lb-rail-active;
-            // No box-shadow glow here — this popup sits in a small, tightly
-            // spaced card (unlike the app's modals), where the extra 3px ring
-            // read as the surrounding text shifting.
+            // No focus glow: in this tight card a 3px ring looks like the text shifting.
             box-shadow: none !important;
         }
         &:disabled {

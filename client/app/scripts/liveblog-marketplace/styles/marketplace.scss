@@ -6,8 +6,6 @@ section.marketer {
 }
 
 :where(.lb-refresh) {
-    // Float the page as a card, matching every other redesigned page
-    // (Advertising/Settings/Blog List's own `.main-section`).
     .main-section.marketer {
         margin: 12px 20px 20px;
         background-color: #fff;
@@ -35,9 +33,6 @@ section.marketer header {
             margin-right: 0;
             margin-left: 20px;
             margin-top: 15px;
-            // Same redesign as every other `.alert-info` notice app-wide
-            // (liveblog-edit.scss's `.blogedit .alert-info`) — vendor's hard
-            // blue fill + text-shadow, retinted to the app's teal palette.
             background-color: $lb-rail-active-bg;
             border: 1px solid rgba($lb-rail-active, 0.25);
             border-radius: $lb-radius-input;
@@ -92,17 +87,12 @@ section.marketer div.archive-sidebar div.filter-title {
 }
 
 :where(.lb-refresh) {
-    // "Filter Marketers" sidebar
     section.marketer div.archive-sidebar {
         background: #fff;
         border-right: 1px solid $lb-input-border;
         min-height: 100%;
         box-sizing: border-box;
 
-        // Reset in case either inherits a card look (shadow/radius/own
-        // background) from some other generic `.header`/`.content` rule
-        // elsewhere in the app — this sidebar is meant to read as ONE
-        // continuous white surface, not two stacked boxes.
         .header, .content {
             box-shadow: none;
             border-radius: 0;
@@ -113,12 +103,8 @@ section.marketer div.archive-sidebar div.filter-title {
             padding: 20px 24px;
             border-bottom: 1px solid $lb-input-border;
             .backlink-toolbar {
-                // The actual source of the "floating separate box" look —
-                // vendor's `.backlink-toolbar` (archive-filtering.scss) has
-                // its own shadow/height/bottom-margin/background baked in,
-                // meant to sit as a standalone popup header elsewhere in
-                // Superdesk. Neutralize all of it so it's just this header's
-                // plain content row.
+                // Vendor's `.backlink-toolbar` (archive-filtering.scss) carries its own popup-header
+                // shadow, height, margin and background.
                 box-shadow: none;
                 margin-bottom: 0;
                 height: auto;
@@ -133,9 +119,7 @@ section.marketer div.archive-sidebar div.filter-title {
                     font-weight: 600;
                     color: $lb-btn-dark-bg;
                 }
-                // `.icon-close-small` is a real glyph that follows `color`
-                // (no masking needed — same as the app-wide `.modal__close`
-                // treatment in liveblog.scss).
+                // `.icon-close-small` is a real glyph that follows `color`, so it needs no mask.
                 .doopen {
                     cursor: pointer;
                     color: $lb-timestamp;
@@ -152,11 +136,6 @@ section.marketer div.archive-sidebar div.filter-title {
         }
 
         div.filter-title {
-            // Was `float: left` — unnecessary for a plain vertical stack of
-            // full-width blocks, and floats collapsing/re-clearing between
-            // each one (plus whatever margin vendor's own `<ul>`/`<li>` reset
-            // didn't cover) is what produced the uneven, oversized gaps.
-            // Plain block flow instead.
             display: block;
             width: 100%;
             border-bottom: 1px solid $lb-input-border;
@@ -221,8 +200,6 @@ section.marketer div.archive-sidebar div.filter-title {
                 }
             }
 
-            // Vendor's checked-checkbox fill ($sd-blue-ish) — retint teal, same
-            // as the Users page's own `.sd-checkbox.checked` override.
             .sd-checkbox {
                 border-color: $lb-input-border;
                 &.checked, &[checked="checked"] {

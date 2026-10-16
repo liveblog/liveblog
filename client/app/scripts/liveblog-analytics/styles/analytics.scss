@@ -42,9 +42,7 @@
     background: #eee;
     font-weight: 500;
     :where(.lb-refresh) & {
-      // A real border on a table-row doesn't reliably paint in the
-      // "separate" table border model (only table-cell borders do) —
-      // flex instead, same fix as the output channels row.
+      // Borders on a table-row don't paint in the separate border model, only cell borders do.
       display: flex;
       align-items: center;
       background: $lb-pill-bg;
@@ -56,7 +54,6 @@
     .analytics-list-row-item {
       border-color: #ccc;
       :where(.lb-refresh) & {
-        // Falls back to the base row item color, as without this rule.
         border-color: $lb-input-border;
         border-bottom: none;
       }
@@ -161,10 +158,6 @@
         }
       }
       :where(.lb-refresh) & {
-        // Swap the legacy sd_icons chevron glyphs for Lucide, same masking
-        // technique used elsewhere. Only one asset exists (chevron-right) —
-        // reuse it rotated 180deg for the "previous" arrow instead of adding
-        // a near-duplicate SVG.
         i.icon-chevron-left-thin, i.icon-chevron-right-thin {
           @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 14px);
           vertical-align: middle;

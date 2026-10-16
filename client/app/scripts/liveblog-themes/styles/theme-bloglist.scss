@@ -8,8 +8,6 @@
     form { padding: 0; }
 
     :where(.lb-refresh) & {
-        // Toggle switches — vendor's "on" state is $sd-blue, same fix as the
-        // Blog Settings page's own toggles (settings.scss).
         .sd-toggle {
             border-radius: 9px;
             .inner {
@@ -20,10 +18,6 @@
             }
         }
 
-        // "Settings"/"Styles" tabs — same segmented pill toggle as the Blog
-        // List's "Active blogs"/"Archived blogs"/"Deleted blogs" tabs
-        // (liveblog-bloglist.scss's `.button-stack .nav-tabs`), instead of
-        // vendor's underlined tab bar.
         .nav.nav-tabs {
             display: inline-flex;
             height: auto;
@@ -71,11 +65,6 @@
         padding-top: 0;
         margin-bottom: 20px;
         :where(.lb-refresh) & {
-            // Was 20px — with the hint text itself carrying no bottom margin
-            // of its own, that was the only space between a group's
-            // description (e.g. "Introduces a button for the readers to
-            // filter the timeline by highlights") and the next toggle row,
-            // reading as cramped.
             margin-bottom: 26px;
         }
 
@@ -91,8 +80,6 @@
                 margin-top: 0;
                 display: block;
                 :where(.lb-refresh) & {
-                    // A little separation from its own label/checkbox above —
-                    // was flush against it (0).
                     margin-top: 4px;
                     color: $lb-timestamp;
                 }
@@ -103,8 +90,6 @@
         .sd-line-input__label {
             position: relative;
             :where(.lb-refresh) & {
-                // Labels (e.g. "Author info position") sat flush against
-                // their input/select below with no breathing room.
                 margin-bottom: 8px;
                 display: block;
             }
@@ -134,11 +119,8 @@
             .datetime__text {
                 width: 50%;
                 margin: 0 0 0 5px;
-                // The "Custom" field (lb-date-format's own template) is a
-                // bare `<input>` with no `type` attribute and no class, so
-                // it never matched the global `.modal .modal__body
-                // input[type="..."]` redesign rule (liveblog.scss) — same
-                // border/radius/focus treatment, applied directly here.
+                // The Custom field is a bare `<input>` with no `type`, so the global modal
+                // `input[type=...]` rule (liveblog.scss) does not reach it.
                 :where(.lb-refresh) & input {
                     width: 100%;
                     box-sizing: border-box;
@@ -229,8 +211,6 @@
 }
 .themes-manager {
     :where(.lb-refresh) & {
-        // Not a flex-centering problem — a taller bar instead of a per-button
-        // margin-top hack (same reasoning as the Users page, liveblog.scss).
         height: 5.8rem;
     }
     form {
@@ -246,24 +226,17 @@
         }
     }
     :where(.lb-refresh) & {
-        // "+" create button (a `<label>` or `<button>`, both share this class)
-        // — same labeled teal pill as the Blog List's "Create blog" button
-        // (`lb-create-btn-pill` mixin, lb-ui-mixins.scss).
+        // Both a `<label>` and a `<button>` carry this class.
         .sd-create-btn {
             @include lb-create-btn-pill('New Theme');
         }
-        // Right-edge breathing room — vendor's wrapper only sets a left
-        // margin, so this wider pill was landing flush against the edge.
         .subnav__button-stack--square-buttons {
             margin-right: 20px;
         }
     }
 }
 :where(.lb-refresh) {
-    // Float the whole page as a card, matching Advertising/Users/Analytics —
-    // vendor's `.main-section` has no width/height of its own, so a plain
-    // margin shrinks it inward without touching any absolute-positioned
-    // descendant's own offset math.
+    // `.main-section` is absolutely positioned on all four sides, so a margin insets it evenly.
     .main-section.themelist {
         margin: 12px 20px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
@@ -271,9 +244,6 @@
 }
 .themelist {
     :where(.lb-refresh) & {
-        // Info banner — vendor's plain Bootstrap `.alert-info` (square
-        // corners, dated blue/border combo), same restyle as the Free Types
-        // page's own info banner (freetypes.scss).
         .alert.alert-info {
             background: $lb-pill-bg;
             border: 1px solid darken($lb-pill-bg, 12%);
@@ -322,13 +292,8 @@
                 }
             }
         }
-        // Warning banner (AMP theme notice) — same shape/structure as the info
-        // banner above, but in the app's one existing red tone ($lb-live-badge-*,
-        // reused from the LIVE post badge) instead of introducing a new color.
         .alert.alert-error {
-            // Same blue/neutral treatment as `.alert.alert-info` above instead
-            // of vendor's alarming red — this is a heads-up about feature
-            // support, not an error state.
+            // Styled like `.alert-info` on purpose: the AMP notice is a heads-up, not an error.
             background: $lb-pill-bg;
             border: 1px solid darken($lb-pill-bg, 12%);
             color: $lb-pill-text;
@@ -377,16 +342,8 @@
         ul {
             li {
                 margin-left: 40px;
-                // Each top-level theme renders its own root `<ul><li>` (one per
-                // entry in `self.themesHierachy`); a theme's *variants* render as
-                // a nested `<ul><li>` INSIDE that parent li (recursive `ng-include`
-                // over `themeChildren`). Only that nested case should be indented
-                // — matching by DOM nesting depth (`li li`) instead of `:first-
-                // child` correctly separates "child theme" from "just another
-                // top-level theme that happens to come later in the list" (the
-                // previous `:first-child` reset only ever un-indented whichever
-                // entry was literally first, leaving every other top-level theme
-                // — not just actual child variants — indented).
+                // Only theme variants (`li li`) are indented. Each top-level theme is its own root
+                // `<ul><li>`, so `:first-child` cannot tell the two apart.
                 :where(.lb-refresh) & {
                     margin-left: 0;
                 }
@@ -407,10 +364,6 @@
                 cursor: default;
                 margin-bottom: 10px;
                 @include border-box();
-                // Same bordered/rounded row-card treatment used everywhere
-                // else in this redesign (border instead of a heavy box-shadow,
-                // a soft lift-shadow only on hover) instead of vendor's flat
-                // grey-bordered box.
                 :where(.lb-refresh) & {
                     border: 1px solid $lb-input-border;
                     box-shadow: none;
@@ -437,26 +390,15 @@
                     float: left;
                     position: relative;
                     :where(.lb-refresh) & {
-                        // Vendor's original relied on the inner `div` below
-                        // having a real fixed pixel width (238px) to give this
-                        // floated, no-explicit-`width` box something to
-                        // shrink-wrap to — that div's width is now a `100%`
-                        // percentage instead, which can't establish a
-                        // shrink-to-fit size (resolves to 0), collapsing the
-                        // whole thumbnail column to nothing. An explicit width
-                        // here fixes it directly instead of re-hardcoding the
-                        // child's pixel width.
+                        // Floated with no width of its own, and the inner div is `width: 100%`, so without
+                        // an explicit width this collapses to 0.
                         width: 220px;
                         @include border-radius($lb-radius-input);
                         background: none;
                         background-color: #f8f8f8;
                         overflow: hidden;
-                        // Same masked Lucide `image` placeholder as the Blog
-                        // List's own card media (liveblog-bloglist.scss) — a
-                        // dedicated `:before`, not a mask on `.media` itself,
-                        // so the surrounding grey fill survives (masking the
-                        // element directly clips its own background to just
-                        // the icon's silhouette, leaving the rest transparent).
+                        // The placeholder icon goes on a pseudo-element: masking `.media` itself would clip its
+                        // background color to the icon shape.
                         &:before {
                             content: '';
                             position: absolute;
@@ -587,18 +529,7 @@
                     width: 90px;
                     height: 65px;
                     background: url('~images/default-icon.png') no-repeat left bottom;
-                    // Replaces vendor's `default-icon.png` corner-ribbon
-                    // graphic (a raster image with "DEFAULT" baked into it)
-                    // with a plain teal pill badge, matching the app's other
-                    // status pills — this element has no text content of its
-                    // own, so the label is generated via `content:` instead of
-                    // touching the template.
-                    // A solid teal pill + checkmark reads as an actual status
-                    // badge — the first attempt used the same pale
-                    // `$lb-rail-active-bg` for both this and `.card.default`'s
-                    // own background below, so the "pill" was invisible
-                    // (identical color to what's behind it, leaving only the
-                    // text visible with no pill boundary at all).
+                    // This element has no text, so the label comes from `content:`.
                     :where(.lb-refresh) & {
                         right: 16px;
                         top: 16px;
@@ -633,8 +564,7 @@
                     :where(.lb-refresh) & {
                         background-color: $lb-rail-active-bg;
                         border-color: $lb-rail-active;
-                        // Same specificity as `.card:hover` and later in the
-                        // source, so the hover shadow has to be repeated here.
+                        // Same specificity as `.card:hover` but later in source, so the hover shadow is repeated.
                         box-shadow: none;
                         &:hover {
                             box-shadow: $lb-card-shadow;

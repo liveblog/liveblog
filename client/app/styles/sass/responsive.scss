@@ -4,11 +4,7 @@
 
 @media(max-width: 800px) {
     :where(.lb-refresh) {
-        // Defensive: this page's own content overflowing horizontally (e.g.
-        // the post action-icon row below) was pushing the whole page wider
-        // than the viewport, which is what made the shared app-wide top bar's
-        // "Blog Editor" title render clipped on the left — every other page
-        // uses the same top bar fine, so the cause was here, not there.
+        // Stops overflowing content from widening the page and clipping the top bar's title.
         .blogedit {
             overflow-x: hidden;
         }
@@ -19,13 +15,8 @@
     .blogedit .column--first {
         width: 100% !important;
         :where(.lb-refresh) & {
-            // Desktop's `left: 16px` (liveblog-edit.scss) was never reset here
-            // the way `.column--timeline` resets it below — with width:100%
-            // added on top of that 16px offset, the column's right edge ran
-            // 16px past its container, and `.blogedit`'s own `overflow-x:
-            // hidden` (above) silently clipped that slice instead of showing
-            // an overflow — which is what was cutting "Schedule"/"Draft" etc.
-            // off on the right.
+            // Resets desktop's `left: 16px` (liveblog-edit.scss), which with width 100%
+            // pushes the column past `.blogedit` and gets it clipped.
             left: 0 !important;
         }
     }
@@ -38,12 +29,7 @@
     }
 
     :where(.lb-refresh) {
-        // Left icon rail — desktop's 8px offset + 12px button padding (72px
-        // total footprint) eats into an already-narrow screen. Tighten the
-        // padding and pull the whole rail closer to the edge; shrink its width
-        // to match so the buttons stay snug instead of floating in extra
-        // space, and shift `.columns-holder`'s own left offset the same
-        // amount so the content column reclaims exactly the room freed up.
+        // `.columns-holder`'s left must equal the rail's left + width (4px + 56px).
         .blogedit .side-menu {
             left: 4px !important;
             padding: 4px !important;
@@ -53,10 +39,7 @@
             left: 60px !important;
         }
 
-        // Home button in the subnav — desktop's 24px margin-left was tuned
-        // against the untouched side-menu (8px offset + 12px padding); line it
-        // up with the rail's new position above instead (4px offset + 4px
-        // padding = 8px to the button itself).
+        // Tuned to the narrow rail above (4px offset + 4px padding).
         div.subnav div.button-stack.left-stack a.homebtn {
             margin-left: 14px !important;
         }
@@ -68,22 +51,13 @@
 
     :where(.lb-refresh) {
         .lb-post__holder {
-            // Belt-and-suspenders: whatever ends up too wide inside the card
-            // on a narrow screen gets clipped at the card's own edge instead
-            // of spilling out into the page (and forcing page-level horizontal
-            // scroll, which is what was dragging the shared top bar's title
-            // off-screen too).
+            // Clip at the card edge so wide content can't force page-level horizontal scroll.
             overflow: hidden;
         }
     }
 
     .lb-post__actions {
-        // The real cause of the icon row crowding the edge was
-        // `.panel .lb-post__holder`'s own right padding being too small
-        // (posts-in-panel.scss) — fixed there. `float: right` (post.scss)
-        // already wraps this onto its own line when there's genuinely no
-        // room, so it's left alone here rather than forced to always
-        // block-wrap regardless of available width.
+        // No forced wrap: `float: right` (post.scss) already wraps this row when it doesn't fit.
         margin-top: 10px;
         margin-bottom: 20px;
     }
@@ -112,8 +86,7 @@
         text-indent: -85px;
         color: #d0d0d0;
         :where(.lb-refresh) & {
-            // Shows "Choose post type" with its full label instead of the
-            // icon-only collapse above. Color comes from the `.btn` !important rules.
+            // Shows the full "Choose post type" label. Color is left to the `.btn` !important rules.
             width: auto;
             white-space: normal;
             overflow: visible;
@@ -122,18 +95,9 @@
     }
 
     :where(.lb-refresh) {
-        // "Add content" block-type toolbar (Text/Image/Embed/Quote/…) — the
-        // desktop 34px side padding left too little room for the row on a
-        // narrow screen, and since `.blogedit` above sets `overflow-x: hidden`
-        // page-wide (to stop unrelated content pushing the top bar off-screen),
-        // whatever didn't fit was clipped and unreachable rather than just
-        // wrapping. Tighten the padding and let the row scroll horizontally
-        // within its own bounds instead, with items kept at natural width
-        // (not squished via flex-shrink) so they stay legible while scrolled to.
-        // `!important` on the padding: this selector is an exact-specificity
-        // tie with liveblog-edit.scss's desktop `.st-blocks.st-ready` rule
-        // (same 7-class chain), and that file happens to load after this one
-        // in the bundle, so plain source order was silently losing.
+        // `!important`: same specificity as liveblog-edit.scss's `.st-blocks.st-ready` rule,
+        // which loads later. The toolbar scrolls sideways because `.blogedit`'s
+        // `overflow-x: hidden` would otherwise clip it.
         .blogedit .panel--editor .content .editor-holder .editor .st-blocks.st-ready {
             padding: 12px 14px !important;
         }
@@ -145,26 +109,17 @@
             }
         }
 
-        // Pin/Highlight/Schedule pills — icon + label was truncating the label
-        // to a couple of characters ("Pi…") in the narrow space available.
-        // Drop the icon, keep the label full-width instead.
+        // Icon + label truncates the label at this width, so the icon goes.
         .blogedit .panel--editor .actions__options > div > div .actions__icon {
             display: none !important;
         }
 
-        // Publish/Submit/Save draft (and the Pin/Highlight/Schedule row above
-        // them) share the same `display: table` layout, so the desktop 20px
-        // horizontal `border-spacing` was also the gap between these three
-        // buttons — too wide once each button's own width shrank down to fit
-        // three per row on a narrow screen.
+        // These rows are `display: table`, so `border-spacing` is the gap between buttons.
         .blogedit .panel--editor .content > .actions {
             border-spacing: 8px 14px !important;
         }
 
-        // Publish/Submit/Save draft — same problem as the Pin/Highlight/
-        // Schedule pills above: an icon plus label had no room to breathe once
-        // three buttons had to share a narrow row. Text-only, all three icons,
-        // and uppercase to read as an action button without them.
+        // Icons dropped for room; uppercase so the labels still read as buttons.
         .blogedit .panel--editor .content>.actions .btn i.icon-publish,
         .blogedit .panel--editor .content>.actions .btn i.icon-submit,
         .blogedit .panel--editor .content>.actions .btn i.icon-save-draft {
@@ -174,25 +129,17 @@
             text-transform: uppercase !important;
         }
 
-        // "Choose post type" / "Reset" header buttons — tighter padding to
-        // give the row more breathing room on a narrow screen.
         .blogedit .panel--editor header .btn {
             padding: 0.7rem 0.7rem !important;
         }
 
-        // "Preview" only applies to the Default post type's editor view — drop
-        // it on small screens where header space is tight; "Choose post type"
-        // and "Reset" stay.
+        // "Preview" (Default post type only) is dropped to save header space.
         .panel--editor header .btn.btn--primary.pull-right {
             display: none !important;
         }
 
-        // "Choose post type" dropdown (.freetype-selector) — its `right: -60px`
-        // / `right: 40px` (&.default) offsets were tuned against the full-width
-        // desktop trigger button; anchored like that on a narrow phone it can
-        // run past the screen edge. Pin it flush right within its positioned
-        // ancestor instead, and cap its width so it can never exceed the
-        // viewport.
+        // Desktop's `right` offsets (-60px, 40px) can push the dropdown past a phone's
+        // edge, so it is pinned inside its positioned ancestor.
         .freetype-selector {
             right: 8px !important;
             left: 8px;
@@ -236,15 +183,8 @@
     }
 
     :where(.lb-refresh) {
-        // Users full-profile page — `.form-content` (avatar/name/details) is
-        // pinned to a hard-coded 600px, with `.other-content` (an activity
-        // sidebar, often empty) filling the rest of the viewport next to it
-        // (superdesk-core's users.scss). The avatar/name center fine *within*
-        // that 600px column, but on anything narrower than roughly 900-1000px
-        // the empty sidebar reads as dead space and the whole header looks
-        // shifted left instead of centered on the page. Drop the fixed width
-        // and hide the (usually-empty) sidebar so the column — and its
-        // already-centered contents — fills the actual viewport.
+        // superdesk-core's users.scss fixes `.form-content` at 600px beside a usually
+        // empty `.other-content` sidebar, which leaves dead space on narrow screens.
         .user-profile-page .form-content {
             width: 100% !important;
         }
@@ -394,15 +334,8 @@
     }
 
     :where(.lb-refresh) {
-        // Users table — 5 columns (name/role/username/email/created) at their
-        // vendor percentage widths don't fit under ~800px without truncating
-        // hard. Scroll horizontally rather than hiding columns: give each row
-        // a real minimum width so its columns get real pixels instead of
-        // being squeezed into an ellipsis, and let the table scroll sideways
-        // to reveal whatever doesn't fit. `overflow-x` lives on `.users-table`
-        // itself (not on the individual header/body lists) so the header row
-        // and the data rows scroll together in one motion and stay
-        // column-aligned.
+        // Scroll rather than truncate the 5 columns. `overflow-x` sits on `.users-table`
+        // so the header and body rows scroll together and stay aligned.
         .users-table {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -412,13 +345,8 @@
         .users-table .table-body > li {
             min-width: 560px;
         }
-        // The `<li>` above is what actually needs the min-width (it holds the
-        // columns), but a block-level `<ul>` doesn't grow to contain an
-        // overflowing child — without this, `.table-header`'s own box (and
-        // its blue background, set on the `<ul>` itself) stayed at the
-        // narrower visible width while its `<li>` rendered wider past that
-        // edge, so the background looked like it turned white exactly where
-        // the row kept going.
+        // A block `<ul>` doesn't grow to fit an overflowing `<li>`, so the header's
+        // background would stop at the visible width.
         .users-table .table-header,
         .users-table .table-newest,
         .users-table .table-body {

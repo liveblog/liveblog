@@ -5,9 +5,6 @@
 .column--timeline {
     border: 0px;
     :where(.lb-refresh) & {
-        // .cancel-reorder/.header--filters/.header--live all rely on this
-        // (margin-left: auto, etc.) to line up in one row — make it explicit
-        // instead of assuming it's inherited from elsewhere.
         header {
             display: flex;
             align-items: center;
@@ -18,9 +15,6 @@
         padding: 0 5px 0 5px;
         :where(.lb-refresh) & {
             float: none;
-            // Keeps LIVE right after the "Timeline" title, with the
-            // Cancel/reorder control and ALL/star filters visually reordered
-            // (via order:, not DOM position) to cluster on the right.
             order: 1;
             a {
                 display: inline-flex;
@@ -54,8 +48,7 @@
                     mask-repeat: no-repeat;
                     -webkit-mask-position: left center;
                     mask-position: left center;
-                    // Fixed (not "contain") so the icon itself never scales —
-                    // widening the box just reveals more of it, left to right.
+                    // Fixed, not `contain`: the hover width transition reveals the icon instead of scaling it.
                     -webkit-mask-size: 11px 11px;
                     mask-size: 11px 11px;
                     transition: width .15s ease, margin-left .15s ease;
@@ -229,10 +222,6 @@
             font-size: 15px;
             opacity: 0;
             overflow: hidden;
-            // Height/border/background animate first; opacity (the text)
-            // is delayed until that's mostly done, so the box grows and only
-            // then does the text fade in — font-size stays constant the whole
-            // time so the text itself never visibly "grows".
             transition: height 0.3s ease, border-color 0.3s ease,
                 background-color 0.3s ease, opacity 0.2s ease 0.15s;
         }
@@ -282,9 +271,7 @@
             position: static;
             height: auto;
             padding-top: 0;
-            // Explicit order (lower than the real .header--filters' order: 4
-            // below) so it always renders right before ALL/star, with no
-            // reliance on DOM-position tie-breaking.
+            // Must stay below .header--filters' order: 4 so it sits right before the filters.
             order: 3;
             border-right: 1px solid $lb-input-border !important;
             display: flex;
@@ -294,12 +281,9 @@
         }
     }
     :where(.lb-refresh) & {
-        // It keeps margin-left: auto (inherited from sharing .header--filters)
-        // so it's the one that consumes the pushed-right free space. The real
-        // filters must NOT also use auto here, or flex splits that free space
-        // between the two and Cancel ends up stranded mid-row instead of snug
-        // against ALL/star — so give the real filters a fixed gap instead,
-        // but only when .cancel-reorder actually exists (reorder mode).
+        // .cancel-reorder also carries .header--filters, so it takes the margin-left: auto.
+        // The real filters must not keep auto too, or flex splits the free space and
+        // strands Cancel mid-row.
         .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
             margin-left: 12px;
         }
@@ -338,15 +322,8 @@
         -o-transition: transform 0.5s;
         transition: transform 0.5s;
         :where(.lb-refresh) & {
-            // Anchored to `.pin-drawer`'s own bottom edge (`top: 100%` +
-            // `translateY(-50%)`) instead of the old `margin-top: -10px` off
-            // its static flow position — that hack pulled the button upward by
-            // a fixed amount regardless of how much room existed above, so
-            // when `.pin-drawer` was the very first thing in the (scrolling)
-            // timeline column — the collapsed "N PINNED POSTS" state — the
-            // button's top half got clipped by the scroll container's edge.
-            // Centering on `.pin-drawer`'s own border keeps the whole circle
-            // inside its box in every state.
+            // Centered on `.pin-drawer`'s bottom border. A negative margin-top gets clipped
+            // by the scrolling column when the drawer is its first child.
             margin-top: 0;
             width: 28px;
             height: 28px;
@@ -360,17 +337,12 @@
         &.active {
             @include rotate(180deg);
             :where(.lb-refresh) & {
-                // Combine with the base translateY (rather than the vendor
-                // `rotate()` mixin, which would set `transform: rotate(180deg)`
-                // alone and drop the centering translate).
+                // Not the rotate() mixin: it would drop the centering translateY.
                 transform: translateY(-50%) rotate(180deg);
             }
         }
         :where(.lb-refresh) & {
-            // Vendor's sd_icons glyphs carry their own margin/positioning
-            // baggage from being sprite-based — absolute-center the masked
-            // Lucide replacement against this button directly instead of
-            // trusting flex to override all of that.
+            // !important beats the sd_icons glyph's own margin and positioning.
             i.icon-chevron-up-thin {
                 @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 14px);
                 position: absolute !important;
@@ -386,9 +358,7 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         :where(.lb-refresh) & {
             position: relative;
-            // The "N PINNED POSTS" label is a plain `<div>` in the template,
-            // not a `<span>` — this rule never matched it, so the text sat
-            // flush against the border-bottom below with no breathing room.
+            // The "N PINNED POSTS" label is a `<div>`, so the `span` rule below misses it.
             > div {
                 font-size: 11px;
                 color: #999999;

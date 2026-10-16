@@ -4,9 +4,6 @@
 $PADDING: 20px;
 
 :where(.lb-refresh) {
-    // Left sidebar nav ("General Settings" list) + main content pane — vendor's
-    // own `.sd-page`/`.sd-left-nav` shell (settings-view.html), plain white
-    // list with a flat blue active-state bar.
     .sd-page {
         background: $lb-subnav-bg;
     }
@@ -28,9 +25,7 @@ $PADDING: 20px;
             &--active {
                 color: $lb-btn-dark-bg !important;
                 border-left-color: $lb-rail-active !important;
-                // Vendor's own active-state rule for this exact class draws a
-                // flat blue 4px right-side border — redundant/conflicting with
-                // the teal left accent above.
+                // Vendor's active rule for this class adds a 4px right border.
                 border-right: none !important;
                 background: $lb-rail-active-bg;
             }
@@ -70,15 +65,7 @@ $PADDING: 20px;
         }
     }
     :where(.lb-refresh) & {
-        // "DEFAULT THEME" / "GLOBAL TAGS" / "YOUTUBE PRIVACY STATUS" etc.
-        // section labels — was plain uppercase-bold text sitting flush
-        // against its control below. Every one of these labels (whether or
-        // not it also carries `.sd-line-input__label`) lives inside
-        // `.lb-group-heading` — targeting that directly, rather than the
-        // earlier `.form-group > div > label` attempt, which also
-        // accidentally caught the *toggle's own* plain-text description
-        // label ("Makes blog's default embed height responsive by default"),
-        // wrapping it in the same tiny uppercase treatment as a section title.
+        // Not `.form-group > div > label`: that also matches each toggle's description label.
         .lb-group-heading {
             margin-bottom: 8px;
             label {
@@ -112,9 +99,6 @@ $PADDING: 20px;
                 box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
             }
         }
-        // Toggle switches (Default Embed Height, Multiple tags selection) —
-        // vendor's "on" state is a flat blue, retint teal (same fix already
-        // applied to the Theme Settings modal's own toggles).
         .sd-toggle {
             border-radius: 9px;
             .inner {
@@ -124,8 +108,6 @@ $PADDING: 20px;
                 background: $lb-rail-active !important;
             }
         }
-        // The plain-text label next to each toggle — normal sentence-case
-        // body text, NOT the uppercase section-heading treatment above.
         span[sd-switch] + label {
             display: inline;
             text-transform: none;

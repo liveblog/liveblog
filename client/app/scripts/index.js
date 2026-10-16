@@ -318,7 +318,6 @@ liveblog.run(['$rootScope', 'SESSION_EVENTS', function($rootScope, SESSION_EVENT
     });
 }]);
 
-// rendered only for a logged-in user, the login screen stays as it is
 liveblog.directive('lbUiRefreshBanner', ['gettext', 'SESSION_EVENTS', function(gettext, SESSION_EVENTS) {
     return {
         restrict: 'E',

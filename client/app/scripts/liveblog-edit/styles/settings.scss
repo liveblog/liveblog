@@ -4,14 +4,8 @@ $PADDING: 20px;
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
-// Companion to the `.tabbable.outer > .nav-stacked` mobile override below —
-// vendor's `.tab-content.outer` is `position: absolute; top: 0; left:
-// 180px` (assuming the sidebar it sits beside is a fixed-width column).
-// An older app-wide rule (responsive.scss) already resets `left: 0` once
-// that sidebar becomes a horizontal row on mobile, but never adjusted
-// `top`, so the content pane still started at the very top of
-// `.tabbable.outer` — sitting underneath/behind the tab row instead of
-// below it.
+// Vendor positions `.tab-content.outer` absolutely at `top: 0` and responsive.scss
+// only resets `left` on mobile, so offset it below the horizontal tab row.
 @media(max-width: 800px) {
     :where(.lb-refresh) .settings-page .tabbable.outer .tab-content.outer {
         top: 48px !important;
@@ -27,39 +21,14 @@ $PADDING: 20px;
     .settings-page {
         top: $SUBNAV_HEIGHT*3;
         :where(.lb-refresh) & {
-            // Vendor's own value ($topspace) — pin it explicitly rather than
-            // relying on that variable, since it's what actually clears the
-            // two header bars above.
+            // Vendor's `$topspace`: clears the two header bars above.
             top: 98px !important;
-            // Wrap the header bar + sidebar/content in one card, floating on
-            // the page background — matches the "Edit output" modal's look.
-            // A small top margin — zero felt too tight against the "Test blog"
-            // row above, but the page's own `top` offset already does most of
-            // the work so this only needs to be a little breathing room.
             margin: 12px 20px 20px;
             background-color: white;
             @include border-radius($lb-radius-card);
-            // $lb-card-shadow has a vertical offset (built for a shadow cast
-            // downward), so it barely shows on the top edge — use a blur-only,
-            // no-offset shadow instead so this floating card reads evenly on
-            // all four sides.
+            // Not $lb-card-shadow: its vertical offset leaves the top edge almost shadowless.
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
-            // No overflow: hidden here — box-shadow and overflow: hidden on the
-            // same element conflict, since overflow clips the shadow along with
-            // everything else (the blog editor's .column avoids this the same
-            // way: round each section's own corners instead of clipping at the
-            // outer box). Rounded top corners on .subnav and bottom corners on
-            // the sidebar/content below give the same "one clean card" look
-            // without hiding this box's own shadow.
-            // The old layout pushed .settings-page down by one extra header's
-            // worth of height, then pulled .subnav back up by the same negative
-            // offset so it rendered in that "reclaimed" strip above .tabbable —
-            // a fixed-pixel trick calibrated to the *old*, shorter header. Once
-            // the header grew (bigger title/buttons), that calibration broke
-            // and .subnav started overlapping .tabbable's content instead of
-            // sitting above it. Flex avoids the magic numbers entirely: header
-            // sized by its own content, body (.tabbable.outer) fills whatever
-            // is left, no matter how tall the header ends up being.
+            // No `overflow: hidden`, it would clip the shadow. Children round their own corners.
             display: flex;
             flex-direction: column;
         }
@@ -82,15 +51,9 @@ $PADDING: 20px;
                     font-size: 22px;
                     font-weight: 700;
                 }
-                // Flat pills, no shadow/lift — this is a plain settings form,
-                // not a primary editorial action, so it should stay calm.
-                // Sized up from the default subnav button — these are the
-                // page's main commit actions and were reading as too small.
                 .btn {
                     border-radius: $lb-radius-pill !important;
                     text-transform: none;
-                    // Matches Publish/Submit/Save draft in the editor (normal
-                    // weight, not bold) — bold was reading as odd/out of place.
                     font-weight: 400;
                     font-size: 14px;
                     padding: 8px 22px !important;
@@ -105,10 +68,6 @@ $PADDING: 20px;
                             background-color: lighten($lb-btn-dark-bg, 8%) !important;
                         }
                     }
-                    // Cancel needs to read as clearly clickable against the
-                    // pale subnav background — the same light pill as other
-                    // utility buttons washed out here, so give it a stronger,
-                    // more saturated neutral instead.
                     &.btn-default {
                         background-color: darken($lb-pill-bg, 18%) !important;
                         border-color: darken($lb-pill-bg, 18%) !important;
@@ -122,9 +81,7 @@ $PADDING: 20px;
         }
 
         :where(.lb-refresh) & {
-            // Fills whatever height is left below .subnav (see flex note above),
-            // and is the containing block for .nav-stacked/.tab-content.outer's
-            // own `position: absolute; top: 0; bottom: 0;`.
+            // Containing block for the absolutely positioned `.nav-stacked` and `.tab-content.outer`.
             .tabbable.outer {
                 flex: 1 1 auto;
                 min-height: 0;
@@ -132,17 +89,10 @@ $PADDING: 20px;
             }
         }
 
-        // Left tab list — a left accent bar + color on the active item,
-        // no filled/boxed background. Non-active items stay quiet (same
-        // weight/color as body text) so the active tab is the only thing
-        // that reads as "selected".
         .tabbable.outer > .nav-stacked {
             width: 200px;
             :where(.lb-refresh) & {
-                // Keep vendor's width/position/padding as-is (.tab-content.outer
-                // is absolutely positioned with left: 200px, assuming this
-                // stays 180px + no padding) — only recolor it to match the
-                // white card instead of vendor's default grey ($sd-background).
+                // Width must match vendor's `left: 180px` on `.tab-content.outer`.
                 width: 180px;
                 background-color: white !important;
                 box-shadow: none !important;
@@ -156,9 +106,7 @@ $PADDING: 20px;
                         padding: 10px 16px 10px 22px;
                         color: $lb-subnav-text;
                         font-weight: 500;
-                        // Vendor's .nav-tabs.nav-stacked sets a 1px border on
-                        // all 4 sides — reset it, no accent bar replacing it,
-                        // just a color change when active.
+                        // Vendor's `.nav-tabs.nav-stacked` borders all four sides.
                         border: none !important;
                         border-radius: 0 !important;
                         transition: color .15s ease;
@@ -171,20 +119,12 @@ $PADDING: 20px;
                     &.active > a, &.active > a:hover {
                         background: none !important;
                         color: $lb-rail-active !important;
-                        // Vendor's original .active > a sets this inset shadow
-                        // (a leftover from the old "square notch" look).
+                        // Vendor's `.active > a` adds an inset shadow.
                         box-shadow: none !important;
                     }
                 }
-                // An older app-wide rule (responsive.scss) already converts
-                // this sidebar into a horizontal scrollable tab row on narrow
-                // screens — but this file (module-scoped CSS, loaded after the
-                // global bundle) redeclares the same selector with vendor's
-                // fixed-width sidebar positioning left untouched, which wins
-                // the tie and silently cancels that conversion. Re-declare it
-                // here instead, so General/Team/Output Channels/Consumers stay
-                // reachable instead of being squeezed into an unusable sliver
-                // (or hidden off-screen) next to the content pane.
+                // Repeats responsive.scss's mobile tab-row layout: this file loads after the global
+                // bundle, so its fixed-width sidebar rules would otherwise win.
                 @media(max-width: 800px) {
                     position: relative !important;
                     width: 100% !important;
@@ -216,9 +156,7 @@ $PADDING: 20px;
                 padding: $PADDING/2 $PADDING;
                 box-sizing: border-box;
                 :where(.lb-refresh) & {
-                    // Vendor sets its own border-bottom here (layouts.scss
-                    // .split-content > .header, and the settings app's own
-                    // .split-content > .header) — kill both explicitly.
+                    // Vendor's `.split-content > .header` sets a border in both layouts.scss and the settings app.
                     border-bottom: none !important;
                     h2 {
                         font-size: 18px;
@@ -231,8 +169,7 @@ $PADDING: 20px;
                 padding: $PADDING;
                 @include box-sizing(border-box);
                 :where(.lb-refresh) & {
-                    // Vendor's .split-content > .content sets a grey #f8f8f8
-                    // fill — this card is already white end to end.
+                    // Vendor's `.split-content > .content` sets a grey fill.
                     background-color: white !important;
                     border-bottom-right-radius: $lb-radius-card;
                     padding: $PADDING*1.5 $PADDING;
@@ -248,9 +185,6 @@ $PADDING: 20px;
                     :where(.lb-refresh) & {
                         display: flex;
                         content: normal;
-                        // Centered, not top-aligned — rows with a toggle switch
-                        // (Blog Status, Embed height, Syndication…) were reading
-                        // as visibly offset from their label.
                         align-items: center;
                         padding: 14px 0;
                     }
@@ -279,13 +213,8 @@ $PADDING: 20px;
                             float: none;
                             flex: 1 1 auto;
                             min-width: 0;
-                            // Same cap for every field type (plain input, select,
-                            // textarea, and the datepicker/timepicker widget) so
-                            // Blog Title/Theme/etc. all line up at one width —
-                            // and so the datepicker/timepicker's calendar/clock
-                            // button (absolutely positioned against *this* box)
-                            // sits right at the visible edge of the field
-                            // instead of far off to the right of an uncapped row.
+                            // The datepicker/timepicker button is positioned against this box, so the cap keeps
+                            // it at the field's visible edge.
                             max-width: 480px;
                         }
                         select {margin: 0; height: auto;} // overwrite bootstrap
@@ -324,11 +253,7 @@ $PADDING: 20px;
                             }
                             select {
                                 padding: 8px 12px;
-                                // The native arrow ignores padding-right in most
-                                // browsers (it's drawn glued to the edge
-                                // regardless) — drop it and draw our own via
-                                // background-image, which does respect
-                                // background-position, so it actually moves.
+                                // The native arrow ignores padding, so draw our own as a background image.
                                 appearance: none;
                                 -webkit-appearance: none;
                                 -moz-appearance: none;
@@ -343,12 +268,6 @@ $PADDING: 20px;
                                     outline: 0!important;
                                 }
                             }
-                            // In-form utility buttons (Upload Image, Change,
-                            // Remove) are secondary actions, not page-level
-                            // commits — keep them light and flat, no shadow.
-                            // Needs a stronger fill than the default pale pill,
-                            // same reasoning as Cancel above — it was washing
-                            // out against the white card.
                             .btn {
                                 border-radius: $lb-radius-pill !important;
                                 text-transform: none;
@@ -361,19 +280,12 @@ $PADDING: 20px;
                                     background-color: darken($lb-pill-bg, 20%) !important;
                                 }
                             }
-                            // ...except the datepicker/timepicker's calendar/
-                            // clock icon button — that's not an action button,
-                            // it's the field's own affordance, so leave it
-                            // borderless/transparent like the rest of the input.
                             .datepicker-input .btn, .timepicker-input .btn {
                                 background-color: transparent !important;
                                 border-color: transparent !important;
                                 color: $lb-timestamp !important;
                                 box-shadow: none !important;
-                                // Vendor pins this at a fixed `top: 2px`, sized
-                                // for a shorter input — our input is taller now,
-                                // so that reads as sitting too high. Center it
-                                // against the input's actual height instead.
+                                // Vendor pins this at `top: 2px`, which only fits its shorter input.
                                 top: 50% !important;
                                 transform: translateY(-50%);
                                 &:hover:not(:disabled) {
@@ -381,7 +293,6 @@ $PADDING: 20px;
                                     color: $lb-btn-dark-bg !important;
                                 }
                             }
-                            // Swap the legacy sd_icons glyphs for Lucide.
                             .datepicker-input .btn i.icon-calendar {
                                 @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-timestamp, 16px);
                             }
@@ -392,9 +303,6 @@ $PADDING: 20px;
                             .timepicker-input .btn:hover i.icon-time {
                                 background-color: $lb-btn-dark-bg;
                             }
-                            // Hint/help text under a field ("This will override…",
-                            // stylesheet/embed links, AMP warning) — always its
-                            // own line below the control, quiet and small.
                             > p, .form-input__hint {
                                 display: block;
                                 width: 100%;
@@ -403,10 +311,6 @@ $PADDING: 20px;
                                 line-height: 1.5;
                                 color: $lb-timestamp;
                             }
-                            // The public embed/stylesheet URL link sitting right
-                            // under a textarea (Embed code, Stylesheet) — same
-                            // gap as the hint text above, otherwise it reads as
-                            // glued to the box right above it.
                             > a {
                                 display: block;
                                 margin-top: 8px;
@@ -421,9 +325,6 @@ $PADDING: 20px;
         }
     }
     :where(.lb-refresh) & {
-        // Buttons anywhere in the settings tabs (Team's owner-search footer,
-        // the "edit team" modal, etc.) that aren't covered by a more specific
-        // rule above — same pill/palette treatment as everywhere else.
         .btn {
             border-radius: $lb-radius-pill !important;
             text-transform: none;
@@ -438,12 +339,8 @@ $PADDING: 20px;
                     background-color: lighten($lb-btn-dark-bg, 8%) !important;
                 }
             }
-            // Plain `.btn` with no modifier class (e.g. the owner-search
-            // footer's Cancel) fell through with no color at all before —
-            // catch it too, not just `.btn-default`. Same flat $lb-pill-bg
-            // fill as every other secondary/Cancel button on the page (see
-            // the popups below) — one consistent "secondary button" color
-            // site-wide instead of some reading grey and some blue.
+            // `:not(.btn--primary)` rather than `.btn-default`: some buttons (e.g. the
+            // owner-search Cancel) have no modifier class.
             &:not(.btn--primary) {
                 background-color: $lb-pill-bg !important;
                 border-color: $lb-pill-bg !important;
@@ -473,18 +370,10 @@ $PADDING: 20px;
                 }
             }
             :where(.lb-refresh) & {
-                // Labeled teal pill, same as every other "+" create button in
-                // the app (Blog List, Users, Free Types, Themes…) — this one
-                // has a real `<i>`/`.circle` in its template already (unlike
-                // the Advertising page's create buttons), so the shared mixin
-                // works directly.
                 .sd-create-btn {
                     @include lb-create-btn-pill('Add output');
                 }
-                // `.minusMargin1020` on the wrapper (margin: -10px -20px) was
-                // tuned for the old bare circular icon — same issue as the
-                // Ingest panel's "Attach" button — and pulls the now-wider
-                // pill past the header's edge.
+                // The wrapper's `.minusMargin1020` (-10px -20px) pushes the pill past the header edge.
                 .minusMargin1020 {
                     margin: 0 !important;
                 }
@@ -492,13 +381,6 @@ $PADDING: 20px;
         }
         :where(.lb-refresh) & {
             .pills-list li {
-                // Each row reads as its own card now — a real border instead of
-                // vendor's box-shadow, rounded corners, and margin between
-                // rows instead of a shared divider line.
-                // Vendor lays this row out with h6 float:left and .actions
-                // position:absolute (top:0, meant for a short single-line row).
-                // Flex here instead, so the title and the action icons both
-                // vertically center against the row's real (taller) height.
                 display: flex !important;
                 align-items: center;
                 justify-content: space-between;
@@ -507,12 +389,8 @@ $PADDING: 20px;
                 border: 1px solid $lb-input-border !important;
                 @include border-radius($lb-radius-input);
                 box-shadow: none !important;
-                // The `clearfix` class on this <li> (in the template, for the
-                // old float-based layout) generates empty ::before/::after
-                // pseudo-elements. Flex turns those into two extra flex items,
-                // so `justify-content: space-between` splits its gap 3 ways
-                // instead of 1, pushing the title right instead of flush left.
-                // Not needed once this row is flex (no floats left to clear).
+                // The template's `clearfix` ::before/::after would become extra flex items and
+                // break `space-between`.
                 &::before, &::after {
                     content: none;
                 }
@@ -530,11 +408,7 @@ $PADDING: 20px;
                     font-size: 15px;
                 }
                 .actions {
-                    // Vendor has `&:hover .actions { display: block !important }`
-                    // (this row's actions are hidden by default, shown on
-                    // hover, in the vendor's original design) — needs its own
-                    // !important to keep winning on hover, or the icons flip
-                    // from a flex row to inline block flow and visibly jump.
+                    // Must beat vendor's `:hover .actions { display: block !important }`.
                     position: static !important;
                     display: flex !important;
                     align-items: center;
@@ -553,13 +427,6 @@ $PADDING: 20px;
                         color: $lb-rail-active;
                         background-color: $lb-rail-active-bg;
                     }
-                    // Swap the legacy sd_icons glyphs for Lucide, same
-                    // masking technique used for the datepicker/timepicker
-                    // icons above. Darkest available tone by default — these
-                    // are actions, not secondary metadata, so they should read
-                    // clearly without needing to hover first. Same size/color/
-                    // hover treatment across all three so they read as one
-                    // uniform icon set.
                     i.icon-globe, i.icon-pencil, i.icon-trash {
                         margin: 0;
                     }
@@ -577,8 +444,6 @@ $PADDING: 20px;
                     }
                 }
             }
-            // Icon now comes from the app-wide `.sd-create-btn i` rule
-            // (liveblog.scss, masked white circle-plus).
         }
     }
     .dropdown-content {
@@ -599,7 +464,6 @@ $PADDING: 20px;
             @include border-radius($lb-radius-input);
             box-shadow: $lb-card-shadow;
             padding: 14px;
-            // "Choose new owner" label + search input.
             .user-select form {
                 label {
                     display: block;
@@ -624,12 +488,6 @@ $PADDING: 20px;
                     }
                 }
             }
-            // "Team" / "Users" group labels above each list section — these
-            // `<a>` tags are children of .users-list-embed, not of
-            // .search-result directly, so the `>` combinator here needs to
-            // reach one level deeper or it never matches (and the labels
-            // render inline, squeezed against the input above and the list
-            // below instead of getting their own line/spacing).
             .search-result .users-list-embed > a {
                 display: block;
                 margin-top: 14px;
@@ -694,9 +552,7 @@ $PADDING: 20px;
             overflow-y: auto;
             overflow-x: hidden;
             > li {
-                // Vendor's negative right margin is what causes the horizontal
-                // scrollbar: it makes every row a few px wider than the list's
-                // own scrollable box.
+                // Vendor's negative right margin makes rows wider than the list (horizontal scrollbar).
                 margin-right: 0;
                 @include border-radius($lb-radius-input);
                 padding: 0 8px;
@@ -744,7 +600,6 @@ $PADDING: 20px;
             border-radius: 8px;
         }
         :where(.lb-refresh) & {
-            // Vendor's "on" state is $sd-blue — match our teal accent instead.
             &.checked {
                 background: $lb-rail-active !important;
             }
@@ -779,9 +634,7 @@ $PADDING: 20px;
         height: 84px!important;
         width: 84px!important;
         :where(.lb-refresh) & {
-            // Vendor's .avatar.large.initials still uses line-height: 48px
-            // (its own, smaller default size) — the initials were sitting
-            // near the top of this bigger 84px circle instead of centered.
+            // Vendor's `.avatar.large.initials` keeps a 48px line-height.
             &.initials {
                 line-height: 84px !important;
                 font-size: 28px !important;
@@ -870,20 +723,14 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
 }
 
 :where(.lb-refresh) {
-    // The sd-datepicker calendar popup is appended straight to <body> by the
-    // vendor directive (not nested under .blog-settings-view), so it stays
-    // global like the rules above — recolored/resized to match the rest of the
-    // redesigned Settings page instead of vendor's default grey/blue Bootstrap
-    // look.
+    // The sd-datepicker popup is appended to <body>, so it can't be scoped under
+    // `.blog-settings-view`.
     div.datepicker-wrapper {
         border: 1px solid $lb-input-border;
         @include border-radius($lb-radius-card);
         box-shadow: $lb-card-shadow;
         padding: 14px;
-        // Vendor's fixed 260px is too narrow for the month/year picker's
-        // 3-column grid — longer labels ("SEPTEMBER", "NOVEMBER") had no room
-        // and ran into their neighboring column. Wider box, same as the day
-        // grid's own comfortable spacing.
+        // Vendor's fixed 260px is too narrow for the month grid's longer labels.
         width: 320px !important;
 
         .datepicker-additional .btn {
@@ -901,11 +748,7 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
         }
 
         .datepicker-core table {
-            // Vendor sizes columns to fit each cell's content, so the month
-            // picker's ragged label widths ("MAY" vs "SEPTEMBER") throw off
-            // both the grid's column alignment and each pill's centering.
-            // Fixed layout gives every column (day-grid's 7 or month/year
-            // grid's 3) equal width, in both this view and the day grid.
+            // Equal-width columns. Vendor's auto layout skews the month grid's uneven labels.
             table-layout: fixed;
 
             thead {
@@ -922,8 +765,6 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
                             background-color: $lb-rail-active-bg !important;
                         }
                     }
-                    // Breathing room before the grid below (day names, or the
-                    // first month/year row).
                     padding-bottom: 6px;
                 }
                 tr:last-child th small {
@@ -936,9 +777,6 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
                 }
             }
             tbody td {
-                // More breathing room between rows/columns than vendor's
-                // cramped `0 2px` — noticeable on the month/year grid, whose
-                // taller pill labels were reading as squeezed together.
                 padding: 6px 4px !important;
             }
             tbody td .btn {
@@ -956,8 +794,6 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
                     color: $lb-btn-dark-bg !important;
                     box-shadow: none !important;
                 }
-                // Selected date — filled solid instead of the barely-there tint
-                // hover uses, so it actually reads as "selected" at a glance.
                 &.active {
                     background-color: $lb-rail-active !important;
                     color: #fff !important;
@@ -974,8 +810,6 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
             }
         }
 
-        // Confirm/Cancel — same pill treatment as the rest of the Settings
-        // page's buttons (see .settings-page .subnav .btn above).
         > .btn {
             @include border-radius($lb-radius-pill);
             text-transform: none;
@@ -1006,22 +840,15 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
         }
     }
 
-    // The sd-timepicker popup — same body-appended global scope and the same
-    // redesign treatment as .datepicker-wrapper above.
+    // Also appended to <body>, like the datepicker popup.
     div.timepicker-popup {
         border: 1px solid $lb-input-border;
         @include border-radius($lb-radius-card);
         box-shadow: $lb-card-shadow;
         padding: 14px;
-        // Vendor pins this at a fixed height (310px), sized for its old
-        // side-by-side Hours/Minutes layout. Ours stacks them, and runs
-        // taller — with a fixed height the floated Confirm/Cancel buttons at
-        // the bottom render past the box's actual bottom edge instead of
-        // inside it. Let the box grow to fit its content instead.
+        // Vendor's fixed 310px height cuts off the floated Confirm/Cancel buttons.
         height: auto !important;
-        // Vendor's fixed 200px is too narrow to fit Cancel + Confirm side by
-        // side (they wrap onto their own lines instead) — match the calendar
-        // popup's width, which comfortably fits both.
+        // Vendor's fixed 200px wraps Cancel and Confirm onto separate lines.
         width: 260px !important;
 
         .timepicker-additional .btn {
@@ -1039,9 +866,7 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
         }
 
         .timepicker-core {
-            // Contains the floated Confirm/Cancel buttons below (pull-right)
-            // so the box's own height/border grows to include them instead of
-            // stopping before them.
+            // Clears the floated Confirm/Cancel buttons.
             &::after {
                 content: '';
                 display: table;
@@ -1060,8 +885,6 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
                         background-color: $lb-rail-active-bg !important;
                         color: $lb-rail-active;
                     }
-                    // Selected hour/minute — filled solid, matching the
-                    // calendar's selected-date treatment.
                     &.active {
                         background-color: $lb-rail-active !important;
                         color: #fff !important;
@@ -1070,9 +893,7 @@ div.timepicker-popup div.timepicker-core button.btn.btn-info {
                 }
             }
 
-            // Confirm/Cancel — same pill treatment and spacing as the
-            // calendar popup's, side by side (float:right, Confirm first in
-            // markup so it lands rightmost, Cancel to its left).
+            // Floated right with Confirm first in markup, so Cancel's right margin sits between them.
             .btn {
                 @include border-radius($lb-radius-pill);
                 text-transform: none;

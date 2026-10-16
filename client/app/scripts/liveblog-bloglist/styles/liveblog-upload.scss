@@ -48,12 +48,8 @@ blog image uploader
                 :where(.lb-refresh) & {
                     border: 2px dashed $lb-input-border;
                     @include border-radius($lb-radius-input);
-                    // Every other card/panel in this redesign is plain white —
-                    // vendor's grey fill here read as out of place.
                     background-color: white;
                     transition: border-color .15s ease;
-                    // Border-color change only — border + background shifting
-                    // together read as too much for a plain drop target.
                     &:hover {
                         border-color: $lb-rail-active;
                     }
@@ -74,11 +70,7 @@ blog image uploader
                             margin: 0 auto 10px;
                             width: 22px;
                             height: 22px;
-                            // The mixin sets its own `display: inline-block` —
-                            // include it first so this explicit `display: block`
-                            // (needed to stack the icon above the text instead
-                            // of flowing inline next to it, which is what was
-                            // pushing/misaligning it) wins.
+                            // Include the mixin first: it sets `display: inline-block`, which must lose to `display: block`.
                             @include lb-icon-font-mask(url('~images/icons/image.svg'), $lb-timestamp, 22px);
                             display: block;
                         }
@@ -135,9 +127,7 @@ blog image uploader
                       border-color: #c0c0c0;
                       cursor: pointer !important;
                       :where(.lb-refresh) & {
-                        // A flat swap to $lb-pill-bg read as barely different
-                        // from the button's own white resting state — darken
-                        // it so the hover is actually visible.
+                        // $lb-pill-bg alone is too close to the white resting state to read as a hover.
                         background: darken($lb-pill-bg, 10%);
                         border-color: darken($lb-pill-bg, 10%);
                       }

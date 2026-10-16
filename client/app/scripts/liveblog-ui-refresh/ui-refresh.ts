@@ -1,14 +1,10 @@
 /**
- * Opt-in switch for the refreshed admin UI.
+ * Opt-in switch for the refreshed admin UI: toggles the `lb-refresh` class on <html>.
  *
- * Every refreshed style is scoped under `:where(.lb-refresh)` and only matches
- * while `<html>` carries that class, so turning the refresh on or off is a
- * class toggle with no reload. `:where()` keeps the scope at zero specificity,
- * so the refreshed rules cascade exactly as they would unscoped. Don't replace
- * it with a plain `.lb-refresh` ancestor selector.
+ * Refreshed styles are scoped with `:where(.lb-refresh)`, which adds no specificity.
+ * A plain `.lb-refresh` ancestor would change which rules win.
  *
- * The choice is per browser and kept in cookies rather than localStorage,
- * because superdesk-core wipes localStorage on logout (session.clear).
+ * Kept in cookies because superdesk-core clears localStorage on logout.
  */
 
 export const UI_REFRESH_CLASS = 'lb-refresh';
@@ -44,7 +40,7 @@ export const applyUiRefresh = (): void => {
 
 export const setUiRefreshEnabled = (enabled: boolean): void => {
     writeCookie(ENABLED_COOKIE, enabled ? '1' : null);
-    // once someone has made a choice, the banner has done its job
+    // a choice either way retires the banner
     writeCookie(BANNER_DISMISSED_COOKIE, '1');
     applyUiRefresh();
     notifyChange();

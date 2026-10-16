@@ -2,18 +2,12 @@
 @import '~lb-ui-mixins.scss';
 
 :where(.lb-refresh) {
-    // "+" create button — same labeled teal pill as the Blog List's "Create
-    // blog" button (`lb-create-btn-pill` mixin, lb-ui-mixins.scss).
     .items-manager .sd-create-btn {
         @include lb-create-btn-pill('Create Free Type');
     }
-    // Not a flex-centering problem — a taller bar instead of a per-button
-    // margin-top hack (same reasoning as the Users page, liveblog.scss).
     .items-manager {
         height: 5.8rem;
     }
-    // Right-edge breathing room — vendor's wrapper only sets a left margin,
-    // so this wider pill was landing flush against the edge.
     .items-manager .subnav__button-stack--square-buttons {
         margin-right: 20px;
     }
@@ -21,9 +15,6 @@
 
 .freetypeslist {
     :where(.lb-refresh) & {
-        // Info banner — vendor's plain Bootstrap `.alert-info` (square corners,
-        // dated blue/border combo) restyled to match the rest of the app's
-        // palette and card language.
         .alert.alert-info {
             background: $lb-pill-bg;
             border: 1px solid darken($lb-pill-bg, 12%);
@@ -33,8 +24,6 @@
             font-size: 13px;
             line-height: 1.7;
             position: relative;
-            // A leading icon gives the wall of text an entry point instead of
-            // reading as one dense paragraph.
             &::before {
                 content: '';
                 position: absolute;
@@ -103,11 +92,6 @@
             line-height: 18px;
             text-rendering: optimizelegibility;
             :where(.lb-refresh) & {
-                // Same bordered/rounded row-card treatment as the Output Channels list
-                // on the Blog Settings page (client/app/scripts/liveblog-edit/styles/
-                // settings.scss, `.outputs .pills-list li`) — border instead of
-                // box-shadow, flex layout so the title/actions vertically center, and
-                // the legacy sd_icons pencil/trash glyphs swapped for Lucide masks.
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -116,9 +100,7 @@
                 border-radius: $lb-radius-input;
                 padding: 8px 22px;
                 box-shadow: none;
-                // Vendor's `clearfix` pseudo-elements become extra flex items
-                // once this is `display:flex`, throwing off `justify-content:
-                // space-between` — same fix as the Output Channels row.
+                // Vendor's clearfix pseudo-elements would become flex items and break `space-between`.
                 &::before, &::after {
                     content: none;
                 }
@@ -141,12 +123,8 @@
                 }
             };
             :where(.lb-refresh) & {
-                // Vendor has `.pills-list li:hover .actions { display: block
-                // !important }` (this row's actions are meant to be hidden by
-                // default, shown on hover) — needs its own !important to keep
-                // winning on hover, or the icons flip from a flex row to
-                // inline block flow and visibly jump. Same fix as Output
-                // Channels.
+                // Vendor's `.pills-list li:hover .actions { display: block !important }` would win on
+                // hover without these.
                 .actions {
                     position: static !important;
                     display: flex !important;
