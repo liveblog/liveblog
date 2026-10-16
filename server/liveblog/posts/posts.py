@@ -166,7 +166,7 @@ class PostsResource(ArchiveResource):
         "_created_1": ([("_created", 1)]),
         "_created_-1": ([("_created", -1)]),
         "order_-1": ([("order", -1)]),
-        "tenant_blog_posts_optimized": (
+        "blog_posts_optimized": (
             [
                 ("tenant_id", 1),
                 ("blog", 1),
