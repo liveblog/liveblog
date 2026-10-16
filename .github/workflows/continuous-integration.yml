@@ -80,7 +80,7 @@ jobs:
       run: npm run lint
 
   e2e:
-    name: e2e (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    name: e2e ${{ matrix.ui }} (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     runs-on: ubuntu-24.04
 
     # Each shard is its own job with its own databases: every test wipes and
@@ -88,8 +88,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # classic and the opt-in refreshed UI (playwright.config.ts projects)
+        ui: [classic, refresh]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        include:
+          - ui: classic
+            project: chromium
+          - ui: refresh
+            project: chromium-refresh
 
     services:
       mongodb:
@@ -129,4 +136,4 @@ jobs:
     - name: Run Playwright e2e tests
       working-directory: ./client/e2e
       shell: bash
-      run: npx playwright test --reporter=line --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      run: npx playwright test --project=${{ matrix.project }} --reporter=line --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}

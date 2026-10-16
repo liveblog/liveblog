@@ -1,4 +1,5 @@
-import { test as base, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { applyUiMode, test as base } from './ui';
 import { LoginPage } from '../pages/login.page';
 import { ApiClient, Credentials, PERSONAS } from '../api/client';
 
@@ -40,8 +41,9 @@ export const test = base.extend<Fixtures>({
         await use(page);
     },
 
-    contributorPage: async ({ browser }, use) => {
+    contributorPage: async ({ browser, uiRefresh }, use) => {
         const ctx = await browser.newContext();
+        await applyUiMode(ctx, uiRefresh);
         const page = await ctx.newPage();
         await loginAs(page, PERSONAS.contributor);
         await use(page);

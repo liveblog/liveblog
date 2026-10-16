@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import { UiOptions } from './fixtures/ui';
 
-export default defineConfig({
+export default defineConfig<UiOptions>({
     testDir: './tests',
     // Needs a Stripe sandbox and billing enabled; runs via playwright.stripe.config.ts.
     testIgnore: ['billing/**'],
@@ -23,6 +24,10 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
+        },
+        {
+            name: 'chromium-refresh',
+            use: { ...devices['Desktop Chrome'], uiRefresh: true },
         },
     ],
 });
