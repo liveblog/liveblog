@@ -41,9 +41,9 @@ export const test = base.extend<Fixtures>({
         await use(page);
     },
 
-    contributorPage: async ({ browser, uiRefresh }, use) => {
+    contributorPage: async ({ browser, uiRefresh, baseURL }, use) => {
         const ctx = await browser.newContext();
-        await applyUiMode(ctx, uiRefresh);
+        await applyUiMode(ctx, uiRefresh, baseURL);
         const page = await ctx.newPage();
         await loginAs(page, PERSONAS.contributor);
         await use(page);

@@ -7,59 +7,51 @@
  * so the refreshed rules cascade exactly as they would unscoped. Don't replace
  * it with a plain `.lb-refresh` ancestor selector.
  *
- * The choice is per browser (localStorage). superdesk-core wipes localStorage
- * on explicit logout (session.clear), which resets it to the classic UI.
+ * The choice is per browser and kept in cookies rather than localStorage,
+ * because superdesk-core wipes localStorage on logout (session.clear).
  */
 
 export const UI_REFRESH_CLASS = 'lb-refresh';
 
-const ENABLED_KEY = 'lb:uiRefresh';
-const BANNER_DISMISSED_KEY = 'lb:uiRefreshBannerDismissed';
+const ENABLED_COOKIE = 'lb_ui_refresh';
+const BANNER_DISMISSED_COOKIE = 'lb_ui_refresh_banner_dismissed';
 const CHANGED_EVENT = 'lb:uiRefreshChanged';
+const ONE_YEAR = 60 * 60 * 24 * 365;
 
-// localStorage throws in some privacy modes; the classic UI is the safe fallback
-const read = (key: string): string | null => {
-    try {
-        return localStorage.getItem(key);
-    } catch (e) {
-        return null;
-    }
+const readCookie = (name: string): string | null => {
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+
+    return match ? match[1] : null;
 };
 
-const write = (key: string, value: string | null): void => {
-    try {
-        if (value === null) {
-            localStorage.removeItem(key);
-        } else {
-            localStorage.setItem(key, value);
-        }
-    } catch (e) {
-        // the class toggle still applies for the current page
-    }
+const writeCookie = (name: string, value: string | null): void => {
+    const maxAge = value === null ? 0 : ONE_YEAR;
+
+    document.cookie = `${name}=${value || ''}; path=/; max-age=${maxAge}; SameSite=Lax`;
 };
 
 const notifyChange = (): void => {
     window.dispatchEvent(new Event(CHANGED_EVENT));
 };
 
-export const isUiRefreshEnabled = (): boolean => read(ENABLED_KEY) === '1';
+export const isUiRefreshEnabled = (): boolean => readCookie(ENABLED_COOKIE) === '1';
 
-export const isUiRefreshBannerDismissed = (): boolean => read(BANNER_DISMISSED_KEY) === '1';
+export const isUiRefreshBannerDismissed = (): boolean => readCookie(BANNER_DISMISSED_COOKIE) === '1';
 
 export const applyUiRefresh = (): void => {
     document.documentElement.classList.toggle(UI_REFRESH_CLASS, isUiRefreshEnabled());
 };
 
 export const setUiRefreshEnabled = (enabled: boolean): void => {
-    write(ENABLED_KEY, enabled ? '1' : null);
+    writeCookie(ENABLED_COOKIE, enabled ? '1' : null);
     // once someone has made a choice, the banner has done its job
-    write(BANNER_DISMISSED_KEY, '1');
+    writeCookie(BANNER_DISMISSED_COOKIE, '1');
     applyUiRefresh();
     notifyChange();
 };
 
 export const dismissUiRefreshBanner = (): void => {
-    write(BANNER_DISMISSED_KEY, '1');
+    writeCookie(BANNER_DISMISSED_COOKIE, '1');
     notifyChange();
 };
 
@@ -68,9 +60,10 @@ export const onUiRefreshChange = (callback: () => void): (() => void) => {
     return () => window.removeEventListener(CHANGED_EVENT, callback);
 };
 
-// keeps other open tabs in sync when the choice changes in one of them
-const onStorage = (event: StorageEvent): void => {
-    if (event.key === null || event.key === ENABLED_KEY || event.key === BANNER_DISMISSED_KEY) {
+// cookies have no change event, so a tab picks up a switch made in another
+// tab when it becomes visible again
+const onVisibilityChange = (): void => {
+    if (document.visibilityState === 'visible') {
         applyUiRefresh();
         notifyChange();
     }
@@ -78,5 +71,5 @@ const onStorage = (event: StorageEvent): void => {
 
 export const initUiRefresh = (): void => {
     applyUiRefresh();
-    window.addEventListener('storage', onStorage);
+    document.addEventListener('visibilitychange', onVisibilityChange);
 };

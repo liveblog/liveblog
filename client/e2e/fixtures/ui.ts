@@ -5,29 +5,29 @@ export type UiOptions = {
     uiRefresh: boolean;
 };
 
-// Keys mirror client/app/scripts/liveblog-ui-refresh/ui-refresh.ts. Written on
-// every navigation because an explicit logout wipes localStorage.
-export async function applyUiMode(context: BrowserContext, uiRefresh: boolean): Promise<void> {
-    await context.addInitScript((enabled: boolean) => {
-        try {
-            if (enabled) {
-                localStorage.setItem('lb:uiRefresh', '1');
-            } else {
-                localStorage.removeItem('lb:uiRefresh');
-            }
-            // the opt-in banner floats over the bottom-right corner of every page
-            localStorage.setItem('lb:uiRefreshBannerDismissed', '1');
-        } catch (e) {
-            // opaque origins such as about:blank have no localStorage
-        }
-    }, uiRefresh);
+// Cookie names mirror client/app/scripts/liveblog-ui-refresh/ui-refresh.ts.
+export async function applyUiMode(context: BrowserContext, uiRefresh: boolean, baseURL?: string): Promise<void> {
+    if (!baseURL) {
+        throw new Error('the UI mode cookies need `baseURL` set in playwright.config.ts');
+    }
+
+    const cookies = [
+        // the opt-in banner floats over the bottom-right corner of every page
+        { name: 'lb_ui_refresh_banner_dismissed', value: '1', url: baseURL },
+    ];
+
+    if (uiRefresh) {
+        cookies.push({ name: 'lb_ui_refresh', value: '1', url: baseURL });
+    }
+
+    await context.addCookies(cookies);
 }
 
 export const test = base.extend<UiOptions>({
     uiRefresh: [false, { option: true }],
 
-    context: async ({ context, uiRefresh }, use) => {
-        await applyUiMode(context, uiRefresh);
+    context: async ({ context, uiRefresh, baseURL }, use) => {
+        await applyUiMode(context, uiRefresh, baseURL);
         await use(context);
     },
 });
