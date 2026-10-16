@@ -1,0 +1,35 @@
+// below superdesk modals (~1050) so an open dialog still covers it
+.ui-refresh-banner {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 320px;
+    max-width: calc(100vw - 48px);
+    padding: 16px;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    color: #333;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.ui-refresh-banner__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+        font-size: 14px;
+    }
+}
+
+.ui-refresh-banner__actions {
+    display: flex;
+    gap: 8px;
+}

@@ -1,3 +1,4 @@
+import './liveblog-ui-refresh/boot';
 import 'lb-bootstrap.scss';
 
 // Vendor CSS imported after lb-bootstrap so they appear later in the DOM.
@@ -108,6 +109,8 @@ import 'liveblog-features.service';
 import {BillingBanner} from './liveblog-billing/BillingBanner';
 import {ImpersonationBanner} from './liveblog-impersonation/ImpersonationBanner';
 import {isImpersonating, restoreSupportSession} from './liveblog-impersonation/impersonation';
+import {UiRefreshBanner} from './liveblog-ui-refresh/UiRefreshBanner';
+import {isUiRefreshEnabled, onUiRefreshChange, setUiRefreshEnabled} from './liveblog-ui-refresh/ui-refresh';
 
 const sdBillingBanner = ['notify', 'SESSION_EVENTS', function(notify, SESSION_EVENTS) {
     return {
@@ -312,6 +315,41 @@ liveblog.run(['$rootScope', 'SESSION_EVENTS', function($rootScope, SESSION_EVENT
     // right after broadcasting, does not trigger a restore.
     $rootScope.$on(SESSION_EVENTS.LOGOUT, () => {
         setTimeout(restoreIfSessionLost, 0);
+    });
+}]);
+
+// rendered only for a logged-in user, the login screen stays as it is
+liveblog.directive('lbUiRefreshBanner', ['gettext', 'SESSION_EVENTS', function(gettext, SESSION_EVENTS) {
+    return {
+        restrict: 'E',
+        link: function(scope, element) {
+            const mountPoint = $(element).get(0);
+            const render = () => {
+                const banner = getToken() ? React.createElement(UiRefreshBanner, {gettext: gettext}) : null;
+
+                ReactDOM.render(banner, mountPoint);
+            };
+
+            scope.$on(SESSION_EVENTS.LOGIN, render);
+            scope.$on(SESSION_EVENTS.LOGOUT, render);
+            render();
+
+            scope.$on('$destroy', () => {
+                ReactDOM.unmountComponentAtNode(mountPoint);
+            });
+        },
+    };
+}]);
+
+// backs the switch in the Help menu (index.html)
+liveblog.run(['$rootScope', function($rootScope) {
+    $rootScope.uiRefreshEnabled = isUiRefreshEnabled();
+    $rootScope.toggleUiRefresh = () => setUiRefreshEnabled(!isUiRefreshEnabled());
+
+    onUiRefreshChange(() => {
+        $rootScope.$applyAsync(() => {
+            $rootScope.uiRefreshEnabled = isUiRefreshEnabled();
+        });
     });
 }]);
 
