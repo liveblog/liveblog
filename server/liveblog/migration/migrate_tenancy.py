@@ -41,6 +41,11 @@ ELASTIC_REINDEX = (
     ("archive", "posts"),
 )
 
+# Indexes replaced by tenant-aware ones under a new name. Mongo refuses to
+# create an index whose keys differ from an existing index with the same name,
+# so the replacements could not reuse these names.
+LEGACY_INDEXES = (("archive", "blog_posts_optimized"),)
+
 MISSING_TENANT = {"tenant_id": None}
 REINDEX_PAGE_SIZE = 500
 
@@ -48,12 +53,13 @@ REINDEX_PAGE_SIZE = 500
 class MigrateTenancyCommand(superdesk.Command):
     """Assign the documents of a pre-multi-tenancy instance to one tenant.
 
-    Backfills `tenant_id` on every tenant scoped collection, marks the bundled
-    themes as system themes (`tenant_id` null), links the tenant to its first
-    administrator and re-indexes blogs and archive in Elasticsearch so the tenant
-    filters there see the new field. Documents that already have a tenant are
-    left alone, so the command can be re-run; with several tenants it only asks
-    for `--tenant-id` while unassigned documents remain.
+    Drops indexes replaced by tenant-aware ones, backfills `tenant_id` on every
+    tenant scoped collection, marks the bundled themes as system themes
+    (`tenant_id` null), links the tenant to its first administrator and
+    re-indexes blogs and archive in Elasticsearch so the tenant filters there
+    see the new field. Documents that already have a tenant are left alone, so
+    the command can be re-run; with several tenants it only asks for
+    `--tenant-id` while unassigned documents remain.
 
     Run it before the upgraded API is reachable: `/api/register` is public and
     creates a tenant, and a lone tenant is adopted as the migration target.
@@ -115,6 +121,10 @@ class MigrateTenancyCommand(superdesk.Command):
                 )
             )
         prefix = "[dry run] " if dry_run else ""
+        for collection, index in LEGACY_INDEXES:
+            if self._drop_index(collection, index, dry_run):
+                print("{}{}: dropped index {}".format(prefix, collection, index))
+
         tenant = self._resolve_tenant(
             tenant_id, tenant_name, subscription_level, dry_run
         )
@@ -203,6 +213,14 @@ class MigrateTenancyCommand(superdesk.Command):
 
     def _collection(self, name):
         return app.data.mongo.pymongo().db[name]
+
+    def _drop_index(self, collection, index, dry_run):
+        coll = self._collection(collection)
+        if index not in coll.index_information():
+            return False
+        if not dry_run:
+            coll.drop_index(index)
+        return True
 
     def _has_unassigned_documents(self):
         for collection in TENANT_SCOPED_COLLECTIONS:

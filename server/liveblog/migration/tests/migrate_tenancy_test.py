@@ -208,6 +208,22 @@ class MigrateTenancyTestCase(TestCase):
             first,
         )
 
+    def test_drops_the_legacy_posts_index(self):
+        legacy_keys = [("blog", 1), ("post_status", 1), ("deleted", 1)]
+        self.db.archive.create_index(legacy_keys, name="blog_posts_optimized")
+        self.app.init_indexes()
+
+        self.command.run(dry_run=True)
+        self.assertIn("blog_posts_optimized", self.db.archive.index_information())
+
+        self.command.run()
+        self.assertNotIn("blog_posts_optimized", self.db.archive.index_information())
+
+        # also when every document already has a tenant
+        self.db.archive.create_index(legacy_keys, name="blog_posts_optimized")
+        self.command.run()
+        self.assertNotIn("blog_posts_optimized", self.db.archive.index_information())
+
     def test_subscription_level_is_validated(self):
         with self.assertRaises(SystemExit):
             self.command.run(subscription_level="enterprise")
