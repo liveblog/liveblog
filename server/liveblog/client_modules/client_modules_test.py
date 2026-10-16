@@ -1,15 +1,18 @@
-import datetime
 import json
+import datetime
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
+import liveblog.tenants as tenants
 import superdesk.users as users_app
 import liveblog.items as items_app
 import liveblog.polls as polls_app
+import liveblog.liveblog_users as liveblog_users_app
 from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
+from superdesk.errors import SuperdeskApiError
 from liveblog.client_modules.client_modules import (
     blog_posts_blueprint,
     voting_blueprint,
@@ -17,6 +20,7 @@ from liveblog.client_modules.client_modules import (
     _get_converted_item,
 )
 from liveblog.posts import utils as post_utils
+from liveblog.tests.helpers import setup_tenant_for_test
 
 
 class Foo:
@@ -42,10 +46,12 @@ class ClientModuleTestCase(TestCase):
             }
             self.app.config.update(test_config)
             foo.setup_called()
+            tenants.init_app(self.app)
             blogs.init_app(self.app)
             items_app.init_app(self.app)
             polls_app.init_app(self.app)
             users_app.init_app(self.app)
+            liveblog_users_app.init_app(self.app)
             client_modules.init_app(self.app)
             self.app.register_blueprint(blog_posts_blueprint)
             self.app.register_blueprint(voting_blueprint)
@@ -116,7 +122,10 @@ class ClientModuleTestCase(TestCase):
         self.blog_post_service = get_resource_service("client_blog_posts")
         self.blogs_service = get_resource_service("blogs")
         self.client_blog_service = get_resource_service("client_blogs")
-        self.users_service = get_resource_service("users")
+        self.users_service = get_resource_service("liveblog_users")
+
+        # Create tenant for test
+        self.tenant_id = setup_tenant_for_test(self.app)
 
         self.user_list = [
             {
@@ -131,6 +140,7 @@ class ClientModuleTestCase(TestCase):
                 "sign_off": "off",
                 "byline": "by",
                 "email": "abc@other.com",
+                "tenant_id": self.tenant_id,
             }
         ]
 
@@ -221,6 +231,7 @@ class ClientModuleTestCase(TestCase):
                 "title": "title: end to end Five",
                 "total_posts": 3,
                 "versioncreated": "2018-03-27T12:04:58+00:00",
+                "tenant_id": self.tenant_id,
             }
         ]
         # Create blogs
@@ -253,6 +264,7 @@ class ClientModuleTestCase(TestCase):
                 },
                 "text": "Sample poll",
                 "versioncreated": "2024-02-07T07:18:11+00:00",
+                "tenant_id": self.tenant_id,
             },
         ]
 
@@ -304,6 +316,7 @@ class ClientModuleTestCase(TestCase):
                 "urgency": 3,
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-03T05:42:43+00:00",
+                "tenant_id": self.tenant_id,
             },
             {
                 "_created": "2018-04-13T06:48:23+00:00",
@@ -392,6 +405,7 @@ class ClientModuleTestCase(TestCase):
                 "urgency": 3,
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-13T06:48:23+00:00",
+                "tenant_id": self.tenant_id,
             },
             self.polls[0],
         ]
@@ -489,18 +503,62 @@ class ClientModuleTestCase(TestCase):
                 "urgency": 3,
                 "version_creator": self.user_ids[0],
                 "versioncreated": "2018-04-03T05:42:43+00:00",
+                "tenant_id": self.tenant_id,
             }
         ]
 
         self.blog_post_ids = self.app.data.insert("client_blog_posts", self.blog_posts)
 
+    def _comment_doc_for_blog(self, blog_id):
+        item_id = self.app.data.insert(
+            "client_items",
+            [
+                {
+                    "_id": "urn:test-comment:{}".format(ObjectId()),
+                    "text": "comment",
+                    "commenter": "reader",
+                    "item_type": "comment",
+                    "client_blog": blog_id,
+                    "particular_type": "item",
+                    "tenant_id": self.tenant_id,
+                }
+            ],
+        )[0]
+        doc = dict(self.comment_docs[0], client_blog=blog_id, sticky=True)
+        doc["groups"] = [
+            {"id": "root", "refs": [{"idRef": "main"}]},
+            {"id": "main", "refs": [{"residRef": item_id, "location": "users"}]},
+        ]
+        return doc, item_id
+
     def test_a_on_create_comment(self):
+        blog_id = self.blogs_ids[0]
+        self.app.data.update(
+            "blogs", blog_id, {"users_can_comment": "enabled"}, self.blogs_list[0]
+        )
+        doc, item_id = self._comment_doc_for_blog(blog_id)
+
         with self.app.test_request_context("client_comments", method="POST"):
-            self.assertIsNone(self.client_comment_service.on_create(self.comment_docs))
-            response = get_resource_service("archive").find_one(
-                req=None, client_blog=ObjectId("5ab90249fd16ad1752b39b74")
-            )
-            self.assertIsNotNone(response, True)
+            self.assertIsNone(self.client_comment_service.on_create([doc]))
+
+        self.assertEqual(doc["tenant_id"], self.tenant_id)
+        self.assertEqual(doc["post_status"], "comment")
+        self.assertEqual(doc["blog"], str(blog_id))
+        self.assertFalse(doc["sticky"])
+        self.assertEqual(doc["groups"][1]["refs"][0]["residRef"], item_id)
+        self.assertNotIn("location", doc["groups"][1]["refs"][0])
+
+    def test_a_on_create_comment_rejected_when_blog_disallows_comments(self):
+        blog_id = self.blogs_ids[0]
+        self.app.data.update(
+            "blogs", blog_id, {"users_can_comment": "disabled"}, self.blogs_list[0]
+        )
+        doc, _ = self._comment_doc_for_blog(blog_id)
+
+        with self.app.test_request_context("client_comments", method="POST"):
+            with self.assertRaises(SuperdeskApiError) as ctx:
+                self.client_comment_service.on_create([doc])
+        self.assertEqual(ctx.exception.status_code, 403)
 
     def test_post_type_and_author(self):
         doc = self.blog_post_service.extract_author_ids(self.blog_posts[0])
@@ -646,7 +704,9 @@ class ClientModuleTestCase(TestCase):
             self.assertEqual(response_data["message"], "Vote placed successfully")
 
             # Validate that the vote count has been incremented in the poll
-            updated_poll = get_resource_service("polls").find_one(req=None, _id=poll_id)
+            updated_poll = get_resource_service("client_polls").find_one(
+                req=None, _id=poll_id
+            )
             updated_answers = updated_poll["poll_body"]["answers"]
             for answer in updated_answers:
                 if answer["option"] == option_selected:

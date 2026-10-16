@@ -1,0 +1,188 @@
+name: Stripe e2e
+
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  stripe-e2e:
+    # Fork PRs get no environment secrets, so only same-repo PRs can run this.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.label.name == 'e2e:stripe' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: stripe-sandbox
+    # One sandbox account backs every run, so runs must queue rather than race on its data.
+    concurrency:
+      group: stripe-sandbox
+      cancel-in-progress: false
+
+    env:
+      CI: true
+      SYNDICATION_VALIDATE_AUTH: 0
+      MAIL_SERVER: 'localhost'
+      MAIL_PORT: 2225
+      MAIL_USERNAME: __EMPTY__
+      MAIL_PASSWORD: __EMPTY__
+      MAIL_USE_TLS: 0
+      MAIL_USE_SSL: 0
+      MAIL_DEBUG: 1
+      MAIL_SUPPRESS_SEND: true
+      SUPERDESK_URL: 'http://localhost:5000/api'
+      SUPERDESK_WS_URL: 'ws://localhost:5100'
+      SUPERDESK_CLIENT_URL: 'http://localhost:9000'
+      WEB_CONCURRENCY: 3
+      WEB_TIMEOUT: 8
+      SUPERDESK_TESTING: true
+      MARKETPLACE: true
+      SYNDICATION: true
+      MONGO_URI: 'mongodb://localhost:27017/liveblog'
+      STRIPE_BILLING_REQUIRED: 'true'
+      STRIPE_CLI_VERSION: '1.53.0'
+      STRIPE_CLI_SHA256: 'a12205df4aecb18153b8b3f76d5029386b1e94944d559900f9082ca489a8521b'
+      STRIPE_CLI_TELEMETRY_OPTOUT: 1
+
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      elasticsearch:
+        image: liveblog3/elasticsearch:1.7.2
+        ports:
+          - 9200:9200
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up server
+      uses: ./.github/actions/setup-server
+
+    - name: Set up client
+      uses: ./.github/actions/setup-client
+
+    - name: Install Stripe CLI
+      shell: bash
+      run: |
+        tarball="stripe_${STRIPE_CLI_VERSION}_linux_x86_64.tar.gz"
+        curl -fsSL -o "$RUNNER_TEMP/$tarball" \
+          "https://github.com/stripe/stripe-cli/releases/download/v${STRIPE_CLI_VERSION}/$tarball"
+        echo "$STRIPE_CLI_SHA256  $RUNNER_TEMP/$tarball" | sha256sum --check --strict
+        mkdir -p "$RUNNER_TEMP/stripe-cli"
+        tar -xzf "$RUNNER_TEMP/$tarball" -C "$RUNNER_TEMP/stripe-cli" stripe
+        echo "$RUNNER_TEMP/stripe-cli" >> "$GITHUB_PATH"
+        "$RUNNER_TEMP/stripe-cli/stripe" version
+
+    - name: Get Stripe webhook signing secret
+      shell: bash
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      run: |
+        secret="$(stripe listen --api-key "$STRIPE_SECRET_KEY" --print-secret)"
+        if [[ "$secret" != whsec_* ]]; then
+          echo "::error::stripe listen --print-secret did not return a webhook signing secret"
+          exit 1
+        fi
+        echo "::add-mask::$secret"
+        echo "STRIPE_WEBHOOK_SECRET=$secret" >> "$GITHUB_ENV"
+
+    - name: Start app
+      uses: ./.github/actions/start-app
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+
+    - name: Forward Stripe webhooks to the backend
+      shell: bash
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      run: |
+        # The listen log contains the webhook signing secret: it lives outside the workspace,
+        # is never uploaded, and is only ever printed with the secret redacted.
+        log="$RUNNER_TEMP/stripe-listen.log"
+        # The events the billing webhook handles (EVENT_HANDLERS in server/liveblog/billing/webhooks.py).
+        nohup stripe listen --api-key "$STRIPE_SECRET_KEY" \
+          --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted \
+          --forward-to http://localhost:5000/api/billing/webhook \
+          > "$log" 2>&1 &
+        for _ in $(seq 1 60); do
+          if grep -q 'Ready!' "$log"; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "::error::stripe listen did not become ready"
+        sed -E 's/whsec_[A-Za-z0-9]+/whsec_***/g' "$log"
+        exit 1
+
+    - name: Wait for the backend
+      shell: bash
+      run: timeout 180 bash -c 'until curl -s -o /dev/null http://localhost:5000/api; do sleep 2; done'
+
+    - name: Setup Node 24 for Playwright
+      uses: actions/setup-node@v6
+      with:
+        node-version: '24'
+
+    - name: Install Playwright dependencies
+      id: e2e-deps
+      working-directory: ./client/e2e
+      shell: bash
+      run: |
+        npm ci
+        npx playwright install chromium --with-deps
+
+    - name: Clean up the Stripe sandbox before the tests
+      working-directory: ./client/e2e
+      shell: bash
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      run: npm run stripe:janitor
+
+    - name: Run Stripe e2e tests
+      working-directory: ./client/e2e
+      shell: bash
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        E2E_BASE_URL: 'http://localhost:9000'
+      run: npx playwright test -c playwright.stripe.config.ts
+
+    # Runs are serialized by the concurrency group, so everything e2e in the sandbox is this run's.
+    - name: Clean up the Stripe sandbox after the tests
+      if: always() && steps.e2e-deps.outcome == 'success'
+      working-directory: ./client/e2e
+      shell: bash
+      env:
+        STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      run: npm run stripe:janitor -- --older-than-hours 0
+
+    - name: Upload Playwright report
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: playwright-report-stripe
+        path: |
+          client/e2e/playwright-report-stripe
+          client/e2e/test-results
+        if-no-files-found: ignore
+        retention-days: 14
+
+    - name: Remove the e2e:stripe label
+      if: always() && github.event_name == 'pull_request'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label e2e:stripe \
+          || echo "::notice::Could not remove the e2e:stripe label, it may already be gone"

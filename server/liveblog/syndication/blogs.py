@@ -1,12 +1,12 @@
 import datetime
 import logging
 
-from bson import ObjectId
 from eve.utils import str_to_date
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, g, request
 from flask_cors import CORS
 from liveblog.blogs.schema import blogs_schema
 from liveblog.posts.posts import PostsResource
+from liveblog.tenancy.context import set_system_mode, reset_system_mode
 from superdesk import get_resource_service
 from superdesk.services import BaseService
 
@@ -42,7 +42,7 @@ class BlogPostsService(BaseService):
 
     def get(self, req, lookup):
         if lookup.get("blog_id"):
-            lookup["blog"] = ObjectId(lookup["blog_id"])
+            lookup["blog"] = lookup["blog_id"]
             del lookup["blog_id"]
         return super().get(req, lookup)
 
@@ -50,7 +50,12 @@ class BlogPostsService(BaseService):
 class BlogPostsResource(CustomAuthResource):
     url = 'syndication/blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = PostsResource.schema
-    datasource = PostsResource.datasource
+    datasource = {
+        "source": "archive",
+        "search_backend": "elastic",
+        "elastic_filter": {"term": {"particular_type": "post"}},
+        "default_sort": [("order", -1)],
+    }
     authentication = ConsumerApiKeyAuth
     item_methods = ["GET"]
     resource_methods = ["GET"]
@@ -185,6 +190,14 @@ def _blogs_blueprint_auth():
     authorized = auth.authorized(allowed_roles=[], resource="syndication_blogs")
     if not authorized:
         return abort(401, "Authorization failed.")
+    g._system_mode_token = set_system_mode()
+
+
+def _blogs_blueprint_teardown(exc):
+    token = g.pop("_system_mode_token", None)
+    if token:
+        reset_system_mode(token)
 
 
 blogs_blueprint.before_request(_blogs_blueprint_auth)
+blogs_blueprint.teardown_request(_blogs_blueprint_teardown)

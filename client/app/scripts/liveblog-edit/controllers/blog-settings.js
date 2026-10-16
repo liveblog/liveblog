@@ -478,7 +478,7 @@ function BlogSettingsController(
             $location.path('/liveblog/edit/' + vm.blog._id);
         },
         buildOwner: function(userID) {
-            api('users')
+            api('liveblog_users')
                 .getById(userID)
                 .then((data) => {
                     // temp_selected_owner is used handle the selection of users in the change owner autocomplete box
@@ -488,7 +488,7 @@ function BlogSettingsController(
         },
         getUsers: function(details, ids) {
             _.each(ids, (user) => {
-                api('users')
+                api('liveblog_users')
                     .getById(user.user)
                     .then((data) => {
                         if (user.request_id) {
@@ -550,12 +550,12 @@ function BlogSettingsController(
 <esi:include src="${vm.publicUrl}" />`;
     });
 
-    api('users')
+    api('liveblog_users')
         .getById(blog.original_creator)
         .then((data) => {
             vm.original_creator = data;
         });
-    api('users')
+    api('liveblog_users')
         .query()
         .then((data) => {
             vm.avUsers = data._items;

@@ -9,9 +9,10 @@ from flask import make_response, request
 from flask_cors import CORS
 
 from superdesk import get_resource_service
+from superdesk.errors import SuperdeskApiError
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 
+from liveblog.tenancy.service import TenantAwareService
 from liveblog.utils.hooks import build_hook_data, events, trigger_hooks
 from settings import TRIGGER_HOOK_URLS
 
@@ -27,19 +28,20 @@ analytics_schema = {
         "type": "string",
     },
     "hits": {"type": "integer"},
+    "tenant_id": Resource.rel("tenants"),
 }
 
 
 class AnalyticsResource(Resource):
     datasource = {"source": "analytics", "default_sort": [("hits", 1)]}
 
-    public_methods = ["GET"]
+    resource_methods = ["GET"]
     privileges = {"GET": "analytics"}
 
     schema = analytics_schema
 
 
-class AnalyticsService(BaseService):
+class AnalyticsService(TenantAwareService):
     notification_key = "analytics"
 
 
@@ -51,8 +53,17 @@ class BlogAnalyticsResource(Resource):
     resource_methods = ["GET"]
 
 
-class BlogAnalyticsService(BaseService):
+class BlogAnalyticsService(TenantAwareService):
     notification_key = "blog_analytics"
+
+    def get(self, req, lookup):
+        if lookup.get("blog_id"):
+            blog_id = ObjectId(lookup["blog_id"])
+            blog = get_resource_service("blogs").find_one(req=None, _id=blog_id)
+            if not blog:
+                raise SuperdeskApiError.notFoundError(message="Blog not found")
+            lookup["blog_id"] = blog_id
+        return super().get(req, lookup)
 
 
 def _trigger_embed_hook(blog_id, url):
@@ -64,7 +75,7 @@ def _trigger_embed_hook(blog_id, url):
         blog = get_resource_service("blogs").find_one(
             req=None, checkUser=False, _id=blog_id
         )
-        author = get_resource_service("users").find_one(
+        author = get_resource_service("liveblog_users").find_one(
             req=None, _id=ObjectId(blog["original_creator"])
         )
 
@@ -100,7 +111,9 @@ def analytics_hit():
     cache = app.cache
     cached = cache.get(ip)
     if cached == blog_id:
-        return make_response("hit already registered", 406)
+        return make_response(
+            json.dumps({"_status": "ERR", "_error": "hit already registered"}), 406
+        )
 
     if TRIGGER_HOOK_URLS and context_url:
         _trigger_embed_hook(blog_id, context_url)
@@ -109,27 +122,31 @@ def analytics_hit():
     cache.set(ip, blog_id, timeout=5 * 60)
 
     # check blog with given id exists
-    blogs_service = get_resource_service("blogs")
-    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
+    blogs_service = get_resource_service("client_blogs")
+    blog = blogs_service.find_one(req=None, _id=blog_id)
     if blog is None:
         data = json.dumps(
             {
                 "_status": "ERR",
-                "_error": 'No blog available for syndication with given id "{}".'.format(
-                    blog_id
-                ),
+                "_error": 'No blog available with given id "{}".'.format(blog_id),
             }
         )
         response = make_response(data, 409)
         return response
 
+    tenant_id = blog.get("tenant_id")
+
     # if ip is new and blog exists, add a record of a hit in db
     client = app.data.mongo.pymongo("analytics").db["analytics"]
     # use upsert to be thread safe (upsert updates the record if it exists, or else creates it)
     client.update(
-        {"blog_id": ObjectId(blog_id), "context_url": context_url},
+        {
+            "blog_id": ObjectId(blog_id),
+            "context_url": context_url,
+            "tenant_id": tenant_id,
+        },
         {"$inc": {"hits": 1}},
         True,
     )
 
-    return make_response("success", 200)
+    return make_response(json.dumps({"_status": "OK"}), 200)

@@ -14,18 +14,21 @@ import flask
 import superdesk
 import werkzeug.exceptions
 
+from eve.utils import date_to_str
+from bson.objectid import ObjectId
+from flask import current_app as app
+from eve.versioning import insert_versioning_documents
+
+from superdesk.utc import utcnow
 from apps.archive.common import ITEM_OPERATION
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_STATE, CONTENT_STATE
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.tests import clean_dbs, use_snapshot
-from superdesk.utc import utcnow
-from eve.utils import date_to_str
-from flask import current_app as app
-from eve.versioning import insert_versioning_documents
-from bson.objectid import ObjectId
 from apps.search_providers import allowed_search_providers, register_search_provider
+
+from settings import SUBSCRIPTION_LEVEL_NETWORK
 
 
 def apply_placeholders(placeholders, text):
@@ -59,8 +62,39 @@ def get_default_user():
     return user
 
 
-def prepopulate_data(file_name, default_user=get_default_user()):
+def _register_default_user(default_user):
+    """Register the default user via RegistrationService, creating a tenant automatically.
+
+    Prepopulate profiles seed multiple blogs/themes/posts, so the generated tenant
+    must keep a high-enough entitlement level for fixture loading to succeed.
+
+    Returns the tenant_id so it can be used as a placeholder in prepopulate data.
+    """
+    from liveblog.tenancy.registration import RegistrationService
+
+    users_service = get_resource_service("users")
+    tenants_service = get_resource_service("tenants")
+    user = users_service.find_one(req=None, username=default_user["username"])
+    if user:
+        tenant_id = user.get("tenant_id")
+        if tenant_id:
+            tenants_service.patch(
+                tenant_id, {"subscription_level": SUBSCRIPTION_LEVEL_NETWORK}
+            )
+        return str(user.get("tenant_id", ""))
+
+    reg = RegistrationService()
+    result = reg.register_new_user(dict(default_user))
+    tenants_service.patch(
+        result["tenant_id"], {"subscription_level": SUBSCRIPTION_LEVEL_NETWORK}
+    )
+    return str(result["tenant_id"])
+
+
+def prepopulate_data(file_name, default_user=get_default_user(), tenant_id=None):
     placeholders = {"NOW()": date_to_str(utcnow())}
+    if tenant_id:
+        placeholders["-id default-tenant-"] = tenant_id
     users = {default_user["username"]: default_user["password"]}
     default_username = default_user["username"]
     file = os.path.join(os.path.abspath(os.path.dirname(__file__)), file_name)
@@ -165,12 +199,11 @@ class PrepopulateService(BaseService):
             if doc.get("remove_first"):
                 clean_dbs(superdesk.app, force=True)
 
-            user = get_resource_service("users").find_one(
-                username=get_default_user()["username"], req=None
+            default_user = get_default_user()
+            tenant_id = _register_default_user(default_user)
+            prepopulate_data(
+                doc.get("profile") + ".json", default_user, tenant_id=tenant_id
             )
-            if not user:
-                get_resource_service("users").post([get_default_user()])
-            prepopulate_data(doc.get("profile") + ".json", get_default_user())
 
     def create(self, docs, **kwargs):
         use_snapshot(superdesk.app, "prepopulate")(self._create)(docs)
@@ -190,12 +223,9 @@ class AppPrepopulateCommand(superdesk.Command):
     ]
 
     def run(self, prepopulate_file):
-        user = get_resource_service("users").find_one(
-            username=get_default_user()["username"], req=None
-        )
-        if not user:
-            get_resource_service("users").post([get_default_user()])
-        prepopulate_data(prepopulate_file, get_default_user())
+        default_user = get_default_user()
+        tenant_id = _register_default_user(default_user)
+        prepopulate_data(prepopulate_file, default_user, tenant_id=tenant_id)
 
 
 superdesk.command("app:prepopulate", AppPrepopulateCommand())

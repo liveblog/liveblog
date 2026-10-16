@@ -2,13 +2,14 @@ import logging
 
 from bson import ObjectId
 from flask.views import MethodView
-from flask import current_app as app
 from flask import Blueprint, abort, request
+from flask import current_app as app
 from flask_cors import CORS
 from superdesk import get_resource_service
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
-from superdesk.services import BaseService
+from liveblog.tenancy.service import TenantAwareService
+from liveblog.tenancy.context import system_context, tenant_context_from_blog
 from liveblog.utils.api import api_error, api_response
 
 from .auth import ConsumerBlogTokenAuth
@@ -33,6 +34,7 @@ CORS(syndication_blueprint)
 WEBHOOK_METHODS = {"created": "POST", "updated": "PUT", "deleted": "DELETE"}
 
 syndication_out_schema = {
+    "tenant_id": Resource.rel("tenants"),
     "blog_id": Resource.rel("blogs", embeddable=True, required=True, type="objectid"),
     "consumer_id": Resource.rel(
         "consumers", embeddable=True, required=True, type="objectid"
@@ -44,15 +46,11 @@ syndication_out_schema = {
 }
 
 
-class SyndicationOutService(BaseService):
+class SyndicationOutService(TenantAwareService):
     notification_key = "syndication_out"
 
-    def _cursor(self, resource=None):
-        resource = resource or self.datasource
-        return app.data.mongo.pymongo(resource=resource).db[resource]
-
     def _get_blog(self, blog_id):
-        return self._cursor("blogs").find_one({"_id": ObjectId(blog_id)})
+        return get_resource_service("blogs").find_one(req=None, _id=ObjectId(blog_id))
 
     def _lookup(self, consumer_id, producer_blog_id, consumer_blog_id):
         lookup = {
@@ -120,7 +118,15 @@ class SyndicationOutService(BaseService):
 
     def send_syndication_post(self, post, action="created"):
         if self._is_repeat_syndication(post):
-            blog_id = ObjectId(post["blog"])
+            blog_id = post.get("blog")
+            if not ObjectId.is_valid(blog_id):
+                logger.warning(
+                    'Skipping syndication for post "%s": invalid blog id "%s".',
+                    post.get("_id"),
+                    blog_id,
+                )
+                return
+            blog_id = ObjectId(blog_id)
             out_syndication = self.get_blog_syndication(blog_id)
             for out in out_syndication:
                 send_post_to_consumer.delay(out, post, action)
@@ -167,6 +173,7 @@ class SyndicationOut(Resource):
 
 
 syndication_in_schema = {
+    "tenant_id": Resource.rel("tenants"),
     "blog_id": Resource.rel("blogs", embeddable=True, required=True, type="objectid"),
     "blog_token": {"type": "string", "required": True, "unique": True},
     "producer_id": Resource.rel(
@@ -180,7 +187,7 @@ syndication_in_schema = {
 }
 
 
-class SyndicationInService(BaseService):
+class SyndicationInService(TenantAwareService):
     notification_key = "syndication_in"
 
     def _lookup(self, producer_id, producer_blog_id, consumer_blog_id):
@@ -258,20 +265,29 @@ class SyndicationWebhook(MethodView):
         and ensures the blog is open for updates. If any validation fails, an appropriate
         error response is returned. Otherwise, it proceeds with the request handling.
 
+        Tenant context is derived from the target blog via tenant_context_from_blog,
+        so that syndicated posts are created under the correct tenant.
+
         Returns:
             Flask response object: An API response or error response.
         """
-        # no blog_token but GET request, it means checking for webhook's response
         blog_token = request.headers.get("Authorization")
         if not blog_token and request.method == "GET":
             return api_response({}, 200)
 
         self._initialize_services()
 
-        self.in_syndication = self.in_service.find_one(blog_token=blog_token, req=None)
+        # blog_token is a globally unique secret — look it up across all tenants
+        # to find which syndication relationship (and blog) this request targets.
+        with system_context():
+            self.in_syndication = self.in_service.find_one(
+                blog_token=blog_token, req=None
+            )
+
         if not self.in_syndication:
             return api_error("Blog is not being syndicated", 406)
 
+        # client_blogs is a public endpoint (no tenant filter on find_one)
         self.blog = self.blog_service.find_one(
             req=None, _id=self.in_syndication["blog_id"]
         )
@@ -283,12 +299,14 @@ class SyndicationWebhook(MethodView):
                 "Updates should not be sent for a blog which is not open", 409
             )
 
-        # ensure necessary data is in the request
         self.request_data = data = request.get_json(silent=True) or {}
         if not all(key in data for key in ("items", "post")):
             return api_error("Bad Request", 400)
 
-        return super().dispatch_request(*args, **kwargs)
+        # Derive tenant from the target blog so that posts are created
+        # under the correct tenant — same pattern as create_amp_comment.
+        with tenant_context_from_blog(self.blog):
+            return super().dispatch_request(*args, **kwargs)
 
     def _notify(self, post, **kwargs):
         notification_data = {"posts": [post]}
@@ -360,11 +378,14 @@ syndication_blueprint.add_url_rule(
 
 
 def _syndication_blueprint_auth():
-    auth = ConsumerBlogTokenAuth()
-    # get requests do no require authorization
-    authorized = request.method == "GET" or auth.authorized(
-        allowed_roles=[], resource="syndication_blogs"
-    )
+    # Blog token auth needs a global lookup (syndication_in.find_one(blog_token=...))
+    # since the caller is an external producer with no tenant context.
+    with system_context():
+        auth = ConsumerBlogTokenAuth()
+        authorized = request.method == "GET" or auth.authorized(
+            allowed_roles=[], resource="syndication_blogs"
+        )
+
     if not authorized:
         return abort(401, "Authorization failed.")
 

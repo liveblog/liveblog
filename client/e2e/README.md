@@ -10,12 +10,14 @@ client/e2e/
 ├── fixtures/
 │   └── index.ts              # Auth fixtures (authenticatedPage, contributorPage, resetDb)
 ├── api/
-│   └── client.ts             # HTTP client for data seeding
+│   ├── client.ts             # ApiClient: base-prefixed get/post/delete, persona auth, exposed as the `api` fixture
+│   └── seed.ts               # User/tenant seeding helpers built on ApiClient
 ├── pages/                    # Page objects — one file per feature area
 └── tests/
     ├── auth/
     ├── blogs/
     ├── editor/
+    ├── support/
     ├── syndication/
     ├── timeline/
     └── managers/
@@ -38,6 +40,20 @@ npx playwright test --ui     # interactive UI mode
 npx playwright test tests/editor/drafts.spec.ts  # single spec
 ```
 
+### Environment variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `SUPERDESK_URL` | `http://127.0.0.1:5001/api` | Backend API base used by fixtures and API assertions (`config.ts`) |
+| `E2E_BASE_URL` | `http://localhost:9000` | Client URL the browser navigates to (`playwright.config.ts` baseURL) |
+| `IFRAMELY_KEY` | unset | Enables the embed spec; it auto-skips without it |
+
+Both URL variables exist so the suite can target an alternative stack (for example an isolated instance on non-default ports) without editing config files:
+
+```bash
+SUPERDESK_URL=http://localhost:5002/api E2E_BASE_URL=http://localhost:9100 npx playwright test
+```
+
 ## Conventions
 
 - Never use `waitForTimeout`. Use explicit conditions (`waitFor`, `toBeVisible`, `toHaveCount`).
@@ -45,6 +61,7 @@ npx playwright test tests/editor/drafts.spec.ts  # single spec
 - DB is reset automatically before every test via the `resetDb` auto fixture — no `beforeEach` prepopulate calls in specs.
 - Sidebar nav uses `.dispatchEvent('click')` — not `.click()` — due to blog image overlays intercepting pointer events.
 - The embed test (`editor/embed.spec.ts`) is skipped automatically if `IFRAMELY_KEY` is not set.
+- The support tools specs (`tests/support/`) rely on the `support` user seeded by the prepopulate `test` profile with the CLI-only `is_support` flag (prepopulate posts through the system users service; REST strips the flag). No extra runner prerequisites.
 
 ## Gotchas
 

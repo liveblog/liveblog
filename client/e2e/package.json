@@ -6,7 +6,9 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
-    "test:codegen": "playwright codegen http://localhost:9000"
+    "test:codegen": "playwright codegen http://localhost:9000",
+    "stripe:seed": "tsx scripts/stripe-seed.ts",
+    "stripe:janitor": "tsx scripts/stripe-janitor.ts"
   },
   "dependencies": {
     "@playwright/test": "^1.60.0",
@@ -18,5 +20,11 @@
   },
   "volta": {
     "node": "24.0.0"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^3.6.20",
+    "mongodb": "^3.7.4",
+    "stripe": "^23.0.0",
+    "tsx": "^4.23.15"
   }
 }

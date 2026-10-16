@@ -3,6 +3,7 @@ from superdesk.resource import Resource
 
 
 blogs_schema = {
+    "tenant_id": Resource.rel("tenants"),
     "title": metadata_schema["headline"],
     "description": metadata_schema["description_text"],
     "picture_url": {"type": "string", "nullable": True},

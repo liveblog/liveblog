@@ -1,4 +1,5 @@
 import { EventNames } from './liveblog-common/constants';
+import { getToken } from './liveblog-common/session';
 
 interface ISettings {
     features: { [key: string]: boolean };
@@ -7,11 +8,11 @@ interface ISettings {
 }
 
 class FeaturesService {
-    api: any;
     private settings: ISettings = null;
+    private config: any;
 
-    constructor(api) {
-        this.api = api;
+    constructor(config) {
+        this.config = config;
     }
 
     async initialize(): Promise<void> {
@@ -22,15 +23,26 @@ class FeaturesService {
         }
     }
 
+    clear = () => {
+        this.settings = null;
+    }
+
     /**
      * Gets the settings from cache or loads them if not already loaded.
      * @returns A promise that resolves to the settings object.
      */
     private async loadSettings(): Promise<void> {
-        this.settings = await this.api.get('/instance_settings/current');
+        const token = getToken();
+
+        const response = await fetch(
+            this.config.server.url + '/instance_settings/current',
+            { headers: { Authorization: token } }
+        );
+
+        this.settings = response.ok ? await response.json() : null;
     }
 
-    isNetworkSubscription = () => this.settings.isNetworkSubscription;
+    isNetworkSubscription = () => this.settings?.isNetworkSubscription ?? false;
 
     /**
      * Determines if a specific feature is enabled based on the current settings.
@@ -39,7 +51,7 @@ class FeaturesService {
     isEnabled = (featureName: string) => {
         const settings = this.settings;
 
-        if (settings.isNetworkSubscription) {
+        if (settings?.isNetworkSubscription) {
             return true;
         }
 
@@ -53,7 +65,7 @@ class FeaturesService {
     isLimitReached = (featureName: string, currentUsage: number) => {
         const settings = this.settings;
 
-        if (settings.isNetworkSubscription) {
+        if (settings?.isNetworkSubscription) {
             return false;
         }
 
@@ -68,7 +80,7 @@ class FeaturesService {
     isBandwidthLimitEnabled = () => {
         const settings = this.settings;
 
-        if (settings.isNetworkSubscription) {
+        if (settings?.isNetworkSubscription) {
             return false;
         }
 
@@ -79,13 +91,21 @@ class FeaturesService {
 }
 
 angular.module('liveblog.features', [])
-    .service('featuresService', ['api', '$rootScope', (api, $rootScope) => {
-        const featuresService = new FeaturesService(api);
+    .service('featuresService', ['$rootScope', 'SESSION_EVENTS', 'config',
+        ($rootScope, SESSION_EVENTS, config) => {
+            const featuresService = new FeaturesService(config);
 
-        $rootScope.$on(EventNames.InstanceSettingsUpdated, () => {
+            $rootScope.$on(EventNames.InstanceSettingsUpdated, () => {
+                featuresService.initialize();
+            });
+
+            $rootScope.$on(SESSION_EVENTS.LOGIN, async() => {
+                await featuresService.initialize();
+            });
+
+            $rootScope.$on(SESSION_EVENTS.LOGOUT, featuresService.clear);
+
             featuresService.initialize();
-        });
 
-        featuresService.initialize();
-        return featuresService;
-    }]);
+            return featuresService;
+        }]);

@@ -1,4 +1,5 @@
 declare const angular: IAngularStatic;
+declare const __SUPERDESK_CONFIG__: { server: { url: string } };
 
 // fix to avoid the typescript compiler warning
 declare module '*.ng1' {

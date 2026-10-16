@@ -10,6 +10,7 @@
 import angular from 'angular';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
+import { getToken } from '../liveblog-common/session';
 import { IFilters } from './types';
 
 const postsService = (api, $q, _userList, session) => {
@@ -413,7 +414,7 @@ const postsService = (api, $q, _userList, session) => {
         fetch(url, {
             method: 'DELETE',
             headers: {
-                Authorization: localStorage.getItem('sess:token'),
+                Authorization: getToken(),
                 'Content-Type': 'application/json',
                 'If-Match': etag,
             },

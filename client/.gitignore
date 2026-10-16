@@ -16,5 +16,6 @@ test-results.xml
 .vagrant/
 e2e-test-results/
 playwright-report/
+playwright-report-stripe/
 test-results/
 !package-lock.json

@@ -3,11 +3,23 @@ import liveblog.blogs as blogs
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
 
+from liveblog.common import run_once
+
 
 class BlogsPostOrderingTestCase(TestCase):
+    @run_once
+    def setup_test_case(self):
+        test_config = {
+            "LIVEBLOG_DEBUG": True,
+            "DEBUG": False,
+        }
+        self.app.config.update(test_config)
+
+        for lb_app in [blogs, client_modules]:
+            lb_app.init_app(self.app)
+
     def setUp(self):
-        blogs.init_app(self.app)
-        client_modules.init_app(self.app)
+        self.setup_test_case()
         # set default ordering status
         self.default_ordering = "newest_first"
         self.blog_instance = Blog("5aa60e5e4d003d133fe75b61")

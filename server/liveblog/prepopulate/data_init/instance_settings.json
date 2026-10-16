@@ -3,7 +3,7 @@
         "settings": {
             "liveblog-go": {
                 "features": {
-                    "syndication": true,
+                    "syndication": false,
                     "marketplace": false,
                     "theme_styles": false,
                     "custom_themes": false,

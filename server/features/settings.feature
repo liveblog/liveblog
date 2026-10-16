@@ -32,7 +32,7 @@ Feature: Settings operations
 
     @auth
     Scenario: The blog preference takes the global preferences
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """
@@ -65,7 +65,7 @@ Feature: Settings operations
 
     @auth
     Scenario: Update theme preferences for a specific blog
-    	Given "themes"
+    	Given tenant aware "themes"
         """
         [{"name": "forest"}]
         """

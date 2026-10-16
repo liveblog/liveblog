@@ -8,12 +8,10 @@ from .analytics import (
 
 
 def init_app(app):
-    # Analytics
     endpoint_name = "analytics"
     service = AnalyticsService(endpoint_name, backend=superdesk.get_backend())
     AnalyticsResource(endpoint_name, app=app, service=service)
 
-    # Blog Analytics
     endpoint_name = "blog_analytics"
     service = BlogAnalyticsService(endpoint_name, backend=superdesk.get_backend())
     BlogAnalyticsResource(endpoint_name, app=app, service=service)

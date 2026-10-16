@@ -20,15 +20,53 @@ def before_all(context):
         "ELASTICSEARCH_FORCE_REFRESH": True,
         "BEHAVE_TESTS_FIXTURES_PATH": BEHAVE_TESTS_FIXTURES_PATH,
         "NO_TAKES": True,
+        "CELERY_ALWAYS_EAGER": True,
+        "MAIL_SUPPRESS_SEND": True,
+        "STRIPE_BILLING_REQUIRED": False,
     }
     setup_before_all(context, config, app_factory=get_app)
 
 
+def _get_skip_reason(scenario):
+    """Return the skip reason from a @skip or @skip.<reason> tag, or None if absent."""
+    for tag in scenario.tags:
+        if tag == "skip":
+            return "No reason provided"
+        if tag.startswith("skip."):
+            return tag[5:].replace("_", " ")
+    return None
+
+
 def before_scenario(context, scenario):
+    reason = _get_skip_reason(scenario)
+    if reason is not None:
+        scenario.skip(reason)
+        return
+
     config = {
         "INSTALLED_APPS": INSTALLED_APPS,
         "ELASTICSEARCH_FORCE_REFRESH": True,
         "BEHAVE_TESTS_FIXTURES_PATH": BEHAVE_TESTS_FIXTURES_PATH,
         "NO_TAKES": True,
+        "CELERY_ALWAYS_EAGER": True,
+        "MAIL_SUPPRESS_SEND": True,
+        "STRIPE_BILLING_REQUIRED": False,
     }
     setup_before_scenario(context, scenario, config, app_factory=get_app)
+
+    # Ensure FeaturesService is always initialized for tests
+    if not hasattr(context.app, "features"):
+        from unittest.mock import MagicMock
+        from liveblog.instance_settings.features_service import FeaturesService
+
+        def db_service_mock():
+            db_service = MagicMock()
+            db_service.get_existing_config = MagicMock()
+            return db_service
+
+        context.app.features = FeaturesService(context.app, db_service_mock())
+
+    # Initialize MongoDB indexes after database cleanup
+    # This ensures unique constraints are enforced during tests
+    with context.app.app_context():
+        context.app.init_indexes()

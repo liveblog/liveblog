@@ -1,30 +1,28 @@
 Feature: Syndication Blog Resource
 
+    @auth
     Scenario: List blogs
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        Given "blogs"
+        Given system themes
+        Given tenant aware "blogs"
         """
         [
             {
                 "title": "testBlog",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             },
             {
                 "title": "testBlog2",
                 "blog_status": "open",
                 "syndication_enabled": false,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             },
             {
                 "title": "testBlog3",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             }
         ]
         """
@@ -32,25 +30,23 @@ Feature: Syndication Blog Resource
         When we get "/syndication/blogs/"
         Then we get list with 3 items
 
+    @auth
     Scenario: Create, update and delete blog syndication
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        Given "blogs" as item list
+        Given system themes
+        Given tenant aware "blogs" as item list
         """
         [
             {
                 "title": "Producer Blog",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             },
             {
                 "title": "Consumer Blog",
                 "blog_status": "open",
                 "syndication_enabled": false,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "classic", "language": "fr"}
             }
         ]
         """
