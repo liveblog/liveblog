@@ -24,7 +24,7 @@
 // masked-Lucide-icon swap as the Producer/Consumer avatars in
 // liveblog-syndication/styles/syndication.scss: solid teal circle, white
 // `user-round` glyph, instead of the grey PNG.
-.blogedit .avatar:not(.no-bg):not(.initials) {
+:where(.lb-refresh) .blogedit .avatar:not(.no-bg):not(.initials) {
     background: $lb-rail-active !important;
     position: relative;
     &:before {
@@ -43,7 +43,7 @@
 // (posts-list.ng1's `.alert.alert-info`) — vendor's bare Bootstrap alert
 // box (hard blue fill, heavy text-shadow, sharp-ish corners) untouched by
 // the redesign until now.
-.blogedit .alert-info {
+:where(.lb-refresh) .blogedit .alert-info {
     background-color: $lb-rail-active-bg;
     border: 1px solid rgba($lb-rail-active, 0.25);
     @include border-radius($lb-radius-input);
@@ -59,64 +59,81 @@
 }
 
 .blogedit {
-    // vendor's .main-section sets top: $subnav-height + $topspace; pull it
-    // up a bit so there's less empty space below the subnav row.
-    top: 84px;
-    // Shows through the 8px gap to the left of .side-menu (and anywhere
-    // else not covered by a white/gray child), so that gap reads as the
-    // same gray as .columns-holder's own background, not blank/white.
-    background: $lb-subnav-bg;
+    :where(.lb-refresh) & {
+        // vendor's .main-section sets top: $subnav-height + $topspace; pull it
+        // up a bit so there's less empty space below the subnav row.
+        top: 84px;
+        // Shows through the 8px gap to the left of .side-menu (and anywhere
+        // else not covered by a white/gray child), so that gap reads as the
+        // same gray as .columns-holder's own background, not blank/white.
+        background: $lb-subnav-bg;
+    }
     //left menu
     .side-menu {
         position: absolute;
-        left: 8px; top: 16px; bottom: 0;
-        width: 72px;
-        padding: 12px;
-        @include border-box();
-        background: white;
-        @include border-radius($lb-radius-card);
+        left: 0; top:0; bottom: 0;
+        width: 48px;
+        background: #a1a1a1;
+        :where(.lb-refresh) & {
+            left: 8px; top: 16px;
+            width: 72px;
+            padding: 12px;
+            @include border-box();
+            background: white;
+            @include border-radius($lb-radius-card);
+        }
         button {
             width: 48px;
-            height: 48px;
-            margin-bottom: 8px;
             border:0;
-            border-bottom: none;
+            border-bottom:1px solid $grayLight;
             padding: 0;
             line-height: 0;
-            @include border-radius($lb-radius-card);
+            :where(.lb-refresh) & {
+                height: 48px;
+                margin-bottom: 8px;
+                border-bottom: none;
+                @include border-radius($lb-radius-card);
+            }
             &.active,
             &:hover {
-                background: $lb-rail-active-bg;
+                background: #b8b8b8;
+                :where(.lb-refresh) & {
+                    background: $lb-rail-active-bg;
+                }
             }
-            &.timeline strong {
-                color: $lb-rail-inactive;
-            }
-            &.timeline.active strong,
-            &.timeline:hover strong {
-                color: $lb-rail-active;
+            :where(.lb-refresh) & {
+                &.timeline strong {
+                    color: $lb-rail-inactive;
+                }
+                &.timeline.active strong,
+                &.timeline:hover strong {
+                    color: $lb-rail-active;
+                }
             }
         }
 
-        .lb-big-icon-editor { @include lb-icon-mask(url('~images/icons/pencil-line.svg')); }
-        .lb-big-icon-contributions { @include lb-icon-mask(url('~images/icons/users-round.svg')); }
-        .lb-big-icon-scheduled-posts { @include lb-icon-mask(url('~images/icons/clock.svg')); }
-        .lb-big-icon-archive { @include lb-icon-mask(url('~images/icons/file-input.svg')); }
-        .lb-big-icon-comments { @include lb-icon-mask(url('~images/icons/message-square.svg')); }
-        .lb-big-icon-ingest { @include lb-icon-mask(url('~images/icons/download.svg')); }
+        :where(.lb-refresh) & {
+            .lb-big-icon-editor { @include lb-icon-mask(url('~images/icons/pencil-line.svg')); }
+            .lb-big-icon-contributions { @include lb-icon-mask(url('~images/icons/users-round.svg')); }
+            .lb-big-icon-scheduled-posts { @include lb-icon-mask(url('~images/icons/clock.svg')); }
+            .lb-big-icon-archive { @include lb-icon-mask(url('~images/icons/file-input.svg')); }
+            .lb-big-icon-comments { @include lb-icon-mask(url('~images/icons/message-square.svg')); }
+            .lb-big-icon-ingest { @include lb-icon-mask(url('~images/icons/download.svg')); }
 
-        [class^="lb-big-icon-"], [class*=" lb-big-icon-"] {
-            opacity: 1;
-            width: 22px !important;
-            height: 22px !important;
-            -webkit-mask-size: contain !important;
-            mask-size: contain !important;
-        }
+            [class^="lb-big-icon-"], [class*=" lb-big-icon-"] {
+                opacity: 1;
+                width: 22px !important;
+                height: 22px !important;
+                -webkit-mask-size: contain !important;
+                mask-size: contain !important;
+            }
 
-        button.active [class^="lb-big-icon-"],
-        button.active [class*=" lb-big-icon-"],
-        button:hover [class^="lb-big-icon-"],
-        button:hover [class*=" lb-big-icon-"] {
-            background-color: $lb-rail-active;
+            button.active [class^="lb-big-icon-"],
+            button.active [class*=" lb-big-icon-"],
+            button:hover [class^="lb-big-icon-"],
+            button:hover [class*=" lb-big-icon-"] {
+                background-color: $lb-rail-active;
+            }
         }
     }
     .notification-counter {
@@ -135,33 +152,45 @@
     }
     .columns-holder {
         position: absolute;
-        // .side-menu is now 8px (its own left offset) + 72px (its width,
-        // padding included) = 80px, was flush at 48px before.
-        left: 80px; right: 0;
+        left: 48px; right: 0;
         top:0; bottom: 0;
-        background: $lb-subnav-bg;
+        :where(.lb-refresh) & {
+            // .side-menu is now 8px (its own left offset) + 72px (its width,
+            // padding included) = 80px, was flush at 48px before.
+            left: 80px;
+            background: $lb-subnav-bg;
+        }
     }
 
     .column {
         position: absolute;
-        top: 16px; bottom: 16px;
+        top: 0; bottom: 0;
         padding: 0;
         @include border-box();
-        @include border-radius($lb-radius-card);
-        box-shadow: $lb-card-shadow;
-        // header padding grew from 10px to 20px (+20px total vertical) —
-        // bump the header's own height by the same amount, and carry that
-        // through to .content/.content--timeline's top offset below it
-        // (both were hardcoded to the old $nav-height value), otherwise the
-        // extra padding just squeezes the header's content instead of
-        // growing the box, cutting the cards' content short.
+        :where(.lb-refresh) & {
+            top: 16px; bottom: 16px;
+            @include border-radius($lb-radius-card);
+            box-shadow: $lb-card-shadow;
+        }
         header {
-            height: $nav-height + 20px;
+            height: $nav-height;
             @include border-box();
-            padding: 20px 20px;
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
             background-color: white;
-            border-top-left-radius: $lb-radius-card;
-            border-top-right-radius: $lb-radius-card;
+            :where(.lb-refresh) & {
+                // header padding grew from 10px to 20px (+20px total vertical) —
+                // bump the header's own height by the same amount, and carry that
+                // through to .content/.content--timeline's top offset below it
+                // (both were hardcoded to the old $nav-height value), otherwise the
+                // extra padding just squeezes the header's content instead of
+                // growing the box, cutting the cards' content short.
+                height: $nav-height + 20px;
+                box-shadow: none;
+                padding: 20px 20px;
+                border-top-left-radius: $lb-radius-card;
+                border-top-right-radius: $lb-radius-card;
+            }
             h4 {
                 color: $gray;
                 font-size: 1.4em;
@@ -172,52 +201,86 @@
         }
         .content {
             position: absolute;
-            top: $nav-height + 20px; left: 0; right: 0; bottom: 0;
+            top: $nav-height; left: 0; right: 0; bottom: 0;
             overflow: auto;
+            :where(.lb-refresh) & {
+                top: $nav-height + 20px;
+            }
             .inner-padding {
                 padding: 20px;
             }
         }
         .content--timeline {
-            top: 68px !important;
-            background: $lb-timeline-bg;
+            top: 48px !important;
+            :where(.lb-refresh) & {
+                top: 68px !important;
+                background: $lb-timeline-bg;
+            }
             //padding-top: $nav-height - 10px;
         }
         &--first {
-            left: 16px;
-            width: calc(680px - 32px);
-            background: white;
-            // Between the tablet breakpoint and the point where the fixed
-            // 680px Editor column leaves enough room for Timeline on its
-            // own — Editor was staying pinned at 680px right up until
-            // 1024px, squeezing Timeline into whatever was left (as little
-            // as ~330px around 1025-1100px). Give both columns the same
-            // 50/50 split as the tablet rule for this range too, just
-            // shifted earlier.
-            @media only screen and (max-width: 1240px) {
-                width: calc(50% - 32px);
+            left: 0;
+            width: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
+                width: 50%;
+                :where(.lb-refresh) & {
+                    width: calc(50% - 32px);
+                }
             }
+            @include box-shadow(3px 0 0 $grayLight);
             z-index: 1;
+            :where(.lb-refresh) & {
+                left: 16px;
+                width: calc(680px - 32px);
+                background: white;
+                // Same as .column's; cancels the legacy divider shadow above.
+                box-shadow: $lb-card-shadow;
+                // Between the tablet breakpoint and the point where the fixed
+                // 680px Editor column leaves enough room for Timeline on its
+                // own — Editor was staying pinned at 680px right up until
+                // 1024px, squeezing Timeline into whatever was left (as little
+                // as ~330px around 1025-1100px). Give both columns the same
+                // 50/50 split as the tablet rule for this range too, just
+                // shifted earlier.
+                @media only screen and (max-width: 1240px) {
+                    width: calc(50% - 32px);
+                }
+            }
         }
         &--timeline {
-            right: 16px;
-            left: 680px;
-            @media only screen and (max-width: 1240px) {
+            right: 0;
+            left: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
                 left: 50%;
             }
-            background: $lb-timeline-bg;
-            header {
+            background: #f0f0f0;
+            :where(.lb-refresh) & {
+                right: 16px;
+                left: 680px;
+                @media only screen and (max-width: 1240px) {
+                    left: 50%;
+                }
                 background: $lb-timeline-bg;
-                color: black;
+            }
+            header {
+                background: #fff;
+                color: $gray;
                 font-size: 1.4em;
                 line-height: 1.6em;
-                font-weight: 700;
-                // Flex row instead of float+line-height for vertical
-                // centering — floats don't respond to a parent's
-                // line-height, which was leaving Timeline/LIVE/ALL sitting
-                // low in the taller header box.
-                display: flex;
-                align-items: center;
+                font-weight: 400;
+                :where(.lb-refresh) & {
+                    background: $lb-timeline-bg;
+                    color: black;
+                    font-weight: 700;
+                    // Flex row instead of float+line-height for vertical
+                    // centering — floats don't respond to a parent's
+                    // line-height, which was leaving Timeline/LIVE/ALL sitting
+                    // low in the taller header box.
+                    display: flex;
+                    align-items: center;
+                }
             }
         }
     }
@@ -244,91 +307,116 @@
                 .btn {
                     margin-left: 5px;
                     > .title {white-space: nowrap; text-transform: none;}
-                    // A small round "x" at the pill's trailing edge instead
-                    // of the old full-cover dark overlay sliding up over
-                    // the whole pill on hover (which blotted out the name
-                    // with an oversized × mid-word).
+                    &:hover {> .overlay {top:0;}}
                     > .overlay {
+                        transition-property: top;
+                        transition-duration: .25s;
                         position: absolute;
-                        top: 50%;
-                        right: 4px;
-                        bottom: auto;
-                        left: auto;
-                        transform: translateY(-50%);
-                        width: 20px;
-                        height: 20px;
-                        @include border-radius(50%);
-                        background-color: transparent;
-                        color: $lb-timestamp;
-                        padding: 0;
-                        transition: background-color .15s ease, color .15s ease;
+                        top: 24px;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background-color: rgba(0, 0, 0, 0.6);
+                        color: white;
+                        padding: 10px 0 0;
+                        font-size: 1.8em;
+                        line-height: 0 !important;
                         @include box-sizing(border-box);
-                        // The "×" text glyph itself sits high in its own
-                        // font-metrics box — no amount of flex/line-height
-                        // centering fixes that. Draw the X as two crossed
-                        // bars instead, which centers pixel-perfectly
-                        // regardless of font.
-                        font-size: 0;
-                        &::before, &::after {
-                            content: '';
-                            position: absolute;
+                        // A small round "x" at the pill's trailing edge instead
+                        // of the old full-cover dark overlay sliding up over
+                        // the whole pill on hover (which blotted out the name
+                        // with an oversized × mid-word).
+                        :where(.lb-refresh) & {
                             top: 50%;
-                            left: 50%;
-                            width: 10px;
-                            height: 2px;
-                            background-color: currentColor;
+                            right: 4px;
+                            bottom: auto;
+                            left: auto;
+                            transform: translateY(-50%);
+                            width: 20px;
+                            height: 20px;
+                            @include border-radius(50%);
+                            background-color: transparent;
+                            color: $lb-timestamp;
+                            padding: 0;
+                            transition: background-color .15s ease, color .15s ease;
+                            // The "×" text glyph itself sits high in its own
+                            // font-metrics box — no amount of flex/line-height
+                            // centering fixes that. Draw the X as two crossed
+                            // bars instead, which centers pixel-perfectly
+                            // regardless of font.
+                            font-size: 0;
+                            &::before, &::after {
+                                content: '';
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                width: 10px;
+                                height: 2px;
+                                background-color: currentColor;
+                            }
+                            &::before { transform: translate(-50%, -50%) rotate(45deg); }
+                            &::after { transform: translate(-50%, -50%) rotate(-45deg); }
                         }
-                        &::before { transform: translate(-50%, -50%) rotate(45deg); }
-                        &::after { transform: translate(-50%, -50%) rotate(-45deg); }
                     }
-                    &:hover > .overlay {
+                    :where(.lb-refresh) &:hover > .overlay {
+                        // Holds the x in place against the legacy hover `top: 0` above.
+                        top: 50%;
                         background-color: rgba($lb-btn-dark-bg, 0.12);
                         color: $lb-btn-dark-bg;
                     }
                 }
 
                 .btn-mini {
-                    padding: 6px 24px 6px 8px;
+                    padding: 6px 8px 6px 8px;
                     height: auto;
                     margin: 2px 5px 2px 0;
                     position: relative;
                     overflow: hidden;
                     border: none;
+                    :where(.lb-refresh) & {
+                        padding: 6px 24px 6px 8px;
+                    }
                 }
 
                 .dropdown-content {
                     background-color: #fff;
-                    border: 1px solid $lb-input-border;
-                    @include border-radius($lb-radius-input);
-                    box-shadow: $lb-card-shadow;
-                    padding: 14px 14px 0;
+                    border: 1px solid #c6c6c6;
+                    border-radius: 3px;
+                    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+                    padding: 10px 10px 0;
                     width: 290px;
                     z-index: 2;
                     position: absolute;
                     left: 150px;
                     top: 2px;
-                    // "Select users" label + search input.
-                    .user-select form {
-                        label {
-                            display: block;
-                            color: $lb-timestamp;
-                            font-size: 11px;
-                            font-weight: 600;
-                            text-transform: uppercase;
-                            letter-spacing: .02em;
-                            margin-bottom: 6px;
-                        }
-                        input {
-                            width: 100%;
-                            @include box-sizing(border-box);
-                            border: 1px solid $lb-input-border;
-                            @include border-radius($lb-radius-input);
-                            padding: 8px 10px;
-                            font-size: 13px;
-                            &:focus {
-                                outline: 0;
-                                border-color: $lb-rail-active;
-                                box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                    :where(.lb-refresh) & {
+                        border: 1px solid $lb-input-border;
+                        @include border-radius($lb-radius-input);
+                        box-shadow: $lb-card-shadow;
+                        padding: 14px 14px 0;
+                        // "Select users" label + search input.
+                        .user-select form {
+                            label {
+                                display: block;
+                                color: $lb-timestamp;
+                                font-size: 11px;
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                letter-spacing: .02em;
+                                margin-bottom: 6px;
+                            }
+                            input {
+                                width: 100%;
+                                @include box-sizing(border-box);
+                                border: 1px solid $lb-input-border;
+                                @include border-radius($lb-radius-input);
+                                padding: 8px 10px;
+                                font-size: 13px;
+                                &:focus {
+                                    outline: 0;
+                                    border-color: $lb-rail-active;
+                                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                                }
                             }
                         }
                     }
@@ -336,18 +424,20 @@
                         margin: 10px 0;
                         li {
                             margin: 0;
-                            @include border-radius($lb-radius-input);
-                            padding: 4px 8px;
-                            @include box-sizing(border-box);
-                            &:hover, &.active {
-                                color: $lb-btn-dark-bg !important;
-                            }
-                            &:hover {
-                                background: $lb-rail-active-bg !important;
-                            }
-                            &.active {
-                                background: $lb-rail-active-bg !important;
-                                font-weight: 600;
+                            :where(.lb-refresh) & {
+                                @include border-radius($lb-radius-input);
+                                padding: 4px 8px;
+                                @include box-sizing(border-box);
+                                &:hover, &.active {
+                                    color: $lb-btn-dark-bg !important;
+                                }
+                                &:hover {
+                                    background: $lb-rail-active-bg !important;
+                                }
+                                &.active {
+                                    background: $lb-rail-active-bg !important;
+                                    font-weight: 600;
+                                }
                             }
                         }
                     }
@@ -364,11 +454,18 @@
                     }
                     .footer {
                         overflow: hidden;
-                        background-color: #fff;
-                        margin: 10px -14px 0;
-                        border-top: 1px solid $lb-input-border;
-                        padding: 10px 14px;
-                        @include border-radius(0 0 $lb-radius-input $lb-radius-input);
+                        background-color: #f8f8f8;
+                        margin: 0 -10px;
+                        border-top: 1px solid #e8e8e8;
+                        padding: 10px;
+                        @include border-radius(0 0 2px 2px);
+                        :where(.lb-refresh) & {
+                            background-color: #fff;
+                            margin: 10px -14px 0;
+                            border-top: 1px solid $lb-input-border;
+                            padding: 10px 14px;
+                            @include border-radius(0 0 $lb-radius-input $lb-radius-input);
+                        }
                     }
                 }
             }
@@ -382,20 +479,22 @@
         }
         // editor
         &--editor {
-            header .btn {
-                background-color: $lb-pill-bg !important;
-                border-color: $lb-pill-bg !important;
-                color: $lb-pill-text !important;
-                border-radius: $lb-radius-pill !important;
-                text-transform: none;
-                transition: background-color .15s ease;
-                &:hover:not(:disabled), &:focus {
-                    background-color: darken($lb-pill-bg, 4%) !important;
+            :where(.lb-refresh) & {
+                header .btn {
+                    background-color: $lb-pill-bg !important;
+                    border-color: $lb-pill-bg !important;
+                    color: $lb-pill-text !important;
+                    border-radius: $lb-radius-pill !important;
+                    text-transform: none;
+                    transition: background-color .15s ease;
+                    &:hover:not(:disabled), &:focus {
+                        background-color: darken($lb-pill-bg, 4%) !important;
+                    }
                 }
-            }
-            header h4 {
-                color: black;
-                font-weight: 700;
+                header h4 {
+                    color: black;
+                    font-weight: 700;
+                }
             }
         }
         &--editor .content {
@@ -406,8 +505,11 @@
             .editor-holder {
                 position: absolute;
                 bottom: 88px; left: 0; right: 0; top:0;
-                padding: 0px 20px 20px 20px;
+                padding: 20px;
                 overflow: auto;
+                :where(.lb-refresh) & {
+                    padding: 0px 20px 20px 20px;
+                }
                 .ads-media {
                     img {
                         width: 100%;
@@ -501,43 +603,56 @@
 
                 .editor {
                     textarea {
-                        border: 1px solid $lb-input-border !important;
+                        border: 1px solid #dfdfdf !important;
                         resize:vertical;
                         height: 180px;
                         padding: 10px;
                         font-size: 14px;
                         line-height: 24px;
-                        @include border-radius($lb-radius-input !important);
+                        @include border-radius(5px !important);
                         margin-bottom: 20px;
+                        :where(.lb-refresh) & {
+                            border: 1px solid $lb-input-border !important;
+                            @include border-radius($lb-radius-input !important);
+                        }
                         &:focus {
                             @include box-shadow(inset 0 3px 0 0 #f0f0f0 !important);
                         }
                     }
                     // Sir-trevor elements ---------------------------
-                    .st-blocks.st-ready {
-                        padding: 24px 34px;
+                    :where(.lb-refresh) & {
+                        .st-blocks.st-ready {
+                            padding: 24px 34px;
+                        }
                     }
                     .st-outer {
-                        display: block;
-                        border: 1px dashed $lb-input-border;
-                        @include border-radius($lb-radius-input);
+                        :where(.lb-refresh) & {
+                            display: block;
+                            border: 1px dashed $lb-input-border;
+                            @include border-radius($lb-radius-input);
+                        }
                         // ["+" bars]
                         .st-block-controls__top:before, .st-icon--add:after {
                             background-color: transparent;
-                            color: $lb-add-content-text;
+                            color: $blue;
                             padding: 0;
                             line-height: 40px;
                             height: 40px;
                             font-family: 'Roboto';
                             font-size: 13px;
+                            :where(.lb-refresh) & {
+                                color: $lb-add-content-text;
+                            }
                         }
                         .st-block-controls__top:hover:before, .st-block--with-plus:after {
                             cursor: pointer;
-                            background-color: #edf4f8;
+                            background-color: #d9d9d9;
                             color: #333;
+                            :where(.lb-refresh) & {
+                                background-color: #edf4f8;
+                            }
                         }
                         .st-block-controls {
-                            background-color: #edf4f8;
                             a[data-type='comment'] {
                                 display: none;
                             }
@@ -569,6 +684,9 @@
                             }
 
                             padding: 0;
+                            :where(.lb-refresh) & {
+                                background-color: #edf4f8;
+                            }
                             // [block types bar]
                             &--active {
                                 display: -webkit-box;
@@ -597,55 +715,62 @@
                                         font-family: inherit;
                                         @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                     } // prevent style from sir-trevor
-                                    // sir-trevor renders these via a ligature font (the
-                                    // element's text content, e.g. "text"/"quote", gets
-                                    // glyph-substituted by the ST-Icons webfont) — kill
-                                    // that with font-size: 0 and mask a Lucide SVG in its
-                                    // place instead, one per block type via [data-type].
                                     .st-icon {
-                                        font-size: 0 !important; // beats sir-trevor.scss's global `.st-icon { font-size: 18px !important; }`
-                                        display: inline-block;
-                                        width: 16px;
-                                        height: 16px;
+                                        font-size: 20px;
+                                        display: inline;
                                         vertical-align: top;
                                         position: absolute;
                                         left: 13px;
                                         top: 10px;
-                                        background-color: $gray;
-                                        -webkit-mask-repeat: no-repeat;
-                                        mask-repeat: no-repeat;
-                                        -webkit-mask-position: center;
-                                        mask-position: center;
-                                        -webkit-mask-size: contain;
-                                        mask-size: contain;
+                                        color: $gray;
+                                        // sir-trevor renders these via a ligature font (the
+                                        // element's text content, e.g. "text"/"quote", gets
+                                        // glyph-substituted by the ST-Icons webfont) — kill
+                                        // that with font-size: 0 and mask a Lucide SVG in its
+                                        // place instead, one per block type via [data-type].
+                                        :where(.lb-refresh) & {
+                                            font-size: 0 !important; // beats sir-trevor.scss's global `.st-icon { font-size: 18px !important; }`
+                                            display: inline-block;
+                                            width: 16px;
+                                            height: 16px;
+                                            background-color: $gray;
+                                            -webkit-mask-repeat: no-repeat;
+                                            mask-repeat: no-repeat;
+                                            -webkit-mask-position: center;
+                                            mask-position: center;
+                                            -webkit-mask-size: contain;
+                                            mask-size: contain;
+                                        }
                                     }
                                     &:last-child {
                                         margin: 0;
                                     }
                                 }
-                                a[data-type='text'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/file-text.svg');
-                                    mask-image: url('~images/icons/file-text.svg');
-                                }
-                                a[data-type='image'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/camera.svg');
-                                    mask-image: url('~images/icons/camera.svg');
-                                }
-                                a[data-type='embed'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/ellipsis.svg');
-                                    mask-image: url('~images/icons/ellipsis.svg');
-                                }
-                                a[data-type='quote'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/quote.svg');
-                                    mask-image: url('~images/icons/quote.svg');
-                                }
-                                a[data-type='poll'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
-                                    mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
-                                }
-                                a[data-type='video'] .st-icon {
-                                    -webkit-mask-image: url('~images/icons/video.svg');
-                                    mask-image: url('~images/icons/video.svg');
+                                :where(.lb-refresh) & {
+                                    a[data-type='text'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/file-text.svg');
+                                        mask-image: url('~images/icons/file-text.svg');
+                                    }
+                                    a[data-type='image'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/camera.svg');
+                                        mask-image: url('~images/icons/camera.svg');
+                                    }
+                                    a[data-type='embed'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/ellipsis.svg');
+                                        mask-image: url('~images/icons/ellipsis.svg');
+                                    }
+                                    a[data-type='quote'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/quote.svg');
+                                        mask-image: url('~images/icons/quote.svg');
+                                    }
+                                    a[data-type='poll'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
+                                        mask-image: url('~images/icons/chart-no-axes-column-increasing.svg');
+                                    }
+                                    a[data-type='video'] .st-icon {
+                                        -webkit-mask-image: url('~images/icons/video.svg');
+                                        mask-image: url('~images/icons/video.svg');
+                                    }
                                 }
                             }
                         }
@@ -746,35 +871,43 @@
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css
-                                border: 2px dashed $lb-input-border;
-                                @include border-radius($lb-radius-input);
+                                border: 1px dashed $grayLight;
                                 padding: $main-content-padding * 2;
-                                p {
-                                    color: $lb-timestamp;
-                                    font-size: 14px;
-                                    font-weight: 500;
+                                :where(.lb-refresh) & {
+                                    border: 2px dashed $lb-input-border;
+                                    @include border-radius($lb-radius-input);
                                 }
-                                // Same "image" icon as every other upload dropzone in the
-                                // app (liveblog-upload.scss's `.computer .dropzone`) instead
-                                // of sir-trevor's own ligature-font glyph (the element's text
-                                // content, "image", gets glyph-substituted by its bundled
-                                // icon webfont) — same font-size: 0 + mask technique used for
-                                // the block-type buttons below (a[data-type] .st-icon).
-                                .st-icon {
-                                    font-size: 0 !important;
-                                    display: block;
-                                    width: 22px;
-                                    height: 22px;
-                                    margin: 0 auto 10px;
-                                    background-color: $lb-timestamp;
-                                    -webkit-mask-image: url('~images/icons/image.svg');
-                                    mask-image: url('~images/icons/image.svg');
-                                    -webkit-mask-repeat: no-repeat;
-                                    mask-repeat: no-repeat;
-                                    -webkit-mask-position: center;
-                                    mask-position: center;
-                                    -webkit-mask-size: contain;
-                                    mask-size: contain;
+                                p, .st-icon {
+                                    color: $grayLight;
+                                }
+                                :where(.lb-refresh) & {
+                                    p {
+                                        color: $lb-timestamp;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                    }
+                                    // Same "image" icon as every other upload dropzone in the
+                                    // app (liveblog-upload.scss's `.computer .dropzone`) instead
+                                    // of sir-trevor's own ligature-font glyph (the element's text
+                                    // content, "image", gets glyph-substituted by its bundled
+                                    // icon webfont) — same font-size: 0 + mask technique used for
+                                    // the block-type buttons below (a[data-type] .st-icon).
+                                    .st-icon {
+                                        font-size: 0 !important;
+                                        display: block;
+                                        width: 22px;
+                                        height: 22px;
+                                        margin: 0 auto 10px;
+                                        background-color: $lb-timestamp;
+                                        -webkit-mask-image: url('~images/icons/image.svg');
+                                        mask-image: url('~images/icons/image.svg');
+                                        -webkit-mask-repeat: no-repeat;
+                                        mask-repeat: no-repeat;
+                                        -webkit-mask-position: center;
+                                        mask-position: center;
+                                        -webkit-mask-size: contain;
+                                        mask-size: contain;
+                                    }
                                 }
                             }
                             &__upload-container {
@@ -812,7 +945,9 @@
                                 // Matches .st-text-block's radius below so the
                                 // hover box-shadow (cast by this element) doesn't
                                 // trace a square outline around the rounded child.
-                                @include border-radius($lb-radius-input);
+                                :where(.lb-refresh) & {
+                                    @include border-radius($lb-radius-input);
+                                }
                                 ::selection {
                                     background: $sd-blue;
                                     color: $white;
@@ -826,14 +961,22 @@
                                 // for text input field (div[content-editable] looking like a textarea)
                                 .st-text-block {
                                     padding: 20px;
-                                    min-height: 155px;
+                                    min-height: 65px;
                                     font-size: 1em;
-                                    border: 1px solid $lb-input-border;
+                                    border: 1px solid lighten($grayLight, 25%);
                                     word-wrap: break-word;
                                     background-color: white;
-                                    @include border-radius($lb-radius-input);
-                                    &:focus, &:hover {
+                                    @include border-radius(3px);
+                                    :where(.lb-refresh) & {
+                                        min-height: 155px;
                                         border: 1px solid $lb-input-border;
+                                        @include border-radius($lb-radius-input);
+                                    }
+                                    &:focus, &:hover {
+                                        border: 1px solid $sd-blue;
+                                        :where(.lb-refresh) & {
+                                            border: 1px solid $lb-input-border;
+                                        }
                                     }
                                 }
                                 .st-placeholder {
@@ -947,68 +1090,78 @@
             }
             .actions {
                 .actions__label {
-                    // ::first-letter only applies to block containers, not
-                    // plain inline elements — without this the rule below
-                    // was a silent no-op and every label rendered all-lowercase.
-                    display: inline-block;
                     vertical-align: middle;
-                    margin-left: 5px;
-                    // Markup text is hard-coded upper case ("PIN POST"); render
-                    // it as "Pin post" without touching the template.
-                    text-transform: lowercase;
-                    &::first-letter {
-                        text-transform: uppercase;
+                    margin-right: 5px;
+                    :where(.lb-refresh) & {
+                        // ::first-letter only applies to block containers, not
+                        // plain inline elements — without this the rule below
+                        // was a silent no-op and every label rendered all-lowercase.
+                        display: inline-block;
+                        margin-right: 0;
+                        margin-left: 5px;
+                        // Markup text is hard-coded upper case ("PIN POST"); render
+                        // it as "Pin post" without touching the template.
+                        text-transform: lowercase;
+                        &::first-letter {
+                            text-transform: uppercase;
+                        }
                     }
                 }
                 .actions__icon i {
                     vertical-align: middle;
                 }
             }
-            // Shrink the table's border-spacing-driven gap between the Pin/
-            // Highlight/Schedule pills (margin is ignored on table-cells,
-            // so pull each pill after the first closer via its own margin).
-            .actions__options > div:not(:first-child) > div {
-                margin-left: -4px;
-            }
-            .actions__options > div > div {
-                display: inline-flex;
-                align-items: center;
-                background-color: $lb-action-pill-active-bg;
-                color: $lb-action-pill-active-text;
-                border-radius: $lb-radius-pill;
-                padding: 6px 18px;
-                cursor: pointer;
-                transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
-                &:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 10px rgba($lb-action-pill-active-text, 0.25);
-                    background-color: darken($lb-action-pill-active-bg, 3%);
+            :where(.lb-refresh) & {
+                // Shrink the table's border-spacing-driven gap between the Pin/
+                // Highlight/Schedule pills (margin is ignored on table-cells,
+                // so pull each pill after the first closer via its own margin).
+                .actions__options > div:not(:first-child) > div {
+                    margin-left: -4px;
                 }
-                i { color: $lb-action-pill-active-text; }
-
-                // Lucide replacements for icon-pin/icon-star/icon-calendar —
-                // masked icons ignore `color`, tint via background-color.
-                i.icon-pin {
-                    @include lb-icon-font-mask(url('~images/icons/pin.svg'), $lb-action-pill-active-text);
-                }
-                i.icon-star {
-                    @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-action-pill-active-text);
-                }
-                i.icon-calendar {
-                    @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-action-pill-active-text);
-                }
-
-                &.option-not-activated {
-                    opacity: 1;
-                    background-color: $lb-action-pill-bg;
-                    color: $lb-action-pill-text;
-                    i { color: $lb-action-pill-text; }
-                    i.icon-pin, i.icon-star, i.icon-calendar {
-                        background-color: $lb-action-pill-text;
+                .actions__options > div > div {
+                    display: inline-flex;
+                    align-items: center;
+                    // the markup puts the label first, the refreshed pill leads with the icon
+                    .actions__icon {
+                        order: -1;
                     }
+                    background-color: $lb-action-pill-active-bg;
+                    color: $lb-action-pill-active-text;
+                    border-radius: $lb-radius-pill;
+                    padding: 6px 18px;
+                    cursor: pointer;
+                    transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
                     &:hover {
-                        background-color: darken($lb-action-pill-bg, 3%);
-                        box-shadow: 0 4px 10px rgba($lb-action-pill-text, 0.2);
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 10px rgba($lb-action-pill-active-text, 0.25);
+                        background-color: darken($lb-action-pill-active-bg, 3%);
+                    }
+                    i { color: $lb-action-pill-active-text; }
+
+                    // Lucide replacements for icon-pin/icon-star/icon-calendar —
+                    // masked icons ignore `color`, tint via background-color.
+                    i.icon-pin {
+                        @include lb-icon-font-mask(url('~images/icons/pin.svg'), $lb-action-pill-active-text);
+                    }
+                    i.icon-star {
+                        @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-action-pill-active-text);
+                    }
+                    i.icon-calendar {
+                        @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-action-pill-active-text);
+                    }
+
+                    &.option-not-activated {
+                        opacity: 1;
+                        background-color: $lb-action-pill-bg;
+                        color: $lb-action-pill-text;
+                        i { color: $lb-action-pill-text; }
+                        i.icon-pin, i.icon-star, i.icon-calendar {
+                            background-color: $lb-action-pill-text;
+                        }
+                        &:hover {
+                            background-color: darken($lb-action-pill-bg, 3%);
+                            box-shadow: 0 4px 10px rgba($lb-action-pill-text, 0.2);
+                        }
                     }
                 }
             }
@@ -1019,8 +1172,11 @@
                 bottom: 0; left: 0px; right: 0px;
                 display:table;
                 table-layout: fixed;
-                border-spacing: 20px 14px;
+                border-spacing:10px;
                 width: 100%;
+                :where(.lb-refresh) & {
+                    border-spacing: 20px 14px;
+                }
                 .btn {
                     width: 100%;
                     float: left;
@@ -1028,56 +1184,58 @@
                     padding: 0;
                     line-height: 48px;
                     font-size: 14px;
-                    background-color: $lb-btn-dark-bg !important;
-                    border-color: $lb-btn-dark-bg !important;
-                    color: white !important;
-                    text-transform: none;
-                    transition: box-shadow .15s ease, transform .15s ease;
-                    &:hover:not(:disabled) {
-                        // Restate the dark-navy background here (not just
-                        // the shadow/lift): liveblog.scss's global
-                        // `.blogedit .btn:not(.btn--primary):hover` rule
-                        // has higher specificity than this rule's own
-                        // non-hover background-color, so without this it
-                        // wins on hover and turns Submit/Save draft a pale
-                        // blue instead of staying dark navy.
+                    :where(.lb-refresh) & {
                         background-color: $lb-btn-dark-bg !important;
                         border-color: $lb-btn-dark-bg !important;
-                        transform: translateY(-1px);
-                        box-shadow: 0 4px 10px rgba($lb-btn-dark-bg, 0.25) !important;
-                    }
-
-                    &.btn--primary {
-                        background-color: $lb-btn-teal-bg !important;
-                        border-color: $lb-btn-teal-bg !important;
+                        color: white !important;
+                        text-transform: none;
+                        transition: box-shadow .15s ease, transform .15s ease;
                         &:hover:not(:disabled) {
+                            // Restate the dark-navy background here (not just
+                            // the shadow/lift): liveblog.scss's global
+                            // `.blogedit .btn:not(.btn--primary):hover` rule
+                            // has higher specificity than this rule's own
+                            // non-hover background-color, so without this it
+                            // wins on hover and turns Submit/Save draft a pale
+                            // blue instead of staying dark navy.
+                            background-color: $lb-btn-dark-bg !important;
+                            border-color: $lb-btn-dark-bg !important;
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 10px rgba($lb-btn-dark-bg, 0.25) !important;
+                        }
+
+                        &.btn--primary {
                             background-color: $lb-btn-teal-bg !important;
                             border-color: $lb-btn-teal-bg !important;
-                            box-shadow: 0 4px 10px rgba($lb-btn-teal-bg, 0.35) !important;
+                            &:hover:not(:disabled) {
+                                background-color: $lb-btn-teal-bg !important;
+                                border-color: $lb-btn-teal-bg !important;
+                                box-shadow: 0 4px 10px rgba($lb-btn-teal-bg, 0.35) !important;
+                            }
                         }
-                    }
 
-                    // Lucide icons after the label (Publish/Update, Submit,
-                    // Save draft). icon-publish is also a real font-icon
-                    // class elsewhere (mask'd to send.svg in post.scss for
-                    // the post-card action), so it needs the bg-mask variant
-                    // here to override its global sprite rule; icon-submit/
-                    // icon-save-draft are new, purpose-built classes with no
-                    // legacy glyph to suppress.
-                    i {
-                        vertical-align: middle;
-                        margin-left: 8px;
-                        width: 20px;
-                        height: 20px;
-                    }
-                    i.icon-publish {
-                        @include lb-icon-bg-mask(url('~images/icons/send-horizontal.svg'), white);
-                    }
-                    i.icon-submit {
-                        @include lb-icon-font-mask(url('~images/icons/circle-check-big.svg'), white, 20px);
-                    }
-                    i.icon-save-draft {
-                        @include lb-icon-font-mask(url('~images/icons/save-plus.svg'), white, 20px);
+                        // Lucide icons after the label (Publish/Update, Submit,
+                        // Save draft). icon-publish is also a real font-icon
+                        // class elsewhere (mask'd to send.svg in post.scss for
+                        // the post-card action), so it needs the bg-mask variant
+                        // here to override its global sprite rule; icon-submit/
+                        // icon-save-draft are new, purpose-built classes with no
+                        // legacy glyph to suppress.
+                        i {
+                            vertical-align: middle;
+                            margin-left: 8px;
+                            width: 20px;
+                            height: 20px;
+                        }
+                        i.icon-publish {
+                            @include lb-icon-bg-mask(url('~images/icons/send-horizontal.svg'), white);
+                        }
+                        i.icon-submit {
+                            @include lb-icon-font-mask(url('~images/icons/circle-check-big.svg'), white, 20px);
+                        }
+                        i.icon-save-draft {
+                            @include lb-icon-font-mask(url('~images/icons/save-plus.svg'), white, 20px);
+                        }
                     }
                 }
             }
@@ -1099,8 +1257,43 @@
     }
 
     // Icons LB custom
+    .lb-big-icon-ingest {
+        background-image: url('~images/ingest.svg');
+    }
+    .active .lb-big-icon-ingest {
+        background-image: url('~images/ingest_active.svg');
+    }
+    .lb-big-icon-contributions {
+        background-image: url('~images/contributions.svg');
+    }
+    .active .lb-big-icon-contributions {
+        background-image: url('~images/contributions_active.svg');
+    }
 
+    .lb-big-icon-scheduled-posts {
+        background-image: url('~images/scheduled-posts.svg');
+    }
 
+    .active .lb-big-icon-scheduled-posts {
+        background-image: url('~images/scheduled-posts_active.svg');
+    }
+
+    .lb-big-icon-editor {
+        background-image: url('~images/editor.svg');
+    }
+    .active .lb-big-icon-editor {
+        background-image: url('~images/editor_active.svg');
+    }
+    .lb-big-icon-archive {
+        height: 28px;
+        background-position: 0 0;
+    }
+    .lb-big-icon-comments {
+        background-image: url('~images/comments-sidetab.svg');
+    }
+    .active .lb-big-icon-comments {
+        background-image: url('~images/comments-sidetab_active.svg');
+    }
     .icon-archive {
         background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);
         width: 16px;
@@ -1108,7 +1301,10 @@
         background-position: 0 0;
         height: 16px;
     }
-    .active.icon-archive {
+    .lb-big-icon-archive {
+        background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXogTTIyLDR2MTZoLTFIN0g2VjQNCgkJVjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
+    }
+    .active .lb-big-icon-archive, .active.icon-archive {
         background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGZpbGw9IiMwMDdGQjMiIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXoNCgkJIE0yMiw0djE2aC0xSDdINlY0VjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiBmaWxsPSIjMDA3RkIzIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIGZpbGw9IiMwMDdGQjMiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
     }
     .crop-area img {
@@ -1225,36 +1421,45 @@
 
 .freetype-selector {
     background-color: #fff;
-    border: 1px solid $lb-input-border;
-    @include border-radius($lb-radius-input);
-    box-shadow: $lb-card-shadow;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.2);
     padding: 10px 10px 5px 10px;
     min-width: 100px;
     width: auto;
     z-index: 2;
     position: absolute;
     right: -60px;
+    :where(.lb-refresh) & {
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-input);
+        box-shadow: $lb-card-shadow;
+    }
     &.default {
         right: 40px;
     }
     top: 2px;
     li {
-        padding: 6px 8px;
-        @include border-radius($lb-radius-input);
+        padding: 0px 5px;
+        border-radius: 2px;
         margin-right: 0px;
         margin-bottom: 1px;
         height: auto;
         white-space: normal;
         word-wrap: break-word;
-        &:hover, &.active {
-            color: $lb-btn-dark-bg !important;
-        }
-        &:hover {
-            background: $lb-rail-active-bg !important;
-        }
-        &.active {
-            background: $lb-rail-active-bg !important;
-            font-weight: 600;
+        :where(.lb-refresh) & {
+            padding: 6px 8px;
+            @include border-radius($lb-radius-input);
+            &:hover, &.active {
+                color: $lb-btn-dark-bg !important;
+            }
+            &:hover {
+                background: $lb-rail-active-bg !important;
+            }
+            &.active {
+                background: $lb-rail-active-bg !important;
+                font-weight: 600;
+            }
         }
     }
     max-height: 348px;
@@ -1275,12 +1480,15 @@
     content: " ";
 }
 .freetype-selector .separator {
-    // The shared `li { border-radius: $lb-radius-input }` above (for the
-    // hover/active pill highlight) also rounds this divider's own
-    // border-bottom corners, turning a straight line into an odd curved
-    // "smile" shape — reset it to square for this one.
-    border-radius: 0;
-    border-bottom: 1px solid $lb-input-border;
+    border-bottom: 1px solid #ebebeb;
+    :where(.lb-refresh) & {
+        // The shared `li { border-radius: $lb-radius-input }` above (for the
+        // hover/active pill highlight) also rounds this divider's own
+        // border-bottom corners, turning a straight line into an odd curved
+        // "smile" shape — reset it to square for this one.
+        border-radius: 0;
+        border-bottom: 1px solid $lb-input-border;
+    }
 }
 
 .cursor-pointer {
@@ -1315,7 +1523,7 @@
     }
 }
 
-.output-channels-modal.modal {
+:where(.lb-refresh) .output-channels-modal.modal {
     .sd-line-input {
         // Vendor's own value is 1.4rem — a little more room above the
         // label reads clearer now that the label's own spacing (below) is
@@ -1414,12 +1622,14 @@
     }
 }
 
-.tags-selector .css-2b097c-container {
-    border-radius: $lb-radius-input;
-}
+:where(.lb-refresh) {
+    .tags-selector .css-2b097c-container {
+        border-radius: $lb-radius-input;
+    }
 
-.tags-selector .css-1f578jt-control {
-    border-radius: $lb-radius-input;
+    .tags-selector .css-1f578jt-control {
+        border-radius: $lb-radius-input;
+    }
 }
 
 .schedule-selector {

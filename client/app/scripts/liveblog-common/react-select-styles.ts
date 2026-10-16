@@ -1,10 +1,11 @@
 import type { Styles } from 'react-select/src/styles';
+import { isUiRefreshEnabled } from '../liveblog-ui-refresh/ui-refresh';
 
 export const selectStyles: Styles = {
     control: (provided, state) => {
         const styles = {
             ...provided,
-            borderRadius: '8px',
+            borderRadius: isUiRefreshEnabled() ? '8px' : '3px',
             minHeight: '32px',
             borderColor: '#d9d9d9',
             cursor: 'pointer',
@@ -36,8 +37,8 @@ export const selectStyles: Styles = {
         padding: '2px 3px',
     }),
 
-    multiValue: (provided) => ({
+    multiValue: (provided) => (isUiRefreshEnabled() ? {
         ...provided,
         borderRadius: '999px',
-    }),
+    } : provided),
 };

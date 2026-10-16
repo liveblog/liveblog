@@ -9,6 +9,10 @@
   display: table;
   width: 100%;
   background: #FFF;
+  @include box-shadow(0 1px 3px rgba(0,0,0,.2));
+  :where(.lb-refresh) & {
+    box-shadow: none;
+  }
 }
 
 .analytics-list-row-item {
@@ -18,32 +22,44 @@
   min-width: 120px;
   padding: 10px 12px;
   border-style: solid;
-  border-color: $lb-input-border;
+  border-color: #ddd;
   border-width: 0 0 1px 0;
+  :where(.lb-refresh) & {
+    border-color: $lb-input-border;
+  }
 }
 
 .analytics-list-row-item:nth-of-type(2) {
   text-align: right;
-}
+} 
 
 .analytics-list-row {
   display: table-row;
-  &:last-of-type .analytics-list-row-item {
+  :where(.lb-refresh) &:last-of-type .analytics-list-row-item {
     border-bottom: none;
   }
   &--header {
-    // A real border on a table-row doesn't reliably paint in the
-    // "separate" table border model (only table-cell borders do) —
-    // flex instead, same fix as the output channels row.
-    display: flex;
-    align-items: center;
-    background: $lb-pill-bg;
-    font-weight: 600;
-    color: $lb-btn-dark-bg;
-    border: 1px solid darken($lb-pill-bg, 15%);
-    @include border-radius($lb-radius-input);
+    background: #eee;
+    font-weight: 500;
+    :where(.lb-refresh) & {
+      // A real border on a table-row doesn't reliably paint in the
+      // "separate" table border model (only table-cell borders do) —
+      // flex instead, same fix as the output channels row.
+      display: flex;
+      align-items: center;
+      background: $lb-pill-bg;
+      font-weight: 600;
+      color: $lb-btn-dark-bg;
+      border: 1px solid darken($lb-pill-bg, 15%);
+      @include border-radius($lb-radius-input);
+    }
     .analytics-list-row-item {
-      border-bottom: none;
+      border-color: #ccc;
+      :where(.lb-refresh) & {
+        // Falls back to the base row item color, as without this rule.
+        border-color: $lb-input-border;
+        border-bottom: none;
+      }
     }
   }
 }
@@ -55,30 +71,47 @@
 }
 .content--analytics input {
     @include box-sizing(border-box);
-    padding: 8px 12px;
-    border: 1px solid $lb-input-border;
-    @include border-radius($lb-radius-input);
-    font-size: 13px;
-    color: #000;
-    box-shadow: none;
-    transition: border-color .15s ease, box-shadow .15s ease;
-    &:focus {
-        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
-        border-color: $lb-rail-active !important;
-        outline: 0 !important;
+    padding: 14px 10px;
+    :where(.lb-refresh) & {
+        padding: 8px 12px;
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-input);
+        font-size: 13px;
+        color: #000;
+        box-shadow: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+        &:focus {
+            box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+            border-color: $lb-rail-active !important;
+            outline: 0 !important;
+        }
     }
 }
 
 .orderby__button:after {
-  content: '';
-  @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 12px);
   opacity: .5;
-  vertical-align: middle;
-  margin-left: 6px;
+  content: "\25B2";
+  font-size: .6em;
+  position: relative;
+  top: -1px;
+  padding: 0px 6px 0px 6px;
+  :where(.lb-refresh) & {
+    content: '';
+    @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 12px);
+    vertical-align: middle;
+    margin-left: 6px;
+    position: static;
+    top: auto;
+    padding: 0;
+  }
 }
 
 .orderby__button--reverse:after {
-  @include lb-icon-font-mask(url('~images/icons/chevron-down.svg'), $lb-btn-dark-bg, 12px);
+  content: "\25BC";
+  :where(.lb-refresh) & {
+    content: '';
+    @include lb-icon-font-mask(url('~images/icons/chevron-down.svg'), $lb-btn-dark-bg, 12px);
+  }
 }
 
 .orderby__button--active:after {
@@ -101,11 +134,14 @@
     text-align: center;
     vertical-align: top;
     height: 26px;
-    @include border-radius($lb-radius-pill);
+    border-radius: 2px;
     margin: 0 2px;
+    :where(.lb-refresh) & {
+      @include border-radius($lb-radius-pill);
+    }
 
     button {
-      color: $lb-pill-text;
+      color: $grayDark;
       background: none;
       border: none;
       display: inline-block;
@@ -113,49 +149,70 @@
       padding: 0 10px;
       line-height: 26px;
       text-decoration: none;
-      transition: background-color .15s ease, color .15s ease;
+      :where(.lb-refresh) & {
+        color: $lb-pill-text;
+        transition: background-color .15s ease, color .15s ease;
+      }
       &:hover,
       &:hover i {
-        color: $lb-rail-active;
+        color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-rail-active;
+        }
       }
-      // Swap the legacy sd_icons chevron glyphs for Lucide, same masking
-      // technique used elsewhere. Only one asset exists (chevron-right) —
-      // reuse it rotated 180deg for the "previous" arrow instead of adding
-      // a near-duplicate SVG.
-      i.icon-chevron-left-thin, i.icon-chevron-right-thin {
-        @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 14px);
-        vertical-align: middle;
-      }
-      i.icon-chevron-left-thin {
-        transform: rotate(180deg);
-      }
-      &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
-        background-color: $lb-rail-active;
+      :where(.lb-refresh) & {
+        // Swap the legacy sd_icons chevron glyphs for Lucide, same masking
+        // technique used elsewhere. Only one asset exists (chevron-right) —
+        // reuse it rotated 180deg for the "previous" arrow instead of adding
+        // a near-duplicate SVG.
+        i.icon-chevron-left-thin, i.icon-chevron-right-thin {
+          @include lb-icon-font-mask(url('~images/icons/chevron-right.svg'), $lb-pill-text, 14px);
+          vertical-align: middle;
+        }
+        i.icon-chevron-left-thin {
+          transform: rotate(180deg);
+        }
+        &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
+          background-color: $lb-rail-active;
+        }
       }
     }
     &--active {
-      background-color: $lb-rail-active;
-      @include border-radius($lb-radius-pill);
-      button {
+      background-color: $sd-blue;
+      border-radius: 2px;
+      :where(.lb-refresh) & {
+        background-color: $lb-rail-active;
+        @include border-radius($lb-radius-pill);
+      }
+      button { 
         color: #fff;
         &:hover {
-          color: #fff;
+          color: $white;
+          :where(.lb-refresh) & {
+            color: #fff;
+          }
         }
       }
     }
     &--disabled {
       button {
         cursor: default;
-        color: $lb-timestamp;
-        i.icon-chevron-left-thin, i.icon-chevron-right-thin {
-          background-color: $lb-timestamp;
-        }
-        &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
-          background-color: $lb-timestamp;
+        color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-timestamp;
+          i.icon-chevron-left-thin, i.icon-chevron-right-thin {
+            background-color: $lb-timestamp;
+          }
+          &:hover i.icon-chevron-left-thin, &:hover i.icon-chevron-right-thin {
+            background-color: $lb-timestamp;
+          }
         }
       }
       i {
-        color: $lb-timestamp;
+        color: #ccc;
+        :where(.lb-refresh) & {
+          color: $lb-timestamp;
+        }
       }
     }
   }
