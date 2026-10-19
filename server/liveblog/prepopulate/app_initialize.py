@@ -260,6 +260,45 @@ def get_filepath(filename, path=None):
             return filepath
 
 
+def _index_keys(keys):
+    return [
+        (field, int(direction) if isinstance(direction, float) else direction)
+        for field, direction in keys
+    ]
+
+
+def drop_stale_indexes():
+    """Drop mongo indexes whose keys no longer match their definition.
+
+    Mongo refuses to create an index under an existing name with different keys,
+    and Eve only recreates indexes whose options changed, so `app.init_indexes`
+    fails on databases created before such a change.
+    """
+    for resource, resource_config in app.config["DOMAIN"].items():
+        mongo_indexes = resource_config.get("mongo_indexes__init")
+        if not mongo_indexes:
+            continue
+
+        prefix = resource_config.get("mongo_prefix", "MONGO")
+        db = app.data.pymongo(resource, prefix).db
+        source = app.config["SOURCES"][resource]["source"]
+        collections = [db[source]]
+        if resource_config.get("versioning"):
+            collections.append(db["%s_versions" % source])
+
+        for coll in collections:
+            existing = coll.index_information()
+            for name, value in mongo_indexes.items():
+                if name not in existing:
+                    continue
+                keys = value[0] if isinstance(value, tuple) else value
+                if _index_keys(existing[name]["key"]) != _index_keys(keys):
+                    logger.info(
+                        "Dropping index %s on %s, its keys changed", name, coll.name
+                    )
+                    coll.drop_index(name)
+
+
 class AppInitializeWithDataCommand(superdesk.Command):
     """Initialize application with predefined data for various entities.
 
@@ -296,6 +335,7 @@ class AppInitializeWithDataCommand(superdesk.Command):
         logger.info("Config: %s", app.config["APP_ABSPATH"])
 
         # create indexes in mongo
+        drop_stale_indexes()
         app.init_indexes()
         app.is_initialize_data = True
 
