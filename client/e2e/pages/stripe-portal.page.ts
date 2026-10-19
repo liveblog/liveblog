@@ -76,9 +76,8 @@ export class StripePortalPage {
     }
 
     /**
-     * From the plan picker, picks `productName` and waits for the change summary.
-     * Stripe renamed this heading from "Summary" to "Confirm your update" in
-     * October 2026; both are accepted in case the old one is still served.
+     * Picks `productName` and waits for the change summary. Stripe serves this
+     * heading as either "Summary" or "Confirm your update".
      */
     async selectPlan(productName: string) {
         await this.planCard(productName).getByRole('button', { name: 'Select plan' }).click();

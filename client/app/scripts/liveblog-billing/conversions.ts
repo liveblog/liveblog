@@ -1,11 +1,9 @@
 import { apiGet } from '../liveblog-common/api';
 
 /**
- * Ad conversion tracking for signups and purchases (LBSD-2984).
- *
- * The Google tag only loads for visitors carrying a Google Ads click cookie,
- * which the liveblog.pro marketing site sets on the shared `.liveblog.pro`
- * domain when someone lands from an ad. Everyone else never loads it.
+ * Google Ads conversion tracking (LBSD-2984). The tag only loads for visitors
+ * with a Google Ads click cookie, which liveblog.pro sets on the shared
+ * `.liveblog.pro` domain.
  */
 
 interface IGoogleAds {
@@ -40,9 +38,6 @@ function gtag(..._args: any[]) {
     w.dataLayer.push(arguments);
 }
 
-/**
- * Loads the conversion tags from the `conversions` key of `/billing/config`.
- */
 export const initConversions = (config: any): void => {
     const ads = config && config.google_ads;
 
@@ -82,8 +77,8 @@ export const trackSignup = (): void => {
 };
 
 /**
- * Keeps the plan price for the purchase conversion. The Checkout return lands
- * on a different page of the same tab, so session storage carries it across.
+ * The Checkout return is a new page load in the same tab, so session storage
+ * carries the price across.
  */
 export const rememberCheckoutValue = (value: number, currency: string): void => {
     try {
@@ -105,11 +100,9 @@ const takeCheckoutValue = (): ICheckoutValue | null => {
 };
 
 /**
- * Reports a purchase when the page is the return from a paid Stripe Checkout
- * (see `_checkout_success_url` on the server).
- *
- * Call it before Angular bootstraps: it strips the return params from the URL
- * so `$location` never sees them and a reload cannot report the purchase twice.
+ * Reports a purchase on return from a paid Checkout. Must run before Angular
+ * bootstraps: it strips the return params so `$location` never sees them and a
+ * reload cannot report twice.
  */
 export const trackCheckoutReturn = (): void => {
     const params = new URLSearchParams(window.location.search);
