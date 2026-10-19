@@ -4,19 +4,85 @@
 // timeline
 .column--timeline {
     border: 0px;
+    :where(.lb-refresh) & {
+        header {
+            display: flex;
+            align-items: center;
+        }
+    }
     .header--live {
         float: left;
         padding: 0 5px 0 5px;
+        :where(.lb-refresh) & {
+            float: none;
+            order: 1;
+            a {
+                display: inline-flex;
+                align-items: center;
+                background-color: $lb-live-badge-bg;
+                color: $lb-live-badge-text;
+                border-radius: $lb-radius-pill;
+                padding: 0px 14px 0px 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 12px;
+                &:before {
+                    content: '';
+                    display: inline-block;
+                    width: 6px;
+                    height: 6px;
+                    margin-right: 6px;
+                    border-radius: 50%;
+                    background-color: $lb-live-badge-text;
+                }
+                &:after {
+                    content: '';
+                    display: inline-block;
+                    width: 0;
+                    height: 11px;
+                    margin-left: 0;
+                    background-color: $lb-live-badge-text;
+                    -webkit-mask-image: url('~images/icons/external-link.svg');
+                    mask-image: url('~images/icons/external-link.svg');
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    -webkit-mask-position: left center;
+                    mask-position: left center;
+                    // Fixed, not `contain`: the hover width transition reveals the icon instead of scaling it.
+                    -webkit-mask-size: 11px 11px;
+                    mask-size: 11px 11px;
+                    transition: width .15s ease, margin-left .15s ease;
+                }
+                &:hover {
+                    text-decoration: none;
+                    color: $lb-live-badge-text;
+                    &:after {
+                        width: 11px;
+                        margin-left: 6px;
+                    }
+                }
+            }
+        }
     }
     .header--timeline {
         padding: 0 5px 0 5px;
         float: left;
+        :where(.lb-refresh) & {
+            float: none;
+            color: black;
+            font-weight: 700;
+        }
         a:hover {
             text-decoration: none;
         }
     }
     .header--filters {
         float: right;
+        :where(.lb-refresh) & {
+            float: none;
+            order: 4;
+            margin-left: auto;
+        }
         .btn {
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid rgba(215, 215, 215, 0.7);
@@ -24,26 +90,52 @@
             padding: 4px 12px;
             height: 24px;
             margin-left: 4px;
+            :where(.lb-refresh) & {
+                background: $lb-filter-btn-bg;
+                border: none;
+                color: $lb-pill-text;
+                border-radius: $lb-radius-pill;
+                transition: background-color .15s ease;
+            }
             &:hover {
                 background: rgba(255, 255, 255, 0.8);
                 border: 1px solid #aaaaaa;
                 color: $gray;
+                :where(.lb-refresh) & {
+                    background: darken($lb-filter-btn-bg, 4%);
+                    border: none;
+                    color: $lb-pill-text;
+                }
             }
             &.active {
                 color: $grayDark;
                 background-color: rgba(0, 0, 0, 0.11);
                 box-shadow: inset 0 2px 1px rgba(0, 0, 0, 0.11);
                 border: 1px solid rgba(0, 0, 0, 0.11);
+                :where(.lb-refresh) & {
+                    color: $lb-pill-text;
+                    background-color: $lb-filter-btn-bg;
+                    box-shadow: none;
+                    border: none;
+                }
                 [class^="icon-"] {
                     color: $orange;
                 }
             }
             &.active:hover {
                 cursor: default;
+                :where(.lb-refresh) & {
+                    background: $lb-filter-btn-bg;
+                }
             }
             [class^="icon-"] {
                 margin-right: 0;
                 color: $orange;
+            }
+            :where(.lb-refresh) & {
+                i.icon-star {
+                    @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-pill-text);
+                }
             }
             // & + .btn {
             //     margin-left: 4px;
@@ -54,6 +146,9 @@
         padding: 20px 20px 7px 20px;
         opacity: 1;
         transition: opacity linear 0.1s;
+        :where(.lb-refresh) & {
+            padding: 0px 20px 7px 20px;
+        }
         > li {
             margin: 10px 0px;
         }
@@ -63,6 +158,11 @@
             border-bottom: 1px solid #D4D4D4;
             transition: border 0.4s;
             transition: box-shadow 0.4s;
+            :where(.lb-refresh) & {
+                border: none;
+                box-shadow: $lb-card-shadow;
+                @include border-radius($lb-radius-card);
+            }
         }
         .lb-post.active {
             border: 1px solid #5ea9c8!important;
@@ -72,11 +172,17 @@
             border: 1px solid #edc1b2;
             box-shadow: 0 1px 0 #edc1b2;
             @include border-radius(3px);
+            :where(.lb-refresh) & {
+                @include border-radius($lb-radius-card);
+            }
         }
         .lb-post.pinned {
             border: 1px solid #a9cad7;
             box-shadow: 0 1px 0 #a9cad7;
             @include border-radius(3px);
+            :where(.lb-refresh) & {
+                @include border-radius($lb-radius-card);
+            }
         }
     }
     .posts.flicker {
@@ -111,12 +217,32 @@
         text-align: center;
         padding-top: 0px;
         transition: all linear 0.4s;
+        :where(.lb-refresh) & {
+            color: $lb-timestamp;
+            font-size: 15px;
+            opacity: 0;
+            overflow: hidden;
+            transition: height 0.3s ease, border-color 0.3s ease,
+                background-color 0.3s ease, opacity 0.2s ease 0.15s;
+        }
     }
     .timeline-reorder.active {
         padding-top: 15px;
         height: 34px;
         font-size: 18px;
         border: 1px dashed #ccc;
+        :where(.lb-refresh) & {
+            height: 44px;
+            font-size: 15px;
+            opacity: 1;
+            padding: 0 16px;
+            margin: 10px 0;
+            border: 1px dashed darken($lb-input-border, 20%);
+            @include border-radius($lb-radius-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
     .timeline-reorder.top {
         margin-bottom: 10px;
@@ -128,6 +254,11 @@
         border: 1px dashed #999;
         color: #666;
         background: #f8f8f8;
+        :where(.lb-refresh) & {
+            border: 1px dashed $lb-rail-active;
+            color: $lb-btn-dark-bg;
+            background: $lb-action-pill-bg;
+        }
     }
     .cancel-reorder {
         border-right: 1px solid #e0e0e0!important;
@@ -136,13 +267,42 @@
         padding-top:9px;
         padding-right:9px;
         background-color: white;
+        :where(.lb-refresh) & {
+            position: static;
+            height: auto;
+            padding-top: 0;
+            // Must stay below .header--filters' order: 4 so it sits right before the filters.
+            order: 3;
+            border-right: 1px solid $lb-input-border !important;
+            display: flex;
+            align-items: center;
+            padding-right: 12px;
+            background-color: transparent;
+        }
+    }
+    :where(.lb-refresh) & {
+        // .cancel-reorder also carries .header--filters, so it takes the margin-left: auto.
+        // The real filters must not keep auto too, or flex splits the free space and
+        // strands Cancel mid-row.
+        .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
+            margin-left: 12px;
+        }
+        i.svg-icon-move {
+            @include lb-icon-bg-mask(url('~images/icons/move.svg'), $lb-btn-dark-bg);
+        }
     }
     .fix-cancel-move-icon {
         margin-top:5px;
         margin-right:5px;
+        :where(.lb-refresh) & {
+            margin-top: 0;
+        }
     }
     .fix-cancel-move-button {
         margin-top: -7px;
+        :where(.lb-refresh) & {
+            margin-top: 0;
+        }
     }
     .pin-drawer-button {
         position: absolute;
@@ -161,13 +321,51 @@
         -webkit-transition: transform 0.5s;
         -o-transition: transform 0.5s;
         transition: transform 0.5s;
+        :where(.lb-refresh) & {
+            // Centered on `.pin-drawer`'s bottom border. A negative margin-top gets clipped
+            // by the scrolling column when the drawer is its first child.
+            margin-top: 0;
+            width: 28px;
+            height: 28px;
+            border: 1px solid $lb-input-border;
+            top: 100%;
+            margin-left: -14px;
+            border-radius: 28px;
+            box-shadow: none;
+            transform: translateY(-50%);
+        }
         &.active {
             @include rotate(180deg);
+            :where(.lb-refresh) & {
+                // Not the rotate() mixin: it would drop the centering translateY.
+                transform: translateY(-50%) rotate(180deg);
+            }
+        }
+        :where(.lb-refresh) & {
+            // !important beats the sd_icons glyph's own margin and positioning.
+            i.icon-chevron-up-thin {
+                @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 14px);
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                margin: 0 !important;
+                transform: translate(-50%, -50%);
+            }
         }
     }
     .pin-drawer {
         margin: 0px 20px 0px 20px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        :where(.lb-refresh) & {
+            position: relative;
+            // The "N PINNED POSTS" label is a `<div>`, so the `span` rule below misses it.
+            > div {
+                font-size: 11px;
+                color: #999999;
+                padding: 5px 0 12px;
+                display: inline-block;
+            }
+        }
         span {
             font-size: 11px;
             color: #999999;
@@ -175,6 +373,9 @@
             display: inline-block;
         }
     }
+}
+:where(.lb-refresh) .column--timeline .pin-drawer {
+    margin: 0px 20px 26px 20px;
 }
 .opaque {
     opacity: 1!important;

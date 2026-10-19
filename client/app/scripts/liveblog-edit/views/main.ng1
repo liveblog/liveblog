@@ -257,14 +257,15 @@
                                         ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true" translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
+                                        <i class="icon-publish" ng-if="$root.uiRefreshEnabled"></i>
                                     </button>
                                 </div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()"
                                         ng-disabled="isCurrentPostPublished() || actionStatus()"
-                                        translate>Submit</button></div>
+                                        ><span translate>Submit</span><i class="icon-submit" ng-if="$root.uiRefreshEnabled"></i></button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()"
                                         ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()"
-                                        translate><span class="hideMobile">Save</span> draft</button></div>
+                                        ><span translate><span class="hideMobile">Save</span> draft</span><i class="icon-save-draft" ng-if="$root.uiRefreshEnabled"></i></button></div>
                             </div>
                         </div>
                     </div>

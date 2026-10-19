@@ -1,4 +1,5 @@
 @import '~superdesk-core/styles/sass/mixins';
+@import 'lb-ui-mixins';
 
 @mixin buttonStates($background:$btnDefaultColor, $color: $sd-text){
     color: $color;

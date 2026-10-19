@@ -1,4 +1,69 @@
+@import '~lb-variables.scss';
+@import '~lb-ui-mixins.scss';
+
+:where(.lb-refresh) {
+    .items-manager .sd-create-btn {
+        @include lb-create-btn-pill('Create Free Type');
+    }
+    .items-manager {
+        height: 5.8rem;
+    }
+    .items-manager .subnav__button-stack--square-buttons {
+        margin-right: 20px;
+    }
+}
+
 .freetypeslist {
+    :where(.lb-refresh) & {
+        .alert.alert-info {
+            background: $lb-pill-bg;
+            border: 1px solid darken($lb-pill-bg, 12%);
+            color: $lb-pill-text;
+            border-radius: $lb-radius-input;
+            padding: 16px 40px 16px 48px;
+            font-size: 13px;
+            line-height: 1.7;
+            position: relative;
+            &::before {
+                content: '';
+                position: absolute;
+                left: 18px;
+                top: 16px;
+                width: 18px;
+                height: 18px;
+                background-color: $lb-rail-active;
+                -webkit-mask-image: url('~images/icons/info.svg');
+                mask-image: url('~images/icons/info.svg');
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+                -webkit-mask-size: contain;
+                mask-size: contain;
+            }
+            a {
+                color: $lb-rail-active;
+                font-weight: 600;
+                text-decoration: underline;
+                text-underline-offset: 2px;
+                &:hover {
+                    color: darken($lb-rail-active, 10%);
+                }
+            }
+            .close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                color: $lb-timestamp;
+                opacity: 1;
+                transition: color .15s ease;
+                &:hover {
+                    color: $lb-btn-dark-bg;
+                    opacity: 1;
+                }
+            }
+        }
+    }
     .list-container {
         position: absolute;
         top: 0px;
@@ -26,13 +91,47 @@
             box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.08);
             line-height: 18px;
             text-rendering: optimizelegibility;
+            :where(.lb-refresh) & {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+                border: 1px solid $lb-input-border;
+                border-radius: $lb-radius-input;
+                padding: 8px 22px;
+                box-shadow: none;
+                // Vendor's clearfix pseudo-elements would become flex items and break `space-between`.
+                &::before, &::after {
+                    content: none;
+                }
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
             h6 {
 
                 font-size: 14px;
                 font-weight: 300;
                 color: #333;
                 text-transform: none;
+                :where(.lb-refresh) & {
+                    float: none;
+                    margin: 0;
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: $lb-btn-dark-bg;
+                }
             };
+            :where(.lb-refresh) & {
+                // Vendor's `.pills-list li:hover .actions { display: block !important }` would win on
+                // hover without these.
+                .actions {
+                    position: static !important;
+                    display: flex !important;
+                    align-items: center;
+                    gap: 6px;
+                }
+            }
             .actions button {
                 border: 0;
                 height: 30px;
@@ -44,14 +143,44 @@
                 float: left;
                 line-height: 0;
                 opacity: .4;
+                :where(.lb-refresh) & {
+                    width: 34px;
+                    height: 34px;
+                    margin: 0;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: $lb-radius-pill;
+                    opacity: 1;
+                    color: $lb-pill-text;
+                    transition: background-color .15s ease, color .15s ease;
+                    i.icon-pencil {
+                        @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-pill-text, 18px);
+                        opacity: .4;
+                    }
+                    i.icon-trash {
+                        @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 18px);
+                        opacity: .4;
+                    }
+                }
             };
             .actions button:hover {
                 cursor: pointer;
                 opacity: 1;
+                :where(.lb-refresh) & {
+                    background-color: $lb-rail-active-bg;
+                    i {
+                        background-color: $lb-rail-active;
+                        opacity: 1;
+                    }
+                }
             };
         }
         >li:hover {
             box-shadow: 0 0 3px rgba(0,0,0,.3), 0 0 1px rgba(0,0,0,.2);
+            :where(.lb-refresh) & {
+                box-shadow: none;
+            }
         }
     }
         

@@ -1,12 +1,22 @@
+@import '~lb-variables.scss';
+
 .poll_component {
     padding: 24px;
     border: 0.5px solid #EBEBEB;
     display: flex;
+    :where(.lb-refresh) & {
+        border: 1px solid $lb-input-border;
+        border-radius: $lb-radius-card;
+        background-color: #fff;
+    }
 }
 
 .poll_component_title {
     font-size: 16px;
     font-weight: 500;
+    :where(.lb-refresh) & {
+        color: $lb-btn-dark-bg;
+    }
 }
 
 .poll_component_vote_option {
@@ -23,6 +33,14 @@
 .poll_component_subtitle {
     font-size: 12px;
     color: #737373;
+    :where(.lb-refresh) & {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        color: $lb-timestamp;
+        margin-bottom: 6px;
+    }
 }
 
 .poll_option_container {
@@ -35,6 +53,39 @@
     position: absolute;
     right: 10px;
     cursor: pointer;
+    :where(.lb-refresh) & {
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color .15s ease, color .15s ease;
+        color: $lb-timestamp;
+        &:hover {
+            background-color: rgba($lb-btn-dark-bg, 0.08);
+            color: $lb-btn-dark-bg;
+        }
+        // Drawn in CSS (no Lucide "x" asset) so it centers regardless of font metrics.
+        .icon-close-small {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            &:before, &:after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 10px;
+                height: 2px;
+                background-color: currentColor;
+            }
+            &:before { transform: translate(-50%, -50%) rotate(45deg); }
+            &:after { transform: translate(-50%, -50%) rotate(-45deg); }
+        }
+    }
 }
 
 .poll_option_add_button {
@@ -42,6 +93,14 @@
    font-weight: 500;
    color: #8AB6D0; 
    width: fit-content;
+   :where(.lb-refresh) & {
+       font-weight: 600;
+       color: $lb-rail-active;
+       transition: color .15s ease;
+       &:hover {
+           color: $lb-btn-dark-bg;
+       }
+   }
 }
 
 .poll_flex_box {
@@ -90,4 +149,40 @@
     
     background-color: #5FA8C8; 
     border-radius: 12px;
+    :where(.lb-refresh) & {
+        background-color: $lb-rail-active;
+    }
+}
+
+:where(.lb-refresh) {
+    // The React component renders these inputs without classes.
+    .poll_component input[type="text"],
+    .poll_component input[type="number"] {
+        width: 100%;
+        box-sizing: border-box !important;
+        // !important so no vendor focus style can change the border width and resize the box.
+        border-width: 1px !important;
+        border-style: solid !important;
+        border-color: $lb-input-border;
+        border-radius: $lb-radius-input !important;
+        // sir-trevor's `.st-block input[type="text"]` (and :active/:focus, inputs.scss) sets
+        // `padding: .6em` at equal specificity, so without !important build order decides.
+        padding: 8px 12px !important;
+        font-size: 13px;
+        transition: border-color .15s ease;
+        &:hover {
+            border-color: darken($lb-input-border, 15%);
+        }
+        &:focus {
+            outline: 0 !important;
+            border-color: $lb-rail-active;
+            // No focus glow: in this tight card a 3px ring looks like the text shifting.
+            box-shadow: none !important;
+        }
+        &:disabled {
+            background-color: $lb-subnav-bg;
+            color: $lb-timestamp;
+            cursor: not-allowed;
+        }
+    }
 }
