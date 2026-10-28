@@ -89,7 +89,7 @@
     "raven-js": "3.22.3",
     "react-select": "^3.0.4",
     "react-social-media-embed": "^2.5.13",
-    "sanitize-html": "^2.7.0",
+    "sanitize-html": "^2.18.0",
     "sir-trevor": "github:liveblog/sir-trevor-js",
     "styled-components": "^5.1.1",
     "superdesk-core": "github:liveblog/superdesk-client-core#v1.17.0-liveblog",
