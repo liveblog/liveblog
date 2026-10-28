@@ -59,6 +59,28 @@ const shouldExclude = function(modulePath) {
     return !validModules.some((app) => modulePath.indexOf(app) > -1);
 };
 
+// VersionEmbedScriptPlugin emits a copy of `embed.js` under `<version>/embed.js`,
+// since `/embed.js` is redirected to the versioned path on hosted instances
+class VersionEmbedScriptPlugin {
+    apply(compiler) {
+        const version = require(path.join(__dirname, 'package.json')).version;
+
+        compiler.hooks.thisCompilation.tap('VersionEmbedScriptPlugin', (compilation) => {
+            compilation.hooks.processAssets.tap(
+                {
+                    name: 'VersionEmbedScriptPlugin',
+                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+                },
+                (assets) => {
+                    if (assets['embed.js']) {
+                        compilation.emitAsset(`${version}/embed.js`, assets['embed.js']);
+                    }
+                }
+            );
+        });
+    }
+}
+
 module.exports = (env, argv) => {
     const mode = (argv && argv.mode) || process.env.NODE_ENV || 'development';
 
@@ -109,6 +131,7 @@ module.exports = (env, argv) => {
             new ForkTsCheckerWebpackPlugin({
                 async: true,
             }),
+            new VersionEmbedScriptPlugin(),
             new CopyPlugin({
                 patterns: [
                     { from: 'app/fonts', to: 'fonts' },
