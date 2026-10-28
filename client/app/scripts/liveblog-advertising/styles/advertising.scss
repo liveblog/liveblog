@@ -1,3 +1,200 @@
+@import '~lb-variables.scss';
+@import '~lb-ui-mixins.scss';
+
+:where(.lb-refresh) {
+    .item-creation.advertising {
+        // Direct child only: freetype groups nest their own `<fieldset>` and would get this padding twice.
+        > fieldset {
+            padding: 4px 24px 24px;
+        }
+        fieldset fieldset {
+            padding: 0;
+        }
+        > fieldset > .sd-line-input, .form-group, .fieldset-group, .fieldset-group-image {
+            margin-bottom: 26px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+        .sd-line-input__label,
+        .form-group > label,
+        .form-input > label,
+        .fieldset-group > label,
+        .fieldset-group-image > label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        // Vendor positions this label absolutely (floating-label pattern), so its
+        // margin-bottom has no effect unless it is back in normal flow.
+        .sd-line-input__label {
+            position: static !important;
+        }
+        .sd-line-input__input, .form-input input[type="text"], .form-input input[type="url"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .sd-line-input__char-count {
+            margin-top: 4px;
+        }
+        .form-input .image-text {
+            margin-top: 8px;
+            color: $lb-timestamp;
+            font-size: 12px;
+        }
+    }
+
+    // advert-modal.ng1's `sd-modal` has no size modifier, so it gets vendor's
+    // 480px `.modal` default. Match `modal--large` (680px).
+    .modal:has(.item-creation.advertising) {
+        .modal__dialog {
+            max-width: 680px;
+        }
+        .modal__body {
+            max-width: 680px !important;
+        }
+    }
+
+	// `.main-section` is absolutely positioned on all four sides, so a margin
+	// insets it without shifting the offsets its children rely on.
+	.main-section.advertising {
+		margin: 12px 20px 20px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+		border-radius: $lb-radius-card;
+	}
+
+	.main-section.advertising {
+		// Vendor's `.navbtn` fixes `width: 4.8rem`, which lets the labeled pill
+		// overflow the wrapper and run off-screen.
+		.dropdown.navbtn {
+			width: auto !important;
+			// Vendor's `.navbtn` draws a left divider meant for icon-only buttons.
+			border-left: none !important;
+		}
+		// Vendor restyles the toggle (fill and side shadow) while its menu is open.
+		.dropdown.open > .dropdown__toggle.sd-create-btn {
+			background-color: $lb-rail-active !important;
+			box-shadow: none !important;
+		}
+		[data-test-id="open-adverts-modal"].sd-create-btn,
+		[ng-click="openCollectionDialog();"].sd-create-btn {
+			position: relative;
+			width: auto !important;
+			height: 40px !important;
+			padding: 0 20px 0 16px !important;
+			display: inline-flex !important;
+			align-items: center;
+			border-radius: $lb-radius-pill !important;
+			background-color: $lb-rail-active !important;
+			// Vendor's `.navbtn` draws a left divider meant for icon-only buttons.
+			border-left: none !important;
+			.circle {
+				display: none !important;
+			}
+			// The icon comes from the app-wide `.sd-create-btn i` rule (liveblog.scss);
+			// this only undoes vendor's absolute centering.
+			i {
+				position: static !important;
+				top: auto !important;
+				left: auto !important;
+				margin: 0 8px 0 0 !important;
+			}
+			&:after {
+				position: relative;
+				color: #fff;
+				font-size: 13px;
+				font-weight: 600;
+				white-space: nowrap;
+			}
+		}
+		[data-test-id="open-adverts-modal"].sd-create-btn:after {
+			content: 'New Advert';
+		}
+		[ng-click="openCollectionDialog();"].sd-create-btn:after {
+			content: 'New Collection';
+		}
+		// Repeats the narrow-screen collapse of the `lb-create-btn-pill` mixin,
+		// which these buttons don't use. Keep the two in sync.
+		@media (max-width: 800px) {
+			[data-test-id="open-adverts-modal"].sd-create-btn,
+			[ng-click="openCollectionDialog();"].sd-create-btn {
+				width: 40px !important;
+				padding: 0 !important;
+				justify-content: center !important;
+				&:after {
+					content: none !important;
+				}
+				i {
+					margin: 0 !important;
+				}
+			}
+		}
+		.dropdown__menu {
+			border: 1px solid $lb-input-border;
+			border-radius: $lb-radius-input;
+			box-shadow: $lb-card-shadow;
+			padding: 6px;
+			.dropdown__menu-label {
+				padding: 8px 10px 4px;
+				color: $lb-timestamp;
+				font-size: 11px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: .02em;
+			}
+			li > button {
+				display: block;
+				width: 100%;
+				text-align: left;
+				padding: 8px 10px;
+				border-radius: $lb-radius-input;
+				color: $lb-pill-text;
+				font-size: 13px;
+				transition: background-color .15s ease, color .15s ease;
+				&:hover {
+					background: $lb-rail-active-bg;
+					color: $lb-btn-dark-bg;
+				}
+			}
+		}
+	}
+
+	// This `.subnav` is a sibling of `.main-section.advertising`, not an
+	// ancestor, hence `:has()`.
+	.subnav:has(+ .main-section.advertising) .nav-tabs {
+		display: inline-flex;
+		height: auto;
+		margin-top: 12px;
+		// Not $lb-subnav-bg: `.subnav` already has that background.
+		background: #fff;
+		padding: 4px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+		border-radius: $lb-radius-pill;
+		> li {
+			margin-bottom: 0;
+			> button {
+				margin: 0;
+				height: auto;
+				line-height: normal;
+				background: none;
+				border: none !important;
+				border-radius: $lb-radius-pill;
+				padding: 8px 18px;
+				color: $lb-pill-text;
+				font-weight: 500;
+				font-size: 13px;
+				transition: background-color .15s ease, color .15s ease;
+				&:hover {
+					color: $lb-btn-dark-bg;
+				}
+			}
+			&.active > button, &.active > button:hover {
+				background-color: $lb-btn-dark-bg;
+				color: #fff;
+			}
+		}
+	}
+}
+
 .advertising {
 	.button-stack.right-stack {
 		margin: 0px!important;
@@ -10,6 +207,38 @@
 		float: right!important;
 	}
 
+	:where(.lb-refresh) & {
+		.ad-section > header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			background: #fff;
+			height: 68px;
+			box-sizing: border-box;
+			padding: 0 24px;
+			border-bottom: 1px solid $lb-input-border;
+			border-top-left-radius: $lb-radius-card;
+			border-top-right-radius: $lb-radius-card;
+			// Without this stacking context, `.advert-list-holder` (absolute, no
+			// z-index) paints over the dropdown menu.
+			position: relative;
+			.dropdown.navbtn {
+				position: relative;
+				z-index: 3;
+			}
+			.section-title {
+				float: none;
+				padding: 0;
+				h2 {
+					margin: 0;
+					font-size: 18px;
+					font-weight: 600;
+					color: $lb-btn-dark-bg;
+				}
+			}
+		}
+	}
+
 	.advert-list-holder {
 		position: absolute;
 		top: 48px;
@@ -17,28 +246,195 @@
 		right: 0;
 		bottom: 0;		
 		overflow-y: auto;
+		:where(.lb-refresh) & {
+			top: 68px;
+			background: #fff;
+			border-bottom-left-radius: $lb-radius-card;
+			border-bottom-right-radius: $lb-radius-card;
+		}
 		& > .shadow-list-holder {
 			& > .pills-list {
 				padding: 20px;
 			}
 		}
 	}
+	:where(.lb-refresh) & {
+		.pills-list li {
+			display: flex;
+			align-items: center;
+			background: #fff;
+			margin-bottom: 12px;
+			border: 1px solid $lb-input-border;
+			border-radius: $lb-radius-input;
+			padding: 8px 22px;
+			box-shadow: none;
+			// Vendor's clearfix pseudo-elements would become flex items.
+			&::before, &::after {
+				content: none;
+			}
+			&:last-child {
+				margin-bottom: 0;
+			}
+			&:hover {
+				box-shadow: none;
+			}
+			h6 {
+				float: none;
+				margin: 0;
+				font-size: 15px;
+				font-weight: 600;
+				color: $lb-btn-dark-bg;
+			}
+			// Auto margin, not space-between, so the title and badge stay together.
+			.actions {
+				position: static !important;
+				display: flex !important;
+				align-items: center;
+				gap: 6px;
+				margin-left: auto;
+			}
+			.actions button {
+				border: 0;
+				width: 34px;
+				height: 34px;
+				margin: 0;
+				background: none;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: $lb-radius-pill;
+				opacity: 1;
+				transition: background-color .15s ease;
+				i.icon-pencil {
+					@include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg, 18px);
+					opacity: .4;
+				}
+				i.icon-trash {
+					@include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg, 18px);
+					opacity: .4;
+				}
+				&:hover {
+					background-color: $lb-rail-active-bg;
+					i {
+						background-color: $lb-rail-active;
+						opacity: 1;
+					}
+				}
+			}
+		}
+
+		.state-label {
+			border-radius: $lb-radius-pill;
+			padding: 3px 10px;
+			font-size: 10px;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: .02em;
+			border-width: 1px;
+			border-style: solid;
+		}
+	}
 	.green-state {
 		border-color: #5e8d32!important;
     	color: #5e8d32!important;
     	margin-left: 20px;
+		:where(.lb-refresh) & {
+			border-color: $lb-rail-active !important;
+			color: $lb-rail-active !important;
+			background: $lb-rail-active-bg;
+		}
 	}
 	.yellow-state {
 		border-color: #d2a800;
     	color: #d2a800;
     	margin-left: 20px;
+		:where(.lb-refresh) & {
+			border-color: $lb-star-selected;
+			color: darken($lb-star-selected, 10%);
+			background: lighten($lb-star-selected, 38%);
+		}
 	}
 	.adverts-in-collection {
 		color: black;
 		margin-left: 10px;
 	}
+	:where(.lb-refresh) & {
+		.card-box {
+			border: 1px solid $lb-input-border;
+			border-radius: $lb-radius-card;
+			box-shadow: none;
+			// No overflow:hidden: it would clip the absolutely positioned dropdown menu.
+			// The white fill keeps the page background from showing outside the header's
+			// rounded corners.
+			background-color: #fff;
+		}
+		.card-box__header {
+			background-color: $lb-btn-dark-bg !important;
+			color: #fff;
+			// Vendor's `::before` (layouts.scss) draws a dark strip across the header top.
+			&::before {
+				content: none;
+			}
+			// Minus `.card-box`'s 1px border, or the card's white shows at the corners.
+			border-top-left-radius: $lb-radius-card - 1px;
+			border-top-right-radius: $lb-radius-card - 1px;
+			.card-box__heading {
+				color: #fff;
+				font-weight: 600;
+			}
+			.dropdown__toggle {
+				color: rgba(255, 255, 255, 0.7);
+				&:hover {
+					color: #fff;
+				}
+				i.icon-dots-vertical {
+					color: inherit;
+				}
+			}
+			.more-activity-menu {
+				padding: 6px 0;
+				.dropdown__menu-label {
+					padding: 8px 16px 4px;
+				}
+				li.divider {
+					margin: 4px 0;
+				}
+				li > button {
+					display: flex;
+					align-items: center;
+					gap: 10px;
+					padding: 9px 16px;
+					i.icon-pencil, i.icon-trash {
+						margin: 0;
+					}
+					i.icon-pencil {
+						@include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-pill-text, 16px);
+					}
+					i.icon-trash {
+						@include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-pill-text, 16px);
+					}
+					&:hover {
+						i {
+							background-color: $lb-rail-active;
+						}
+					}
+				}
+			}
+		}
+	}
 	.card-box__content {
 		min-height: 120px;
+		:where(.lb-refresh) & {
+			border-bottom-left-radius: $lb-radius-card;
+			border-bottom-right-radius: $lb-radius-card;
+		}
+	}
+	:where(.lb-refresh) & {
+		.collection-list input[type="checkbox"] {
+			accent-color: $lb-rail-active;
+			width: 16px;
+			height: 16px;
+		}
 	}
 	.ads-media {
         img {

@@ -4,6 +4,14 @@ $PADDING: 20px;
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+// Vendor positions `.tab-content.outer` absolutely at `top: 0` and responsive.scss
+// only resets `left` on mobile, so offset it below the horizontal tab row.
+@media(max-width: 800px) {
+    :where(.lb-refresh) .settings-page .tabbable.outer .tab-content.outer {
+        top: 48px !important;
+    }
+}
+
 .settings-disabled {
     .navbtn {
         opacity: 0.3;
@@ -12,14 +20,133 @@ $PADDING: 20px;
 .blog-settings-view {
     .settings-page {
         top: $SUBNAV_HEIGHT*3;
+        :where(.lb-refresh) & {
+            // Vendor's `$topspace`: clears the two header bars above.
+            top: 98px !important;
+            margin: 12px 20px 20px;
+            background-color: white;
+            @include border-radius($lb-radius-card);
+            // Not $lb-card-shadow: its vertical offset leaves the top edge almost shadowless.
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+            // No `overflow: hidden`, it would clip the shadow. Children round their own corners.
+            display: flex;
+            flex-direction: column;
+        }
         > .subnav {
             top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
             padding: 0 20px;
+            :where(.lb-refresh) & {
+                position: static;
+                top: auto;
+                flex: 0 0 auto;
+                height: 5.8rem;
+                border-top-left-radius: $lb-radius-card;
+                border-top-right-radius: $lb-radius-card;
+                background-color: white !important;
+                border-bottom: 1px solid $lb-input-border !important;
+                padding: 0 24px;
+                .page-nav-title {
+                    color: $lb-btn-dark-bg;
+                    font-size: 22px;
+                    font-weight: 700;
+                }
+                .btn {
+                    border-radius: $lb-radius-pill !important;
+                    text-transform: none;
+                    font-weight: 400;
+                    font-size: 14px;
+                    padding: 8px 22px !important;
+                    height: auto !important;
+                    box-shadow: none !important;
+                    transition: background-color .15s ease;
+                    &.btn--primary {
+                        background-color: $lb-btn-dark-bg !important;
+                        border-color: $lb-btn-dark-bg !important;
+                        color: white !important;
+                        &:hover:not(:disabled) {
+                            background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                        }
+                    }
+                    &.btn-default {
+                        background-color: darken($lb-pill-bg, 18%) !important;
+                        border-color: darken($lb-pill-bg, 18%) !important;
+                        color: $lb-btn-dark-bg !important;
+                        &:hover:not(:disabled) {
+                            background-color: darken($lb-pill-bg, 26%) !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        :where(.lb-refresh) & {
+            // Containing block for the absolutely positioned `.nav-stacked` and `.tab-content.outer`.
+            .tabbable.outer {
+                flex: 1 1 auto;
+                min-height: 0;
+                position: relative;
+            }
         }
 
         .tabbable.outer > .nav-stacked {
             width: 200px;
+            :where(.lb-refresh) & {
+                // Width must match vendor's `left: 180px` on `.tab-content.outer`.
+                width: 180px;
+                background-color: white !important;
+                box-shadow: none !important;
+                border-right: 1px solid $lb-input-border !important;
+                border-bottom-left-radius: $lb-radius-card;
+                padding-top: 8px;
+                > li {
+                    margin-bottom: 2px;
+                    > a {
+                        display: block;
+                        padding: 10px 16px 10px 22px;
+                        color: $lb-subnav-text;
+                        font-weight: 500;
+                        // Vendor's `.nav-tabs.nav-stacked` borders all four sides.
+                        border: none !important;
+                        border-radius: 0 !important;
+                        transition: color .15s ease;
+                        &:hover {
+                            color: $lb-btn-dark-bg;
+                            text-decoration: none;
+                            background: none;
+                        }
+                    }
+                    &.active > a, &.active > a:hover {
+                        background: none !important;
+                        color: $lb-rail-active !important;
+                        // Vendor's `.active > a` adds an inset shadow.
+                        box-shadow: none !important;
+                    }
+                }
+                // Repeats responsive.scss's mobile tab-row layout: this file loads after the global
+                // bundle, so its fixed-width sidebar rules would otherwise win.
+                @media(max-width: 800px) {
+                    position: relative !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    overflow-x: auto !important;
+                    overflow-y: hidden !important;
+                    border-right: none !important;
+                    border-bottom: 1px solid $lb-input-border !important;
+                    border-bottom-left-radius: 0 !important;
+                    padding: 0 8px !important;
+                    > li {
+                        flex: 0 0 auto;
+                        margin-bottom: 0;
+                        > a {
+                            white-space: nowrap;
+                            padding: 12px 14px !important;
+                        }
+                    }
+                }
+            }
         }
 
         .tab-content {
@@ -28,10 +155,25 @@ $PADDING: 20px;
                 border-bottom: 1px solid #e0e0e0;
                 padding: $PADDING/2 $PADDING;
                 box-sizing: border-box;
+                :where(.lb-refresh) & {
+                    // Vendor's `.split-content > .header` sets a border in both layouts.scss and the settings app.
+                    border-bottom: none !important;
+                    h2 {
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: $lb-btn-dark-bg;
+                    }
+                }
             }
             > .content {
                 padding: $PADDING;
                 @include box-sizing(border-box);
+                :where(.lb-refresh) & {
+                    // Vendor's `.split-content > .content` sets a grey fill.
+                    background-color: white !important;
+                    border-bottom-right-radius: $lb-radius-card;
+                    padding: $PADDING*1.5 $PADDING;
+                }
                 > * {
                     width: $SUBSETTINGS_WIDTH;
                 }
@@ -40,6 +182,12 @@ $PADDING: 20px;
                     content: " ";
                     width: 100%;
                     padding: $PADDING/2 0;
+                    :where(.lb-refresh) & {
+                        display: flex;
+                        content: normal;
+                        align-items: center;
+                        padding: 14px 0;
+                    }
                     .control-label {
                         text-align: left;
                         font-size: 11px;
@@ -48,10 +196,27 @@ $PADDING: 20px;
                         float: left;
                         width: 18%;
                         margin-right: 2%;
+                        :where(.lb-refresh) & {
+                            float: none;
+                            width: auto;
+                            letter-spacing: .02em;
+                            color: $lb-timestamp;
+                            flex: 0 0 160px;
+                            margin-right: 20px;
+                        }
                     }
                     .form-input {
                         width: 80%;
                         float: left;
+                        :where(.lb-refresh) & {
+                            width: auto;
+                            float: none;
+                            flex: 1 1 auto;
+                            min-width: 0;
+                            // The datepicker/timepicker button is positioned against this box, so the cap keeps
+                            // it at the field's visible edge.
+                            max-width: 480px;
+                        }
                         select {margin: 0; height: auto;} // overwrite bootstrap
                         input {
                             box-sizing: border-box;
@@ -67,12 +232,123 @@ $PADDING: 20px;
                                 outline: 0!important;
                             }
                         }
+                        :where(.lb-refresh) & {
+                            select, input, textarea {
+                                border: 1px solid $lb-input-border;
+                                @include border-radius($lb-radius-input);
+                                transition: border-color .15s ease, box-shadow .15s ease;
+                            }
+                            input, textarea {
+                                box-sizing: border-box;
+                                padding: 8px 12px;
+                                height: auto;
+                                font-size: 13px;
+                                color: #000;
+                                box-shadow: none;
+                                &:focus {
+                                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                                    border-color: $lb-rail-active !important;
+                                    outline: 0!important;
+                                }
+                            }
+                            select {
+                                padding: 8px 12px;
+                                // The native arrow ignores padding, so draw our own as a background image.
+                                appearance: none;
+                                -webkit-appearance: none;
+                                -moz-appearance: none;
+                                background-image: url('~images/icons/chevron-down.svg');
+                                background-repeat: no-repeat;
+                                background-position: right 10px center;
+                                background-size: 14px;
+                                padding-right: 32px;
+                                &:focus {
+                                    box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
+                                    border-color: $lb-rail-active !important;
+                                    outline: 0!important;
+                                }
+                            }
+                            .btn {
+                                border-radius: $lb-radius-pill !important;
+                                text-transform: none;
+                                box-shadow: none !important;
+                                transition: background-color .15s ease;
+                                background-color: darken($lb-pill-bg, 12%) !important;
+                                border-color: darken($lb-pill-bg, 12%) !important;
+                                color: $lb-btn-dark-bg !important;
+                                &:hover:not(:disabled) {
+                                    background-color: darken($lb-pill-bg, 20%) !important;
+                                }
+                            }
+                            .datepicker-input .btn, .timepicker-input .btn {
+                                background-color: transparent !important;
+                                border-color: transparent !important;
+                                color: $lb-timestamp !important;
+                                box-shadow: none !important;
+                                // Vendor pins this at `top: 2px`, which only fits its shorter input.
+                                top: 50% !important;
+                                transform: translateY(-50%);
+                                &:hover:not(:disabled) {
+                                    background-color: transparent !important;
+                                    color: $lb-btn-dark-bg !important;
+                                }
+                            }
+                            .datepicker-input .btn i.icon-calendar {
+                                @include lb-icon-font-mask(url('~images/icons/calendar.svg'), $lb-timestamp, 16px);
+                            }
+                            .timepicker-input .btn i.icon-time {
+                                @include lb-icon-font-mask(url('~images/icons/clock.svg'), $lb-timestamp, 16px);
+                            }
+                            .datepicker-input .btn:hover i.icon-calendar,
+                            .timepicker-input .btn:hover i.icon-time {
+                                background-color: $lb-btn-dark-bg;
+                            }
+                            > p, .form-input__hint {
+                                display: block;
+                                width: 100%;
+                                margin: 6px 0 0;
+                                font-size: 12px;
+                                line-height: 1.5;
+                                color: $lb-timestamp;
+                            }
+                            > a {
+                                display: block;
+                                margin-top: 8px;
+                            }
+                        }
                     }
                 }
             }
         }
         .relative {
             position: relative;
+        }
+    }
+    :where(.lb-refresh) & {
+        .btn {
+            border-radius: $lb-radius-pill !important;
+            text-transform: none;
+            font-weight: 400;
+            box-shadow: none !important;
+            transition: background-color .15s ease;
+            &.btn--primary {
+                background-color: $lb-btn-dark-bg !important;
+                border-color: $lb-btn-dark-bg !important;
+                color: white !important;
+                &:hover:not(:disabled) {
+                    background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                }
+            }
+            // `:not(.btn--primary)` rather than `.btn-default`: some buttons (e.g. the
+            // owner-search Cancel) have no modifier class.
+            &:not(.btn--primary) {
+                background-color: $lb-pill-bg !important;
+                border-color: $lb-pill-bg !important;
+                color: $lb-pill-text !important;
+                &:hover:not(:disabled) {
+                    background-color: darken($lb-pill-bg, 4%) !important;
+                }
+            }
         }
     }
     .outputs {
@@ -87,6 +363,86 @@ $PADDING: 20px;
         .header {
             h2 {
                 display: inline;
+                :where(.lb-refresh) & {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: $lb-btn-dark-bg;
+                }
+            }
+            :where(.lb-refresh) & {
+                .sd-create-btn {
+                    @include lb-create-btn-pill('Add output');
+                }
+                // The wrapper's `.minusMargin1020` (-10px -20px) pushes the pill past the header edge.
+                .minusMargin1020 {
+                    margin: 0 !important;
+                }
+            }
+        }
+        :where(.lb-refresh) & {
+            .pills-list li {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 22px;
+                margin-bottom: 12px;
+                border: 1px solid $lb-input-border !important;
+                @include border-radius($lb-radius-input);
+                box-shadow: none !important;
+                // The template's `clearfix` ::before/::after would become extra flex items and
+                // break `space-between`.
+                &::before, &::after {
+                    content: none;
+                }
+                &:last-child {
+                    margin-bottom: 0;
+                }
+                &:hover {
+                    box-shadow: none !important;
+                }
+                h6 {
+                    float: none;
+                    margin: 0;
+                    color: $lb-btn-dark-bg;
+                    font-weight: 600;
+                    font-size: 15px;
+                }
+                .actions {
+                    // Must beat vendor's `:hover .actions { display: block !important }`.
+                    position: static !important;
+                    display: flex !important;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .actions button {
+                    color: $lb-pill-text;
+                    width: 34px;
+                    height: 34px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    @include border-radius($lb-radius-pill);
+                    transition: background-color .15s ease, color .15s ease;
+                    &:hover {
+                        color: $lb-rail-active;
+                        background-color: $lb-rail-active-bg;
+                    }
+                    i.icon-globe, i.icon-pencil, i.icon-trash {
+                        margin: 0;
+                    }
+                    i.icon-globe {
+                        @include lb-icon-font-mask(url('~images/icons/globe.svg'), $lb-btn-dark-bg, 18px);
+                    }
+                    i.icon-pencil {
+                        @include lb-icon-font-mask(url('~images/icons/pencil.svg'), $lb-btn-dark-bg, 18px);
+                    }
+                    i.icon-trash {
+                        @include lb-icon-font-mask(url('~images/icons/trash-2.svg'), $lb-btn-dark-bg, 18px);
+                    }
+                    &:hover i {
+                        background-color: $lb-rail-active;
+                    }
+                }
             }
         }
     }
@@ -103,6 +459,46 @@ $PADDING: 20px;
         position: absolute;
         left: $SUBSETTINGS_WIDTH;
         top:78px;
+        :where(.lb-refresh) & {
+            border: 1px solid $lb-input-border;
+            @include border-radius($lb-radius-input);
+            box-shadow: $lb-card-shadow;
+            padding: 14px;
+            .user-select form {
+                label {
+                    display: block;
+                    color: $lb-timestamp;
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: .02em;
+                    margin-bottom: 6px;
+                }
+                input {
+                    width: 100%;
+                    @include box-sizing(border-box);
+                    border: 1px solid $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    padding: 8px 10px;
+                    font-size: 13px;
+                    &:focus {
+                        outline: 0;
+                        border-color: $lb-rail-active;
+                        box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15);
+                    }
+                }
+            }
+            .search-result .users-list-embed > a {
+                display: block;
+                margin-top: 14px;
+                margin-bottom: 8px;
+                color: $lb-timestamp;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .02em;
+            }
+        }
     }
     .footer {
         background: none repeat scroll 0 0 #f8f8f8;
@@ -111,6 +507,13 @@ $PADDING: 20px;
         margin: 3px -10px -10px;
         padding: 10px;
         height: 30px;
+        :where(.lb-refresh) & {
+            background-color: white;
+            border-radius: 0 0 $lb-radius-input $lb-radius-input;
+            border-top: 1px solid $lb-input-border;
+            margin: 10px -14px -14px;
+            padding: 10px 14px;
+        }
     }
     .subsettings-content {
         margin-top: 25px;
@@ -131,11 +534,44 @@ $PADDING: 20px;
             color: #666;
             font-weight: 400;
             border-bottom: 1px solid #e0e0e0;
+            :where(.lb-refresh) & {
+                color: $lb-timestamp;
+                border-bottom: 1px solid $lb-input-border;
+                padding-bottom: 8px;
+                h3 {
+                    color: $lb-btn-dark-bg;
+                    font-weight: 600;
+                }
+            }
         }
     .users-list-embed {
         max-height:136px;
         overflow: auto;
         margin-top: 3px;
+        :where(.lb-refresh) & {
+            overflow-y: auto;
+            overflow-x: hidden;
+            > li {
+                // Vendor's negative right margin makes rows wider than the list (horizontal scrollbar).
+                margin-right: 0;
+                @include border-radius($lb-radius-input);
+                padding: 0 8px;
+                @include box-sizing(border-box);
+                .avatar {
+                    margin: 3px 10px 4px 0;
+                }
+                &:hover, &.active {
+                    color: $lb-btn-dark-bg !important;
+                }
+                &:hover {
+                    background: $lb-rail-active-bg !important;
+                }
+                &.active {
+                    background: $lb-rail-active-bg !important;
+                    font-weight: 600;
+                }
+            }
+        }
     }
     .reset-default {
         position: absolute;
@@ -145,6 +581,9 @@ $PADDING: 20px;
         float: left;
         text-transform: uppercase;
         width: 80px;
+        :where(.lb-refresh) & {
+            margin-right: 12px;
+        }
     }
     .top-pad {
         padding-top: 4px;
@@ -160,6 +599,11 @@ $PADDING: 20px;
         .inner {
             border-radius: 8px;
         }
+        :where(.lb-refresh) & {
+            &.checked {
+                background: $lb-rail-active !important;
+            }
+        }
     }
     .header-top {
         margin-top: 40px;
@@ -174,14 +618,36 @@ $PADDING: 20px;
         display:inline-block;
         float:right;
         margin-top:7px;
+        :where(.lb-refresh) & {
+            color: $lb-rail-active;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            &:hover {
+                color: darken($lb-rail-active, 10%);
+                text-decoration: none;
+            }
+        }
     }
     .avatar.large {
         height: 84px!important;
         width: 84px!important;
+        :where(.lb-refresh) & {
+            // Vendor's `.avatar.large.initials` keeps a 48px line-height.
+            &.initials {
+                line-height: 84px !important;
+                font-size: 28px !important;
+            }
+        }
     }
     .blog-media {
         @include border-box();
         border: 1px solid #d0d0d0 !important;
+        :where(.lb-refresh) & {
+            @include border-radius($lb-radius-input);
+            border: 1px solid $lb-input-border !important;
+        }
         img {
             padding: 7px;
             max-width: 240px;
@@ -254,6 +720,213 @@ div.datepicker-wrapper div.datepicker-additional td button {
 div.timepicker-popup div.timepicker-core button.btn.btn-info {
     margin: 0;
     float: left;
+}
+
+:where(.lb-refresh) {
+    // The sd-datepicker popup is appended to <body>, so it can't be scoped under
+    // `.blog-settings-view`.
+    div.datepicker-wrapper {
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-card);
+        box-shadow: $lb-card-shadow;
+        padding: 14px;
+        // Vendor's fixed 260px is too narrow for the month grid's longer labels.
+        width: 320px !important;
+
+        .datepicker-additional .btn {
+            @include border-radius($lb-radius-pill);
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            text-transform: none;
+            font-weight: 600;
+            box-shadow: none !important;
+            transition: background-color .15s ease;
+            &:hover:not(:disabled) {
+                background-color: darken($lb-pill-bg, 6%) !important;
+            }
+        }
+
+        .datepicker-core table {
+            // Equal-width columns. Vendor's auto layout skews the month grid's uneven labels.
+            table-layout: fixed;
+
+            thead {
+                tr:first-child th {
+                    .btn strong {
+                        font-weight: 600;
+                        font-size: 13px;
+                        color: $lb-btn-dark-bg;
+                        letter-spacing: .02em;
+                    }
+                    &:first-child .btn, &:last-child .btn {
+                        @include border-radius($lb-radius-pill);
+                        &:hover {
+                            background-color: $lb-rail-active-bg !important;
+                        }
+                    }
+                    padding-bottom: 6px;
+                }
+                tr:last-child th small {
+                    display: inline-block;
+                    margin-top: 8px;
+                    color: $lb-timestamp;
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: .02em;
+                }
+            }
+            tbody td {
+                padding: 6px 4px !important;
+            }
+            tbody td .btn {
+                @include border-radius($lb-radius-pill);
+                color: $lb-btn-dark-bg;
+                font-size: 13px;
+                white-space: nowrap;
+                text-align: center;
+                transition: background-color .15s ease, color .15s ease;
+                .text-muted {
+                    color: $lb-timestamp;
+                }
+                &:hover {
+                    background-color: $lb-rail-active-bg !important;
+                    color: $lb-btn-dark-bg !important;
+                    box-shadow: none !important;
+                }
+                &.active {
+                    background-color: $lb-rail-active !important;
+                    color: #fff !important;
+                    font-weight: 600;
+                    box-shadow: none !important;
+                }
+                &.btn--primary, &.btn--primary.active {
+                    background-color: $lb-rail-active !important;
+                    color: #fff !important;
+                    .text-muted {
+                        color: #fff;
+                    }
+                }
+            }
+        }
+
+        > .btn {
+            @include border-radius($lb-radius-pill);
+            text-transform: none;
+            font-weight: 400;
+            font-size: 12px;
+            margin-top: 12px;
+            padding: 6px 16px !important;
+            height: auto !important;
+            box-shadow: none !important;
+            transition: background-color .15s ease;
+            &.btn--primary {
+                background-color: $lb-btn-dark-bg !important;
+                border-color: $lb-btn-dark-bg !important;
+                color: #fff !important;
+                &:hover:not(:disabled) {
+                    background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                }
+            }
+            &:not(.btn--primary) {
+                margin-right: 8px;
+                background-color: $lb-pill-bg !important;
+                border-color: $lb-pill-bg !important;
+                color: $lb-pill-text !important;
+                &:hover:not(:disabled) {
+                    background-color: darken($lb-pill-bg, 4%) !important;
+                }
+            }
+        }
+    }
+
+    // Also appended to <body>, like the datepicker popup.
+    div.timepicker-popup {
+        border: 1px solid $lb-input-border;
+        @include border-radius($lb-radius-card);
+        box-shadow: $lb-card-shadow;
+        padding: 14px;
+        // Vendor's fixed 310px height cuts off the floated Confirm/Cancel buttons.
+        height: auto !important;
+        // Vendor's fixed 200px wraps Cancel and Confirm onto separate lines.
+        width: 260px !important;
+
+        .timepicker-additional .btn {
+            @include border-radius($lb-radius-pill);
+            background-color: $lb-pill-bg !important;
+            border-color: $lb-pill-bg !important;
+            color: $lb-pill-text !important;
+            text-transform: none;
+            font-weight: 600;
+            box-shadow: none !important;
+            transition: background-color .15s ease;
+            &:hover:not(:disabled) {
+                background-color: darken($lb-pill-bg, 6%) !important;
+            }
+        }
+
+        .timepicker-core {
+            // Clears the floated Confirm/Cancel buttons.
+            &::after {
+                content: '';
+                display: table;
+                clear: both;
+            }
+            .select-area {
+                border-top-color: $lb-input-border;
+                .header {
+                    color: $lb-timestamp;
+                    letter-spacing: .02em;
+                }
+                ul > li {
+                    @include border-radius($lb-radius-pill);
+                    color: $lb-btn-dark-bg;
+                    &:hover {
+                        background-color: $lb-rail-active-bg !important;
+                        color: $lb-rail-active;
+                    }
+                    &.active {
+                        background-color: $lb-rail-active !important;
+                        color: #fff !important;
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            // Floated right with Confirm first in markup, so Cancel's right margin sits between them.
+            .btn {
+                @include border-radius($lb-radius-pill);
+                text-transform: none;
+                font-weight: 400;
+                font-size: 12px;
+                white-space: nowrap;
+                margin-top: 12px;
+                padding: 6px 16px !important;
+                height: auto !important;
+                box-shadow: none !important;
+                transition: background-color .15s ease;
+                &:not(.btn--primary) {
+                    margin-right: 8px;
+                }
+                &.btn--primary {
+                    background-color: $lb-btn-dark-bg !important;
+                    border-color: $lb-btn-dark-bg !important;
+                    color: #fff !important;
+                    &:hover:not(:disabled) {
+                        background-color: lighten($lb-btn-dark-bg, 8%) !important;
+                    }
+                }
+                &:not(.btn--primary) {
+                    background-color: $lb-pill-bg !important;
+                    border-color: $lb-pill-bg !important;
+                    color: $lb-pill-text !important;
+                    &:hover:not(:disabled) {
+                        background-color: darken($lb-pill-bg, 4%) !important;
+                    }
+                }
+            }
+        }
+    }
 }
 
 p.warn-block {

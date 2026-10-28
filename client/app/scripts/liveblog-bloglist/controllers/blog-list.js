@@ -16,6 +16,7 @@ BlogListController.$inject = [
     'modal',
     'blogService',
     'featuresService',
+    '$timeout',
 ];
 
 export default function BlogListController(
@@ -32,7 +33,8 @@ export default function BlogListController(
     urls,
     modal,
     blogService,
-    featuresService
+    featuresService,
+    $timeout
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -473,12 +475,28 @@ export default function BlogListController(
     }
 
     function fetchBlogs() {
+        const query = $location.search().q || null;
+
         $scope.blogsLoading = true;
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
+            $scope.searchQuery = query;
             $scope.blogsLoading = false;
         });
     }
+
+    // The search text lives in the sdSearchbar directive's own scope, so its close
+    // button is the only way to clear both the input and the URL. Clicking it during
+    // this digest would throw "$digest already in progress", hence the $timeout.
+    $scope.clearSearch = function() {
+        $timeout(() => {
+            const close = document.querySelector('.bloglist .search-close');
+
+            if (close) {
+                close.click();
+            }
+        });
+    };
     // initialize bloglist embed code.
     fetchBloglistEmbed();
     // initialize blogs list

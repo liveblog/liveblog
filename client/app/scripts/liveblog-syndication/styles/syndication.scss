@@ -3,6 +3,64 @@
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
+:where(.lb-refresh) {
+    // `sd-user-avatar` falls back to vendor's grey `avatar_64.png` here: these objects
+    // have a `name`, not `display_name`, so neither `.initials` nor `.no-bg` is set
+    // (UserAvatarDirective.js `initAvatar`).
+    [lb-producers] .avatar:not(.no-bg):not(.initials),
+    [lb-consumers] .avatar:not(.no-bg):not(.initials) {
+        background: $lb-rail-active !important;
+        position: relative;
+        &:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            @include lb-icon-bg-mask(url('~images/icons/user-round.svg'), #fff);
+        }
+    }
+
+    // `.subnav` is a sibling of `[lb-producers]`/`[lb-consumers]`, not an ancestor,
+    // hence `:has()`.
+    .subnav:has(+ [lb-producers]), .subnav:has(+ [lb-consumers]) {
+        .nav-tabs {
+            display: inline-flex;
+            height: auto;
+            border-bottom: none;
+            margin-top: 12px;
+            background: $lb-subnav-bg;
+            padding: 4px;
+            @include border-radius($lb-radius-pill);
+            > li {
+                margin-bottom: 0;
+                > button {
+                    margin: 0;
+                    height: auto;
+                    line-height: normal;
+                    background: none;
+                    border: none !important;
+                    @include border-radius($lb-radius-pill);
+                    padding: 8px 18px;
+                    color: $lb-pill-text;
+                    font-weight: 500;
+                    font-size: 13px;
+                    transition: background-color .15s ease, color .15s ease;
+                    &:hover {
+                        color: $lb-btn-dark-bg;
+                    }
+                }
+                &.active > button, &.active > button:hover {
+                    background-color: $lb-btn-dark-bg;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
 /*Force 4 columns layout in consumers view*/
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div,
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.email,
@@ -159,6 +217,18 @@ div.select-producer {
     select {
         width: 85%;
         float: left;
+        :where(.lb-refresh) & {
+            // Replaces the native arrow, which misaligns once the global
+            // `.modal .modal__body select` rule (liveblog.scss) adds border and padding.
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-image: url('~images/icons/chevron-down.svg') !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            background-size: 14px !important;
+            padding-right: 32px !important;
+        }
     }
 
     select.full {
@@ -228,6 +298,23 @@ i.webhook-status.on {
 
 .zIndex2 {
     z-index: 2;
+}
+
+:where(.lb-refresh) {
+    // One neutral label: Producers and Consumers render identical markup.
+    // Float + margin only approximates the alignment. A `position: relative` wrapper
+    // moves `.main-section.users` off-screen, and `translateY` hid the button.
+    .sd-create-btn.zIndex2 {
+        @include lb-create-btn-pill('New entry');
+        margin-top: 16px;
+        margin-right: 24px;
+    }
+
+    [lb-ingest-panel] .sd-create-btn {
+        @include lb-create-btn-pill('Attach');
+        // Overrides `.minusMargin1020`, whose negative margins push the pill off-screen.
+        margin: 0 !important;
+    }
 }
 
 .preview-layout .list-pane > .content, .preview-layout .preview-pane > .content {

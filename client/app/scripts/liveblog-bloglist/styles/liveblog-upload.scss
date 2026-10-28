@@ -45,6 +45,15 @@ blog image uploader
                 @include box-sizing(border-box);
                 border: 2px dashed #e0e0e0;
                 padding: 15px;
+                :where(.lb-refresh) & {
+                    border: 2px dashed $lb-input-border;
+                    @include border-radius($lb-radius-input);
+                    background-color: white;
+                    transition: border-color .15s ease;
+                    &:hover {
+                        border-color: $lb-rail-active;
+                    }
+                }
 
                 .text {
                     text-align: center;
@@ -52,16 +61,37 @@ blog image uploader
                     color: #ccc;
                     font-size: 30px;
                     @include text-light();
+                    :where(.lb-refresh) & {
+                        margin-top: 20px;
+                        color: $lb-timestamp;
+                        font-size: 14px;
+                        font-weight: 400;
+                        &:before {
+                            content: '';
+                            margin: 0 auto 10px;
+                            width: 22px;
+                            height: 22px;
+                            // Include the mixin first: it sets `display: inline-block`, which must lose to `display: block`.
+                            @include lb-icon-font-mask(url('~images/icons/image.svg'), $lb-timestamp, 22px);
+                            display: block;
+                        }
+                    }
                 }
                 .input-holder {
                     text-align: center;
                     margin: 30px auto 0;
                     width: 175px;
+                    :where(.lb-refresh) & {
+                        margin: 15px auto 0;
+                    }
 
                     input {
                         width: 100%;
                         height: auto;
                         cursor: pointer !important;
+                        // Hides the native "no file selected" text, which Safari still draws
+                        // next to the hidden upload button. The `:before` sets its own size.
+                        font-size: 0;
                     }
                     input::-webkit-file-upload-button {
                       visibility: hidden;
@@ -83,6 +113,16 @@ blog image uploader
                       width: 100%;
                       text-align: center;
                       cursor: pointer !important;
+                      :where(.lb-refresh) & {
+                        background: white;
+                        border: 1px solid $lb-input-border;
+                        @include border-radius($lb-radius-pill);
+                        padding: 6px 14px;
+                        text-shadow: inherit;
+                        font-weight: 600;
+                        color: $lb-pill-text;
+                        transition: background-color .15s ease, border-color .15s ease;
+                      }
                     }
                     input:focus {
                         outline: none !important;
@@ -90,10 +130,19 @@ blog image uploader
                     input:hover:before {
                       border-color: #c0c0c0;
                       cursor: pointer !important;
+                      :where(.lb-refresh) & {
+                        // $lb-pill-bg alone is too close to the white resting state to read as a hover.
+                        background: darken($lb-pill-bg, 10%);
+                        border-color: darken($lb-pill-bg, 10%);
+                      }
                     }
                     input:active:before {
                       background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
                       outline: none;
+                      :where(.lb-refresh) & {
+                        background: darken($lb-pill-bg, 18%);
+                        border-color: darken($lb-pill-bg, 18%);
+                      }
                     }
                 }
 

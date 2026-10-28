@@ -3,11 +3,22 @@
 }
 
 @media(max-width: 800px) {
+    :where(.lb-refresh) {
+        // Stops overflowing content from widening the page and clipping the top bar's title.
+        .blogedit {
+            overflow-x: hidden;
+        }
+    }
     .blogedit .column {
         width: 100% !important;
     }
     .blogedit .column--first {
         width: 100% !important;
+        :where(.lb-refresh) & {
+            // Resets desktop's `left: 16px` (liveblog-edit.scss), which with width 100%
+            // pushes the column past `.blogedit` and gets it clipped.
+            left: 0 !important;
+        }
     }
     .blogedit .column--timeline {
         width: 100% !important;
@@ -17,11 +28,36 @@
         display: block !important;
     }
 
+    :where(.lb-refresh) {
+        // `.columns-holder`'s left must equal the rail's left + width (4px + 56px).
+        .blogedit .side-menu {
+            left: 4px !important;
+            padding: 4px !important;
+            width: 56px !important;
+        }
+        .blogedit .columns-holder {
+            left: 60px !important;
+        }
+
+        // Tuned to the narrow rail above (4px offset + 4px padding).
+        div.subnav div.button-stack.left-stack a.homebtn {
+            margin-left: 14px !important;
+        }
+    }
+
     .lb-post__content {
         margin-left: 0px !important;
     }
 
+    :where(.lb-refresh) {
+        .lb-post__holder {
+            // Clip at the card edge so wide content can't force page-level horizontal scroll.
+            overflow: hidden;
+        }
+    }
+
     .lb-post__actions {
+        // No forced wrap: `float: right` (post.scss) already wraps this row when it doesn't fit.
         margin-top: 10px;
         margin-bottom: 20px;
     }
@@ -49,6 +85,70 @@
         overflow: hidden;
         text-indent: -85px;
         color: #d0d0d0;
+        :where(.lb-refresh) & {
+            // Shows the full "Choose post type" label. Color is left to the `.btn` !important rules.
+            width: auto;
+            white-space: normal;
+            overflow: visible;
+            text-indent: 0;
+        }
+    }
+
+    :where(.lb-refresh) {
+        // `!important`: same specificity as liveblog-edit.scss's `.st-blocks.st-ready` rule,
+        // which loads later. The toolbar scrolls sideways because `.blogedit`'s
+        // `overflow-x: hidden` would otherwise clip it.
+        .blogedit .panel--editor .content .editor-holder .editor .st-blocks.st-ready {
+            padding: 12px 14px !important;
+        }
+        .blogedit .panel--editor .content .editor-holder .editor .st-block-controls--active {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            .st-block-control {
+                flex: 0 0 auto !important;
+            }
+        }
+
+        // Icon + label truncates the label at this width, so the icon goes.
+        .blogedit .panel--editor .actions__options > div > div .actions__icon {
+            display: none !important;
+        }
+
+        // These rows are `display: table`, so `border-spacing` is the gap between buttons.
+        .blogedit .panel--editor .content > .actions {
+            border-spacing: 8px 14px !important;
+        }
+
+        // Icons dropped for room; uppercase so the labels still read as buttons.
+        .blogedit .panel--editor .content>.actions .btn i.icon-publish,
+        .blogedit .panel--editor .content>.actions .btn i.icon-submit,
+        .blogedit .panel--editor .content>.actions .btn i.icon-save-draft {
+            display: none !important;
+        }
+        .blogedit .panel--editor .content>.actions .btn {
+            text-transform: uppercase !important;
+        }
+
+        .blogedit .panel--editor header .btn {
+            padding: 0.7rem 0.7rem !important;
+        }
+
+        // "Preview" (Default post type only) is dropped to save header space.
+        .panel--editor header .btn.btn--primary.pull-right {
+            display: none !important;
+        }
+
+        // Desktop's `right` offsets (-60px, 40px) can push the dropdown past a phone's
+        // edge, so it is pinned inside its positioned ancestor.
+        .freetype-selector {
+            right: 8px !important;
+            left: 8px;
+            width: auto !important;
+            max-width: none;
+            &.default {
+                right: 8px !important;
+            }
+        }
     }
 
     .blogedit .panel--editor .content .option-not-activated {
@@ -82,6 +182,17 @@
 
     }
 
+    :where(.lb-refresh) {
+        // superdesk-core's users.scss fixes `.form-content` at 600px beside a usually
+        // empty `.other-content` sidebar, which leaves dead space on narrow screens.
+        .user-profile-page .form-content {
+            width: 100% !important;
+        }
+        .user-profile-page .other-content {
+            display: none !important;
+        }
+    }
+
     .blog-settings-view .settings-page .tab-content > .content > * {
         width: 100% !important;
     }
@@ -99,6 +210,10 @@
         margin-top: 19px;
         z-index: 300;
         border: 1px solid rgba(0, 0, 0, 0.1);
+        :where(.lb-refresh) & {
+            margin-top: 0;
+            border: none;
+        }
     }
 
     .blog-settings-view .shadow-list-holder > .pills-list {
@@ -121,6 +236,9 @@
 
     .sd-top-menu__header {
         margin-left: 40px !important;
+        :where(.lb-refresh) & {
+            margin-left: 70px !important;
+        }
     }
 
     .modal {
@@ -131,6 +249,9 @@
 
     .subnav__button-stack--square-buttons {
         border: 1px solid rgba(0, 0, 0, 0.1);
+        :where(.lb-refresh) & {
+            border: none;
+        }
     }
 
     .nav-tabs > li > a, .nav-tabs > li > button {
@@ -210,5 +331,26 @@
 
     .column-hidden-mobile {
         display: none;
+    }
+
+    :where(.lb-refresh) {
+        // Scroll rather than truncate the 5 columns. `overflow-x` sits on `.users-table`
+        // so the header and body rows scroll together and stay aligned.
+        .users-table {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .users-table .table-header > li,
+        .users-table .table-newest > li,
+        .users-table .table-body > li {
+            min-width: 560px;
+        }
+        // A block `<ul>` doesn't grow to fit an overflowing `<li>`, so the header's
+        // background would stop at the visible width.
+        .users-table .table-header,
+        .users-table .table-newest,
+        .users-table .table-body {
+            min-width: 560px;
+        }
     }
 }

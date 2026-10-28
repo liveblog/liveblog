@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { test as base, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { test as base } from './ui';
 import { ApiClient } from '../api/client';
 import { E2ECatalog, loadCatalog } from '../api/stripe';
 import { closeTenantsDb } from '../api/tenants-db';
