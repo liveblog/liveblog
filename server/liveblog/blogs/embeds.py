@@ -70,9 +70,7 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
         and (theme.get("name") != theme.get("extends"))
         and (theme.get("extends") not in parents)
     ):
-        parent_theme = get_resource_service("themes").find_one(
-            req=None, name=theme.get("extends")
-        )
+        parent_theme = themes.find_parent_theme(theme)
         if parent_theme:
             parents.append(theme.get("extends"))
             assets, template = collect_theme_assets(

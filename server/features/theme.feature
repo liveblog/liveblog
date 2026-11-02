@@ -416,3 +416,52 @@ Feature: Themes operations
         [{"name": "unique-theme", "label": "Duplicate Theme"}]
         """
         Then we get error 409
+
+    @auth
+    Scenario: A tenant cannot modify system themes or move a theme to another tenant
+        Given a tenant "Tenant A"
+        And a user "user_a" for current tenant
+        When we login as tenant user "user_a"
+        Given system themes
+        When we find for "themes" the id as "system-simple" by "where={"name": "simple"}"
+        # Eve reports an error raised while patching as a 400 validator exception
+        When we patch "/themes/#system-simple#"
+        """
+        {"version": "9.9.9"}
+        """
+        Then we get error 400
+        """
+        {"_issues": {"validator exception": "403: System themes cannot be modified"}}
+        """
+        When we patch "/themes/#system-simple#"
+        """
+        {"extends": "angular"}
+        """
+        Then we get error 400
+        """
+        {"_issues": {"validator exception": "403: System themes cannot be modified"}}
+        """
+        When we get "/themes/#system-simple#"
+        Then we get existing resource
+        """
+        {"name": "simple", "version": "1.0.0"}
+        """
+        When we post to "themes"
+        """
+        [{"name": "own-theme", "version": "1.0.0"}]
+        """
+        Then we get OK response
+        When we find for "themes" the id as "own-theme" by "where={"name": "own-theme"}"
+        When we patch "/themes/#own-theme#"
+        """
+        {"tenant_id": null}
+        """
+        Then we get error 400
+        """
+        {"_issues": {"validator exception": "403: The tenant of a theme cannot be changed"}}
+        """
+        When we patch "/themes/#own-theme#"
+        """
+        {"version": "1.0.1"}
+        """
+        Then we get OK response

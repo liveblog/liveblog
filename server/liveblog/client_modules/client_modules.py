@@ -3,6 +3,7 @@ import logging
 
 from copy import deepcopy
 from bson import ObjectId
+from urllib.parse import urlparse
 from distutils.util import strtobool
 from eve.utils import config, date_to_str
 from flask_cors import CORS
@@ -49,6 +50,10 @@ voting_blueprint = Blueprint("polls", __name__)
 CORS(blog_posts_blueprint)
 CORS(voting_blueprint)
 logger = logging.getLogger(__name__)
+
+# Cache domains from https://cdn.ampproject.org/caches.json. Pages served by an
+# AMP cache submit forms with `Origin: https://<publisher-host>.<cache domain>`.
+AMP_CACHE_DOMAINS = ("cdn.ampproject.org", "bing-amp.com")
 
 
 class ClientUsersResource(Resource):
@@ -479,6 +484,16 @@ class ClientOutputPostsResource(ClientBlogPostsResource):
 
 class ClientOutputPostsService(ClientBlogPostsService):
     def get(self, req, lookup):
+        blog = get_resource_service("client_blogs").find_one(
+            req=None, _id=ObjectId(lookup.get("blog_id"))
+        )
+        if not blog:
+            raise SuperdeskApiError.notFoundError(message="Blog not found")
+
+        with tenant_context_from_blog(blog):
+            return self._get_output_posts(req, lookup)
+
+    def _get_output_posts(self, req, lookup):
         output = get_resource_service("outputs").find_one(
             req=None, _id=lookup.get("output_id")
         )
@@ -586,6 +601,11 @@ def create_amp_comment():
     if not blog:
         return api_error("Blog not found", 404)
 
+    origin = request.headers.get("Origin")
+    source_origin = data.get("__amp_source_origin")
+    if not _is_allowed_amp_origin(blog, origin, source_origin):
+        return api_error("Origin not allowed", 403)
+
     with tenant_context_from_blog(blog):
         item_data = dict()
         item_data["text"] = data["text"]
@@ -609,14 +629,69 @@ def create_amp_comment():
         comment = post_comments.find_one(req=None, _id=post_comment)
 
     resp = api_response(comment, 201)
-    resp.headers["Access-Control-Allow-Credentials"] = "true"
-    client_domain = data.get("__amp_source_origin")
-    resp.headers["Access-Control-Allow-Origin"] = client_domain
-    resp.headers["AMP-Access-Control-Allow-Source-Origin"] = client_domain
-    resp.headers[
-        "Access-Control-Expose-Headers"
-    ] = "AMP-Access-Control-Allow-Source-Origin"
+    if origin:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
+        resp.headers.add("Vary", "Origin")
+    if source_origin:
+        resp.headers["AMP-Access-Control-Allow-Source-Origin"] = source_origin
+        resp.headers[
+            "Access-Control-Expose-Headers"
+        ] = "AMP-Access-Control-Allow-Source-Origin"
     return resp
+
+
+def _origin_host(url):
+    """Return the lowercased `host[:port]` of an origin or URL, `None` if absent.
+
+    Schemes are ignored on purpose: blog public URLs can be protocol relative
+    or use `EMBED_PROTOCOL`, which does not always match the page's scheme.
+    """
+    if not url:
+        return None
+    if url.startswith("//"):
+        url = "https:" + url
+    return urlparse(url).netloc.lower() or None
+
+
+def _amp_publisher_hosts(blog):
+    """Hosts an AMP page of `blog` can be served from, besides the AMP caches."""
+    public_urls = blog.get("public_urls") or {}
+    server_url = "{}{}".format(
+        app.config.get("EMBED_PROTOCOL") or "", app.config.get("SERVER_NAME") or ""
+    )
+    urls = [
+        blog.get("public_url"),
+        server_url,
+        app.config.get("CLIENT_URL"),
+        *app.config.get("AMP_ALLOWED_SOURCE_ORIGINS", []),
+        *(public_urls.get("theme") or {}).values(),
+        *(public_urls.get("output") or {}).values(),
+    ]
+    return {host for host in map(_origin_host, urls) if host}
+
+
+def _is_amp_cache_origin(origin):
+    parsed = urlparse(origin)
+    host = (parsed.hostname or "").lower()
+    return parsed.scheme == "https" and any(
+        host.endswith("." + domain) for domain in AMP_CACHE_DOMAINS
+    )
+
+
+def _is_allowed_amp_origin(blog, origin, source_origin):
+    """Check the request origins as required by the AMP CORS spec.
+
+    `Origin` must be the publisher or an AMP cache. `__amp_source_origin`, only
+    sent by older AMP runtimes, must be the publisher. Requests without
+    `Origin` (same origin, non browser clients) are not CORS requests and pass.
+    """
+    publisher_hosts = _amp_publisher_hosts(blog)
+    if source_origin and _origin_host(source_origin) not in publisher_hosts:
+        return False
+    if origin:
+        return _origin_host(origin) in publisher_hosts or _is_amp_cache_origin(origin)
+    return True
 
 
 @blog_posts_blueprint.route("/api/v2/client_blogs/<blog_id>/posts", methods=["GET"])

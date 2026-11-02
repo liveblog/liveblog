@@ -160,3 +160,16 @@ def step_attempt_delete_cross_tenant(context, url):
 
     full_url = get_prefixed_url(context.app, url)
     context.response = context.client.delete(full_url, headers=headers)
+
+
+@when('we get "{url}" without authentication')
+def step_get_without_authentication(context, url):
+    """GET a URL the way a public embed does: the session's Authorization header is dropped."""
+    url = apply_placeholders(context, url)
+    headers = [
+        (key, value)
+        for key, value in getattr(context, "headers", [])
+        if key.lower() != "authorization"
+    ]
+    full_url = get_prefixed_url(context.app, url)
+    context.response = context.client.get(full_url, headers=headers)
