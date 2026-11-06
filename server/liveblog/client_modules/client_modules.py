@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 
@@ -43,6 +44,15 @@ voting_blueprint = Blueprint("polls", __name__)
 CORS(blog_posts_blueprint)
 CORS(voting_blueprint)
 logger = logging.getLogger(__name__)
+
+
+def client_posts_cache_key(req):
+    # Built with sha1 rather than hash(): hash() is randomised per interpreter,
+    # so every node sharing the Redis cache would compute a different key.
+    digest = hashlib.sha1(
+        json.dumps(req.__dict__, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    return "lb_ClientBlogPostsService_get_%s" % digest
 
 
 class ClientUsersResource(Resource):
@@ -282,8 +292,7 @@ class ClientBlogPostsService(BlogPostsService, AuthorsMixin):
         # check for unknown query parameters
         _check_for_unknown_params(request, allowed_params)
 
-        sufix = hash(json.dumps(req.__dict__, sort_keys=True))
-        cache_key = "lb_ClientBlogPostsService_get_%s" % sufix
+        cache_key = client_posts_cache_key(req)
         blog_id = lookup.get("blog_id")
 
         # ElasticCursor is returned so we can loop and modify docs inside
