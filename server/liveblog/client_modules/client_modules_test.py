@@ -1,5 +1,9 @@
 import datetime
 import json
+import os
+import subprocess
+import sys
+import unittest
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import superdesk.users as users_app
@@ -9,12 +13,15 @@ from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
 from bson import ObjectId
+from eve.utils import ParsedRequest
+from werkzeug.datastructures import MultiDict
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import (
     blog_posts_blueprint,
     voting_blueprint,
     convert_posts,
     _get_converted_item,
+    client_posts_cache_key,
 )
 from liveblog.posts import utils as post_utils
 
@@ -707,3 +714,35 @@ class ClientModuleTestCase(TestCase):
             self.assertIn(
                 "Error: Option 'Invalid Option' not found", response_data["_error"]
             )
+
+
+class ClientPostsCacheKeyTestCase(unittest.TestCase):
+    """Nodes share the Redis cache, so they must all build the same key for the same request."""
+
+    SCRIPT = (
+        "from eve.utils import ParsedRequest\n"
+        "from werkzeug.datastructures import MultiDict\n"
+        "from liveblog.client_modules.client_modules import client_posts_cache_key\n"
+        "req = ParsedRequest()\n"
+        "req.args = MultiDict([('max_results', '15'), ('page', '1'), ('source', '{\"query\": {}}')])\n"
+        "req.max_results = 15\n"
+        "print(client_posts_cache_key(req))\n"
+    )
+
+    def _key_in_new_interpreter(self, hash_seed):
+        env = dict(os.environ, PYTHONHASHSEED=str(hash_seed))
+        output = subprocess.check_output([sys.executable, "-c", self.SCRIPT], env=env)
+        return output.decode().strip().splitlines()[-1]
+
+    def test_key_is_the_same_across_interpreters(self):
+        keys = {self._key_in_new_interpreter(seed) for seed in (1, 2, 3)}
+        self.assertEqual(len(keys), 1, keys)
+        self.assertTrue(keys.pop().startswith("lb_ClientBlogPostsService_get_"))
+
+    def test_key_changes_with_the_request(self):
+        first, second = ParsedRequest(), ParsedRequest()
+        first.args = MultiDict([("page", "1")])
+        second.args = MultiDict([("page", "2")])
+        self.assertNotEqual(
+            client_posts_cache_key(first), client_posts_cache_key(second)
+        )
