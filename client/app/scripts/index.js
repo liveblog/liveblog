@@ -107,6 +107,7 @@ import {getToken} from './liveblog-common/session';
 import 'liveblog-features.service';
 
 import {BillingBanner} from './liveblog-billing/BillingBanner';
+import {trackCheckoutReturn} from './liveblog-billing/conversions';
 import {ImpersonationBanner} from './liveblog-impersonation/ImpersonationBanner';
 import {isImpersonating, restoreSupportSession} from './liveblog-impersonation/impersonation';
 import {UiRefreshBanner} from './liveblog-ui-refresh/UiRefreshBanner';
@@ -428,6 +429,8 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$http',
             }
         });
     }]);
+
+trackCheckoutReturn();
 
 const body = angular.element('body');
 

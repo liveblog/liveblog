@@ -75,10 +75,13 @@ export class StripePortalPage {
             .last();
     }
 
-    /** From the plan picker, picks `productName` and waits for the change summary. */
+    /**
+     * Picks `productName` and waits for the change summary. Stripe serves this
+     * heading as either "Summary" or "Confirm your update".
+     */
     async selectPlan(productName: string) {
         await this.planCard(productName).getByRole('button', { name: 'Select plan' }).click();
-        await expect(this.heading).toHaveText('Summary', { timeout: LOAD_TIMEOUT });
+        await expect(this.heading).toHaveText(/^(Summary|Confirm your update)$/, { timeout: LOAD_TIMEOUT });
     }
 
     /** Confirms the plan change and waits to land back on the plan's page. */

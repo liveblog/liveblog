@@ -420,6 +420,12 @@ STRIPE_BILLING_REQUIRED = env("STRIPE_BILLING_REQUIRED", False)
 
 STRIPE_PRICING_URL = env("STRIPE_PRICING_URL", "https://liveblog.pro/en/pricing/")
 
+# Google Ads conversion tracking for signups and purchases. Disabled while the
+# tag id is empty. The labels come from the conversion actions in Google Ads.
+GOOGLE_ADS_TAG_ID = env("GOOGLE_ADS_TAG_ID", "")
+GOOGLE_ADS_SIGNUP_LABEL = env("GOOGLE_ADS_SIGNUP_LABEL", "")
+GOOGLE_ADS_PURCHASE_LABEL = env("GOOGLE_ADS_PURCHASE_LABEL", "")
+
 # Identifies the Terms of Use a new account agrees to at registration. It is
 # stored with every acceptance record, so it has to change whenever the
 # published terms change.
