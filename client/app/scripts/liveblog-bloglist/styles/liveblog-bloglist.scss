@@ -645,6 +645,9 @@
                     background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
                     :where(.lb-refresh) & {
                         position: relative;
+                        // Keeps the blog picture's z-index inside the media area. Without a stacking context here
+                        // the picture is stacked against `.bulk-select` and, coming later in the markup, covers it.
+                        z-index: 0;
                         height: 150px;
                         background: none;
                         background-color: #f8f8f8;
