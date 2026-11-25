@@ -119,8 +119,7 @@
             .datetime__text {
                 width: 50%;
                 margin: 0 0 0 5px;
-                // The Custom field is a bare `<input>` with no `type`, so the global modal
-                // `input[type=...]` rule (liveblog.scss) does not reach it.
+                // This input has no `type`, so the modal input rule misses it.
                 :where(.lb-refresh) & input {
                     width: 100%;
                     box-sizing: border-box;
@@ -226,7 +225,7 @@
         }
     }
     :where(.lb-refresh) & {
-        // Both a `<label>` and a `<button>` carry this class.
+        // On both a `<label>` and a `<button>`.
         .sd-create-btn {
             @include lb-create-btn-pill('New Theme');
         }
@@ -236,7 +235,7 @@
     }
 }
 :where(.lb-refresh) {
-    // Absolutely positioned on all four sides, so a margin insets it.
+    // Absolutely positioned on all sides, so margin insets it.
     .main-section.themelist {
         margin: 12px 20px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
@@ -293,7 +292,7 @@
             }
         }
         .alert.alert-error {
-            // Styled like `.alert-info` on purpose: the AMP notice is a heads-up, not an error.
+            // Info styling on purpose: the AMP notice is not an error.
             background: $lb-pill-bg;
             border: 1px solid darken($lb-pill-bg, 12%);
             color: $lb-pill-text;
@@ -342,8 +341,7 @@
         ul {
             li {
                 margin-left: 40px;
-                // Only theme variants (`li li`) are indented. Each top-level theme is its own root
-                // `<ul><li>`, so `:first-child` cannot tell the two apart.
+                // Only variants (`li li`) indent; each theme is its own root list.
                 :where(.lb-refresh) & {
                     margin-left: 0;
                 }
@@ -390,13 +388,13 @@
                     float: left;
                     position: relative;
                     :where(.lb-refresh) & {
-                        // Floated around a 100%-wide child, so it collapses to 0 without a width.
+                        // Collapses to 0 without a width.
                         width: 220px;
                         @include border-radius($lb-radius-input);
                         background: none;
                         background-color: #f8f8f8;
                         overflow: hidden;
-                        // Icon on a pseudo-element: masking `.media` would clip its background to the icon shape.
+                        // Pseudo-element: masking `.media` would clip its background.
                         &:before {
                             content: '';
                             position: absolute;
@@ -527,7 +525,7 @@
                     width: 90px;
                     height: 65px;
                     background: url('~images/default-icon.png') no-repeat left bottom;
-                    // This element has no text, so the label comes from `content:`.
+                    // No text here, so the label is `content:`.
                     :where(.lb-refresh) & {
                         right: 16px;
                         top: 16px;
@@ -562,7 +560,7 @@
                     :where(.lb-refresh) & {
                         background-color: $lb-rail-active-bg;
                         border-color: $lb-rail-active;
-                        // Same specificity as `.card:hover` but later in source, so the hover shadow is repeated.
+                        // Same specificity as `.card:hover` but later, so repeat the shadow.
                         box-shadow: none;
                         &:hover {
                             box-shadow: $lb-card-shadow;

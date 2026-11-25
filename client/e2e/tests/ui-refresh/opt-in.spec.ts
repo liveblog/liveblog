@@ -3,8 +3,7 @@ import { test, expect } from '../../fixtures';
 import { PERSONAS } from '../../api/client';
 import { LoginPage } from '../../pages/login.page';
 
-// The shared fixtures pin the UI mode and hide the banner through cookies,
-// so these specs drive a bare context to exercise the real opt-in flow.
+// Fixtures pin the UI mode by cookie, so drive a bare context.
 test.describe('refreshed UI opt-in', () => {
     test.skip(({ uiRefresh }) => uiRefresh, 'covers the flow from the classic UI only');
 

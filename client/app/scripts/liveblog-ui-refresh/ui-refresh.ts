@@ -1,10 +1,7 @@
 /**
- * Opt-in switch for the refreshed admin UI: toggles the `lb-refresh` class on <html>.
- *
- * Refreshed styles are scoped with `:where(.lb-refresh)`, which adds no specificity.
- * A plain `.lb-refresh` ancestor would change which rules win.
- *
- * Kept in cookies because superdesk-core clears localStorage on logout.
+ * Opt-in switch for the refreshed UI: the `lb-refresh` class on <html>.
+ * Styles use `:where(.lb-refresh)`, which adds no specificity.
+ * Stored in cookies because superdesk-core clears localStorage on logout.
  */
 
 export const UI_REFRESH_CLASS = 'lb-refresh';
@@ -14,7 +11,7 @@ const BANNER_DISMISSED_COOKIE = 'lb_ui_refresh_banner_dismissed';
 const CHANGED_EVENT = 'lb:uiRefreshChanged';
 const DAY = 60 * 60 * 24;
 const ONE_YEAR = 365 * DAY;
-// "Not now" only snoozes the banner; making a choice retires it for good
+// "Not now" snoozes; a choice retires the banner
 const SNOOZE = 14 * DAY;
 
 const readCookie = (name: string): string | null => {
@@ -56,8 +53,7 @@ export const onUiRefreshChange = (callback: () => void): (() => void) => {
     return () => window.removeEventListener(CHANGED_EVENT, callback);
 };
 
-// cookies have no change event, so a tab picks up a switch made in another
-// tab when it becomes visible again
+// cookies have no change event, so resync when the tab is shown again
 const onVisibilityChange = (): void => {
     if (document.visibilityState === 'visible') {
         applyUiRefresh();

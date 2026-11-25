@@ -88,7 +88,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # classic and the opt-in refreshed UI (playwright.config.ts projects)
+        # classic and refreshed UI (playwright.config.ts projects)
         ui: [classic, refresh]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]

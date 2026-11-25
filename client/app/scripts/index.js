@@ -341,7 +341,7 @@ liveblog.directive('lbUiRefreshBanner', ['gettext', 'SESSION_EVENTS', function(g
     };
 }]);
 
-// backs the switch in the Help menu (index.html)
+// backs the Help menu switch
 liveblog.run(['$rootScope', function($rootScope) {
     $rootScope.uiRefreshEnabled = isUiRefreshEnabled();
     $rootScope.toggleUiRefresh = () => setUiRefreshEnabled(!isUiRefreshEnabled());

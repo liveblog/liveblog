@@ -4,7 +4,7 @@
 
 @media(max-width: 800px) {
     :where(.lb-refresh) {
-        // Stops overflowing content from widening the page and clipping the top bar's title.
+        // Keeps overflow from widening the page.
         .blogedit {
             overflow-x: hidden;
         }
@@ -15,8 +15,7 @@
     .blogedit .column--first {
         width: 100% !important;
         :where(.lb-refresh) & {
-            // Resets desktop's `left: 16px` (liveblog-edit.scss), which with width 100%
-            // pushes the column past `.blogedit` and gets it clipped.
+            // Desktop's `left: 16px` with 100% width gets the column clipped.
             left: 0 !important;
         }
     }
@@ -29,7 +28,7 @@
     }
 
     :where(.lb-refresh) {
-        // `.columns-holder`'s left must equal the rail's left + width (4px + 56px).
+        // Rail left + width (4px + 56px).
         .blogedit .side-menu {
             left: 4px !important;
             padding: 4px !important;
@@ -39,7 +38,7 @@
             left: 60px !important;
         }
 
-        // Tuned to the narrow rail above (4px offset + 4px padding).
+        // Fits the narrow rail (4px offset + 4px padding).
         div.subnav div.button-stack.left-stack a.homebtn {
             margin-left: 14px !important;
         }
@@ -51,13 +50,13 @@
 
     :where(.lb-refresh) {
         .lb-post__holder {
-            // Clip at the card edge so wide content can't force page-level horizontal scroll.
+            // Keeps wide content from scrolling the page.
             overflow: hidden;
         }
     }
 
     .lb-post__actions {
-        // No forced wrap: `float: right` (post.scss) already wraps this row when it doesn't fit.
+        // `float: right` already wraps this row.
         margin-top: 10px;
         margin-bottom: 20px;
     }
@@ -86,7 +85,7 @@
         text-indent: -85px;
         color: #d0d0d0;
         :where(.lb-refresh) & {
-            // Shows the full "Choose post type" label. Color is left to the `.btn` !important rules.
+            // Full "Choose post type" label.
             width: auto;
             white-space: normal;
             overflow: visible;
@@ -95,8 +94,7 @@
     }
 
     :where(.lb-refresh) {
-        // !important: liveblog-edit.scss's `.st-blocks.st-ready` has equal specificity and loads later.
-        // Scrolls sideways because `.blogedit` hides overflow-x.
+        // !important: liveblog-edit.scss's equal rule loads later. Scrolls since `.blogedit` hides overflow-x.
         .blogedit .panel--editor .content .editor-holder .editor .st-blocks.st-ready {
             padding: 12px 14px !important;
         }
@@ -108,17 +106,17 @@
             }
         }
 
-        // Icon + label truncates the label at this width, so the icon goes.
+        // No room for icon + label.
         .blogedit .panel--editor .actions__options > div > div .actions__icon {
             display: none !important;
         }
 
-        // These rows are `display: table`, so `border-spacing` is the gap between buttons.
+        // Table rows: `border-spacing` is the button gap.
         .blogedit .panel--editor .content > .actions {
             border-spacing: 8px 14px !important;
         }
 
-        // Icons dropped for room; uppercase so the labels still read as buttons.
+        // No icons; uppercase keeps them reading as buttons.
         .blogedit .panel--editor .content>.actions .btn i.icon-publish,
         .blogedit .panel--editor .content>.actions .btn i.icon-submit,
         .blogedit .panel--editor .content>.actions .btn i.icon-save-draft {
@@ -132,13 +130,12 @@
             padding: 0.7rem 0.7rem !important;
         }
 
-        // "Preview" (Default post type only) is dropped to save header space.
+        // Drops "Preview" to save space.
         .panel--editor header .btn.btn--primary.pull-right {
             display: none !important;
         }
 
-        // Desktop's `right` offsets (-60px, 40px) can push the dropdown past a phone's
-        // edge, so it is pinned inside its positioned ancestor.
+        // Desktop offsets push the dropdown off a phone's edge.
         .freetype-selector {
             right: 8px !important;
             left: 8px;
@@ -182,8 +179,7 @@
     }
 
     :where(.lb-refresh) {
-        // superdesk-core's users.scss fixes `.form-content` at 600px beside a usually
-        // empty `.other-content` sidebar, which leaves dead space on narrow screens.
+        // Vendor's fixed 600px form leaves dead space on narrow screens.
         .user-profile-page .form-content {
             width: 100% !important;
         }
@@ -333,8 +329,7 @@
     }
 
     :where(.lb-refresh) {
-        // Scroll rather than truncate the 5 columns. `overflow-x` sits on `.users-table`
-        // so the header and body rows scroll together and stay aligned.
+        // Scroll on `.users-table` so header and rows stay aligned.
         .users-table {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -344,8 +339,7 @@
         .users-table .table-body > li {
             min-width: 560px;
         }
-        // A block `<ul>` doesn't grow to fit an overflowing `<li>`, so the header's
-        // background would stop at the visible width.
+        // A block `<ul>` won't grow, so the header background would stop short.
         .users-table .table-header,
         .users-table .table-newest,
         .users-table .table-body {

@@ -1,5 +1,4 @@
-// Vendor `.btn:hover/:focus` (superdesk-ui bundle) and Bootstrap `.btn:active` add shadows
-// and load after this file, hence !important.
+// Vendor and Bootstrap button shadows load after this file.
 :where(.lb-refresh) {
     .btn:hover, .btn:focus, .btn:active, .btn.active {
         box-shadow: none !important;
@@ -42,8 +41,7 @@
   float: right;
   margin: -10px -20px 0 5px;
   :where(.lb-refresh) & {
-    // !important: the ID-scoped `#main-container > div.subnav div.button-stack.right-stack`
-    // rule below sets margin: 0.
+    // The ID-scoped right-stack rule below sets margin: 0.
     margin: 4px 20px 0 5px !important;
     display: flex;
     align-items: center;
@@ -112,13 +110,11 @@
 	text-decoration: none;
 
 	:where(.lb-refresh) & {
-		// The Settings page renders this pair without .analytics-link/.settings-link,
-		// so also match on the icon itself.
+		// The Settings page has no .analytics-link/.settings-link, so match the icon too.
 		&.analytics-link, &.settings-link,
 		&:has(> .big-icon--analytics), &:has(> .big-icon--cog) {
 			position: relative !important;
-			// !important: vendor `.button-stack.right-stack .navbtn` and the Settings page's
-			// `.active`/`.settings-disabled` rules have the same specificity.
+			// Vendor and Settings rules have the same specificity.
 			width: 40px !important;
 			height: 40px !important;
 			min-width: 40px !important;
@@ -132,7 +128,7 @@
 				border-right: none !important;
 				margin-right: 0 !important;
 				box-shadow: none !important;
-				// Vendor `.button-stack .navbtn.navbtn-active` sets height: 48px at equal specificity.
+				// Vendor sets 48px at equal specificity.
 				height: 40px !important;
 				&:hover {
 					background-color: #dee7ec !important;
@@ -211,7 +207,7 @@
     color: white;
     position: relative !important;
     float: right;
-    // above .btn--contact-support so the open menu is not covered by it
+    // above .btn--contact-support so the menu isn't covered
     z-index: 2002;
     right: 60px;
     top: 15px;
@@ -517,8 +513,7 @@ i.icon-star.orange {
         background-color: $lb-header-bg !important;
     }
 
-    // !important: vendor rules load later at equal specificity. The size stays vendor's 16px,
-    // which its check glyph is positioned for.
+    // !important: vendor loads later at equal specificity. Size stays 16px for the check glyph.
     .sd-checkbox {
         border-color: #C3CAD2 !important;
         @include border-radius(4px !important);
@@ -541,11 +536,11 @@ i.icon-star.orange {
         box-shadow: inset 0 0 0 1px rgba($lb-rail-active, 0.2);
         color: darken($lb-rail-active, 12%);
         font-weight: 600;
-        // Initials take one letter per word of the name, so four letters are common.
+        // One letter per word, so four letters are common.
         letter-spacing: -.02em;
     }
 
-    // !important: vendor rules load later at equal specificity.
+    // !important: vendor loads later at equal specificity.
     .dropdown__menu {
         border: 1px solid $lb-input-border !important;
         @include border-radius(10px !important);
@@ -626,8 +621,7 @@ i.icon-star.orange {
         }
     }
 
-    // Icon on `:before`, since masking `.title` would also clip its text. It sits in
-    // vendor's 100px padding-top.
+    // Icon on `:before`: masking `.title` would clip its text.
     .upload-media .drag-area .title {
         background: none !important;
         position: relative;
@@ -643,8 +637,7 @@ i.icon-star.orange {
         }
     }
 
-    // superdesk-core's menu.scss sets this with !important outside this file's import
-    // chain, so the doubled class wins on specificity whatever the load order.
+    // Doubled class beats menu.scss's !important whatever the load order.
     #top-menu a.collapse-nav.collapse-nav, #top-menu button.collapse-nav.collapse-nav {
         width: 78px !important;
     }
@@ -668,8 +661,7 @@ i.icon-star.orange {
         mask-size: contain;
     }
 
-    // !important: vendor `[class^="big-icon--"]` sets 26px at equal specificity and
-    // loads after this file.
+    // Vendor sets 26px at equal specificity and loads later.
     .big-icon--analytics {
         @include lb-icon-font-mask(url('~images/icons/chart-column.svg'), $lb-subnav-text, 20px);
         width: 20px !important;
@@ -684,7 +676,7 @@ i.icon-star.orange {
         font-size: 0 !important;
     }
 
-    // Absolute centering sidesteps vendor's `.navbtn i { vertical-align: baseline !important }`.
+    // Absolute centering sidesteps vendor's `vertical-align` !important.
     .navbtn .big-icon--analytics, .navbtn .big-icon--cog {
         position: absolute !important;
         top: 50% !important;
@@ -692,8 +684,7 @@ i.icon-star.orange {
         transform: translate(-50%, -50%) !important;
     }
 
-    // Three classes: several page stylesheets redeclare `.btn.btn--primary` with
-    // !important at (0,2,0), and which loads last in the bundle varies.
+    // Three classes beat pages' (0,2,0) `.btn.btn--primary` !important rules.
     .btn.btn--primary.btn--contact-support {
         background-color: $lb-contact-support-bg !important;
         border-color: $lb-contact-support-bg !important;
@@ -708,7 +699,7 @@ i.icon-star.orange {
         }
     }
 
-    // Widens the avatar's dark block so the avatar lines up with the 20px page gutter.
+    // Lines the avatar up with the 20px gutter.
     #top-menu button.current-user {
         width: auto !important;
         padding: 0 14px 0 10px !important;
@@ -729,7 +720,7 @@ i.icon-star.orange {
     }
 
     .subnav {
-        // Deliberately #F5F6F7, not $lb-subnav-bg (#F6F7F8).
+        // Deliberately #F5F6F7, not $lb-subnav-bg.
         background-color: #F5F6F7 !important;
         border: none !important;
         box-shadow: none !important;
@@ -763,7 +754,7 @@ i.icon-star.orange {
         }
     }
 
-    // `.blogedit` wraps the editor's main/post views only, not settings.ng1.
+    // `.blogedit` excludes settings.ng1.
     .blogedit .btn:not(.btn--primary):not(.btn-primary) {
         background-color: $lb-pill-bg !important;
         border-color: $lb-pill-bg !important;
@@ -773,8 +764,7 @@ i.icon-star.orange {
         }
     }
 
-    // Same specificity as the app-wide `.btn:not():not()` rule above, so this must
-    // stay after it.
+    // Must stay after the equal-specificity `.btn:not():not()` rule.
     .btn-group .btn.btn--text-only {
         background: none !important;
         border: none !important;
@@ -783,13 +773,12 @@ i.icon-star.orange {
     .sd-create-btn .circle {
         background-color: $lb-rail-active !important;
     }
-    // Replaces vendor's glyph, which is missing on some pages and the same color as
-    // the `.circle` on others.
+    // Vendor's glyph is missing or invisible on some pages.
     .sd-create-btn i {
         @include lb-icon-font-mask(url('~images/icons/circle-plus.svg'), #fff, 18px);
     }
 
-    // Vendor draws its own arrow as a border triangle here; hide it or both arrows show.
+    // Hides vendor's border-triangle arrow.
     .sd-line-input--is-select::after {
         content: none !important;
     }
@@ -846,12 +835,12 @@ i.icon-star.orange {
         color: $lb-subnav-text;
     }
 
-    // sd-modal sets an inline z-index only on the first backdrop, which ng-if recreates on reopen.
-    // The backdrop comes after the modal, so it needs the lower value or it covers the dialog.
+    // sd-modal's inline z-index is lost when ng-if recreates the backdrop.
+    // It must stay below the modal or it covers the dialog.
     .modal {
         z-index: 100001 !important;
     }
-    // Vendor's 40px top (30px for `.modal--fill`) tucks the dialog under the 48px top bar.
+    // Vendor's 40px top tucks the dialog under the 48px top bar.
     .modal:not(.modal--fullscreen) {
         top: 72px;
         bottom: 24px;
@@ -863,8 +852,7 @@ i.icon-star.orange {
     .modal .modal__content {
         border: none;
         box-shadow: $lb-card-shadow !important;
-        // No overflow:hidden here (it would clip the box-shadow), so the header and footer
-        // round their own corners.
+        // No overflow:hidden (clips the shadow), so header and footer round themselves.
         .modal__header {
             border-top-left-radius: $lb-radius-card;
             border-top-right-radius: $lb-radius-card;
@@ -886,19 +874,17 @@ i.icon-star.orange {
         .modal__body {
             background: #fff !important;
             padding: 20px 24px;
-            // Rounds the bottom for modals with no `.modal__footer` (buttons in `.modal__body-footer`).
+            // For modals whose buttons are in `.modal__body-footer`.
             border-bottom-left-radius: $lb-radius-card;
             border-bottom-right-radius: $lb-radius-card;
-            // `.modal--tabs` gives this flex: 1 1 auto and its own grey fill, which stretches
-            // into an empty scrolling box below short forms.
+            // `.modal--tabs` stretches this into an empty grey box.
             .modal__body-content {
                 background: #fff !important;
                 flex: 0 1 auto !important;
                 min-height: 0 !important;
                 overflow-y: visible !important;
             }
-            // Text uses three colors: dark for headings and values, $lb-subnav-text for labels
-            // and inactive tabs, $lb-timestamp for hints.
+            // Colors: dark for values, $lb-subnav-text for labels, $lb-timestamp for hints.
             .modal__body-header .nav-tabs > li {
                 > button {
                     color: $lb-subnav-text;
@@ -922,14 +908,13 @@ i.icon-star.orange {
                 letter-spacing: .02em;
                 margin-bottom: 6px;
             }
-            // !important radius to beat vendor `.searchbar`'s own 2px !important.
+            // Beats vendor `.searchbar`'s 2px !important radius.
             input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
                 border: 1px solid $lb-input-border;
                 @include border-radius($lb-radius-input !important);
                 padding: 8px 12px;
                 box-sizing: border-box;
-                // Vendor `.sd-line-input__input`/`__select` set a fixed height that squeezes this
-                // padding under border-box.
+                // Vendor's fixed height squeezes this padding.
                 height: auto !important;
                 font-size: 14px;
                 color: $lb-btn-dark-bg;
@@ -939,7 +924,7 @@ i.icon-star.orange {
                     box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
                 }
             }
-            // Safari keeps its native select look unless appearance is reset.
+            // Safari needs the appearance reset.
             select:not([multiple]) {
                 appearance: none;
                 -webkit-appearance: none;
@@ -947,15 +932,14 @@ i.icon-star.orange {
                 background: #fff url('~images/icons/chevron-down.svg') no-repeat right 12px center / 16px;
                 padding-right: 40px;
             }
-            // Vendor sets `height: 32px !important` here at higher specificity than the
-            // input rule above.
+            // Vendor's 32px !important height outranks the input rule.
             .searchbar.searchbar-large {
                 height: auto !important;
-                // Matches `.flat-searchbar .search-handler` in liveblog-bloglist.scss.
+                // Matches the blog list's `.search-handler`.
                 padding: 6px 12px 6px 35px !important;
                 @include border-radius($lb-radius-pill !important);
                 font-size: 13px;
-                // Vendor's fixed `9px 7px` offset only centers the icon in its own 32px box.
+                // Vendor's offset only fits its 32px box.
                 background-position: 12px center !important;
                 &:focus {
                     outline: 0;
@@ -964,7 +948,7 @@ i.icon-star.orange {
                 }
             }
             .modal__body-footer {
-                // No negative-margin bleed to the modal edge: it causes a horizontal scrollbar.
+                // A negative-margin bleed causes a horizontal scrollbar.
                 margin-top: 20px;
                 padding-top: 14px;
                 border-top: 1px solid $lb-input-border;
@@ -1030,11 +1014,10 @@ i.icon-star.orange {
         }
     }
 
-    // Absolutely positioned on all four sides, so a margin insets it.
+    // Absolutely positioned on all sides, so margin insets it.
     .main-section.users {
         margin: 12px 20px 20px;
-        // Vendor's own values, pinned so these panes stay under sd-modal's backdrop
-        // (z-index 1049+).
+        // Vendor values, pinned below sd-modal's backdrop (1049+).
         .list-pane {
             z-index: 1 !important;
         }
@@ -1056,8 +1039,7 @@ i.icon-star.orange {
     .subnav--absolute:has(+ .main-section.users) .sd-create-btn {
         @include lb-create-btn-pill('Create user');
     }
-    // A taller bar rather than flex centering: another core `.subnav` rule at equal
-    // specificity drops `display: flex`, depending on load order.
+    // Taller bar, not flex: a core `.subnav` rule can drop `display: flex`.
     .subnav--absolute:has(+ .main-section.users) {
         height: 5.8rem;
     }
@@ -1079,7 +1061,7 @@ i.icon-star.orange {
             border-right: none !important;
             @include border-radius($lb-radius-card);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
-            // Opaque, so it needs its own radius or it squares off `.list-pane`'s corners.
+            // Opaque, so it rounds its own corners.
             > .subnav {
                 background-color: #fff !important;
                 border-bottom: 1px solid $lb-input-border !important;
@@ -1087,7 +1069,7 @@ i.icon-star.orange {
                 border-top-right-radius: $lb-radius-card;
                 display: flex !important;
                 align-items: center !important;
-                // `.extended` gives `.search-handler` a square opaque fill over the toolbar's corner.
+                // `.extended` paints a square fill over the corner.
                 .flat-searchbar.extended {
                     border-top-left-radius: $lb-radius-card !important;
                     .search-handler {
@@ -1145,8 +1127,7 @@ i.icon-star.orange {
 
         .sd-line-input.sd-line-input--is-select select.sd-line-input__select {
             border: 1px solid $lb-input-border !important;
-            // Vendor sets a `border-bottom` longhand on this selector that still showed
-            // through the shorthand.
+            // Vendor's longhand showed through the shorthand.
             border-bottom: 1px solid $lb-input-border !important;
             @include border-radius($lb-radius-input !important);
             box-sizing: border-box !important;
@@ -1169,8 +1150,7 @@ i.icon-star.orange {
 
         .users-table {
             border-top: none;
-            // !important throughout: vendor users styles load after this file at equal
-            // specificity. Row height and avatar size must change together to stay centered.
+            // !important: vendor loads later at equal specificity. Row height and avatar size go together.
             .table-header, .table-newest, .table-body {
                 > li {
                     height: 56px !important;
@@ -1183,14 +1163,13 @@ i.icon-star.orange {
                             line-height: 36px !important;
                         }
                     }
-                    // Positioned against the `<li>`, not the avatar (avatar box is 14,10 to 50,46).
-                    // drop-shadow fakes the white halo, since a masked icon can't take a stroke.
+                    // Positioned against the `<li>`. drop-shadow fakes the halo a mask can't stroke.
                     .admin-label {
                         width: 18px !important;
                         height: 18px !important;
                         top: 5px !important;
                         left: 5px !important;
-                        // Not transparent: the row's hover/selected tint would show inside the ring.
+                        // Opaque, or the row tint shows inside the ring.
                         background-color: #fff !important;
                         border: 2px solid #fff !important;
                         @include border-radius(50%);
@@ -1220,7 +1199,7 @@ i.icon-star.orange {
                                 drop-shadow(0 -1px 0 #fff);
                         }
                     }
-                    // Positioned against the avatar figure, not the `<li>`.
+                    // Positioned against the avatar, not the `<li>`.
                     .logged-info {
                         width: 14.4px !important;
                         height: 14.4px !important;
@@ -1246,8 +1225,7 @@ i.icon-star.orange {
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
                 > li {
-                    // !important: vendor's equal-specificity rule loads later and drops it on
-                    // hovered/selected rows.
+                    // Vendor's later equal rule drops it on hover/selection.
                     border-bottom: 1px solid #99c0d878 !important;
                     > div, .name, .email, .created {
                         color: $lb-btn-dark-bg !important;
@@ -1268,7 +1246,7 @@ i.icon-star.orange {
             .table-body, .table-newest {
                 background: #fff;
                 border-top: none;
-                // Vendor's -1px margin-top puts this opaque list over the header's border-bottom.
+                // Vendor's -1px margin covers the header border.
                 margin-top: 0 !important;
                 > li {
                     border-bottom: 1px dotted $lb-input-border;
@@ -1348,13 +1326,13 @@ i.icon-star.orange {
             @include border-radius($lb-radius-pill !important);
             color: $lb-rail-active !important;
             border-color: $lb-rail-active !important;
-            // The app-wide `.btn--primary` rule would fill this hollow button.
+            // The global `.btn--primary` would fill this hollow button.
             background-color: transparent !important;
-            // 14px wraps the label onto two lines.
+            // 14px wraps the label.
             font-size: 11px !important;
             padding: 6px 14px !important;
             white-space: nowrap !important;
-            // The app-wide `.btn--primary:hover` rule is !important too.
+            // The global hover rule is !important too.
             &:hover:not(:disabled) {
                 background-color: $lb-rail-active-bg !important;
                 border-color: $lb-rail-active !important;
@@ -1363,9 +1341,8 @@ i.icon-star.orange {
         }
     }
 
-    // Login and reset-password screens (superdesk-core auth templates, shared markup).
-    // !important throughout: vendor auth.scss order isn't guaranteed, and the app-wide
-    // `.btn` rule would otherwise style `.btn--sd-green` as a secondary pill.
+    // Login and reset-password screens. !important: auth.scss order varies
+    // and the global `.btn` rule would restyle `.btn--sd-green`.
     .login-screen {
         background: $lb-header-bg !important;
         display: flex !important;

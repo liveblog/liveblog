@@ -1,18 +1,18 @@
 import { BrowserContext, test as base } from '@playwright/test';
 
 export type UiOptions = {
-    // set per Playwright project: runs the suite against the refreshed UI
+    // set per Playwright project
     uiRefresh: boolean;
 };
 
-// Cookie names mirror client/app/scripts/liveblog-ui-refresh/ui-refresh.ts.
+// Cookie names mirror liveblog-ui-refresh/ui-refresh.ts.
 export async function applyUiMode(context: BrowserContext, uiRefresh: boolean, baseURL?: string): Promise<void> {
     if (!baseURL) {
         throw new Error('the UI mode cookies need `baseURL` set in playwright.config.ts');
     }
 
     const cookies = [
-        // the opt-in banner floats over the bottom-right corner of every page
+        // the banner covers the bottom-right corner
         { name: 'lb_ui_refresh_banner_dismissed', value: '1', url: baseURL },
     ];
 

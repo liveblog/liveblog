@@ -11,7 +11,7 @@
             display: none !important;
         }
         :where(.lb-refresh) & {
-            // Hiding only `.avatar-comment` leaves this floated 30px wrapper pushing the text right.
+            // The floated wrapper would still push the text right.
             .lb-post__figure {
                 display: none !important;
             }
@@ -24,7 +24,7 @@
             border-bottom: 1px solid #DBDBDB;
             @include border-radius(0);
             :where(.lb-refresh) & {
-                // 15px right: 10px crowds the action icons, the Timeline's 20px is too loose here.
+                // 10px crowds the icons, 20px is too loose.
                 padding: 14px 15px 0 12px;
             }
         }

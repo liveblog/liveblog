@@ -42,7 +42,7 @@
     background: #eee;
     font-weight: 500;
     :where(.lb-refresh) & {
-      // Borders on a table-row don't paint in the separate border model, only cell borders do.
+      // Table rows don't paint borders in the separate model.
       display: flex;
       align-items: center;
       background: $lb-pill-bg;

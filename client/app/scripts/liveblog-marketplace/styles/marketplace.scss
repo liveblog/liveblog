@@ -103,8 +103,7 @@ section.marketer div.archive-sidebar div.filter-title {
             padding: 20px 24px;
             border-bottom: 1px solid $lb-input-border;
             .backlink-toolbar {
-                // Vendor's `.backlink-toolbar` (archive-filtering.scss) carries its own popup-header
-                // shadow, height, margin and background.
+                // Drops vendor's `.backlink-toolbar` header styles.
                 box-shadow: none;
                 margin-bottom: 0;
                 height: auto;
@@ -119,7 +118,7 @@ section.marketer div.archive-sidebar div.filter-title {
                     font-weight: 600;
                     color: $lb-btn-dark-bg;
                 }
-                // `.icon-close-small` is a real glyph that follows `color`, so it needs no mask.
+                // A real glyph that follows `color`; no mask needed.
                 .doopen {
                     cursor: pointer;
                     color: $lb-timestamp;

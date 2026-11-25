@@ -68,7 +68,7 @@
             background-color: rgba($lb-btn-dark-bg, 0.08);
             color: $lb-btn-dark-bg;
         }
-        // Drawn in CSS (no Lucide "x" asset) so it centers regardless of font metrics.
+        // Drawn in CSS so it centers regardless of font metrics.
         .icon-close-small {
             position: relative;
             width: 10px;
@@ -155,17 +155,17 @@
 }
 
 :where(.lb-refresh) {
-    // The React component renders these inputs without classes.
+    // The React component's inputs have no classes.
     .poll_component input[type="text"],
     .poll_component input[type="number"] {
         width: 100%;
         box-sizing: border-box !important;
-        // !important so no vendor focus style can change the border width and resize the box.
+        // Keeps vendor focus styles from resizing the box.
         border-width: 1px !important;
         border-style: solid !important;
         border-color: $lb-input-border;
         border-radius: $lb-radius-input !important;
-        // sir-trevor's `.st-block input[type="text"]` sets `padding: .6em` at equal specificity.
+        // Beats sir-trevor's equal-specificity `.st-block input` padding.
         padding: 8px 12px !important;
         font-size: 13px;
         transition: border-color .15s ease;
@@ -175,7 +175,7 @@
         &:focus {
             outline: 0 !important;
             border-color: $lb-rail-active;
-            // No focus glow: in this tight card a 3px ring looks like the text shifting.
+            // A focus ring here looks like the text shifting.
             box-shadow: none !important;
         }
         &:disabled {

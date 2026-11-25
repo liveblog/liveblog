@@ -3,7 +3,7 @@
 @import '~lb-variables.scss';
 @import '~lb-mixins.scss';
 
-// Tints background-image icons via mask, since `color` can't reach a background-image.
+// `color` can't tint a background-image, so mask it.
 @mixin lb-icon-mask($url) {
     background-image: none !important;
     -webkit-mask-image: $url;
@@ -17,7 +17,7 @@
     background-color: $lb-rail-inactive;
 }
 
-// Avatars that would fall back to vendor's raster `avatar_64.png`.
+// Avatars that would show vendor's `avatar_64.png`.
 :where(.lb-refresh) .blogedit .avatar:not(.no-bg):not(.initials) {
     background: $lb-rail-active !important;
     position: relative;
@@ -40,18 +40,18 @@
     color: $lb-btn-dark-bg;
     text-shadow: none;
     font-size: 13px;
-    // The inherited 1.8rem body line-height leaves more space below the text than above.
+    // Body line-height leaves uneven space around the text.
     padding: 14px;
     line-height: 1.4;
-    // Lines up with the 20px inset of the panel headers above it.
+    // Matches the panel headers' 20px inset.
     margin: 16px 20px;
 }
 
 .blogedit {
     :where(.lb-refresh) & {
-        // Overrides vendor `.main-section`'s top ($subnav-height + $topspace).
+        // Overrides vendor `.main-section` top.
         top: 84px;
-        // Fills the 8px gap left of .side-menu.
+        // Fills the gap left of .side-menu.
         background: $lb-subnav-bg;
     }
     //left menu
@@ -141,7 +141,7 @@
         left: 48px; right: 0;
         top:0; bottom: 0;
         :where(.lb-refresh) & {
-            // .side-menu's 8px left offset + 72px width.
+            // .side-menu offset (8px) + width (72px).
             left: 80px;
             background: $lb-subnav-bg;
         }
@@ -164,7 +164,7 @@
             padding: 10px 20px;
             background-color: white;
             :where(.lb-refresh) & {
-                // Grows with the 20px padding; .content and .content--timeline's top below must match.
+                // Includes the 20px padding; .content tops below must match.
                 height: $nav-height + 20px;
                 box-shadow: none;
                 padding: 20px 20px;
@@ -215,7 +215,7 @@
                 width: calc(680px - 32px);
                 background: white;
                 box-shadow: $lb-card-shadow;
-                // Below 1240px a fixed 680px Editor leaves Timeline too narrow, so split 50/50.
+                // Below 1240px a fixed 680px Editor squeezes Timeline: split 50/50.
                 @media only screen and (max-width: 1240px) {
                     width: calc(50% - 32px);
                 }
@@ -247,7 +247,7 @@
                     background: $lb-timeline-bg;
                     color: black;
                     font-weight: 700;
-                    // Flex, not float: floats ignore the parent's line-height for vertical centering.
+                    // Flex centers vertically; floats ignore line-height.
                     display: flex;
                     align-items: center;
                 }
@@ -305,7 +305,7 @@
                             color: $lb-timestamp;
                             padding: 0;
                             transition: background-color .15s ease, color .15s ease;
-                            // Drawn as two bars: the "×" glyph sits high in its font box and can't be centered.
+                            // Two bars: the "×" glyph can't be centered.
                             font-size: 0;
                             &::before, &::after {
                                 content: '';
@@ -683,9 +683,9 @@
                                         left: 13px;
                                         top: 10px;
                                         color: $gray;
-                                        // sir-trevor's ligature font draws over the text: hide it, mask an SVG per [data-type].
+                                        // sir-trevor's icon font draws over the text: mask an SVG per [data-type].
                                         :where(.lb-refresh) & {
-                                            font-size: 0 !important; // beats sir-trevor.scss's global `.st-icon { font-size: 18px !important; }`
+                                            font-size: 0 !important; // beats sir-trevor's global `.st-icon` font-size
                                             display: inline-block;
                                             width: 16px;
                                             height: 16px;
@@ -842,7 +842,7 @@
                                         font-size: 14px;
                                         font-weight: 500;
                                     }
-                                    // sir-trevor's ligature icon font draws over the text: hide it and mask an SVG.
+                                    // sir-trevor's icon font draws over the text: mask an SVG.
                                     .st-icon {
                                         font-size: 0 !important;
                                         display: block;
@@ -893,7 +893,7 @@
                             &__inner {
                                 border: 0;
                                 margin: 8px 0;
-                                // Matches .st-text-block's radius so this element's hover shadow isn't square.
+                                // Matches .st-text-block's radius for the hover shadow.
                                 :where(.lb-refresh) & {
                                     @include border-radius($lb-radius-input);
                                 }
@@ -1042,7 +1042,7 @@
                     vertical-align: middle;
                     margin-right: 5px;
                     :where(.lb-refresh) & {
-                        // ::first-letter is a no-op on inline elements.
+                        // ::first-letter needs a non-inline box.
                         display: inline-block;
                         margin-right: 0;
                         margin-left: 5px;
@@ -1057,14 +1057,14 @@
                 }
             }
             :where(.lb-refresh) & {
-                // Table cells ignore margin, so the border-spacing gap is pulled in on the inner pill.
+                // Cells ignore margin, so the gap goes on the inner pill.
                 .actions__options > div:not(:first-child) > div {
                     margin-left: -4px;
                 }
                 .actions__options > div > div {
                     display: inline-flex;
                     align-items: center;
-                    // The markup puts the label first; show the icon before it.
+                    // Icon before the label.
                     .actions__icon {
                         order: -1;
                     }
@@ -1132,8 +1132,7 @@
                         text-transform: none;
                         transition: box-shadow .15s ease, transform .15s ease;
                         &:hover:not(:disabled) {
-                            // liveblog.scss's `.blogedit .btn:not(.btn--primary):hover` outranks this rule's
-                            // base background-color.
+                            // Beats liveblog.scss's `.blogedit .btn:not(.btn--primary):hover`.
                             background-color: $lb-btn-dark-bg !important;
                             border-color: $lb-btn-dark-bg !important;
                             transform: translateY(-1px);
@@ -1150,7 +1149,7 @@
                             }
                         }
 
-                        // icon-publish needs the bg-mask variant to override its global sprite rule.
+                        // The bg-mask variant overrides icon-publish's sprite rule.
                         i {
                             vertical-align: middle;
                             margin-left: 8px;
@@ -1412,7 +1411,7 @@
 .freetype-selector .separator {
     border-bottom: 1px solid #ebebeb;
     :where(.lb-refresh) & {
-        // Cancels the `li` border-radius above, which curves this divider's border.
+        // No radius on this divider.
         border-radius: 0;
         border-bottom: 1px solid $lb-input-border;
     }
@@ -1455,10 +1454,10 @@
         padding-top: 2rem !important;
         &__label {
             color: $lb-timestamp;
-            // Vendor's inline-block with a 2.6rem line-height would swamp the margin-bottom below.
+            // Vendor's inline-block line-height would swamp the margin.
             display: block !important;
             line-height: normal !important;
-            // Beats vendor's `.sd-line-input .sd-line-input__label` margin.
+            // Beats vendor's `.sd-line-input__label` margin.
             margin-bottom: 6px !important;
         }
         .form-input > a {
@@ -1483,7 +1482,7 @@
                 box-shadow: 0 0 0 3px rgba($lb-rail-active, 0.15) !important;
             }
         }
-        // Native select arrows ignore padding-right, so draw one via background-image.
+        // Native arrows ignore padding, so draw one.
         select.sd-line-input__select {
             appearance: none !important;
             -webkit-appearance: none !important;

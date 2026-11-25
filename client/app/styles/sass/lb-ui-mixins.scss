@@ -1,7 +1,6 @@
-// Mixins only, no imports and no CSS output, so any stylesheet can import
-// this without duplicating rules. Expects lb-variables to be imported first.
+// Mixins only, no CSS output, safe to import anywhere. Needs lb-variables first.
 
-// Replaces an sd_icons font glyph with an SVG mask tinted by $color.
+// Replaces an sd_icons glyph with an SVG mask in $color.
 @mixin lb-icon-font-mask($url, $color: #333, $size: 16px) {
     display: inline-block;
     width: $size;
@@ -21,7 +20,7 @@
     mask-size: contain;
 }
 
-// Same as lb-icon-font-mask, for icons drawn as a background-image sprite.
+// lb-icon-font-mask for background-image sprite icons.
 @mixin lb-icon-bg-mask($url, $color: #333) {
     background-image: none !important;
     -webkit-mask-image: $url;
@@ -35,8 +34,7 @@
     background-color: $color;
 }
 
-// Labeled pill for a vendor `.sd-create-btn`. The label goes in `content:` because
-// the directive replaces the template markup and leaves no text node.
+// Labeled pill for `.sd-create-btn`. The directive leaves no text node, so the label is `content:`.
 @mixin lb-create-btn-pill($label) {
     position: relative;
     width: auto !important;
@@ -47,10 +45,9 @@
     overflow: visible !important;
     border-radius: $lb-radius-pill !important;
     background-color: $lb-rail-active !important;
-    // Vendor `.navbtn` adds a one-sided border-left that skews the icon's centering.
+    // Vendor's one-sided border skews the icon.
     border: none !important;
-    // Vendor icon CSS absolutely centers this in a 48x48 icon-only button,
-    // so put it back in flow ahead of the label.
+    // Back in flow ahead of the label (vendor centers it absolutely).
     i {
         position: static !important;
         top: auto !important;

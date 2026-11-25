@@ -37,7 +37,7 @@ export class BlogsListPage extends BasePage {
     async search(query: string): Promise<void> {
         const input = this.page.locator('input#search-input');
 
-        // the classic UI collapses the bar behind its icon; the refreshed one keeps it open
+        // classic collapses the bar behind its icon; refreshed keeps it open
         if (!(await input.isVisible())) {
             await this.page.locator('label.trigger-icon').click();
         }

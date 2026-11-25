@@ -49,7 +49,7 @@ export default function ingestPanel(
                 scope.syndicationIn = state.syndicationIn;
                 scope.modalActive = state.modalActive;
                 scope.consumerBlogId = state.consumerBlogId;
-                // `_meta` only exists once the syndication query has answered.
+                // `_meta` is set once the query answers.
                 scope.isEmpty = !!state.syndicationIn._meta && state.locallySyndicatedItems.length === 0;
 
                 if (state.error) {

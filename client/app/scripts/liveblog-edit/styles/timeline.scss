@@ -48,7 +48,7 @@
                     mask-repeat: no-repeat;
                     -webkit-mask-position: left center;
                     mask-position: left center;
-                    // Fixed, not `contain`: the hover width transition reveals the icon instead of scaling it.
+                    // Fixed size: the hover transition reveals the icon, not scales it.
                     -webkit-mask-size: 11px 11px;
                     mask-size: 11px 11px;
                     transition: width .15s ease, margin-left .15s ease;
@@ -271,7 +271,7 @@
             position: static;
             height: auto;
             padding-top: 0;
-            // Must stay below .header--filters' order: 4 so it sits right before the filters.
+            // Just before `.header--filters` (order: 4).
             order: 3;
             border-right: 1px solid $lb-input-border !important;
             display: flex;
@@ -281,7 +281,7 @@
         }
     }
     :where(.lb-refresh) & {
-        // `.cancel-reorder` also has `.header--filters` and takes the auto margin; a second one strands it mid-row.
+        // Only `.cancel-reorder` keeps the auto margin, or Cancel strands mid-row.
         .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
             margin-left: 12px;
         }
@@ -320,8 +320,7 @@
         -o-transition: transform 0.5s;
         transition: transform 0.5s;
         :where(.lb-refresh) & {
-            // Centered on `.pin-drawer`'s bottom border. A negative margin-top gets clipped
-            // by the scrolling column when the drawer is its first child.
+            // Centered on the drawer border; a negative margin gets clipped.
             margin-top: 0;
             width: 28px;
             height: 28px;
@@ -335,12 +334,12 @@
         &.active {
             @include rotate(180deg);
             :where(.lb-refresh) & {
-                // Not the rotate() mixin: it would drop the centering translateY.
+                // The rotate() mixin would drop the translateY.
                 transform: translateY(-50%) rotate(180deg);
             }
         }
         :where(.lb-refresh) & {
-            // !important beats the sd_icons glyph's own margin and positioning.
+            // Beats the glyph's own margin and positioning.
             i.icon-chevron-up-thin {
                 @include lb-icon-font-mask(url('~images/icons/chevron-up.svg'), $lb-btn-dark-bg, 14px);
                 position: absolute !important;
@@ -356,7 +355,7 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         :where(.lb-refresh) & {
             position: relative;
-            // The "N PINNED POSTS" label is a `<div>`, so the `span` rule below misses it.
+            // The label is a `<div>`, which the `span` rule misses.
             > div {
                 font-size: 11px;
                 color: #999999;

@@ -25,7 +25,7 @@ $PADDING: 20px;
             &--active {
                 color: $lb-btn-dark-bg !important;
                 border-left-color: $lb-rail-active !important;
-                // Vendor's active rule for this class adds a 4px right border.
+                // Vendor's active rule adds a 4px right border.
                 border-right: none !important;
                 background: $lb-rail-active-bg;
             }
@@ -65,7 +65,7 @@ $PADDING: 20px;
         }
     }
     :where(.lb-refresh) & {
-        // Not `.form-group > div > label`: that also matches each toggle's description label.
+        // `.form-group > div > label` would also match toggle descriptions.
         .lb-group-heading {
             margin-bottom: 8px;
             label {

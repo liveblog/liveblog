@@ -71,7 +71,7 @@ blog image uploader
                             margin: 0 auto 10px;
                             width: 22px;
                             height: 22px;
-                            // Include the mixin first: it sets `display: inline-block`, which must lose to `display: block`.
+                            // Mixin first: its `inline-block` must lose to `block`.
                             @include lb-icon-font-mask(url('~images/icons/image.svg'), $lb-timestamp, 22px);
                             display: block;
                         }
@@ -89,7 +89,7 @@ blog image uploader
                         width: 100%;
                         height: auto;
                         cursor: pointer !important;
-                        // Hides Safari's native "no file selected" text. The `:before` sets its own size.
+                        // Hides Safari's "no file selected" text.
                         font-size: 0;
                     }
                     input::-webkit-file-upload-button {
@@ -130,7 +130,7 @@ blog image uploader
                       border-color: #c0c0c0;
                       cursor: pointer !important;
                       :where(.lb-refresh) & {
-                        // $lb-pill-bg alone is too close to the white resting state to read as a hover.
+                        // $lb-pill-bg alone is too faint for a hover.
                         background: darken($lb-pill-bg, 10%);
                         border-color: darken($lb-pill-bg, 10%);
                       }

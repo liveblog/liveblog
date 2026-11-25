@@ -4,8 +4,7 @@
 @import '~lb-variables.scss';
 
 :where(.lb-refresh) {
-    // These objects have `name`, not `display_name`, so `sd-user-avatar` sets neither `.initials`
-    // nor `.no-bg` and shows vendor's grey `avatar_64.png`.
+    // No `display_name` here, so vendor shows its grey `avatar_64.png`.
     [lb-producers] .avatar:not(.no-bg):not(.initials),
     [lb-consumers] .avatar:not(.no-bg):not(.initials) {
         background: $lb-rail-active !important;
@@ -215,8 +214,7 @@ div.select-producer {
         width: 85%;
         float: left;
         :where(.lb-refresh) & {
-            // Replaces the native arrow, which misaligns once the global
-            // `.modal .modal__body select` rule (liveblog.scss) adds border and padding.
+            // The native arrow misaligns with the modal select padding.
             appearance: none !important;
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
@@ -298,16 +296,15 @@ i.webhook-status.on {
 }
 
 :where(.lb-refresh) {
-    // One label: Producers and Consumers share this markup. Float + margin only approximates the
-    // alignment; a relative wrapper moved `.main-section.users` off-screen and translateY hid the button.
+    // Same label on both tabs (shared markup). Float + margin is approximate.
     .sd-create-btn.zIndex2 {
         @include lb-create-btn-pill('New entry');
         margin-top: 16px;
-        // The 20px page margin plus the panel's 20px inner padding.
+        // Page margin + panel padding.
         margin-right: 40px;
     }
 
-    // Opaque, so it needs its own radius or it squares off `.list-pane`'s corners.
+    // Opaque, so it rounds its own corners.
     [lb-producers], [lb-consumers] {
         .list-pane header {
             background-color: #fff;
@@ -318,7 +315,7 @@ i.webhook-status.on {
 
     [lb-ingest-panel] .sd-create-btn {
         @include lb-create-btn-pill('Attach');
-        // Overrides `.minusMargin1020`, whose negative margins push the pill off-screen.
+        // Overrides `.minusMargin1020`, which pushes the pill off-screen.
         margin: 0 !important;
     }
 

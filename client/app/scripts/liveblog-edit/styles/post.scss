@@ -100,8 +100,7 @@
                 :where(.lb-refresh) & {
                     display: inline-block;
                     vertical-align: middle;
-                    // Line box matches the icon height to drop the descender gap. Don't use
-                    // font-size: 0 instead, icon-publish/icon-unpublish size off it.
+                    // Matches the icon height to drop the descender gap. Not font-size: 0, the icons size off it.
                     line-height: 16px;
                     border-radius: 6px;
                     transition: background-color .15s ease;
@@ -126,7 +125,7 @@
                 }
             }
             :where(.lb-refresh) & {
-                // Descendant, not `a > i`: also matches the icon inside `div.reorder-disabled`.
+                // Descendant, so it also matches `div.reorder-disabled`'s icon.
                 i.icon-star {
                     @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-btn-dark-bg);
                     opacity: 1;
@@ -156,7 +155,7 @@
                 i.icon-unpublish {
                     @include lb-icon-bg-mask(url('~images/icons/undo-2.svg'), $lb-btn-dark-bg);
                     opacity: 1;
-                    // Cancels the sprite rule's rotate(180deg) in liveblog.scss.
+                    // Cancels liveblog.scss's sprite rotation.
                     transform: none;
                 }
                 i.icon-publish {
@@ -397,7 +396,7 @@
     }
 }
 
-// The post's tags line: the template gives it no class, only an inline style.
+// The tags line has only an inline style to match.
 :where(.lb-refresh) .lb-post__holder > div[style*="text-align: right"] {
     padding-top: 10px;
     padding-bottom: 2px;

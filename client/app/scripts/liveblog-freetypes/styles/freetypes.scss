@@ -100,7 +100,7 @@
                 border-radius: $lb-radius-input;
                 padding: 8px 22px;
                 box-shadow: none;
-                // Vendor's clearfix pseudo-elements would become flex items.
+                // Clearfix pseudo-elements would be flex items.
                 &::before, &::after {
                     content: none;
                 }
@@ -123,7 +123,7 @@
                 }
             };
             :where(.lb-refresh) & {
-                // Beats vendor's `.pills-list li:hover .actions { display: block !important }`.
+                // Beats vendor's `li:hover .actions { display: block !important }`.
                 .actions {
                     position: static !important;
                     display: flex !important;
