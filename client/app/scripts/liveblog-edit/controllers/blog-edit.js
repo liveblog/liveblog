@@ -710,6 +710,9 @@ export default function BlogEditController(
             }
 
             $route.updateParams(params);
+            // The route has reloadOnSearch off, so history entries for panel changes would make
+            // the browser Back button change the URL without changing the view.
+            $location.replace();
             unreadPostsService.reset(panel);
 
             $scope.editorColumn.removeClass('column-hidden-mobile');
