@@ -13,9 +13,9 @@ export type CancelReason = 'It\'s too expensive' | 'I found an alternative' | 'I
  * default portal configuration.
  *
  * The portal's buttons carry a hidden "Confirming... Loading" label in their
- * accessible names, so submit buttons are matched by prefix. Plan cards have
- * no test ids; a card is the innermost block holding the product name and a
- * "Select plan" button.
+ * accessible names, so submit buttons are matched by prefix. A plan card's
+ * "Select plan" button is labelled by the button and the card heading, e.g.
+ * "Select plan E2E LiveBlog Solo".
  */
 export class StripePortalPage {
     readonly activePlans: Locator;
@@ -65,14 +65,11 @@ export class StripePortalPage {
     /** From a plan's page, opens the plan picker. */
     async startPlanUpdate() {
         await this.page.getByRole('link', { name: 'Update plan' }).click();
-        await expect(this.heading).toHaveText('Choose your plan', { timeout: LOAD_TIMEOUT });
+        await expect(this.heading).toHaveText(/^(Choose|Update) your plan$/, { timeout: LOAD_TIMEOUT });
     }
 
     planCard(productName: string): Locator {
-        return this.page.getByRole('main').locator('div')
-            .filter({ has: this.page.getByText(productName, { exact: true }) })
-            .filter({ has: this.page.getByRole('button', { name: 'Select plan' }) })
-            .last();
+        return this.page.getByRole('main').getByRole('button', { name: `Select plan ${productName}`, exact: true });
     }
 
     /**
@@ -80,26 +77,26 @@ export class StripePortalPage {
      * heading as either "Summary" or "Confirm your update".
      */
     async selectPlan(productName: string) {
-        await this.planCard(productName).getByRole('button', { name: 'Select plan' }).click();
+        await this.planCard(productName).click();
         await expect(this.heading).toHaveText(/^(Summary|Confirm your update)$/, { timeout: LOAD_TIMEOUT });
     }
 
     /** Confirms the plan change and waits to land back on the plan's page. */
     async confirmPlanUpdate(productName: string) {
-        await this.page.getByRole('main').getByRole('button', { name: /^Confirm/ }).click();
+        await this.page.getByRole('main').getByRole('button', { name: /^(Confirm|Subscribe and pay)/ }).click();
         await expect(this.heading).toHaveText(productName, { timeout: SUBMIT_TIMEOUT });
     }
 
     /** From a plan's page, opens the cancellation review. */
     async startCancel() {
-        await this.page.getByRole('main').getByRole('button', { name: 'Cancel plan', exact: true }).click();
+        await this.page.getByRole('main').getByRole('link', { name: 'Cancel plan', exact: true }).click();
         await expect(this.heading).toHaveText('Review your changes', { timeout: LOAD_TIMEOUT });
     }
 
     async chooseCancelReason(reason: CancelReason) {
-        await this.page.getByRole('button', { name: 'Reason for cancellation (optional)' }).click();
-        await this.page.getByRole('option', { name: reason }).click();
-        await expect(this.page.getByRole('button', { name: 'Reason for cancellation (optional)' })).toContainText(reason);
+        const option = this.page.getByRole('main').getByRole('radio', { name: reason });
+        await option.check();
+        await expect(option).toBeChecked();
     }
 
     async confirmCancel() {
@@ -109,7 +106,7 @@ export class StripePortalPage {
 
     /** Leaves the cancellation confirmation. */
     async done() {
-        await this.page.getByRole('main').getByRole('button', { name: 'Done' }).click();
+        await this.page.getByRole('main').getByRole('button', { name: /^(Done|Return to Overview)$/ }).click();
         await expect(this.heading).not.toHaveText('Plan canceled', { timeout: LOAD_TIMEOUT });
     }
 
