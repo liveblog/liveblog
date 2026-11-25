@@ -174,11 +174,9 @@ test.describe('LiveBlog Go', () => {
         await banner.extendButton.click();
         const checkout = new StripeCheckoutPage(page);
         await checkout.waitForLoaded(GO_PRODUCT_NAME);
-        // The EUR amount is shown either as the line item price or, with
-        // adaptive pricing, as the EUR option of the currency chooser. The
-        // archived legacy price is EUR 2.00, the default EUR 3.00.
-        await expect(page.getByText('€3.00').first()).toBeVisible();
-        await expect(page.getByText('€2.00')).toHaveCount(0);
+        // The archived legacy price is EUR 2.00, the default EUR 3.00.
+        await expect.poll(() => checkout.amountCount('€3.00')).toBeGreaterThan(0);
+        expect(await checkout.amountCount('€2.00')).toBe(0);
         await shot('stripe checkout go default price landing');
 
         const paidFrom = Date.now();
