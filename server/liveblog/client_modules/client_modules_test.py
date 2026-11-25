@@ -1,8 +1,5 @@
 import datetime
 import json
-import os
-import subprocess
-import sys
 import unittest
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
@@ -719,25 +716,14 @@ class ClientModuleTestCase(TestCase):
 class ClientPostsCacheKeyTestCase(unittest.TestCase):
     """Nodes share the Redis cache, so they must all build the same key for the same request."""
 
-    SCRIPT = (
-        "from eve.utils import ParsedRequest\n"
-        "from werkzeug.datastructures import MultiDict\n"
-        "from liveblog.client_modules.client_modules import client_posts_cache_key\n"
-        "req = ParsedRequest()\n"
-        "req.args = MultiDict([('max_results', '15'), ('page', '1'), ('source', '{\"query\": {}}')])\n"
-        "req.max_results = 15\n"
-        "print(client_posts_cache_key(req))\n"
-    )
-
-    def _key_in_new_interpreter(self, hash_seed):
-        env = dict(os.environ, PYTHONHASHSEED=str(hash_seed))
-        output = subprocess.check_output([sys.executable, "-c", self.SCRIPT], env=env)
-        return output.decode().strip().splitlines()[-1]
-
-    def test_key_is_the_same_across_interpreters(self):
-        keys = {self._key_in_new_interpreter(seed) for seed in (1, 2, 3)}
-        self.assertEqual(len(keys), 1, keys)
-        self.assertTrue(keys.pop().startswith("lb_ClientBlogPostsService_get_"))
+    def test_key_is_stable(self):
+        # A pinned value fails if the key ever depends on per-process state again, such as hash().
+        req = ParsedRequest()
+        req.args = MultiDict([("page", "1")])
+        self.assertEqual(
+            client_posts_cache_key(req),
+            "lb_ClientBlogPostsService_get_7f0d84638ae27bd69cc14be8e799e14a0e857ab1",
+        )
 
     def test_key_changes_with_the_request(self):
         first, second = ParsedRequest(), ParsedRequest()
