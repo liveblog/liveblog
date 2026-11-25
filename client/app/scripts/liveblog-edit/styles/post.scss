@@ -197,6 +197,15 @@
             right: 40px;
             float: right;
             background-color: white;
+            :where(.lb-refresh) & {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                width: auto;
+                height: 20px;
+                top: -11px;
+                padding: 0 8px;
+            }
         }
         &-multiple-items-roundel {
             border: 1px solid #a6a6a6;
@@ -207,6 +216,20 @@
             margin-left:-40px;
             margin-right:4px;
             position: relative;
+            :where(.lb-refresh) & {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 20px;
+                width: auto;
+                height: 20px;
+                padding: 0 6px;
+                margin: 0;
+                border: none;
+                @include border-box();
+                @include border-radius($lb-radius-pill);
+                background-color: $lb-pill-bg;
+            }
         }
         &-multiple-items-roundel-text {
             position: absolute;
@@ -218,6 +241,13 @@
             color: #f6f6f6;
             font-size: 11px;
             font-weight: 400;
+            :where(.lb-refresh) & {
+                position: static;
+                width: auto;
+                line-height: 1;
+                color: $lb-pill-text;
+                font-weight: 600;
+            }
         }
         &-multiple-items-roundel-label {
             color: #ababab;
@@ -226,6 +256,14 @@
             display: inline-block;
             font-size: 11px;
             font-weight: 400;
+            :where(.lb-refresh) & {
+                position: static;
+                margin: 0;
+                line-height: 1;
+                color: $lb-timestamp;
+                font-weight: 500;
+                letter-spacing: .04em;
+            }
         }
     }
     &__collapser-multiple-items {

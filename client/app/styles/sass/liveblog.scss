@@ -517,6 +517,45 @@ i.icon-star.orange {
         background-color: $lb-header-bg !important;
     }
 
+    // !important: the vendor `.sd-checkbox` rules load after this file at equal specificity.
+    // Keeps the vendor 16px box, which its 12px check glyph is positioned for.
+    .sd-checkbox {
+        border-color: #C3CAD2 !important;
+        @include border-radius(4px !important);
+        background-color: #fff !important;
+        &:hover {
+            border-color: $lb-rail-active !important;
+        }
+        &.checked, &[checked="checked"] {
+            border-color: $lb-rail-active !important;
+            background-color: $lb-rail-active !important;
+            &:hover {
+                border-color: darken($lb-rail-active, 6%) !important;
+                background-color: darken($lb-rail-active, 6%) !important;
+            }
+        }
+    }
+
+    .avatar.initials {
+        background-color: $lb-rail-active-bg;
+        box-shadow: inset 0 0 0 1px rgba($lb-rail-active, 0.2);
+        color: darken($lb-rail-active, 12%);
+        font-weight: 600;
+        // Initials take one letter per word of the name, so four letters are common.
+        letter-spacing: -.02em;
+    }
+
+    // !important: the vendor `.dropdown__menu` rules load after this file at equal specificity.
+    .dropdown__menu {
+        border: 1px solid $lb-input-border !important;
+        @include border-radius(10px !important);
+        box-shadow: 0 8px 24px rgba(12, 37, 49, 0.12) !important;
+        padding: 6px !important;
+        > li > a, > li > button {
+            @include border-radius(6px);
+        }
+    }
+
     #top-menu a, #top-menu button {
         background: #01131c !important;
     }
@@ -812,6 +851,11 @@ i.icon-star.orange {
     // so it needs the lower value or it covers the dialog and eats its clicks.
     .modal {
         z-index: 100001 !important;
+    }
+    // Vendor's 40px top (30px for `.modal--fill`) tucks the dialog under the 48px top bar.
+    .modal:not(.modal--fullscreen) {
+        top: 72px;
+        bottom: 24px;
     }
     .modal__backdrop {
         z-index: 100000 !important;
@@ -1298,14 +1342,6 @@ i.icon-star.orange {
         .nav-tabs__tab--active .nav-tabs__link, .nav-tabs__tab--active:hover .nav-tabs__link {
             border-bottom-color: $lb-rail-active !important;
             color: $lb-btn-dark-bg !important;
-        }
-        .sd-checkbox.checked, .sd-checkbox[checked="checked"] {
-            border-color: $lb-rail-active !important;
-            background: $lb-rail-active !important;
-            &:hover {
-                border-color: darken($lb-rail-active, 6%) !important;
-                background: darken($lb-rail-active, 6%) !important;
-            }
         }
         .sd-check__wrapper .sd-checkbox+label.label--active {
             color: $lb-rail-active !important;

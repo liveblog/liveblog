@@ -43,6 +43,8 @@
     // The inherited 1.8rem body line-height leaves more space below the text than above.
     padding: 14px;
     line-height: 1.4;
+    // Lines up with the 20px inset of the panel headers above it.
+    margin: 16px 20px;
 }
 
 .blogedit {

@@ -31,7 +31,7 @@
             height: auto;
             border-bottom: none;
             margin-top: 12px;
-            background: $lb-subnav-bg;
+            background: #fff;
             padding: 4px;
             @include border-radius($lb-radius-pill);
             > li {
@@ -307,13 +307,27 @@ i.webhook-status.on {
     .sd-create-btn.zIndex2 {
         @include lb-create-btn-pill('New entry');
         margin-top: 16px;
-        margin-right: 24px;
+        // The 20px page margin plus the panel's 20px inner padding.
+        margin-right: 40px;
+    }
+
+    // Opaque, so it needs its own radius or it squares off `.list-pane`'s corners.
+    [lb-producers], [lb-consumers] {
+        .list-pane header {
+            background-color: #fff;
+            border-top-left-radius: $lb-radius-card;
+            border-top-right-radius: $lb-radius-card;
+        }
     }
 
     [lb-ingest-panel] .sd-create-btn {
         @include lb-create-btn-pill('Attach');
         // Overrides `.minusMargin1020`, whose negative margins push the pill off-screen.
         margin: 0 !important;
+    }
+
+    .lb-empty-state__icon--ingest::before {
+        @include lb-icon-bg-mask(url('~images/icons/download.svg'), $lb-subnav-icon-square);
     }
 }
 

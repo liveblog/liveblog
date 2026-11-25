@@ -374,8 +374,9 @@ $PADDING: 20px;
                     @include lb-create-btn-pill('Add output');
                 }
                 // The wrapper's `.minusMargin1020` (-10px -20px) pushes the pill past the header edge.
+                // -4px keeps the 40px pill inside the 48px header: `.content` paints over any overflow.
                 .minusMargin1020 {
-                    margin: 0 !important;
+                    margin: -4px 0 0 !important;
                 }
             }
         }
@@ -698,6 +699,44 @@ $PADDING: 20px;
     .search-result.searching {
         height: 38px;
         overflow: hidden;
+    }
+
+    :where(.lb-refresh) & {
+        // A dropdown under the search input instead of a box stretched to the modal's bottom.
+        .search-result {
+            top: 90px;
+            bottom: auto;
+            max-height: 240px;
+            padding: 6px;
+            border: 1px solid $lb-input-border;
+            @include border-radius(10px);
+            box-shadow: 0 8px 24px rgba(12, 37, 49, 0.12);
+            z-index: 2;
+            @include border-box();
+        }
+        .search-result.no-records,
+        .search-result.searching {
+            height: auto;
+        }
+        .users-list-embed {
+            max-height: none;
+            margin: 0;
+            > li {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                height: 40px;
+                padding: 0 10px;
+                cursor: pointer;
+                font-size: 14px;
+                color: $lb-btn-dark-bg;
+                .avatar {
+                    width: 28px;
+                    height: 28px;
+                    margin: 0;
+                }
+            }
+        }
     }
 }
 .pending-blog-member {

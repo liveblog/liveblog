@@ -441,11 +441,13 @@
         padding: 30px;
         overflow-y: auto;
         :where(.lb-refresh) & {
-            top: 76px;
+            // 4px of top padding leaves room for the hovered card's -2px lift, which this
+            // scroll container would otherwise clip.
+            top: 72px;
             background: #fff;
             border-bottom-left-radius: $lb-radius-card;
             border-bottom-right-radius: $lb-radius-card;
-            padding: 0 20px 20px;
+            padding: 4px 20px 20px;
         }
         .empty-state {
             :where(.lb-refresh) & {

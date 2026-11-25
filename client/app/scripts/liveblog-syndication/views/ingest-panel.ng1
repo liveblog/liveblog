@@ -9,6 +9,12 @@
 
     </header>
 
+    <div ng-if="isEmpty && $root.uiRefreshEnabled" class="lb-empty-state">
+        <i class="lb-empty-state__icon lb-empty-state__icon--ingest"></i>
+        <h3 class="lb-empty-state__title" translate>No syndicated blogs yet</h3>
+        <p class="lb-empty-state__text" translate>Attach a blog from one of your producers to receive its posts here. You can review each post before publishing it, or turn on autopublish to send them straight to your timeline.</p>
+    </div>
+
     <ul class="syndicated-blogs-list">
         <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
             <h4>
