@@ -28,6 +28,10 @@
             <li><a href="https://liveblog.pro/helpdesk" target="_blank">Helpdesk</a></li>
             <li><a href="https://github.com/liveblog/liveblog" target="_blank">Github</a></li>
             <li translate ng-click="aboutModal = aboutModal? false: true"><button translate>About</button></li>
+            <li ng-click="$root.toggleUiRefresh()">
+                <button ng-if="!$root.uiRefreshEnabled" data-testid="ui-refresh-toggle" translate>Try the new look</button>
+                <button ng-if="$root.uiRefreshEnabled" data-testid="ui-refresh-toggle" translate>Back to the classic look</button>
+            </li>
         </ul>
     </div>
     <div sd-modal="" data-model="aboutModal" class="about-modal modal--large">
@@ -82,6 +86,8 @@
     <sd-billing-banner></sd-billing-banner>
 
     <lb-impersonation-banner></lb-impersonation-banner>
+
+    <lb-ui-refresh-banner></lb-ui-refresh-banner>
 
     <script src="config.js"></script>
     <script src="sir-trevor.js"></script>

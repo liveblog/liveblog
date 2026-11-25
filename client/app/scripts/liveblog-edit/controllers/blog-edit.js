@@ -710,6 +710,8 @@ export default function BlogEditController(
             }
 
             $route.updateParams(params);
+            // reloadOnSearch is off, so panel history entries would break Back.
+            $location.replace();
             unreadPostsService.reset(panel);
 
             $scope.editorColumn.removeClass('column-hidden-mobile');

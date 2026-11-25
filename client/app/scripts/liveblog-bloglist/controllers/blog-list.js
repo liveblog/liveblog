@@ -16,6 +16,7 @@ BlogListController.$inject = [
     'modal',
     'blogService',
     'featuresService',
+    '$timeout',
 ];
 
 export default function BlogListController(
@@ -32,7 +33,8 @@ export default function BlogListController(
     urls,
     modal,
     blogService,
-    featuresService
+    featuresService,
+    $timeout
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -473,12 +475,27 @@ export default function BlogListController(
     }
 
     function fetchBlogs() {
+        const query = $location.search().q || null;
+
         $scope.blogsLoading = true;
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
+            $scope.searchQuery = query;
             $scope.blogsLoading = false;
         });
     }
+
+    // Only sdSearchbar's close button clears both the input and the URL.
+    // $timeout: clicking it mid-digest throws.
+    $scope.clearSearch = function() {
+        $timeout(() => {
+            const close = document.querySelector('.bloglist .search-close');
+
+            if (close) {
+                close.click();
+            }
+        });
+    };
     // initialize bloglist embed code.
     fetchBloglistEmbed();
     // initialize blogs list

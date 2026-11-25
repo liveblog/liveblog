@@ -57,7 +57,37 @@
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
         <!-- empty state -->
-        <div ng-if="blogs._meta.total === 0" class="empty-state">
+        <div ng-if="blogs._meta.total === 0 && $root.uiRefreshEnabled" class="lb-empty-state">
+            <div ng-if="searchQuery">
+                <i class="lb-empty-state__icon lb-empty-state__icon--search"></i>
+                <h3 class="lb-empty-state__title" translate>No blogs match "{{ searchQuery }}"</h3>
+                <p class="lb-empty-state__text" translate>Check the spelling or try a different search.</p>
+                <button class="btn lb-empty-state__secondary" ng-click="clearSearch()" translate>Clear search</button>
+            </div>
+            <div ng-if="!searchQuery && activeState.name === 'active'">
+                <i class="lb-empty-state__icon lb-empty-state__icon--blogs"></i>
+                <h3 class="lb-empty-state__title" translate>No blogs yet</h3>
+                <p class="lb-empty-state__text" translate>Create your first live blog to start covering events in real time.</p>
+                <button
+                    ng-if="isUserAllowedToCreateABlog()"
+                    class="btn btn--primary lb-empty-state__primary"
+                    ng-click="openNewBlog();">
+                    <i class="lb-empty-state__plus"></i>
+                    <span translate>Create blog</span>
+                </button>
+            </div>
+            <div ng-if="!searchQuery && activeState.name === 'archived'">
+                <i class="lb-empty-state__icon lb-empty-state__icon--archived"></i>
+                <h3 class="lb-empty-state__title" translate>No archived blogs</h3>
+                <p class="lb-empty-state__text" translate>Blogs you archive will show up here.</p>
+            </div>
+            <div ng-if="!searchQuery && activeState.name === 'deleted'">
+                <i class="lb-empty-state__icon lb-empty-state__icon--deleted"></i>
+                <h3 class="lb-empty-state__title" translate>No deleted blogs</h3>
+                <p class="lb-empty-state__text" translate>Blogs you delete stay here until they are permanently removed.</p>
+            </div>
+        </div>
+        <div ng-if="blogs._meta.total === 0 && !$root.uiRefreshEnabled" class="empty-state">
             <div translate>No blogs found.</div>
             <button
                 ng-if="activeState.code === 'open' && isUserAllowedToCreateABlog();"

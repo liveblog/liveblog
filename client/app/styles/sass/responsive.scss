@@ -3,11 +3,21 @@
 }
 
 @media(max-width: 800px) {
+    :where(.lb-refresh) {
+        // Keeps overflow from widening the page.
+        .blogedit {
+            overflow-x: hidden;
+        }
+    }
     .blogedit .column {
         width: 100% !important;
     }
     .blogedit .column--first {
         width: 100% !important;
+        :where(.lb-refresh) & {
+            // Desktop's `left: 16px` with 100% width gets the column clipped.
+            left: 0 !important;
+        }
     }
     .blogedit .column--timeline {
         width: 100% !important;
@@ -17,11 +27,36 @@
         display: block !important;
     }
 
+    :where(.lb-refresh) {
+        // Rail left + width (4px + 56px).
+        .blogedit .side-menu {
+            left: 4px !important;
+            padding: 4px !important;
+            width: 56px !important;
+        }
+        .blogedit .columns-holder {
+            left: 60px !important;
+        }
+
+        // Fits the narrow rail (4px offset + 4px padding).
+        div.subnav div.button-stack.left-stack a.homebtn {
+            margin-left: 14px !important;
+        }
+    }
+
     .lb-post__content {
         margin-left: 0px !important;
     }
 
+    :where(.lb-refresh) {
+        .lb-post__holder {
+            // Keeps wide content from scrolling the page.
+            overflow: hidden;
+        }
+    }
+
     .lb-post__actions {
+        // `float: right` already wraps this row.
         margin-top: 10px;
         margin-bottom: 20px;
     }
@@ -49,6 +84,67 @@
         overflow: hidden;
         text-indent: -85px;
         color: #d0d0d0;
+        :where(.lb-refresh) & {
+            // Full "Choose post type" label.
+            width: auto;
+            white-space: normal;
+            overflow: visible;
+            text-indent: 0;
+        }
+    }
+
+    :where(.lb-refresh) {
+        // !important: liveblog-edit.scss's equal rule loads later. Scrolls since `.blogedit` hides overflow-x.
+        .blogedit .panel--editor .content .editor-holder .editor .st-blocks.st-ready {
+            padding: 12px 14px !important;
+        }
+        .blogedit .panel--editor .content .editor-holder .editor .st-block-controls--active {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            .st-block-control {
+                flex: 0 0 auto !important;
+            }
+        }
+
+        // No room for icon + label.
+        .blogedit .panel--editor .actions__options > div > div .actions__icon {
+            display: none !important;
+        }
+
+        // Table rows: `border-spacing` is the button gap.
+        .blogedit .panel--editor .content > .actions {
+            border-spacing: 8px 14px !important;
+        }
+
+        // No icons; uppercase keeps them reading as buttons.
+        .blogedit .panel--editor .content>.actions .btn i.icon-publish,
+        .blogedit .panel--editor .content>.actions .btn i.icon-submit,
+        .blogedit .panel--editor .content>.actions .btn i.icon-save-draft {
+            display: none !important;
+        }
+        .blogedit .panel--editor .content>.actions .btn {
+            text-transform: uppercase !important;
+        }
+
+        .blogedit .panel--editor header .btn {
+            padding: 0.7rem 0.7rem !important;
+        }
+
+        // Drops "Preview" to save space.
+        .panel--editor header .btn.btn--primary.pull-right {
+            display: none !important;
+        }
+
+        // Desktop offsets push the dropdown off a phone's edge.
+        .freetype-selector {
+            right: 8px !important;
+            left: 8px;
+            width: auto !important;
+            max-width: none;
+            &.default {
+                right: 8px !important;
+            }
+        }
     }
 
     .blogedit .panel--editor .content .option-not-activated {
@@ -82,6 +178,16 @@
 
     }
 
+    :where(.lb-refresh) {
+        // Vendor's fixed 600px form leaves dead space on narrow screens.
+        .user-profile-page .form-content {
+            width: 100% !important;
+        }
+        .user-profile-page .other-content {
+            display: none !important;
+        }
+    }
+
     .blog-settings-view .settings-page .tab-content > .content > * {
         width: 100% !important;
     }
@@ -99,6 +205,10 @@
         margin-top: 19px;
         z-index: 300;
         border: 1px solid rgba(0, 0, 0, 0.1);
+        :where(.lb-refresh) & {
+            margin-top: 0;
+            border: none;
+        }
     }
 
     .blog-settings-view .shadow-list-holder > .pills-list {
@@ -121,6 +231,9 @@
 
     .sd-top-menu__header {
         margin-left: 40px !important;
+        :where(.lb-refresh) & {
+            margin-left: 70px !important;
+        }
     }
 
     .modal {
@@ -131,6 +244,9 @@
 
     .subnav__button-stack--square-buttons {
         border: 1px solid rgba(0, 0, 0, 0.1);
+        :where(.lb-refresh) & {
+            border: none;
+        }
     }
 
     .nav-tabs > li > a, .nav-tabs > li > button {
@@ -210,5 +326,24 @@
 
     .column-hidden-mobile {
         display: none;
+    }
+
+    :where(.lb-refresh) {
+        // Scroll on `.users-table` so header and rows stay aligned.
+        .users-table {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .users-table .table-header > li,
+        .users-table .table-newest > li,
+        .users-table .table-body > li {
+            min-width: 560px;
+        }
+        // A block `<ul>` won't grow, so the header background would stop short.
+        .users-table .table-header,
+        .users-table .table-newest,
+        .users-table .table-body {
+            min-width: 560px;
+        }
     }
 }

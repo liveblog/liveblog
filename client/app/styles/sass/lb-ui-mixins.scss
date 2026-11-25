@@ -1,0 +1,81 @@
+// Mixins only, no CSS output, safe to import anywhere. Needs lb-variables first.
+
+// Replaces an sd_icons glyph with an SVG mask in $color.
+@mixin lb-icon-font-mask($url, $color: #333, $size: 16px) {
+    display: inline-block;
+    width: $size;
+    height: $size;
+    font-size: 0;
+    &:before {
+        content: none;
+    }
+    background-color: $color;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// lb-icon-font-mask for background-image sprite icons.
+@mixin lb-icon-bg-mask($url, $color: #333) {
+    background-image: none !important;
+    -webkit-mask-image: $url;
+    mask-image: $url;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    background-color: $color;
+}
+
+// Labeled pill for `.sd-create-btn`. The directive leaves no text node, so the label is `content:`.
+@mixin lb-create-btn-pill($label) {
+    position: relative;
+    width: auto !important;
+    height: 40px !important;
+    padding: 0 20px 0 16px !important;
+    display: inline-flex !important;
+    align-items: center;
+    overflow: visible !important;
+    border-radius: $lb-radius-pill !important;
+    background-color: $lb-rail-active !important;
+    // Vendor's one-sided border skews the icon.
+    border: none !important;
+    // Back in flow ahead of the label (vendor centers it absolutely).
+    i {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 2;
+    }
+    .circle {
+        display: none !important;
+    }
+    &::after {
+        content: $label;
+        position: relative;
+        z-index: 2;
+        margin-left: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    @media (max-width: 800px) {
+        width: 40px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        &::after {
+            content: none !important;
+        }
+        i {
+            margin: 0 !important;
+        }
+    }
+}
