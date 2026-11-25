@@ -236,7 +236,7 @@
     }
 }
 :where(.lb-refresh) {
-    // `.main-section` is absolutely positioned on all four sides, so a margin insets it evenly.
+    // Absolutely positioned on all four sides, so a margin insets it.
     .main-section.themelist {
         margin: 12px 20px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
@@ -390,15 +390,13 @@
                     float: left;
                     position: relative;
                     :where(.lb-refresh) & {
-                        // Floated with no width of its own, and the inner div is `width: 100%`, so without
-                        // an explicit width this collapses to 0.
+                        // Floated around a 100%-wide child, so it collapses to 0 without a width.
                         width: 220px;
                         @include border-radius($lb-radius-input);
                         background: none;
                         background-color: #f8f8f8;
                         overflow: hidden;
-                        // The placeholder icon goes on a pseudo-element: masking `.media` itself would clip its
-                        // background color to the icon shape.
+                        // Icon on a pseudo-element: masking `.media` would clip its background to the icon shape.
                         &:before {
                             content: '';
                             position: absolute;

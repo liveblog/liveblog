@@ -95,9 +95,8 @@
     }
 
     :where(.lb-refresh) {
-        // `!important`: same specificity as liveblog-edit.scss's `.st-blocks.st-ready` rule,
-        // which loads later. The toolbar scrolls sideways because `.blogedit`'s
-        // `overflow-x: hidden` would otherwise clip it.
+        // !important: liveblog-edit.scss's `.st-blocks.st-ready` has equal specificity and loads later.
+        // Scrolls sideways because `.blogedit` hides overflow-x.
         .blogedit .panel--editor .content .editor-holder .editor .st-blocks.st-ready {
             padding: 12px 14px !important;
         }

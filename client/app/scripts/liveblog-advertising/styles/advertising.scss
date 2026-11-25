@@ -24,8 +24,7 @@
             display: block;
             margin-bottom: 8px;
         }
-        // Vendor positions this label absolutely (floating-label pattern), so its
-        // margin-bottom has no effect unless it is back in normal flow.
+        // Vendor positions this label absolutely, so margin-bottom needs it back in flow.
         .sd-line-input__label {
             position: static !important;
         }
@@ -43,8 +42,7 @@
         }
     }
 
-    // advert-modal.ng1's `sd-modal` has no size modifier, so it gets vendor's
-    // 480px `.modal` default. Match `modal--large` (680px).
+    // This `sd-modal` has no size modifier (vendor default 480px), so match `modal--large`.
     .modal:has(.item-creation.advertising) {
         .modal__dialog {
             max-width: 680px;
@@ -54,8 +52,7 @@
         }
     }
 
-	// `.main-section` is absolutely positioned on all four sides, so a margin
-	// insets it without shifting the offsets its children rely on.
+	// Absolutely positioned on all four sides, so a margin insets it.
 	.main-section.advertising {
 		margin: 12px 20px 20px;
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
@@ -63,8 +60,7 @@
 	}
 
 	.main-section.advertising {
-		// Vendor's `.navbtn` fixes `width: 4.8rem`, which lets the labeled pill
-		// overflow the wrapper and run off-screen.
+		// Vendor's `.navbtn` `width: 4.8rem` lets the labeled pill run off-screen.
 		.dropdown.navbtn {
 			width: auto !important;
 			// Vendor's `.navbtn` draws a left divider meant for icon-only buttons.
@@ -90,8 +86,7 @@
 			.circle {
 				display: none !important;
 			}
-			// The icon comes from the app-wide `.sd-create-btn i` rule (liveblog.scss);
-			// this only undoes vendor's absolute centering.
+			// Undoes vendor's absolute centering; the icon comes from `.sd-create-btn i` (liveblog.scss).
 			i {
 				position: static !important;
 				top: auto !important;
@@ -158,8 +153,6 @@
 		}
 	}
 
-	// This `.subnav` is a sibling of `.main-section.advertising`, not an
-	// ancestor, hence `:has()`.
 	.subnav:has(+ .main-section.advertising) .nav-tabs {
 		display: inline-flex;
 		height: auto;
@@ -219,8 +212,7 @@
 			border-bottom: 1px solid $lb-input-border;
 			border-top-left-radius: $lb-radius-card;
 			border-top-right-radius: $lb-radius-card;
-			// Without this stacking context, `.advert-list-holder` (absolute, no
-			// z-index) paints over the dropdown menu.
+			// Stacking context, or the absolute `.advert-list-holder` paints over the menu.
 			position: relative;
 			.dropdown.navbtn {
 				position: relative;
@@ -363,9 +355,7 @@
 			border: 1px solid $lb-input-border;
 			border-radius: $lb-radius-card;
 			box-shadow: none;
-			// No overflow:hidden: it would clip the absolutely positioned dropdown menu.
-			// The white fill keeps the page background from showing outside the header's
-			// rounded corners.
+			// White fill for the rounded corners instead of overflow:hidden, which would clip the menu.
 			background-color: #fff;
 		}
 		.card-box__header {

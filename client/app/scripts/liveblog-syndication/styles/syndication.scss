@@ -4,9 +4,8 @@
 @import '~lb-variables.scss';
 
 :where(.lb-refresh) {
-    // `sd-user-avatar` falls back to vendor's grey `avatar_64.png` here: these objects
-    // have a `name`, not `display_name`, so neither `.initials` nor `.no-bg` is set
-    // (UserAvatarDirective.js `initAvatar`).
+    // These objects have `name`, not `display_name`, so `sd-user-avatar` sets neither `.initials`
+    // nor `.no-bg` and shows vendor's grey `avatar_64.png`.
     [lb-producers] .avatar:not(.no-bg):not(.initials),
     [lb-consumers] .avatar:not(.no-bg):not(.initials) {
         background: $lb-rail-active !important;
@@ -23,8 +22,6 @@
         }
     }
 
-    // `.subnav` is a sibling of `[lb-producers]`/`[lb-consumers]`, not an ancestor,
-    // hence `:has()`.
     .subnav:has(+ [lb-producers]), .subnav:has(+ [lb-consumers]) {
         .nav-tabs {
             display: inline-flex;
@@ -301,9 +298,8 @@ i.webhook-status.on {
 }
 
 :where(.lb-refresh) {
-    // One neutral label: Producers and Consumers render identical markup.
-    // Float + margin only approximates the alignment. A `position: relative` wrapper
-    // moves `.main-section.users` off-screen, and `translateY` hid the button.
+    // One label: Producers and Consumers share this markup. Float + margin only approximates the
+    // alignment; a relative wrapper moved `.main-section.users` off-screen and translateY hid the button.
     .sd-create-btn.zIndex2 {
         @include lb-create-btn-pill('New entry');
         margin-top: 16px;

@@ -89,8 +89,7 @@ blog image uploader
                         width: 100%;
                         height: auto;
                         cursor: pointer !important;
-                        // Hides the native "no file selected" text, which Safari still draws
-                        // next to the hidden upload button. The `:before` sets its own size.
+                        // Hides Safari's native "no file selected" text. The `:before` sets its own size.
                         font-size: 0;
                     }
                     input::-webkit-file-upload-button {

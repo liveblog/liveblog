@@ -14,14 +14,13 @@
 }
 
 :where(.lb-refresh) {
-    // `.main-section` is absolutely positioned on all four sides, so a margin insets it evenly.
+    // Absolutely positioned on all four sides, so a margin insets it.
     .main-section.bloglist {
         margin: 12px 20px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
         @include border-radius($lb-radius-card);
     }
 
-    // Scopes the shared `.subnav` to this page: it is the sibling right before `.main-section.bloglist`.
     .subnav:has(+ .main-section.bloglist) {
         height: 5.8rem;
         .subnav__sliding-toolbar {
@@ -198,8 +197,7 @@
         }
     }
 
-    // Below 800px the tabs and "Create blog" overflow the fixed-height row and widen the page,
-    // so the tab labels wrap. The button collapses to an icon inside `lb-create-btn-pill`.
+    // Below 800px the tab labels wrap so the row does not widen the page.
     @media(max-width: 800px) {
         .subnav:has(+ .main-section.bloglist) {
             .button-stack .nav-tabs {
@@ -323,8 +321,7 @@
                 flex-shrink: 0;
                 display: flex;
                 align-items: center;
-                // The directive renders `.sd-pagination` inside this wrapper. It needs flex too, or its
-                // inline-block children wrap onto a second line.
+                // The directive's inner `.sd-pagination` needs flex too, or its children wrap.
                 .sd-pagination {
                     display: flex;
                     flex-wrap: nowrap;
@@ -441,8 +438,7 @@
         padding: 30px;
         overflow-y: auto;
         :where(.lb-refresh) & {
-            // 4px of top padding leaves room for the hovered card's -2px lift, which this
-            // scroll container would otherwise clip.
+            // The 4px top padding is room for the hovered card's 2px lift, which this scroller would clip.
             top: 72px;
             background: #fff;
             border-bottom-left-radius: $lb-radius-card;
@@ -647,8 +643,7 @@
                     background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
                     :where(.lb-refresh) & {
                         position: relative;
-                        // Keeps the blog picture's z-index inside the media area. Without a stacking context here
-                        // the picture is stacked against `.bulk-select` and, coming later in the markup, covers it.
+                        // Own stacking context, or the picture (later in the markup) covers `.bulk-select`.
                         z-index: 0;
                         height: 150px;
                         background: none;
@@ -656,8 +651,7 @@
                         border-top-left-radius: $lb-radius-card;
                         border-top-right-radius: $lb-radius-card;
                         overflow: hidden;
-                        // The placeholder icon goes on a pseudo-element: masking `.media` itself would clip its
-                        // background color to the icon shape.
+                        // Icon on a pseudo-element: masking `.media` would clip its background to the icon shape.
                         &:before {
                             content: '';
                             position: absolute;

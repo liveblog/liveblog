@@ -517,8 +517,8 @@ i.icon-star.orange {
         background-color: $lb-header-bg !important;
     }
 
-    // !important: the vendor `.sd-checkbox` rules load after this file at equal specificity.
-    // Keeps the vendor 16px box, which its 12px check glyph is positioned for.
+    // !important: vendor rules load later at equal specificity. The size stays vendor's 16px,
+    // which its check glyph is positioned for.
     .sd-checkbox {
         border-color: #C3CAD2 !important;
         @include border-radius(4px !important);
@@ -545,7 +545,7 @@ i.icon-star.orange {
         letter-spacing: -.02em;
     }
 
-    // !important: the vendor `.dropdown__menu` rules load after this file at equal specificity.
+    // !important: vendor rules load later at equal specificity.
     .dropdown__menu {
         border: 1px solid $lb-input-border !important;
         @include border-radius(10px !important);
@@ -846,9 +846,8 @@ i.icon-star.orange {
         color: $lb-subnav-text;
     }
 
-    // sd-modal's directive sets an inline z-index only on the first `.modal__backdrop`,
-    // which ng-if recreates on every reopen. The backdrop is appended after the modal,
-    // so it needs the lower value or it covers the dialog and eats its clicks.
+    // sd-modal sets an inline z-index only on the first backdrop, which ng-if recreates on reopen.
+    // The backdrop comes after the modal, so it needs the lower value or it covers the dialog.
     .modal {
         z-index: 100001 !important;
     }
@@ -1031,8 +1030,7 @@ i.icon-star.orange {
         }
     }
 
-    // Vendor's `.main-section` is absolutely positioned on all four sides, so margin
-    // insets it and its absolutely positioned children follow.
+    // Absolutely positioned on all four sides, so a margin insets it.
     .main-section.users {
         margin: 12px 20px 20px;
         // Vendor's own values, pinned so these panes stay under sd-modal's backdrop
@@ -1356,8 +1354,7 @@ i.icon-star.orange {
             font-size: 11px !important;
             padding: 6px 14px !important;
             white-space: nowrap !important;
-            // The app-wide `.btn--primary:hover` rule is also !important, so reassert both
-            // properties.
+            // The app-wide `.btn--primary:hover` rule is !important too.
             &:hover:not(:disabled) {
                 background-color: $lb-rail-active-bg !important;
                 border-color: $lb-rail-active !important;

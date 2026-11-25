@@ -126,8 +126,7 @@
                 }
             }
             :where(.lb-refresh) & {
-                // Descendant selector (not `a > i`) so it also matches the icon
-                // inside the disabled reorder state's `div.reorder-disabled`.
+                // Descendant, not `a > i`: also matches the icon inside `div.reorder-disabled`.
                 i.icon-star {
                     @include lb-icon-font-mask(url('~images/icons/star.svg'), $lb-btn-dark-bg);
                     opacity: 1;

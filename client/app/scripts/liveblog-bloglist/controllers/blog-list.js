@@ -485,9 +485,8 @@ export default function BlogListController(
         });
     }
 
-    // The search text lives in the sdSearchbar directive's own scope, so its close
-    // button is the only way to clear both the input and the URL. Clicking it during
-    // this digest would throw "$digest already in progress", hence the $timeout.
+    // sdSearchbar keeps the text in its own scope, so its close button is the only way to clear
+    // the input and the URL. $timeout: clicking it mid-digest throws "$digest already in progress".
     $scope.clearSearch = function() {
         $timeout(() => {
             const close = document.querySelector('.bloglist .search-close');

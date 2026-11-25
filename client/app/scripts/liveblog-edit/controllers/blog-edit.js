@@ -710,8 +710,7 @@ export default function BlogEditController(
             }
 
             $route.updateParams(params);
-            // The route has reloadOnSearch off, so history entries for panel changes would make
-            // the browser Back button change the URL without changing the view.
+            // reloadOnSearch is off, so a history entry per panel would make Back change only the URL.
             $location.replace();
             unreadPostsService.reset(panel);
 

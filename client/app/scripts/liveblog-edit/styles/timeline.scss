@@ -281,9 +281,7 @@
         }
     }
     :where(.lb-refresh) & {
-        // .cancel-reorder also carries .header--filters, so it takes the margin-left: auto.
-        // The real filters must not keep auto too, or flex splits the free space and
-        // strands Cancel mid-row.
+        // `.cancel-reorder` also has `.header--filters` and takes the auto margin; a second one strands it mid-row.
         .cancel-reorder ~ .header--filters:not(.cancel-reorder) {
             margin-left: 12px;
         }

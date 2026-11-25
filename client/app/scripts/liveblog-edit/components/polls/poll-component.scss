@@ -165,8 +165,7 @@
         border-style: solid !important;
         border-color: $lb-input-border;
         border-radius: $lb-radius-input !important;
-        // sir-trevor's `.st-block input[type="text"]` (and :active/:focus, inputs.scss) sets
-        // `padding: .6em` at equal specificity, so without !important build order decides.
+        // sir-trevor's `.st-block input[type="text"]` sets `padding: .6em` at equal specificity.
         padding: 8px 12px !important;
         font-size: 13px;
         transition: border-color .15s ease;

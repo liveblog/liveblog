@@ -4,8 +4,7 @@ $PADDING: 20px;
 @import '~lb-mixins.scss';
 @import '~lb-variables.scss';
 
-// Vendor positions `.tab-content.outer` absolutely at `top: 0` and responsive.scss
-// only resets `left` on mobile, so offset it below the horizontal tab row.
+// Vendor pins `.tab-content.outer` at `top: 0`; on mobile it has to clear the tab row.
 @media(max-width: 800px) {
     :where(.lb-refresh) .settings-page .tabbable.outer .tab-content.outer {
         top: 48px !important;
@@ -123,8 +122,7 @@ $PADDING: 20px;
                         box-shadow: none !important;
                     }
                 }
-                // Repeats responsive.scss's mobile tab-row layout: this file loads after the global
-                // bundle, so its fixed-width sidebar rules would otherwise win.
+                // Repeats responsive.scss's mobile tab row: this file loads later, so its sidebar rules would win.
                 @media(max-width: 800px) {
                     position: relative !important;
                     width: 100% !important;
@@ -213,8 +211,7 @@ $PADDING: 20px;
                             float: none;
                             flex: 1 1 auto;
                             min-width: 0;
-                            // The datepicker/timepicker button is positioned against this box, so the cap keeps
-                            // it at the field's visible edge.
+                            // The picker button is positioned against this box; the cap keeps it at the field's edge.
                             max-width: 480px;
                         }
                         select {margin: 0; height: auto;} // overwrite bootstrap
@@ -373,8 +370,7 @@ $PADDING: 20px;
                 .sd-create-btn {
                     @include lb-create-btn-pill('Add output');
                 }
-                // The wrapper's `.minusMargin1020` (-10px -20px) pushes the pill past the header edge.
-                // -4px keeps the 40px pill inside the 48px header: `.content` paints over any overflow.
+                // Replaces `.minusMargin1020`; -4px keeps the 40px pill inside the 48px header, which `.content` overlaps.
                 .minusMargin1020 {
                     margin: -4px 0 0 !important;
                 }
@@ -390,8 +386,7 @@ $PADDING: 20px;
                 border: 1px solid $lb-input-border !important;
                 @include border-radius($lb-radius-input);
                 box-shadow: none !important;
-                // The template's `clearfix` ::before/::after would become extra flex items and
-                // break `space-between`.
+                // The template's clearfix pseudo-elements would become flex items.
                 &::before, &::after {
                     content: none;
                 }

@@ -100,7 +100,7 @@
                 border-radius: $lb-radius-input;
                 padding: 8px 22px;
                 box-shadow: none;
-                // Vendor's clearfix pseudo-elements would become flex items and break `space-between`.
+                // Vendor's clearfix pseudo-elements would become flex items.
                 &::before, &::after {
                     content: none;
                 }
@@ -123,8 +123,7 @@
                 }
             };
             :where(.lb-refresh) & {
-                // Vendor's `.pills-list li:hover .actions { display: block !important }` would win on
-                // hover without these.
+                // Beats vendor's `.pills-list li:hover .actions { display: block !important }`.
                 .actions {
                     position: static !important;
                     display: flex !important;

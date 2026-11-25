@@ -321,7 +321,6 @@
                         }
                     }
                     :where(.lb-refresh) &:hover > .overlay {
-                        // Overrides the legacy hover `top: 0` above.
                         top: 50%;
                         background-color: rgba($lb-btn-dark-bg, 0.12);
                         color: $lb-btn-dark-bg;
@@ -684,8 +683,7 @@
                                         left: 13px;
                                         top: 10px;
                                         color: $gray;
-                                        // sir-trevor draws these with a ligature icon font over the text content, so hide
-                                        // the text and mask an SVG per [data-type].
+                                        // sir-trevor's ligature font draws over the text: hide it, mask an SVG per [data-type].
                                         :where(.lb-refresh) & {
                                             font-size: 0 !important; // beats sir-trevor.scss's global `.st-icon { font-size: 18px !important; }`
                                             display: inline-block;
@@ -844,8 +842,7 @@
                                         font-size: 14px;
                                         font-weight: 500;
                                     }
-                                    // sir-trevor draws this with a ligature icon font over the text content, so hide
-                                    // the text and mask an SVG instead.
+                                    // sir-trevor's ligature icon font draws over the text: hide it and mask an SVG.
                                     .st-icon {
                                         font-size: 0 !important;
                                         display: block;
@@ -1461,7 +1458,7 @@
             // Vendor's inline-block with a 2.6rem line-height would swamp the margin-bottom below.
             display: block !important;
             line-height: normal !important;
-            // !important to beat vendor `.sd-line-input .sd-line-input__label { margin: 0 0.5rem 0 0 }`.
+            // Beats vendor's `.sd-line-input .sd-line-input__label` margin.
             margin-bottom: 6px !important;
         }
         .form-input > a {

@@ -11,8 +11,7 @@
             display: none !important;
         }
         :where(.lb-refresh) & {
-            // Hiding only `.avatar-comment` leaves its floated 30px `.lb-post__figure`
-            // wrapper (post.scss) pushing the comment text right.
+            // Hiding only `.avatar-comment` leaves this floated 30px wrapper pushing the text right.
             .lb-post__figure {
                 display: none !important;
             }
