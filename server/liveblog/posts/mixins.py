@@ -7,7 +7,7 @@ from superdesk.resource import build_custom_hateoas
 from settings import MOBILE_APP_WORKAROUND
 from liveblog.polls.polls import poll_calculations
 from . import utils as post_utils
-from .utils import find_ref_items, get_associations
+from .utils import drop_unresolved_refs, find_ref_items, get_associations
 
 logger = logging.getLogger("superdesk")
 
@@ -216,7 +216,6 @@ class BlogPostsMixin:
                 ref_id = assoc.get("residRef", None)
 
                 if ref_id and ref_id not in related_items:
-                    assoc["deleted"] = True
                     continue
 
                 if ref_id:
@@ -226,15 +225,7 @@ class BlogPostsMixin:
                             assoc["item"]["poll_body"]
                         )
 
-            # Editor and embed clients expect every ref to carry its item, so refs
-            # whose item no longer resolves are left out of the response. The
-            # stored post is not modified.
-            for group in doc.get("groups", []):
-                if "refs" in group:
-                    group["refs"] = [
-                        ref for ref in group["refs"] if not ref.get("deleted")
-                    ]
-
+            drop_unresolved_refs(doc)
             self.extract_author_ids(doc)
 
         self.generate_authors_map()

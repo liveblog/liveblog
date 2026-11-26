@@ -11,7 +11,7 @@ from superdesk import get_resource_service
 
 from liveblog.polls.polls import poll_calculations
 from liveblog.posts.mixins import AuthorsMixin
-from liveblog.posts.utils import get_associations
+from liveblog.posts.utils import drop_unresolved_refs, get_associations
 
 
 def is_valid_html(html):
@@ -151,16 +151,7 @@ class Blog(AuthorsMixin):
                     assoc["item"] = rel_item
                     self.fix_item_markup_if_needed(assoc)
 
-            # Themes and the AMP filter expect every ref to carry its item, so
-            # refs whose item no longer resolves are left out. The stored post
-            # is not modified.
-            for group in post.get("groups", []):
-                if "refs" in group:
-                    group["refs"] = [
-                        ref
-                        for ref in group["refs"]
-                        if not ref.get("residRef") or "item" in ref
-                    ]
+            drop_unresolved_refs(post)
 
         # Enrich documents
         self.complete_posts_info(posts)

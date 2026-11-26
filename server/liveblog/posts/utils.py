@@ -27,6 +27,19 @@ def get_associations(post):
             yield assoc
 
 
+def drop_unresolved_refs(post):
+    """Remove refs whose item could not be attached to `post`.
+
+    Editor and theme code reads `ref.item` without checking, so a ref without
+    its item must not reach them. Only the in-memory post changes.
+    """
+    for group in post.get("groups", []):
+        if "refs" in group:
+            group["refs"] = [
+                ref for ref in group["refs"] if not ref.get("residRef") or "item" in ref
+            ]
+
+
 def get_associations_ids(post):
     ids = []
 
@@ -226,7 +239,7 @@ def get_first_item(post):
 
     except Exception as err:
         logger.info(
-            "Impossible to get the main item for the post {}. Error: {}".format(
+            "Unable to get the main item for the post {}. Error: {}".format(
                 post.get("_id"), err
             )
         )
