@@ -226,8 +226,8 @@ def get_first_item(post):
 
     except Exception as err:
         logger.info(
-            "Imposible to get the main item for the post {}. Error: {}".format(
-                post, err
+            "Impossible to get the main item for the post {}. Error: {}".format(
+                post.get("_id"), err
             )
         )
 

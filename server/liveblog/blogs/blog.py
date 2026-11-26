@@ -151,6 +151,17 @@ class Blog(AuthorsMixin):
                     assoc["item"] = rel_item
                     self.fix_item_markup_if_needed(assoc)
 
+            # Themes and the AMP filter expect every ref to carry its item, so
+            # refs whose item no longer resolves are left out. The stored post
+            # is not modified.
+            for group in post.get("groups", []):
+                if "refs" in group:
+                    group["refs"] = [
+                        ref
+                        for ref in group["refs"]
+                        if not ref.get("residRef") or "item" in ref
+                    ]
+
         # Enrich documents
         self.complete_posts_info(posts)
 

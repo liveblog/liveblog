@@ -1,8 +1,7 @@
 import logging
-from flask import request, current_app as app
+from flask import request
 from bson.objectid import ObjectId
 
-from eve_elastic.elastic import ElasticCursor
 from superdesk import get_resource_service
 from superdesk.resource import build_custom_hateoas
 from settings import MOBILE_APP_WORKAROUND
@@ -203,48 +202,6 @@ class BlogPostsMixin:
             items_map.update(find_ref_items(refs, tenant_id))
         return items_map
 
-    def remove_post_from_list_and_db(self, docs, post):
-        if app.config.get("SUPERDESK_TESTING", False):
-            return
-
-        self.delete(lookup={"_id": post["_id"]})
-
-        try:
-            if isinstance(docs, ElasticCursor):
-                docs.docs.remove(post)
-            else:
-                docs.remove(post)
-        except Exception as e:
-            logger.warning(f"Failed to remove orphan doc: {post}. Error: {e}")
-
-    def remove_orphan_items(self, docs):
-        """Removes posts whose items are missing from the related_items map."""
-        for post in docs:
-            posts_items = []
-
-            for group in post.get("groups", []):
-                if group.get("id") == "main":
-                    posts_items = group.get("refs", [])
-
-            if len(posts_items) == 0:
-                self.remove_post_from_list_and_db(docs, post)
-
-            for assoc in get_associations(post):
-                if "deleted" in assoc:
-                    if (
-                        len(post["groups"]) > 0
-                        and "refs" in post["groups"][1]
-                        and len(post["groups"][1]["refs"]) == 1
-                    ):
-                        self.remove_post_from_list_and_db(docs, post)
-
-                    try:
-                        post["groups"][1]["refs"].remove(assoc)
-                    except Exception as e:
-                        logger.warning(
-                            f"Failed to remove orphan item: {assoc}. Error: {e}"
-                        )
-
     def _enrich_blog_posts(self, docs):
         """
         Attach related items, resolve poll calculations, and enrich author
@@ -258,8 +215,6 @@ class BlogPostsMixin:
             for assoc in get_associations(doc):
                 ref_id = assoc.get("residRef", None)
 
-                # not in related_items means it's a deleted item — mark it so
-                # remove_orphan_items can clean it up
                 if ref_id and ref_id not in related_items:
                     assoc["deleted"] = True
                     continue
@@ -271,11 +226,16 @@ class BlogPostsMixin:
                             assoc["item"]["poll_body"]
                         )
 
-            self.extract_author_ids(doc)
+            # Editor and embed clients expect every ref to carry its item, so refs
+            # whose item no longer resolves are left out of the response. The
+            # stored post is not modified.
+            for group in doc.get("groups", []):
+                if "refs" in group:
+                    group["refs"] = [
+                        ref for ref in group["refs"] if not ref.get("deleted")
+                    ]
 
-        # NOTE: temporary workaround for broken references
-        # TODO: remove this after two releases from now
-        self.remove_orphan_items(docs)
+            self.extract_author_ids(doc)
 
         self.generate_authors_map()
         self.attach_authors(docs)
