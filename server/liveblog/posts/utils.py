@@ -266,12 +266,13 @@ def check_content_diff(updates, original):
     items = find_ref_items(updated_refs, original.get("tenant_id"))
     for index, item_ref in enumerate(updated_refs):
         item = items.get(get_ref_id(item_ref))
-        if item is None:
+        original_item = original_refs[index].get("item")
+        if item is None or original_item is None:
             return True
         item_type = item.get("item_type")
 
         if item_type == "poll":
-            original_poll_body = original_refs[index]["item"].get("poll_body", {})
+            original_poll_body = original_item.get("poll_body", {})
             item_poll_body = item.get("poll_body", {})
 
             original_active_until = original_poll_body.get("active_until")
@@ -281,7 +282,7 @@ def check_content_diff(updates, original):
                 if original_active_until != item_active_until:
                     return True
         else:
-            if item["text"] != original_refs[index]["item"]["text"]:
+            if item["text"] != original_item["text"]:
                 return True
 
     return content_diff

@@ -757,6 +757,13 @@ class PostsModuleTestCase(TenantAwareTestCase):
         assert check_content_diff(updates, original)
         assert not check_content_diff(original, original)
 
+    def test_check_content_diff_original_ref_without_item(self):
+        updates = {
+            "groups": [{}, {"refs": [{"residRef": self.items_ids[0], "type": "text"}]}]
+        }
+        original = {"groups": [{}, {"refs": [{"residRef": "urn:test:missing-item"}]}]}
+        assert check_content_diff(updates, original)
+
     def test_check_content_diff_polls(self):
         updates = {
             "groups": [
