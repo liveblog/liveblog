@@ -11,7 +11,7 @@ from superdesk import get_resource_service
 
 from liveblog.polls.polls import poll_calculations
 from liveblog.posts.mixins import AuthorsMixin
-from liveblog.posts.utils import get_associations
+from liveblog.posts.utils import drop_unresolved_refs, get_associations
 
 
 def is_valid_html(html):
@@ -150,6 +150,8 @@ class Blog(AuthorsMixin):
                 if ref_id and rel_item:
                     assoc["item"] = rel_item
                     self.fix_item_markup_if_needed(assoc)
+
+            drop_unresolved_refs(post)
 
         # Enrich documents
         self.complete_posts_info(posts)

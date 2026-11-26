@@ -131,11 +131,13 @@ export default function lbPostsList(postsService, notify, $timeout, PagesManager
                 });
             },
             isEditable: function(post) {
+                const mainItem = _.get(post, 'groups[1].refs[0].item', {});
+
                 // A syndicated post of type free type is not editable
                 return !(
                     post.syndication_in &&
-                    post.groups[1].refs[0].item.group_type === 'freetype' &&
-                    post.groups[1].refs[0].item.item_type.toLowerCase() !== 'scorecard'
+                    mainItem.group_type === 'freetype' &&
+                    mainItem.item_type.toLowerCase() !== 'scorecard'
                 );
             },
             isBlogClosed: $scope.$parent.blog.blog_status === 'closed',

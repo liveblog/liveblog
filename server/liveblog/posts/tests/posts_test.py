@@ -2,6 +2,7 @@ import datetime
 
 import liveblog.blogs as blogs
 import liveblog.items as items
+import liveblog.liveblog_users as liveblog_users_app
 import liveblog.polls as polls
 import liveblog.posts as posts
 import liveblog.tenants as tenants
@@ -30,6 +31,8 @@ from liveblog.posts.utils import (
 )
 from liveblog.tenancy.context import system_context
 from liveblog.common import run_once
+from liveblog.blogs.blog import Blog
+from liveblog.themes.template.filters import ampsupport
 
 
 class PostsModuleTestCase(TenantAwareTestCase):
@@ -54,6 +57,7 @@ class PostsModuleTestCase(TenantAwareTestCase):
             advertisements,
             polls,
             items,
+            liveblog_users_app,
         ]
         for lb_app in init_apps:
             lb_app.init_app(self.app)
@@ -753,6 +757,13 @@ class PostsModuleTestCase(TenantAwareTestCase):
         assert check_content_diff(updates, original)
         assert not check_content_diff(original, original)
 
+    def test_check_content_diff_original_ref_without_item(self):
+        updates = {
+            "groups": [{}, {"refs": [{"residRef": self.items_ids[0], "type": "text"}]}]
+        }
+        original = {"groups": [{}, {"refs": [{"residRef": "urn:test:missing-item"}]}]}
+        assert check_content_diff(updates, original)
+
     def test_check_content_diff_polls(self):
         updates = {
             "groups": [
@@ -1113,6 +1124,116 @@ class PostsModuleTestCase(TenantAwareTestCase):
         with system_context():
             self.assertEqual(set(find_ref_items(refs, self.tenant_id)), {own_id})
             self.assertEqual(set(find_ref_items(refs, other_tenant_id)), {other_id})
+
+    def test_enrich_blog_posts_keeps_posts_with_unresolved_refs(self):
+        own_id, _, _, _ = self._insert_ref_items()
+        missing_ref = {"residRef": "urn:test:missing-item"}
+        main_refs_by_post = {
+            "urn:test:post-partly-resolved": [{"residRef": own_id}, missing_ref],
+            "urn:test:post-only-unresolved": [missing_ref],
+            "urn:test:post-empty-main": [],
+        }
+        self.app.data.insert(
+            "archive",
+            [
+                {
+                    "_id": post_id,
+                    "tenant_id": self.tenant_id,
+                    "blog": self.blogs_ids[0],
+                    "post_status": "open",
+                    "particular_type": "post",
+                    "type": "composite",
+                    "groups": [
+                        {"id": "root", "refs": [{"idRef": "main"}]},
+                        {"id": "main", "refs": refs},
+                    ],
+                }
+                for post_id, refs in main_refs_by_post.items()
+            ],
+        )
+
+        for service_name in ("blog_posts", "client_blog_posts"):
+            service = get_resource_service(service_name)
+            docs = [
+                self.app.data.find_one("archive", req=None, _id=post_id)
+                for post_id in main_refs_by_post
+            ]
+
+            with patch.dict(self.app.config, {"SUPERDESK_TESTING": False}):
+                service._enrich_blog_posts(docs)
+
+            returned_refs = {doc["_id"]: doc["groups"][1]["refs"] for doc in docs}
+            self.assertEqual(len(docs), 3, service_name)
+            self.assertEqual(
+                [
+                    ref["item"]["_id"]
+                    for ref in returned_refs["urn:test:post-partly-resolved"]
+                ],
+                [own_id],
+                service_name,
+            )
+            self.assertEqual(returned_refs["urn:test:post-only-unresolved"], [])
+            self.assertEqual(returned_refs["urn:test:post-empty-main"], [])
+
+            for post_id, refs in main_refs_by_post.items():
+                stored = self.app.data.find_one("archive", req=None, _id=post_id)
+                self.assertIsNotNone(stored, (service_name, post_id))
+                self.assertEqual(stored["groups"][1]["refs"], refs)
+
+    def test_blog_posts_drops_unresolved_refs_for_server_rendering(self):
+        own_id, _, _, _ = self._insert_ref_items()
+        missing_ref = {"residRef": "urn:test:missing-item"}
+        main_refs_by_post = {
+            "urn:test:post-partly-resolved": [{"residRef": own_id}, missing_ref],
+            "urn:test:post-only-unresolved": [missing_ref],
+        }
+        self.app.data.insert(
+            "archive",
+            [
+                {
+                    "_id": post_id,
+                    "tenant_id": self.tenant_id,
+                    "blog": self.blogs_ids[0],
+                    "post_status": "open",
+                    "particular_type": "post",
+                    "type": "composite",
+                    "deleted": False,
+                    "sticky": False,
+                    "groups": [
+                        {"id": "root", "refs": [{"idRef": "main"}]},
+                        {"id": "main", "refs": refs},
+                    ],
+                }
+                for post_id, refs in main_refs_by_post.items()
+            ],
+        )
+
+        blog = self.app.data.find_one("client_blogs", req=None, _id=self.blogs_ids[0])
+        returned = {
+            post["_id"]: post
+            for post in Blog(blog).posts(all_posts=True)
+            if post["_id"] in main_refs_by_post
+        }
+
+        self.assertEqual(set(returned), set(main_refs_by_post))
+        self.assertEqual(
+            [
+                ref["item"]["_id"]
+                for ref in returned["urn:test:post-partly-resolved"]["groups"][1][
+                    "refs"
+                ]
+            ],
+            [own_id],
+        )
+        self.assertEqual(
+            returned["urn:test:post-only-unresolved"]["groups"][1]["refs"], []
+        )
+        self.assertEqual(
+            returned["urn:test:post-only-unresolved"]["groups"][0]["refs"],
+            [{"idRef": "main"}],
+        )
+        for post in returned.values():
+            self.assertTrue(ampsupport(post))
 
     def test_validate_post_refs_rejects_foreign_and_unknown_resources(self):
         own_id, other_id, _, refs = self._insert_ref_items()
