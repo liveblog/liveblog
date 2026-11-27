@@ -146,6 +146,17 @@ CELERY_TASK_PROTOCOL = 1
 
 CELERY_TASK_IGNORE_RESULT = False
 
+# Replace a Celery pool process after this many tasks, or once its peak RSS
+# exceeds this many KiB (checked after each task). 0 disables either limit
+# (billiard rejects 0, so it maps to None). superdesk loads this config with
+# namespace="CELERY", so only CELERY_WORKER_* names reach Celery, not CELERYD_*.
+CELERY_WORKER_MAX_TASKS_PER_CHILD = (
+    env("CELERY_WORKER_MAX_TASKS_PER_CHILD", 1000) or None
+)
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = (
+    env("CELERY_WORKER_MAX_MEMORY_PER_CHILD", 307200) or None
+)
+
 CELERYBEAT_SCHEDULE_FILENAME = env(
     "CELERYBEAT_SCHEDULE_FILENAME", "./celerybeatschedule.db"
 )
