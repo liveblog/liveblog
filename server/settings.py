@@ -181,6 +181,7 @@ INSTALLED_APPS = [
     "superdesk.roles",
     "superdesk.upload",
     "superdesk.notification",
+    "liveblog.notifications",
     "superdesk.activity",
     "superdesk.sequences",
     "superdesk.vocabularies",
