@@ -3,6 +3,8 @@ import time
 import unittest
 from unittest import mock
 
+import eve
+from celery.signals import worker_process_shutdown
 from flask import Flask
 
 from liveblog import notifications
@@ -62,6 +64,19 @@ class BackgroundNotificationProducerTestCase(unittest.TestCase):
             self.wait_until_sent()
         self.assertEqual(self.published, ["new"])
 
+    def test_celery_process_shutdown_waits_for_queued_messages(self):
+        release = threading.Event()
+
+        def slow_publish(message):
+            release.wait(5)
+            self.published.append(message)
+
+        with mock.patch.object(self.producer, "_publish", side_effect=slow_publish):
+            self.producer.send("last")
+            threading.Timer(0.2, release.set).start()
+            worker_process_shutdown.send(sender=None, pid=0, exitcode=0)
+            self.assertEqual(self.published, ["last"])
+
 
 class InitAppTestCase(unittest.TestCase):
     def test_replaces_and_closes_the_superdesk_client(self):
@@ -75,3 +90,13 @@ class InitAppTestCase(unittest.TestCase):
         previous.close.assert_called_once_with()
         self.assertIsInstance(app.notification_client, BackgroundNotificationProducer)
         self.assertTrue(app.notification_client.open)
+
+    def test_works_on_an_eve_app_without_a_previous_client(self):
+        app = eve.Eve(
+            settings={"DOMAIN": {}, "CELERY_BROKER_URL": "amqp://localhost:1//"}
+        )
+        app.notification_client  # Eve stores an event slot on the first read of an unset attribute
+
+        notifications.init_app(app)
+
+        self.assertIsInstance(app.notification_client, BackgroundNotificationProducer)

@@ -6,6 +6,7 @@ import queue
 import threading
 import time
 
+from celery.signals import worker_process_shutdown
 from kombu import Connection, Exchange
 from kombu.pools import producers
 from superdesk.default_settings import WS_HEART_BEAT
@@ -45,6 +46,8 @@ class BackgroundNotificationProducer:
         self._pid = None
         self._queue = None
         atexit.register(self._flush)
+        # Celery pool children end with `os._exit`, which skips atexit handlers.
+        worker_process_shutdown.connect(self._flush, weak=False)
 
     def send(self, message):
         """Queue the message for publishing and return immediately."""
@@ -119,7 +122,7 @@ class BackgroundNotificationProducer:
                 retry_policy=PUBLISH_RETRY_POLICY,
             )
 
-    def _flush(self):
+    def _flush(self, **kwargs):
         """On a clean exit, give the thread a moment to publish what is still queued."""
         if self._pid != os.getpid():
             return
