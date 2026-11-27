@@ -1,5 +1,6 @@
 import datetime
 import json
+import unittest
 import liveblog.client_modules as client_modules
 import liveblog.blogs as blogs
 import superdesk.users as users_app
@@ -9,12 +10,15 @@ from flask_cache import Cache
 from liveblog.blogs.blog import Blog
 from superdesk.tests import TestCase
 from bson import ObjectId
+from eve.utils import ParsedRequest
+from werkzeug.datastructures import MultiDict
 from superdesk import get_resource_service
 from liveblog.client_modules.client_modules import (
     blog_posts_blueprint,
     voting_blueprint,
     convert_posts,
     _get_converted_item,
+    client_posts_cache_key,
 )
 from liveblog.posts import utils as post_utils
 
@@ -707,3 +711,24 @@ class ClientModuleTestCase(TestCase):
             self.assertIn(
                 "Error: Option 'Invalid Option' not found", response_data["_error"]
             )
+
+
+class ClientPostsCacheKeyTestCase(unittest.TestCase):
+    """Nodes share the Redis cache, so they must all build the same key for the same request."""
+
+    def test_key_is_stable(self):
+        # A pinned value fails if the key ever depends on per-process state again, such as hash().
+        req = ParsedRequest()
+        req.args = MultiDict([("page", "1")])
+        self.assertEqual(
+            client_posts_cache_key(req),
+            "lb_ClientBlogPostsService_get_7f0d84638ae27bd69cc14be8e799e14a0e857ab1",
+        )
+
+    def test_key_changes_with_the_request(self):
+        first, second = ParsedRequest(), ParsedRequest()
+        first.args = MultiDict([("page", "1")])
+        second.args = MultiDict([("page", "2")])
+        self.assertNotEqual(
+            client_posts_cache_key(first), client_posts_cache_key(second)
+        )
