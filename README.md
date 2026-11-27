@@ -196,6 +196,15 @@ npm run build
 
 The production bundle is written to `client/dist`; serve it with any static file server.
 
+**Worker recycling**
+
+Gunicorn and Celery replace their worker processes periodically as a safety net against memory growth. Set any of these to `0` to disable that limit.
+
+- `WEB_MAX_REQUESTS` (default `1000`): requests a gunicorn worker serves before it is restarted.
+- `WEB_MAX_REQUESTS_JITTER` (default `100`): random extra requests added per worker, so workers do not all restart at once.
+- `CELERY_WORKER_MAX_TASKS_PER_CHILD` (default `1000`): tasks a Celery pool process runs before it is replaced.
+- `CELERY_WORKER_MAX_MEMORY_PER_CHILD` (default `307200`, in KiB): peak resident memory after which a Celery pool process is replaced once its current task finishes.
+
 ## Quick start with Claude Code (local dev)
 
 If you use [Claude Code](https://claude.com/claude-code), this repo ships
